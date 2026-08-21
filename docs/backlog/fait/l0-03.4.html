@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.4</b></nav><h1>[l0-03.4] CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.2.html"><code>l0-03.2</code></a>, <a href="../fait/l0-03.3.html"><code>l0-03.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li>→ <a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li></ul></div><h1 id="l0-034-cli-ingest">[l0-03.4] — CLI ingest</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.4</b></nav><h1>[l0-03.4] CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.2.html"><code>l0-03.2</code></a>, <a href="l0-03.3.html"><code>l0-03.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li>→ <a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li></ul></div><h1 id="l0-034-cli-ingest">[l0-03.4] — CLI ingest</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Assembler : recherche (ou liste fournie) → pour chaque item : garde → SCL → verdict →
 chips → manifeste. Relançable à l'infini.</p>
@@ -257,4 +257,130 @@ reconfirmés sur le code mergé (signatures relevées ci-dessous).</p>
 <p><strong>Non testé</strong> : réseau réel (l0-03.7 --live) ; parallélisme (l0-04.1).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 00:30 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>bd96c1f</code>, mergé en <code>f7c8a4e</code>, corrigé par <code>00f3eb1</code>) :
+<code>adapters/ingestion.py</code> (489 l., toute l'orchestration), <code>cli/ingest.py</code> (203 l., wiring
+pur), <code>scripts/smoke.py</code> (le placeholder est mort), <code>tests/test_ingestion.py</code>,
+<code>tests/test_cli_ingest.py</code>, <code>tests/test_smoke.py</code>. <strong>122 → 146 tests</strong> (+21 par l'agent,
++3 à la revue). <code>just check</code> vert sur <code>develop</code> : mypy strict <strong>25 fichiers</strong>, <strong>146
+passed</strong>, et ⭐ <strong>le smoke exécute désormais le pipeline réel</strong> :
+<code>smoke: vert — ingest bout en bout (double en mémoire, 1 item, 3 fichiers, assets_read &gt; 0)</code>.
+<strong>Le gate n'est plus creux</strong> — c'était l'enjeu de l'ajout PO du 21/08.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>statuts conformes, invariants bouclés, compteurs gelés</td>
+<td>5 items ; <code>found_stac=7 · skipped_scene_cloud=1 · off_tile=1 · found_tile=5 · ingested=1 · rejected_clouds=1 · rejected_invalid=1 · rejected_nodata=1 · failed=1</code> <strong>en littéral</strong> (7 = 1+1+5 ✓ ; 5 = 1+1+1+1+1 ✓)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>témoins positif ET négatif</td>
+<td>1er run <code>assets_read &gt; 0</code> ; 2e run <code>assets_read == 0</code>, <code>skipped == 2</code>, <code>content_hashes</code> identiques</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>grille mutée → ré-ingestion</td>
+<td>origine +60 m → <code>skipped=0</code>, <code>grid_hash</code> différent, transform de sortie == nouvelle grille</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>sequence=1</code> même date</td>
+<td>2 répertoires distincts, zéro écrasement</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>1 échec / N</td>
+<td><code>failed=1</code> + <code>cause</code> non vide, 2 autres <code>ingested</code>, exit <strong>1</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5bis</td>
+<td>garde nodata dans les deux sens</td>
+<td>37,5 % → <code>rejected_nodata</code>, <code>chip_nodata_pct</code> au manifeste, <strong>0 fichier sur disque</strong> ; 0,5 % → <code>ingested</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5ter</td>
+<td><code>tile_suspect</code> au-delà de 20 %</td>
+<td>2/5 = 40 % → <code>true</code> ; 1/5 = 20 % pile → <code>false</code> (seuil <strong>strict</strong>)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>amont injoignable → exit 3</td>
+<td>tous les items en échec réseau → exit <strong>3</strong>, distinct du <strong>1</strong> de O5 ; <code>StacUnreachable</code> sur <code>search()</code> → exit 3 sans qu'aucun item soit tenté</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>smoke réel dans le gate</td>
+<td>positif (3 fichiers + manifeste <code>ingested</code> + <code>assets_read &gt; 0</code>) <strong>et</strong> négatif (source vide → <code>AssertionError</code>, gate rouge)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O8</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert (cf. ci-dessus)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="contrat-expose-consomme-par-l0-035-l0-041-l0-052">Contrat exposé (consommé par l0-03.5, l0-04.1, l0-05.2)</h3>
+<pre><code class="language-python">@dataclass(frozen=True, slots=True)
+class IngestOutcome:
+    run: Run
+    all_failures_network: bool
+
+def ingest_from_envelope(*, envelope, grid, settings, data_root, force=False) -&gt; IngestOutcome
+def ingest_from_source(*, site, window, source, settings, data_root, force=False) -&gt; IngestOutcome
+</code></pre>
+<p>Internes monkeypatchées par les tests (pas un contrat public) : <code>_new_run_id()</code>, <code>_sleep()</code>,
+<code>_retry_call()</code>, <code>_is_network_error()</code>.</p>
+<h3 id="deux-corrections-apportees-a-la-revue-avant-cloture-commit-00f3eb1">⭐ Deux corrections apportées à la revue avant clôture (commit <code>00f3eb1</code>)</h3>
+<ol>
+<li><strong><code>_retry_call</code> retentait TOUTE exception</strong>, y compris déterministe (clé d'asset absente
+   de l'item). Une telle erreur ne se résout jamais : la retenter coûte
+   <code>http_retries × http_backoff_s</code> = <strong>6 s par item</strong>, à multiplier par les 25 sites × 48
+   mois de l0-04.H. Le retry est désormais réservé aux erreurs d'origine réseau.
+   <em>L'agent avait lui-même signalé ce choix dans ses décisions hors fiche — signalement utile.</em></li>
+<li><strong><code>_is_network_error</code> ne reconnaissait que <code>OSError</code></strong>, donc classait <code>StacUnreachable</code>
+   comme « pas réseau ». Sans effet visible aujourd'hui (elle ne survient que sur <code>search()</code>,
+   hors boucle), mais c'était un piège posé pour <strong>l0-04.1 et l0-05.2</strong>, qui réutiliseront cet
+   orchestrateur avec d'autres sources. <code>StacUnreachable</code> n'hérite pas d'<code>OSError</code>
+   volontairement (décision l0-02.2) : il fallait donc la nommer explicitement.</li>
+</ol>
+<p><strong>+3 tests</strong> dont le <strong>témoin positif du retry</strong>, que l'agent avait listé comme non testé :
+seul le chemin « échoue toujours » était couvert (O5/O6), donc <strong>rien ne prouvait que
+<code>http_retries</code> serve à quelque chose</strong> — un retry qui ne retenterait jamais aurait laissé
+O5 et O6 verts.</p>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong>Granularité des fixtures de test</strong> : une grille 4×4 ne permet pas d'exprimer 40 % ni
+   0,5 % exactement (6,25 %/pixel) → 37,5 % (6/16) pour le rejet, grille dédiée 20×20 pour
+   le cas 0,5 % (2/400). Aucun impact sur le code de production.</li>
+<li><strong>Classification réseau</strong> : <code>isinstance(exc, OSError)</code> — couvre le transport HTTP et
+   <code>rasterio.errors.RasterioIOError</code> (qui en hérite), ce qui permet de simuler O5 et O6 sans
+   réseau réel, par des hrefs vers des fichiers inexistants. <strong>Étendue à <code>StacUnreachable</code>
+   à la revue.</strong></li>
+<li><strong>Manifeste <code>rejected_nodata</code></strong> : <code>files=[]</code> et <code>content_hashes={}</code> après suppression —
+   reflète l'état réel du disque plutôt qu'un contenu calculé puis effacé.</li>
+</ol>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Réseau réel et fixtures COG réelles (l0-03.5 pour le corpus, l0-03.7 pour <code>--live</code>) ·
+<code>bytes_downloaded</code> jamais vérifié à une valeur non nulle (toujours 0 — non instrumentable
+côté GDAL, donnée de rapport et non critère de gate) · <strong>parallélisme</strong> : la boucle est
+strictement séquentielle et n'a jamais tourné sous concurrence (l0-04.1) · les sous-cas de
+JSON <code>--acquisitions</code> gravement malformé au-delà de ceux que <code>Envelope.from_dict</code> couvre déjà.</p><p class="gen">Généré le 22/08/2026 01:12 — le .md fait foi.</p></article></body></html>
