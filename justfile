@@ -52,6 +52,11 @@ run *args:
 script name *args:
     pixi run python scripts/{{name}}.py {{args}}
 
+# relevé RÉSEAU des tuiles de référence + calcul des grilles (l0-01.3, écrit sites.yaml)
+# (ex. just survey-tiles -- --sites A01,C07 — re-passe ciblée après correction de coordonnées)
+survey-tiles *args:
+    pixi run python scripts/survey_tiles.py {{args}}
+
 # smoke : le pipeline réel sur un périmètre minuscule (à câbler dès le Lot 0)
 smoke:
     pixi run python scripts/smoke.py
