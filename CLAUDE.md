@@ -9,7 +9,8 @@ avec le kit `_tools_python/`.
 Deux types d'instances Claude travaillent sur ce dépôt **en parallèle** :
 
 - **L'architecte/PO** (instance Cowork) écrit UNIQUEMENT dans `docs/backlog/` (rédaction de
-  fiches en `maturation/`, régénération du dashboard). Il ne touche jamais à `src/`, `tests/`,
+  fiches en `maturation/`, régénération du dashboard) et `docs/lots/` (feuille de route des
+  lots, source de vérité du lotissement). Il ne touche jamais à `src/`, `tests/`,
   `scripts/`, et ne fait **ni commit ni push**.
 - **L'équipe d'implémentation** (instances Claude Code) écrit dans `src/`, `tests/`,
   `scripts/`, et gère les **déplacements** de fiches (`a-faire/ → en-cours/ → fait/`) ainsi
