@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><h1 id="l0-012-socle-cli">[l0-01.2] — Socle CLI</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li></ul></div><h1 id="l0-012-socle-cli">[l0-01.2] — Socle CLI</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Le mécanisme qui rend les fiches aval parallélisables : chaque commande = un module déposé
 dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> n'est plus jamais modifié ensuite.</p>
@@ -42,8 +42,9 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
   <code>INCONCLUSIVE=3</code> — TOUS les CLIs du lot les importent (décision chapeau l0-01).</li>
 <li><code>src/tiny_wae/cli/sites_validate.py</code> et <code>cli/sites_list.py</code> : wiring pur sur la
   validation de l0-01.1 ; <code>--json</code> pour sites-list ; logs STDERR.</li>
-<li>Taxonomie documentée (9 commandes, cf. chapeau) : les 7 restantes n'existent PAS encore
-  (pas de stubs) — la liste vit en commentaire dans <code>__main__.py</code>.</li>
+<li>Taxonomie documentée (<strong>9 sous-commandes, cf. chapeau — <code>smoke</code> n'en est PAS une, c'est
+  un script</strong>) : les 6 restantes n'existent PAS encore (pas de stubs) — la liste vit en
+  commentaire dans <code>__main__.py</code>.</li>
 </ul>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
@@ -73,7 +74,7 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 <tr>
 <td>O3</td>
 <td>Config cassée (fixture)</td>
-<td>exit 2 (<code>USAGE</code>), message nommant le champ</td>
+<td>exit 2 (<code>USAGE</code>) ; STDERR contient <strong>l'id du site</strong> ET <strong>le nom du champ</strong> fautifs (assertion littérale sur les deux chaînes)</td>
 </tr>
 <tr>
 <td>O4</td>
@@ -87,7 +88,7 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé</strong> : les 7 commandes futures (fiches aval).</p>
+<p><strong>Non testé</strong> : les <strong>6</strong> sous-commandes restantes (fiches aval) — cf. taxonomie ci-dessus.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 18:20 — le .md fait foi.</p></article></body></html>

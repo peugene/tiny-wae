@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.5] Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -29,48 +29,44 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-le-harnais-de-rejeu-et-le-smoke">[l0-03.5] — Le harnais de rejeu et le smoke</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-corpus-de-fixtures-et-fixturesource">[l0-03.5] — Corpus de fixtures et FixtureSource</h1>
+<blockquote>
+<p>Scission de l'ex-l0-03.5 (PO, 21/08 — elle cumulait un script d'enregistrement réseau
+<strong>jetable</strong> et le <strong>gate permanent</strong>, deux natures et deux rythmes de vie différents,
+sur le point de passage unique du graphe). <strong>Ici : le corpus.</strong> Le smoke est en l0-03.7.
+Mise en œuvre de <strong>D-a</strong>.</p>
+</blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Rendre <code>just check</code> déterministe et hors ligne (D-a), et livrer le chemin live. Cette
-fiche REMPLACE <code>scripts/smoke.py</code> — le gate lui appartient.</p>
+<p>Constituer le matériau qui rend tous les tests aval déterministes et hors ligne : des
+GeoTIFF locaux clippés + les enveloppes STAC correspondantes, servis par une
+implémentation du port <code>StacSource</code>.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
-<li><strong>Enregistrement des fixtures</strong> : <code>scripts/record_fixtures.py</code> (rejouable, réseau) —
-  télécharge et CLIPPE localement les fenêtres des items gelés (chapeau l0-02 : le clair
-  2024, le nuageux 2023, le S2C) + <strong>la fenêtre complète A01 × sept. 2022 (6 items,
-  mesuré)</strong> pour l0-04.1/l0-05 → GeoTIFF locaux sous <code>tests/fixtures/cog/</code> (~2-5 Mo,
-  versionnés) + enveloppes JSON correspondantes sous <code>tests/fixtures/stac/</code>.</li>
-<li><code>src/tiny_wae/adapters/fixture_source.py</code> : <code>FixtureSource(StacSource)</code> — sert les
-  enveloppes enregistrées, hrefs <code>file://</code> vers les GeoTIFF locaux. AUCUN mock HTTP.</li>
-<li><strong>Smoke</strong> : <code>scripts/smoke.py</code> réécrit — mode <code>--replay</code> (défaut) : <code>ingest</code> complet via
-  FixtureSource sur l'item clair, assertions (3 fichiers, tailles, hashes attendus gravés,
-  manifeste conforme) ; mode <code>--live</code> : même chemin via EarthSearchSource, data_root
-  temporaire, hors gate. <code>just check</code> inchangé dans sa forme (<code>just smoke</code> = replay).</li>
-<li>⭐ <strong>Garde réseau — amendement à D-a (décision Philippe E-b, 21/08)</strong>. Le mécanisme de
-  rejeu ne change pas ; <strong>la garde passe du TRANSPORT au CONTRAT</strong>, pour la raison
-  suivante, <strong>mesurée</strong> en revue v3 : <code>pytest-socket</code>/monkeypatch patchent le module
-  <code>socket</code> de Python, mais rasterio lit via <strong>GDAL (C, libcurl)</strong> qui ne l'emprunte
-  jamais — <code>rasterio.open("https://…")</code> sous <code>disable_socket()</code> <strong>atteint le réseau</strong>.
-  Le risque réel est donc le <strong>faux-vert</strong> : un smoke qui passe en téléchargeant.</li>
-<li><strong>Bretelles (garde de contrat, la vraie)</strong> : mode <code>TINY_WAE_OFFLINE=1</code> posé par
-    <code>smoke --replay</code> (et hérité par <code>just check</code>). Sous ce mode, <strong><code>adapters/chips.py</code></strong>
-    refuse d'ouvrir tout href dont le schéma n'est pas <code>file://</code> → exception typée
-    <code>RemoteAccessForbidden</code>. ⚠ La garde vit dans <strong><code>chips.py</code></strong> (celui qui OUVRE), pas
-    seulement dans <code>FixtureSource</code> (qui ne fait que servir des hrefs) : tout autre chemin
-    d'appel reste ainsi couvert.</li>
-<li><strong>Ceinture (garde de transport, partielle et assumée)</strong> : <code>pytest-socket</code> continue de
-    couvrir le chemin <strong>STAC</strong> (<code>httpx</code>/<code>pystac-client</code>, qui passent bien par le <code>socket</code>
-    Python). Écrire dans la fiche qu'il <strong>ne couvre pas</strong> les lectures GDAL — pour que
-    personne ne croie qu'un seul dispositif suffit.</li>
-<li>Mesures live publiées (volume/durée/octets par chip — baseline pour l0-04).</li>
+<li><strong><code>scripts/record_fixtures.py</code></strong> (rejouable, RÉSEAU, hors package) — télécharge et
+  <strong>clippe</strong> les fenêtres utiles :</li>
+<li>les <strong>3 items gelés</strong> du chapeau l0-02 (clair <code>S2A_31TGJ_20240801_0_L2A</code>, nuageux
+    <code>S2B_31TGJ_20230315_0_L2A</code>, S2C <code>S2C_31TGJ_20260513_0_L2A</code>) ;</li>
+<li>un item <strong><code>sequence=1</code></strong> (candidat mesuré : <code>S2A_31TGJ_20260813_1_L2A</code>) ;</li>
+<li>la <strong>fenêtre A01 × 1 mois</strong> (6 items, mesuré) pour l0-04.1 ;</li>
+<li>un <strong>second site</strong> (B09 A69, mono-tuile, 3 items suffisent) — exigé par les oracles
+    multi-sites de l0-04.1/O2 et l0-05.2/O3/O5, que l'ex-fiche déclarait « non couverts ».
+  ⚠ <strong>Adressage par ID et par fenêtre ABSOLUE</strong>, jamais « 48 mois glissants » : deux des
+  items gelés sortiront de la fenêtre glissante (le nuageux le 15/03/2027) — le script
+  doit rester rejouable après cette date.</li>
+<li>Sortie : <code>tests/fixtures/cog/</code> (GeoTIFF clippés) + <code>tests/fixtures/stac/</code> (enveloppes
+  JSON, réutilise le format de l0-02.1). ⭐ <strong>Budget mesuré : ~2,84 MiB brut par item →
+  ~14 items ≈ 40 MiB brut, ~20 MiB en DEFLATE</strong> (l'ex-fiche annonçait « 2-5 Mo », faux
+  d'un facteur 5-10). Si le dépôt s'en trouve trop lourd : réduire les fenêtres des items
+  non-smoke à 128×128, décision à prendre <strong>à la mesure</strong>, pas d'avance.</li>
+<li><strong><code>src/tiny_wae/adapters/fixture_source.py</code></strong> : <code>FixtureSource(StacSource)</code> — sert les
+  enveloppes enregistrées, hrefs <code>file://</code> vers les GeoTIFF locaux. <strong>AUCUN mock HTTP.</strong></li>
+<li>Dépendances : déjà posées par l0-01.1 (<code>rasterio</code>, <code>httpx</code>). <code>pixi.lock</code> : versionné,
+  jamais mergé.</li>
 </ul>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] Fixtures enregistrées et commises ; FixtureSource ; smoke 2 modes ; <code>just check</code>
-      vert de bout en bout hors ligne.</li>
-<li>[ ] Garde de contrat dans <code>chips.py</code> (<code>TINY_WAE_OFFLINE</code> → <code>RemoteAccessForbidden</code>) +
-      test unitaire dédié ; la limite de <code>pytest-socket</code> (ne couvre pas GDAL) écrite dans
-      le docstring du smoke.</li>
+<li>[ ] <code>record_fixtures.py</code> + corpus enregistré et commis (2 sites, ≥ 14 items).</li>
+<li>[ ] <code>FixtureSource</code> + tests de contrat (sert les mêmes types que <code>EarthSearchSource</code>).</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
 <table>
@@ -84,42 +80,33 @@ fiche REMPLACE <code>scripts/smoke.py</code> — le gate lui appartient.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><code>just smoke</code> (replay), machine hors ligne</td>
-<td>vert ; <strong><code>content_hashes</code> des sorties == valeurs gravées</strong> (hash du tableau décodé + CRS/transform/dtype — E-d ; jamais les octets du GeoTIFF)</td>
+<td><code>FixtureSource</code> vs le port</td>
+<td>mêmes types retournés que <code>EarthSearchSource</code> (test de substituabilité : la même fonction consomme les deux)</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Cas négatif : une fixture retirée</td>
-<td>smoke ROUGE avec message clair (le gate sait échouer)</td>
+<td>Corpus</td>
+<td>≥ 14 items sur <strong>2 sites</strong> ; les 4 items gelés présents par id ; taille totale du dossier <strong>mesurée et publiée</strong> dans le Résumé</td>
 </tr>
 <tr>
 <td>O3</td>
-<td><strong>Garde de contrat</strong> : fixture dont un href est <code>https://</code>, sous <code>TINY_WAE_OFFLINE=1</code></td>
-<td>smoke ROUGE, exit ≠ 0, cause <strong><code>RemoteAccessForbidden</code></strong> nommée en STDERR — <strong>aucune requête réseau émise</strong> (l'exception précède l'ouverture)</td>
-</tr>
-<tr>
-<td>O3bis</td>
-<td>Même fixture, <code>TINY_WAE_OFFLINE</code> absent (mode live)</td>
-<td>l'ouverture est tentée normalement (la garde n'est pas un blocage permanent)</td>
+<td>Tous les hrefs servis par <code>FixtureSource</code></td>
+<td>commencent par <code>file://</code> (aucun <code>https://</code> résiduel — c'est ce qui rend la garde de l0-03.7 effective)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td><strong>Répétabilité</strong> (E-d — remplace l'ancien test <code>--now</code>, option morte sur <code>ingest</code>) : <code>just smoke</code> deux fois d'affilée sur data_root vierge à chaque fois</td>
-<td><code>content_hashes</code> identiques entre les deux exécutions ; <code>assets_read &gt; 0</code> aux deux (chaque run part de zéro)</td>
+<td><code>record_fixtures.py</code> rejoué (réseau, hors gate)</td>
+<td>régénère un corpus <strong>identique</strong> aux hashes de contenu près</td>
 </tr>
 <tr>
-<td>O5 [live, hors gate]</td>
-<td><code>smoke --live</code> avant livraison</td>
-<td>vert ; mesures volume/durée publiées dans le Résumé</td>
-</tr>
-<tr>
-<td>O6</td>
+<td>O5</td>
 <td><code>just check</code></td>
-<td>vert, hors ligne</td>
+<td>vert, hors ligne (le smoke minimal de l0-03.4 est toujours en place à ce stade)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé</strong> : couverture fixtures d'autres sites que A01 (suffisant pour le lot — dit).</p>
+<p><strong>Non testé</strong> : le smoke complet et sa garde de contrat (l0-03.7) ; les mesures live
+(l0-03.7/O5).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:53 — le .md fait foi.</p></article></body></html>

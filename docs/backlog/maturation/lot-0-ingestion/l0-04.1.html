@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.1</b></nav><h1>[l0-04.1] CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</h1><p>Maturation · effort M · pipeline · phase O2 · depends_on : <a href="l0-03.4.html"><code>l0-03.4</code></a>, <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li>→ <a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-041-cli-backfill">[l0-04.1] — CLI backfill</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.1</b></nav><h1>[l0-04.1] CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</h1><p>Maturation · effort M · pipeline · phase O2 · depends_on : <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li>→ <a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-041-cli-backfill">[l0-04.1] — CLI backfill</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Orchestrer <code>ingest</code> sur sites × fenêtres avec un pool borné. Zéro campagne réelle ici —
 tout se teste sur FixtureSource.</p>
@@ -41,8 +41,12 @@ tout se teste sur FixtureSource.</p>
   <strong>un site = une unité d'isolation</strong> (échec d'un site → les autres continuent, exit 1
   à la fin). Compteurs agrégés par site sur STDERR, <code>run.json</code> par (site, fenêtre) via
   l'API manifests. Réutilise le retry de l0-03.4 — AUCUN retry ici.</li>
-<li><strong>Interruption propre</strong> : SIGINT → arrêt des soumissions, attente des items en cours,
-  exit ≠ 0 ; grâce à l'atomicité de l0-03.2, aucun manifeste tronqué.</li>
+<li><strong>Interruption propre</strong> : le gestionnaire de signal (SIGINT, et <code>CTRL_BREAK_EVENT</code> sur
+  Windows) → arrêt des soumissions, attente des items en cours, exit ≠ 0 ; grâce à
+  l'atomicité de l0-03.2, aucun manifeste tronqué. ⚠ <strong>Le déclenchement du signal n'est
+  PAS portable</strong> (<code>pyproject.toml</code> cible <code>linux-64</code> ET <code>win-64</code>) : le test du gate
+  appelle <strong>directement le gestionnaire</strong> (fonction pure d'arrêt), pas un vrai signal —
+  l'interruption réelle est vérifiée à la main sur la campagne (l0-04.H).</li>
 <li>La source (Earth/Fixture) suit le même point d'injection que l0-03.4.</li>
 </ul>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -61,13 +65,18 @@ tout se teste sur FixtureSource.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><code>backfill --sites A01 --months 1 --workers 4 --now 2022-10-01</code> sur FixtureSource</td>
-<td>même ensemble <code>(item_id, statut)</code> qu'un run <code>--workers 1</code> (déterminisme du pool) ; compteurs == valeurs gelées dans le test (A01 mono-tuile : <code>found_stac=6, skipped_scene_cloud=0, off_tile=0, found_tile=6</code>) ; <strong>les deux invariants de conservation bouclent</strong></td>
+<td><code>backfill --sites A01 --months 1 --workers 4 --now &lt;date de la fenêtre du corpus&gt;</code> sur FixtureSource</td>
+<td>même ensemble <code>(item_id, statut)</code> qu'un run <code>--workers 1</code> (déterminisme du pool) ; compteurs == valeurs gelées dans le test (A01 mono-tuile : <code>found_stac=6, skipped_scene_cloud=0, off_tile=0, found_tile=6</code>) ; <strong>les deux invariants de conservation bouclent</strong>. ⚠ <code>--now</code> est passé littéralement : la fenêtre du corpus est <strong>absolue</strong>, jamais « 48 mois glissants »</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Échec injecté sur 1 site / 2</td>
+<td>Échec injecté sur 1 site / 2 (le corpus l0-03.5 couvre <strong>2 sites</strong> : A01 et B09)</td>
 <td>l'autre site complet, exit 1, site fautif nommé</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>Amont injoignable sur TOUS les sites</td>
+<td><strong>exit 3</strong> (<code>INCONCLUSIVE</code>), distinct de O2</td>
 </tr>
 <tr>
 <td>O3</td>
@@ -90,4 +99,4 @@ tout se teste sur FixtureSource.</p>
 optimal (mesuré en campagne).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:53 — le .md fait foi.</p></article></body></html>

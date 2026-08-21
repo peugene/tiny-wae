@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.3</b></nav><h1>[l0-03.3] Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.1.html"><code>l0-03.1</code></a>, <a href="l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li>→ <a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li></ul></div><h1 id="l0-033-chips-lecture-et-ecriture">[l0-03.3] — Chips : lecture et écriture</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.3</b></nav><h1>[l0-03.3] Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.1.html"><code>l0-03.1</code></a>, <a href="l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li>→ <a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li></ul></div><h1 id="l0-033-chips-lecture-et-ecriture">[l0-03.3] — Chips : lecture et écriture</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Depuis une <code>Acquisition</code> : lire les fenêtres nécessaires (SCL d'abord), écrire les 3
 fichiers sur la grille du site. Pas de CLI ici (l0-03.4), pas de manifeste (fonction pure
@@ -37,8 +37,10 @@ retournant un résultat que l0-03.4 assemble).</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
 <li><code>src/tiny_wae/adapters/chips.py</code> :</li>
-<li><code>read_scl(acq, grid) -&gt; ndarray 256×256</code> (fenêtre de l0-03.1 ; <code>Resampling.nearest</code>
-    si jamais nécessaire — normalement AUCUN rééchantillonnage, fenêtre entière).</li>
+<li><code>read_scl(acq, grid) -&gt; ndarray 256×256</code> — fenêtre dérivée <strong>ici</strong> de
+    <code>core.geometry.chip_bounds</code> (l0-03.1) via <code>rasterio.windows.from_bounds</code> sur le
+    transform de la source ; <code>Resampling.nearest</code>
+    si jamais nécessaire — normalement AUCUN rééchantillonnage, fenêtre entière.</li>
 <li><code>read_bands_10m(acq, grid)</code>, <code>read_bands_20m(acq, grid)</code> — 4 et 6 bandes (D-b :
     rededge1/2/3 + nir08 + swir16 + swir22), dans CET ordre, gravé en constante
     <code>BAND_ORDER_10M</code> / <code>BAND_ORDER_20M</code> (l'ordre des bandes est un contrat du Lot 1).</li>
@@ -96,8 +98,8 @@ retournant un résultat que l0-03.4 assemble).</p>
 </tr>
 <tr>
 <td>O3</td>
-<td>Fraction nodata du chip calculée et retournée</td>
-<td>== fraction injectée dans le raster synthétique</td>
+<td>Fraction nodata du chip calculée et retournée (arbitrage n°3)</td>
+<td>== fraction injectée dans le raster synthétique ; la valeur <strong>remonte</strong> dans <code>chip_nodata_pct</code> du manifeste (l0-03.2) et déclenche <code>rejected_nodata</code> au-delà de <code>chip_nodata_pct_max</code> — testé dans les deux sens (0,5 % → ingested ; 40 % → rejected_nodata, fichiers supprimés)</td>
 </tr>
 <tr>
 <td>O4</td>
@@ -106,8 +108,8 @@ retournant un résultat que l0-03.4 assemble).</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé</strong> : lecture HTTPS réelle (smoke --live, l0-03.5) ; performance (mesurée en
-l0-03.5/O-mesure).</p>
+<p><strong>Non testé</strong> : lecture HTTPS réelle (smoke <code>--live</code>, l0-03.7) ; performance et volumes
+(mesurés en <strong>l0-03.7 / O5</strong>).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 18:20 — le .md fait foi.</p></article></body></html>

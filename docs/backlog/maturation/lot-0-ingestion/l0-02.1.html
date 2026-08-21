@@ -29,17 +29,96 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.1</b></nav><h1>[l0-02.1] Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.3.html"><code>l0-01.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li>→ <a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-021-stacsource-et-contrat-acquisition">[l0-02.1] — StacSource et contrat Acquisition</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.1</b></nav><h1>[l0-02.1] Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li>→ <a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-021-stacsource-et-contrat-acquisition">[l0-02.1] — StacSource et contrat Acquisition</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Le port, le contrat et son implémentation earth-search — testés sur fixtures des DEUX
 générations d'items (S2A/B et S2C).</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
-<li><code>src/tiny_wae/core/acquisition.py</code> : dataclass frozen <code>Acquisition</code> — champs exacts :
-  <code>item_id</code>, <code>datetime</code>, <code>platform</code> (lu du champ <code>platform</code>, jamais déduit de l'id),
-  <code>tile</code> (grid:code), <code>sequence</code>, <code>scene_cloud_cover</code>, <code>nodata_pixel_pct</code>,
-  <code>processing_baseline</code>, <code>boa_offset_applied</code>, <code>raster_scale</code>, <code>raster_offset</code>,
-  <code>proj_epsg</code>, <code>assets: dict[str, str]</code> (clé logique → href <code>https://</code>). Round-trip JSON.</li>
+<li><code>src/tiny_wae/core/acquisition.py</code> : dataclass frozen <code>Acquisition</code>. ⭐ <strong>Champs exacts,
+  avec leur CLÉ STAC SOURCE — à ne pas deviner</strong> (relevé de la revue v3 ; noter que trois
+  clés sont préfixées <code>s2:</code>/<code>earthsearch:</code>, ce dernier étant <strong>propre à earth-search</strong> et
+  destiné à disparaître à une éventuelle bascule CDSE) :</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>champ</th>
+<th>clé STAC source</th>
+<th>remarque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td><code>id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>datetime</code></td>
+<td><code>properties.datetime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>platform</code></td>
+<td><code>properties.platform</code></td>
+<td><code>sentinel-2a/2b/2c</code> — <strong>jamais déduit de l'id</strong></td>
+</tr>
+<tr>
+<td><code>tile</code></td>
+<td><code>properties.grid:code</code></td>
+<td>ex. <code>MGRS-31TGJ</code></td>
+</tr>
+<tr>
+<td><code>sequence</code></td>
+<td><code>properties.s2:sequence</code></td>
+<td>⚠ valeur = <strong>chaîne</strong> <code>"0"</code>, pas un entier</td>
+</tr>
+<tr>
+<td><code>scene_cloud_cover</code></td>
+<td><code>properties.eo:cloud_cover</code></td>
+<td>métrique <strong>scène</strong> (110 km)</td>
+</tr>
+<tr>
+<td><code>nodata_pixel_pct</code></td>
+<td><code>properties.s2:nodata_pixel_percentage</code></td>
+<td>métrique <strong>scène</strong></td>
+</tr>
+<tr>
+<td><code>processing_baseline</code></td>
+<td><code>properties.s2:processing_baseline</code></td>
+<td>plusieurs valeurs coexistent dans la fenêtre (04.00 → 05.12, mesuré)</td>
+</tr>
+<tr>
+<td><code>boa_offset_applied</code></td>
+<td><code>properties.earthsearch:boa_offset_applied</code></td>
+<td>⚠ <strong>préfixe vendeur</strong></td>
+</tr>
+<tr>
+<td><code>proj_epsg</code></td>
+<td><code>properties.proj:epsg</code></td>
+<td>garde epsg de l0-03.3</td>
+</tr>
+<tr>
+<td><code>assets</code></td>
+<td><code>assets[clé].href</code></td>
+<td><code>dict[str, str]</code>, hrefs <code>https://</code></td>
+</tr>
+<tr>
+<td><code>radiometry</code></td>
+<td><code>assets[clé].raster:bands[0].{scale,offset}</code></td>
+<td>⭐ <strong>dict PAR ASSET</strong> (arbitrage n°1)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>⭐ <strong>Arbitrage n°1 (21/08) — <code>raster:bands</code> est une propriété PAR ASSET, pas par item</strong> :
+  mesuré, les 10 bandes de réflectance portent <code>scale 0.0001 / offset −0.1</code>, mais <code>aot</code> et
+  <code>wvp</code> portent <code>0.001 / 0</code> et <code>scl</code> n'en a <strong>aucun</strong>. Le contrat expose donc
+  <code>radiometry: dict[str, tuple[float, float] | None]</code> (clé d'asset → scale/offset), pas
+  deux scalaires. C'est la <strong>traçabilité radiométrique promise au Lot 1</strong> : un contrat
+  lossy ici se paierait par une ré-lecture complète plus tard.
+  Round-trip JSON de l'ensemble.</li>
 <li><code>core/envelope.py</code> : l'enveloppe versionnée du chapeau (<code>schema_version=1</code>, counters,
   items) + round-trip. <strong>Counters exacts</strong> : <code>found_stac</code>, <code>skipped_scene_cloud</code>,
   <code>off_tile</code>, <code>found_tile</code> (cf. chapeau, décision E-a — le nom <code>found</code> seul est banni).
@@ -77,7 +156,7 @@ générations d'items (S2A/B et S2C).</p>
 <tr>
 <td>O1</td>
 <td>Fixture S2B : parsing</td>
-<td>les 11 hrefs <code>https://</code> présents, <code>proj_epsg=32631</code>, <code>raster_offset=-0.1</code></td>
+<td>les 11 hrefs <code>https://</code> présents ; <code>proj_epsg=32631</code> ; <code>sequence == "0"</code> (chaîne) ; <strong><code>radiometry["blue"] == (0.0001, -0.1)</code> ET <code>radiometry["scl"] is None</code></strong> (arbitrage n°1 : la valeur est par asset)</td>
 </tr>
 <tr>
 <td>O2</td>
@@ -91,12 +170,12 @@ générations d'items (S2A/B et S2C).</p>
 </tr>
 <tr>
 <td>O4</td>
-<td>Fixture 2 tuiles (C07 — <strong>à enregistrer par cette fiche</strong>, cf. périmètre)</td>
-<td>items hors <code>reference_tile</code> → <code>counters.off_tile</code>, absents de <code>items</code></td>
+<td>Fixture 2 tuiles (C07 — <strong>à enregistrer par cette fiche</strong>, cf. périmètre), <code>reference_tile</code> passée <strong>en paramètre littéral du test</strong> (<code>MGRS-52TEL</code>)</td>
+<td>items hors tuile → <code>counters.off_tile</code>, absents de <code>items</code>. ⚠ Volontairement <strong>découplé de <code>sites.yaml</code></strong> : le filtre est une fonction de (items, tuile), il n'a pas à attendre le relevé réseau de l0-01.3 (desserrage PO du 21/08 — la fiche remonte de N3 à N2)</td>
 </tr>
 <tr>
 <td>O5</td>
-<td><strong>Conservation</strong> sur les 4 fixtures</td>
+<td><strong>Conservation</strong> sur les 5 fixtures</td>
 <td><code>found_stac == skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile == len(items)</code> — exact, sur chacune</td>
 </tr>
 <tr>
@@ -106,7 +185,8 @@ générations d'items (S2A/B et S2C).</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé</strong> : appels réseau réels (l0-02.2/O-live) ; contenu des pixels.</p>
+<p><strong>Non testé</strong> : appels réseau réels (l0-02.2 / <strong>O4</strong>) ; contenu des pixels ; l'exactitude
+des <code>reference_tile</code> réelles (l0-01.3).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 17:17 — le .md fait foi.</p></article></body></html>

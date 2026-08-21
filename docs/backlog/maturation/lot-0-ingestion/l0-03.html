@@ -29,12 +29,12 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-03</b></nav><h1>[l0-03] [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche</h1><p>Maturation · effort XL · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><h1 id="l0-03-chapeau-ingestion-des-chips">[l0-03] — CHAPEAU : Ingestion des chips</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-03</b></nav><h1>[l0-03] [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche</h1><p>Maturation · effort XL · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><h1 id="l0-03-chapeau-ingestion-des-chips">[l0-03] — CHAPEAU : Ingestion des chips</h1>
 <blockquote>
 <p>Fiche chapeau, non dispatchable, <code>depends_on: []</code> (E-c : un chapeau n'ordonne rien).
 <strong>Vient après l0-02</strong> — les arêtes réelles sont portées par les sous-tâches. La v2 avait
 tout mis dans une seule fiche — la revue v2 l'a retoquée (récidive du défaut l0-04).
-Découpée en 6 sous-tâches agent (S/M) + 1 fiche HUMAINE.</p>
+Découpée en 7 sous-tâches agent (S/M) + 1 fiche HUMAINE.</p>
 </blockquote>
 <h2 id="contexte">Contexte</h2>
 <p>Pour (site, Acquisition) : produire chips 10 m + 20 m + SCL + manifeste, ou rejeter
@@ -49,8 +49,17 @@ proprement. Clé de stockage = <strong>item id</strong> (G9). Grille du site = s
 <li>Ordre invariant : garde epsg (item.proj_epsg == grid.epsg, sinon <code>failed</code>) → SCL seul
   (fenêtré) → verdict (<code>invalid_pct</code> {0,1} &gt; invalid_pct_max → <code>rejected_invalid</code> ;
   <code>cloud_pct</code> {3,8,9,10} &gt; cloud_pct_max → <code>rejected_clouds</code> ; classes 2 et 11 comptées,
-  décision différée documentée) → bandes 10 m puis 20 m. SCL rééchantillonné JAMAIS
-  (verdict calculé à 20 m sur 256×256).</li>
+  décision différée documentée) → bandes 10 m puis 20 m → ⭐ <strong>garde nodata FINALE</strong>.
+  SCL rééchantillonné JAMAIS (verdict calculé à 20 m sur 256×256).</li>
+<li>⭐ <strong>Garde nodata instrumentée (arbitrage n°3, 21/08)</strong> — le GO <strong>G8</strong> exigeait « tuile
+  de référence <strong>+ garde nodata</strong> » et <code>lot-0-sites.md</code> O3 « nodata &lt; 1 % sur 100 % des
+  ingested », mais rien ne la portait : <code>s2:nodata_pixel_percentage</code> est une métrique de
+  <strong>scène</strong> (110 km), inutilisable pour un chip de 5 km. Désormais : <code>chips.py</code> mesure la
+  fraction de pixels nodata <strong>du chip produit</strong> (<code>chip_nodata_pct</code>), elle est <strong>écrite au
+  manifeste</strong>, et si elle dépasse <code>chip_nodata_pct_max</code> (settings, défaut 1 %) l'item
+  prend le statut <strong><code>rejected_nodata</code></strong> — les fichiers écrits sont supprimés. Cas visé :
+  chip en bord de fauchée ou hors emprise de la tuile épinglée (mesuré : 8 items sur 636
+  ont &gt; 50 % de nodata scène sur C07).</li>
 <li><strong>D-a</strong> : rejeu = GeoTIFF locaux clippés versionnés (<code>tests/fixtures/cog/</code>) +
   <code>FixtureSource</code> implémentant le port <code>StacSource</code> + assets <code>file://</code>. Aucun mock HTTP.
   Horloge injectable (<code>--now</code>).</li>
@@ -61,10 +70,16 @@ proprement. Clé de stockage = <strong>item id</strong> (G9). Grille du site = s
   (C/libcurl) — une garde de transport laisserait un smoke passer <strong>vert en
   téléchargeant</strong> (faux-vert). <code>pytest-socket</code> reste en ceinture pour le seul chemin
   STAC (httpx/pystac-client) — limite à écrire, pas à masquer.</li>
-<li>Idempotence au grain item <strong>+ signature de grille</strong> : le manifeste porte <code>grid_hash</code>
-  (hash de epsg+origines) ; si la grille du site a changé → l'item est RÉ-ingéré
-  (l'ancienne impasse « chips inatteignables après correction de coordonnées » disparaît).
-  <code>--force</code> disponible.</li>
+<li>Idempotence au grain item <strong>+ signature de grille</strong> : le manifeste porte <code>grid_hash</code> ;
+  si la signature du site a changé → l'item est RÉ-ingéré (l'impasse « chips
+  inatteignables après correction de coordonnées » disparaît). <code>--force</code> disponible.
+  ⭐ <strong>Contenu et sérialisation du <code>grid_hash</code> (précision PO, 21/08)</strong> :
+  <code>sha256</code> d'une chaîne canonique <code>f"{epsg}|{int(origin_x)}|{int(origin_y)}|{chip_px_10m}|
+  {chip_px_20m}|{','.join(BAND_ORDER_10M)}|{','.join(BAND_ORDER_20M)}"</code> — origines
+  <strong>normalisées en entiers</strong> (<code>699960</code> et <code>699960.0</code> doivent donner le MÊME hash, sinon
+  une relecture YAML déclenche une ré-ingestion fantôme de tout le parc). La signature
+  <strong>inclut les bandes et les tailles</strong> : D-b vient de faire passer le chip 20 m de 3 à
+  6 bandes, un tel changement DOIT invalider les chips existants.</li>
 <li>⭐ <strong>Instrumentation de l'idempotence (décision Philippe E-d, 21/08)</strong> :</li>
 <li><strong><code>assets_read</code></strong> = nombre d'ouvertures de raster effectuées par <code>chips.py</code> (notre
     code compte ses propres appels : la mesure vaut à l'identique sous <code>file://</code> et
@@ -97,7 +112,7 @@ proprement. Clé de stockage = <strong>item id</strong> (G9). Grille du site = s
 <tr>
 <td>l0-03.1</td>
 <td>S</td>
-<td>core géométrie : fenêtres 10/20 m, verdict SCL, fenêtres temporelles</td>
+<td>core géométrie : emprise du chip, verdict SCL, fenêtres temporelles</td>
 </tr>
 <tr>
 <td>l0-03.2</td>
@@ -107,21 +122,26 @@ proprement. Clé de stockage = <strong>item id</strong> (G9). Grille du site = s
 <tr>
 <td>l0-03.3</td>
 <td>M</td>
-<td>lecture COG fenêtrée + écriture des 3 fichiers</td>
+<td>lecture COG fenêtrée + écriture des 3 fichiers + gardes (epsg, offline, nodata)</td>
 </tr>
 <tr>
 <td>l0-03.4</td>
 <td>M</td>
-<td>CLI ingest (2 formes) + idempotence/grid_hash/--force + retry</td>
+<td>CLI ingest (2 formes) + idempotence/grid_hash/--force + retry + <strong>smoke minimal</strong></td>
 </tr>
 <tr>
 <td>l0-03.5</td>
 <td>M</td>
-<td>fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live</td>
+<td>corpus de fixtures COG + FixtureSource (enregistrement réseau, jetable)</td>
+</tr>
+<tr>
+<td>l0-03.7</td>
+<td>M</td>
+<td><strong>le gate</strong> : smoke replay/live + garde de contrat (scission du 21/08)</td>
 </tr>
 <tr>
 <td>l0-03.6</td>
-<td>S</td>
+<td>M</td>
 <td>contact-sheet --latest : la planche précoce (artefact)</td>
 </tr>
 <tr>
@@ -133,4 +153,4 @@ proprement. Clé de stockage = <strong>item id</strong> (G9). Grille du site = s
 </table>
 <p><strong>Non testé par le chapeau</strong> : montée en volume (l0-04) ; application de l'offset aux
 valeurs (journalisé, non corrigé — hors lot) ; recalage sub-pixel, mosaïque multi-tuiles,
-Sentinel-1, IA : hors lot.</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+Sentinel-1, IA : hors lot.</p><p class="gen">Généré le 21/08/2026 17:17 — le .md fait foi.</p></article></body></html>

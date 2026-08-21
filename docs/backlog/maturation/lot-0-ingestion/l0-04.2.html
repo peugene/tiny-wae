@@ -40,10 +40,18 @@ de complétude</strong> que la fiche humaine l0-04.H exécute (critère 2 de l'o
   <code>src/tiny_wae/cli/report.py</code> : <code>report [--out &lt;path&gt;]</code> (défaut <code>&lt;data_root&gt;/report.md</code>).
   Par site, <strong>dans cet ordre</strong> (décision E-a) :</li>
 <li><strong>Colonne de conservation</strong> : <code>found_stac</code>, <code>skipped_scene_cloud</code>, <code>off_tile</code>,
-    <code>found_tile</code>, puis <code>ingested</code>, <code>rejected_clouds</code>, <code>rejected_invalid</code>, <code>failed</code>,
-    <code>skipped</code> — avec une <strong>colonne de verdict <code>conservation: OK/ROUGE</code></strong> par site (les
-    deux invariants du chapeau l0-02).</li>
+    <code>found_tile</code>, puis <code>ingested</code>, <code>rejected_clouds</code>, <code>rejected_invalid</code>,
+    <strong><code>rejected_nodata</code></strong>, <code>failed</code>, <code>skipped</code> — avec une <strong>colonne de verdict
+    <code>conservation: OK/ROUGE</code></strong> par site (les deux invariants du chapeau l0-02).</li>
 <li><strong><code>failed_pct</code> = failed / found_tile</strong> (le seul critère à seuil : ≤ 1 %).</li>
+<li>⭐ <strong>Colonne <code>integrite: OK/ROUGE</code></strong> (critère <strong>O3</strong> de la recette — chapeau l0-04
+    et <code>lot-0-sites.md</code> §5 ; il n'avait aucun instrument — exactement le défaut que
+    l'arbitrage n°3 vient de réparer pour la garde nodata) : <strong>sans relire les
+    rasters</strong>, à partir des seuls manifestes —
+    <code>files</code> contient bien les 3 noms attendus · <code>content_hashes</code> porte une entrée par
+    fichier · <code>grid_hash</code> == celui de la grille <strong>courante</strong> du site (détecte les chips
+    orphelins d'une correction de coordonnées) · <code>chip_nodata_pct &lt; chip_nodata_pct_max</code>.
+    Un <code>ingested</code> qui manque à l'un de ces points met le site en ROUGE, l'item est nommé.</li>
 <li><strong>Publiés sans seuil</strong> : <code>off_tile</code>, <code>skipped_scene_cloud</code>, et le <strong>ratio
     <code>ingested / found_tile</code> avec son dénominateur affiché</strong>. Section « pires cas en
     tête » triée sur ce ratio, avec une phrase d'explication automatique factuelle
@@ -60,12 +68,23 @@ de complétude</strong> que la fiche humaine l0-04.H exécute (critère 2 de l'o
   Sortie Markdown, logs STDERR.</li>
 <li><code>cli/contact_sheet.py</code> : ajout du mode <code>--first-last</code> (premier et dernier chip
   <code>ingested</code> par site, 2 imagettes par case) — extension actée en l0-03.6.</li>
-<li><strong><code>report --check-completeness --sites A01,C07,…</code></strong> (critère 2 de l'oracle du chapeau) :
-  pour chaque site demandé, rejoue une requête <code>/aggregate</code> <strong>aux mêmes bbox et fenêtre,
-  SANS filtre tuile</strong> et compare à <code>found_stac</code> agrégé — <strong>tolérance 0</strong>, tout écart
-  listé item par item. ⚠ Le comparant est <code>found_stac</code>, jamais <code>found_tile</code> (l'écart
-  serait alors de ~50 % sur les sites multi-tuiles — mesuré sur C07 : 636 vs 319).
-  Option réseau, hors <code>just check</code>.</li>
+<li>⭐ <strong><code>report --check-completeness --sites A01,C07,…</code></strong> (critère 2 de l'oracle du chapeau)
+  — <strong>arbitrage n°2 : comparaison d'ENSEMBLES, pas de sommes de compteurs.</strong> Pour chaque
+  site : <code>item_ids_for_site(site)</code> (ensemble exact issu des manifestes, l0-03.2) vs les
+  ids d'une requête <code>/search</code> paginée reproduisant <strong>LES TROIS filtres du pipeline</strong> :
+  même bbox, même fenêtre, <code>grid:code</code> == <code>reference_tile</code>, <strong>ET
+  <code>eo:cloud_cover &lt; scene_cloud_max</code></strong>.
+  ⚠ <strong>Ce troisième filtre est indispensable</strong> : <code>item_ids_for_site</code> rend les items
+  <em>instruits</em> (<code>found_tile</code>), or le pré-filtre scène de l0-02.1 en écarte
+  <code>skipped_scene_cloud</code> <strong>avant</strong> l'ingestion. L'omettre rendrait le contrôle rouge dès
+  qu'une scène dépasse 95 % de nuages — c'est-à-dire en permanence sur Hinkley ou
+  Sizewell. <strong>Règle générale : la requête témoin reproduit TOUS les filtres appliqués en
+  amont du comparant, ni plus ni moins.</strong>
+  Sortie : les ids <strong>manquants</strong> et <strong>en trop</strong>, nommés. Tolérance 0.
+  ⚠ <strong>Ne JAMAIS comparer <code>found_stac</code> agrégé</strong> : en régime permanent (update quotidien,
+  marge 3 j) les runs se recouvrent et la somme sur-compte → le contrôle serait rouge en
+  permanence, donc ignoré. Le comparant est le <strong><code>found_tile</code> effectif</strong> (les manifestes),
+  d'où le filtre tuile côté requête témoin. Option réseau, hors <code>just check</code>.</li>
 </ul>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
@@ -83,8 +102,8 @@ de complétude</strong> que la fiche humaine l0-04.H exécute (critère 2 de l'o
 <tbody>
 <tr>
 <td>O1</td>
-<td><code>report</code> sur le corpus l0-03.2 (comptes connus : found_stac=15, skipped_scene_cloud=1, off_tile=2, found_tile=12, ingested=7, rejected_clouds=3, rejected_invalid=1, failed=1, skipped=0)</td>
-<td>rapport EXACT chiffre à chiffre ; <code>conservation: OK</code> ; <strong>ratio 7/12 avec dénominateur affiché</strong> ; <code>failed_pct = 1/12 = 8,3 %</code> signalé &gt; 1 % ; classes 2/11 agrégées</td>
+<td><code>report</code> sur le corpus l0-03.2 (<strong>mêmes comptes que l0-03.2/O2</strong>, à ne pas diverger : found_stac=15, skipped_scene_cloud=1, off_tile=2, found_tile=12, puis les 6 statuts ingested=6, rejected_clouds=3, rejected_invalid=1, rejected_nodata=1, failed=1, skipped=0)</td>
+<td>rapport EXACT chiffre à chiffre ; <code>conservation: OK</code> ; <strong>ratio 6/12 avec dénominateur affiché</strong> ; <code>failed_pct = 1/12 = 8,3 %</code> signalé &gt; 1 % ; classes 2/11 agrégées</td>
 </tr>
 <tr>
 <td>O2</td>
@@ -97,9 +116,14 @@ de complétude</strong> que la fiche humaine l0-04.H exécute (critère 2 de l'o
 <td><code>failed_pct = 0 %</code>, aucun ROUGE — le critère à seuil discrimine bien dans les deux sens</td>
 </tr>
 <tr>
+<td>O2quater</td>
+<td><strong>Intégrité</strong> : corpus nominal → <code>integrite: OK</code> ; puis trois mutations séparées — un <code>ingested</code> à 2 fichiers · un <code>grid_hash</code> périmé · un <code>chip_nodata_pct</code> à 5 %</td>
+<td>ROUGE à chaque fois, avec <strong>l'<code>item_id</code> et la cause</strong> nommés (le critère 3 de la recette sait enfin rougir)</td>
+</tr>
+<tr>
 <td>O2ter</td>
-<td><code>report --check-completeness</code> sur fixture (réponse <code>/aggregate</code> enregistrée)</td>
-<td>écart 0 → OK ; fixture mutée (1 item retiré) → ROUGE avec l'item listé</td>
+<td><code>report --check-completeness</code> sur fixture (réponse <code>/search</code> enregistrée), corpus à <strong>runs recouvrants</strong> ET contenant <strong>≥ 1 item écarté par le pré-filtre scène</strong> et <strong>≥ 1 item <code>off_tile</code></strong></td>
+<td>écart 0 → OK <strong>malgré le recouvrement, le nuage-scène et le hors-tuile</strong> (les trois pièges dans la même fixture — sinon le test passe vert et le défaut n'apparaît qu'en campagne, au pire endroit : le critère de recette n°2) ; fixture mutée (1 item retiré) → ROUGE avec <strong>l'<code>item_id</code> manquant nommé</strong></td>
 </tr>
 <tr>
 <td>O3</td>
@@ -117,4 +141,4 @@ de complétude</strong> que la fiche humaine l0-04.H exécute (critère 2 de l'o
 possible via <code>just md2html</code> à la main).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 18:22 — le .md fait foi.</p></article></body></html>

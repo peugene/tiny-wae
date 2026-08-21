@@ -40,15 +40,16 @@ planche, prononcer la recette du Lot 0.</p>
 <h2 id="checklist-philippe">Checklist Philippe</h2>
 <ul>
 <li>[ ] <code>TINY_WAE_DATA_ROOT=&lt;NAS&gt; just run backfill --sites all --months 48 --workers 6</code>
-      (durée attendue ~3-5 h avec pool — mesure l0-03.5 à confronter ; relançable :
+      (durée attendue ~3-5 h avec pool — mesures de l0-03.7/O5 à confronter ; relançable :
       idempotent).</li>
-<li>[ ] <code>just run report</code> → lire <code>&lt;data_root&gt;/report.md</code>. <strong>Les 3 critères mécaniques
-      (décision E-a) sont marqués par l'outil, pas par toi</strong> : (1) <code>conservation: OK</code> sur
-      les 25 sites et sur l'agrégat ; (2) complétude (ci-dessous) ; (3) <code>failed_pct ≤ 1 %</code>
-      par site.</li>
-<li>[ ] <code>just run report --check-completeness --sites A01,C07,A03</code> → écart <strong>0</strong> vs
-      <code>/aggregate</code> (bbox + fenêtre, sans filtre tuile) ; tout écart est listé item par
-      item par l'outil.</li>
+<li>[ ] <code>just run report</code> → lire <code>&lt;data_root&gt;/report.md</code>. <strong>Les 4 critères mécaniques sont
+      marqués par l'outil, pas par toi</strong> : (1) <code>conservation: OK</code> sur les 25 sites et sur
+      l'agrégat ; (2) complétude (ci-dessous) ; (3) <code>integrite: OK</code> par site (fichiers,
+      hashes, <code>grid_hash</code> courant, nodata) ; (4) <code>failed_pct ≤ 1 %</code> par site.
+      <em>(Numérotation O1→O4 de <code>docs/lots/lot-0-sites.md</code> §5.)</em></li>
+<li>[ ] <code>just run report --check-completeness --sites A01,C07,A03</code> → écart <strong>0</strong>. La requête
+      témoin reproduit <strong>les trois filtres du pipeline</strong> (bbox + fenêtre + <code>grid:code</code> +
+      <code>eo:cloud_cover &lt; 95 %</code>) ; tout écart est listé item par item par l'outil.</li>
 <li>[ ] <code>just run contact-sheet --first-last</code> → contrôle visuel de non-régression.</li>
 <li>[ ] <strong>Volume transféré</strong> (hors instrument, décision E-d) : relever le compteur réseau
       système avant/après la campagne, OU consigner « non mesuré ». Le rapport donne les
@@ -65,10 +66,11 @@ planche, prononcer la recette du Lot 0.</p>
 <li>[ ] Déplacer cette fiche en <code>fait/</code> avec le résumé.</li>
 </ul>
 <h2 id="critere-de-sortie">Critère de sortie</h2>
-<p>Rapport publié ; <strong>les 3 critères mécaniques au vert</strong> (conservation 25/25, complétude
-écart 0, <code>failed_pct ≤ 1 %</code>) ; recette prononcée dans le document de lot avec les chiffres
-retenus et tes réserves sur les ratios (jugement humain assumé). Les corrections tardives de coordonnées (rares — l0-03.H est passé avant) suivent
+<p>Rapport publié ; <strong>les 4 critères mécaniques au vert</strong> (conservation 25/25, complétude
+écart 0, <code>integrite: OK</code>, <code>failed_pct ≤ 1 %</code>) ; recette prononcée dans le document de lot
+avec les chiffres retenus et tes réserves sur les ratios (jugement humain assumé).
+Les corrections tardives de coordonnées (rares — l0-03.H est passé avant) suivent
 la même mécanique <code>grid_hash</code> : éditer, re-survey, re-backfill du site, re-report.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><p class="gen">Généré le 21/08/2026 18:22 — le .md fait foi.</p></article></body></html>

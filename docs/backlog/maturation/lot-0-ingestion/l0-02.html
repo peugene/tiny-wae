@@ -62,7 +62,14 @@ garde anti-<code>s3://</code> ne s'applique QU'AUX assets mappés. Collection <c
     les ratios de qualité.</strong></li>
 <li>Invariant de conservation à respecter partout :
     <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code>, et
-    <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code>.</li>
+    <code>found_tile = ingested + rejected_clouds + rejected_invalid + rejected_nodata +
+    failed + skipped</code>.</li>
+<li>⭐ <strong>Énumération NORMATIVE des statuts, définie ICI et NULLE PART AILLEURS</strong> :
+    <code>ingested | rejected_clouds | rejected_invalid | rejected_nodata | failed | skipped</code>.
+    Toute fiche qui en a besoin <strong>y renvoie</strong> (« les 6 statuts du chapeau l0-02 ») au lieu
+    de la recopier. <em>Motif : la recopie de cette liste dans 5 fiches a produit 4
+    incohérences lors de l'ajout de <code>rejected_nodata</code> — une énumération dupliquée est une
+    dette qui se paie à chaque évolution.</em></li>
 <li>Motif : mesuré sur C07, <code>off_tile</code> vaut <strong>49,8 %</strong> de <code>found_stac</code> (chip à cheval sur
     52TDL/52TEL) contre 0 % sur A01 — un ratio bâti sur <code>found_stac</code> mesurerait la
     géométrie du site, pas le pipeline.</li>
@@ -93,4 +100,4 @@ garde anti-<code>s3://</code> ne s'applique QU'AUX assets mappés. Collection <c
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé par ce chapeau</strong> : CDSE (hors lot) ; pixels (l0-03) ; Sentinel-1 (hors lot).</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><strong>Non testé par ce chapeau</strong> : CDSE (hors lot) ; pixels (l0-03) ; Sentinel-1 (hors lot).</p><p class="gen">Généré le 21/08/2026 17:17 — le .md fait foi.</p></article></body></html>

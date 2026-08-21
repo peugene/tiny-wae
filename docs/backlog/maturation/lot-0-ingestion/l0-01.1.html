@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Poser les deux fichiers de config et leurs modèles typés. Aucun CLI, aucun réseau.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
@@ -39,11 +39,14 @@ tbody tr:nth-child(even){background:#f3f7fa}
   champs <code>reference_tile</code> et <code>grid</code> (<code>epsg</code>, <code>origin_x</code>, <code>origin_y</code>) <strong>présents mais
   vides</strong> (remplis par l0-01.3). C08 = Bouconne (43.628, 1.217).</li>
 <li><code>config/settings.yaml</code> + surcharges env (une variable par clé, préfixe <code>TINY_WAE_</code>) :
-  <code>stac_url</code>, <code>stac_collection</code> (<code>sentinel-2-l2a</code>), <code>asset_keys</code> (les 9 clés d'assets
-  source : <code>blue, green, red, nir, rededge1, rededge2, rededge3, nir08, swir16, swir22,
-  scl</code> — la clé logique tiny-wae EST la clé earth-search ; les libellés <code>B0x</code> sont
-  documentaires en commentaire), <code>cloud_pct_max</code> (30), <code>scene_cloud_max</code> (95),
-  <code>invalid_pct_max</code> (1), <code>data_root</code> (défaut <code>./data</code>), <code>incremental_margin_days</code> (3),
+  <code>stac_url</code>, <code>stac_collection</code> (<code>sentinel-2-l2a</code>), <code>asset_keys</code> (<strong>les 11 clés</strong> d'assets
+  source = 10 bandes + le masque : <code>blue, green, red, nir, rededge1, rededge2, rededge3,
+  nir08, swir16, swir22, scl</code> — la clé logique tiny-wae EST la clé earth-search ; les
+  libellés <code>B0x</code> sont documentaires en commentaire), <code>cloud_pct_max</code> (30), <code>scene_cloud_max</code> (95),
+  <code>invalid_pct_max</code> (1), ⭐ <strong><code>chip_nodata_pct_max</code> (1)</strong> — arbitrage n°3 : le seuil de la
+  <strong>garde nodata du GO G8</strong>, jusque-là sans instrument (alors que <code>lot-0-sites.md</code> O3
+  l'exige : « nodata &lt; 1 % sur 100 % des items ingested ») —,
+  <code>data_root</code> (défaut <code>./data</code>), <code>incremental_margin_days</code> (3),
   <code>http_retries</code> (3), <code>http_backoff_s</code> (2), <code>backfill_workers</code> (6), <code>chip_px_10m</code> (512),
   <code>chip_px_20m</code> (256).</li>
 <li><code>src/tiny_wae/core/sites.py</code>, <code>core/settings.py</code> : dataclasses frozen + validation pure
@@ -65,7 +68,8 @@ tbody tr:nth-child(even){background:#f3f7fa}
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] Les 2 YAML livrés, les modèles typés, le chargeur.</li>
-<li>[ ] Tests unitaires : nominal + 5 mutations d'erreur + priorité env&gt;YAML.</li>
+<li>[ ] Tests unitaires : nominal + les <strong>5 mutations d'erreur listées en O2</strong> + priorité
+      env &gt; YAML.</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
 <table>
@@ -84,8 +88,8 @@ tbody tr:nth-child(even){background:#f3f7fa}
 </tr>
 <tr>
 <td>O2</td>
-<td>Mutations (id dupliqué, lat=95, catégorie inconnue, origine=13)</td>
-<td>erreur nommant site et champ</td>
+<td><strong>5 mutations</strong> : id dupliqué · lat=95 · catégorie inconnue · origine=13 (non multiple de 20) · <code>asset_keys</code> amputée d'une clé</td>
+<td>erreur nommant site et champ à chaque fois</td>
 </tr>
 <tr>
 <td>O3</td>
@@ -103,4 +107,4 @@ tbody tr:nth-child(even){background:#f3f7fa}
 (l0-03.H).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:57 — le .md fait foi.</p></article></body></html>

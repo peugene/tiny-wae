@@ -8,7 +8,7 @@
 |---|---|---|
 | P1 | `l0-01` | Lot 0 — chapeau socle config (01.1 settings/sites · 01.2 socle CLI · 01.3 tuiles/grilles) |
 | P1 | `l0-02` | Lot 0 — chapeau recherche STAC (02.1 port+contrat · 02.2 CLI search) |
-| P1 | `l0-03` | Lot 0 — chapeau ingestion (03.1 core · 03.2 manifestes · 03.3 chips · 03.4 ingest · 03.5 smoke/fixtures · 03.6 planche · 03.H humain) |
+| P1 | `l0-03` | Lot 0 — chapeau ingestion (03.1 core · 03.2 manifestes · 03.3 chips · 03.4 ingest + smoke minimal · 03.5 corpus fixtures · 03.7 le gate · 03.6 planche · 03.H humain) |
 | P1 | `l0-04` | Lot 0 — chapeau historique (04.1 backfill · 04.2 report · 04.H campagne+recette humain) |
 | P2 | `l0-05` | Lot 0 — chapeau incrémental (05.1 bornes · 05.2 CLI update) |
 | P2 | `l0-06` | Lot 0 — chapeau CWL local (06.1 tools+workflow · 06.2 update.cwl) |

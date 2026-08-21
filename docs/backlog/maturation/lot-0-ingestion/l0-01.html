@@ -57,10 +57,18 @@ et les codes de sortie. Réécrit en v3 post-revues (GO Philippe G1-G10 + D-a/D-
 <li>Grille par site : EPSG de la tuile de référence, origine = coin haut-gauche du chip calé
   sur multiple de 20 m. Bandes 60 m exclues du lot (fenêtre non entière — documenté).</li>
 <li>Codes de sortie figés pour TOUS les CLIs : <code>0</code> succès · <code>1</code> échec métier · <code>2</code> erreur
-  config/usage · <code>3</code> non concluant (amont injoignable).</li>
+  config/usage · <code>3</code> non concluant (amont injoignable). ⭐ <strong>Le code 3 est OBLIGATOIRE
+  dans les trois CLIs qui appellent l'amont — <code>ingest</code>, <code>backfill</code>, <code>update</code></strong> : un
+  earth-search indisponible en pleine campagne doit se distinguer d'un échec métier
+  (sinon une panne de service se lit comme un bug du pipeline). Règle : ≥ 1 item en
+  échec <strong>réseau</strong> et 0 succès → 3 ; mélange succès/échecs → 1.</li>
 <li>Auto-découverte CLI : un module par commande dans <code>cli/</code>, <code>__main__.py</code> jamais modifié
-  après l0-01.2. Taxonomie (9 entrées, <code>smoke</code> inclus) : <code>sites-validate</code>, <code>sites-list</code>,
-  <code>search</code>, <code>ingest</code>, <code>backfill</code>, <code>update</code>, <code>report</code>, <code>contact-sheet</code>, <code>smoke</code>.</li>
+  après l0-01.2. <strong>Taxonomie fermée : 9 sous-commandes</strong> — <code>version</code> (existante),
+  <code>sites-validate</code>, <code>sites-list</code>, <code>search</code>, <code>ingest</code>, <code>backfill</code>, <code>update</code>, <code>report</code>,
+  <code>contact-sheet</code>.
+  ⚠ <strong><code>smoke</code> n'en fait PAS partie</strong> : c'est un <strong>script</strong> (<code>scripts/smoke.py</code>, lancé par
+  <code>just smoke</code>), au même titre que <code>record_fixtures.py</code> et <code>survey_tiles.py</code> — pas un
+  module de <code>cli/</code>. Le confondre ferait chercher un point d'entrée qui n'existe pas.</li>
 </ul>
 <h2 id="sous-taches">Sous-tâches</h2>
 <table>
@@ -84,11 +92,11 @@ et les codes de sortie. Réécrit en v3 post-revues (GO Philippe G1-G10 + D-a/D-
 </tr>
 <tr>
 <td>l0-01.3</td>
-<td>S</td>
+<td>M</td>
 <td>relevé réseau des tuiles de référence + calcul des grilles (D-c)</td>
 </tr>
 </tbody>
 </table>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
 <p>Toute lecture de pixel (l0-03), tout CLI métier (l0-02+). Non testé : exactitude
-géographique fine des coordonnées (planche l0-03.6 + fiche humaine l0-03.H).</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+géographique fine des coordonnées (planche l0-03.6 + fiche humaine l0-03.H).</p><p class="gen">Généré le 21/08/2026 17:17 — le .md fait foi.</p></article></body></html>

@@ -33,13 +33,18 @@ tbody tr:nth-child(even){background:#f3f7fa}
 <h2 id="objectif">Objectif</h2>
 <p>Calculer la fenêtre du run incrémental d'un site, à sec.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<p>⭐ <strong>Décision TRANCHÉE (PO, 21/08 — la v3 laissait le choix à l'agent, ce qui violait
+« toutes les décisions tranchées »)</strong> : <strong>pas de nouveau module</strong>. La fonction vit dans
+<strong><code>core/windows.py</code></strong>, livré par l0-03.1 ; cette fiche l'<strong>étend</strong>, elle ne duplique rien.
+<code>core/update_bounds.py</code> <strong>n'existe pas</strong>.</p>
 <ul>
-<li><code>src/tiny_wae/core/update_bounds.py</code> : <code>update_window_for_site(last_datetime,
+<li><code>src/tiny_wae/core/windows.py</code> (extension) : <code>update_window_for_site(last_datetime,
   margin_days, now) -&gt; Window | NoManifests</code> — borne basse = <code>last_datetime − margin</code>,
   borne haute = <code>now</code> (paramètre, horloge injectable) ; site sans manifeste → valeur
-  typée <code>NoManifests</code> (le CLI en fera un exit 1 pointant vers backfill).
-  (<code>core/windows.py</code> de l0-03.1 porte déjà la primitive — cette fiche la spécialise ;
-  si tout tient dans windows.py, l'y mettre et le dire au Résumé.)</li>
+  typée <code>NoManifests</code> (le CLI en fera un exit 1 pointant vers backfill). La primitive
+  générique <code>update_window(last, margin, now)</code> de l0-03.1 est <strong>réutilisée telle quelle</strong> ;
+  cette fonction n'ajoute que la lecture du <code>last_datetime</code> via l'API manifests et le cas
+  <code>NoManifests</code>.</li>
 <li>Tests à sec sur manifestes fixtures (corpus l0-03.2) : dernier jour, marge, site vierge,
   statuts rejetés comptés dans <code>last_datetime</code>.</li>
 </ul>
@@ -60,8 +65,8 @@ tbody tr:nth-child(even){background:#f3f7fa}
 <tbody>
 <tr>
 <td>O1</td>
-<td>last=2026-08-15, margin=3, now=2026-08-21</td>
-<td>fenêtre [2026-08-12 → 2026-08-21] exacte</td>
+<td>Site de fixture dont le dernier manifeste est au 2026-08-15, <code>margin=3</code>, <code>now=2026-08-21</code></td>
+<td>fenêtre [2026-08-12 → 2026-08-21] exacte, <strong>obtenue en lisant les manifestes</strong> (le cas purement arithmétique est déjà couvert par l0-03.1/O3 — pas de doublon d'oracle)</td>
 </tr>
 <tr>
 <td>O2</td>
@@ -82,4 +87,4 @@ tbody tr:nth-child(even){background:#f3f7fa}
 </table>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:53 — le .md fait foi.</p></article></body></html>

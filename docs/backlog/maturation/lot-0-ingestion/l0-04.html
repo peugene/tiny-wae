@@ -48,17 +48,29 @@ l0-03.5) ; la campagne réelle et la recette sont un acte humain (l0-04.H).</p>
   instruits pour 25 sites (mesure revue v2), transfert estimé 50-100 Go (non mesuré),
   stocké ~×1,41 du 10 m seul. Les rapports distinguent transféré / stocké / requêtes.</li>
 <li>⭐ <strong>Oracle de recette (décision Philippe E-a, 21/08 — remplace la « cohérence
-  statistique » de la v3, non calculable et circulaire)</strong>. Trois critères <strong>mécaniques</strong>,
-  et rien d'autre :
+  statistique » de la v3, non calculable et circulaire)</strong>. <strong>Quatre</strong> critères <strong>mécaniques</strong>,
+  et rien d'autre — numérotés comme dans <code>docs/lots/lot-0-sites.md</code> §5 (O1→O4), la
+  source de vérité de la recette :
   1. <strong>Conservation</strong> : pour chaque site et pour l'agrégat,
      <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET
-     <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code>.
+     <code>found_tile = ingested + rejected_clouds + rejected_invalid + rejected_nodata +
+     failed + skipped</code>.
      Identité comptable — si elle ne boucle pas, il y a un bug. C'est ce critère qui
      attrape la perte silencieuse que cherchaient les v1/v2.
-  2. <strong>Complétude vs source</strong> : <code>found_stac</code> == compte d'une requête <code>/aggregate</code> aux
-     <strong>mêmes bbox et fenêtre</strong> (sans filtre tuile), tolérance <strong>0</strong> — détecte les pertes
-     de pagination.
-  3. <strong><code>failed ≤ 1 % de found_tile</code></strong> — seul seuil légitime : un échec technique EST un
+  2. <strong>Complétude vs source</strong> (arbitrage n°2, 21/08) : <strong>comparaison d'ENSEMBLES d'ids</strong> —
+     <code>item_ids_for_site(site)</code> (manifestes) vs les ids d'un <code>/search</code> paginé reproduisant
+     <strong>les TROIS filtres du pipeline</strong> : bbox, fenêtre, <code>grid:code</code> <strong>et</strong>
+     <code>eo:cloud_cover &lt; scene_cloud_max</code>. Tolérance 0, ids manquants nommés.
+     ⚠ Deux pièges, tous deux vérifiés : jamais une <strong>somme</strong> de <code>found_stac</code> (les runs se
+     recouvrent en régime permanent → sur-comptage) ; et jamais un filtre <strong>incomplet</strong>
+     (oublier le pré-filtre scène rendrait l'écart égal à <code>skipped_scene_cloud</code>, donc
+     rouge en permanence sur les sites nuageux).
+  3. ⭐ <strong>Intégrité</strong> (critère jusque-là sans instrument — corrigé le 21/08) : pour 100 %
+     des <code>ingested</code>, à partir des seuls manifestes, <code>report</code> vérifie 3 fichiers listés,
+     <code>content_hashes</code> complets, <code>grid_hash</code> == grille <strong>courante</strong> du site (détecte les
+     chips orphelins d'une correction de coordonnées) et <code>chip_nodata_pct</code> sous le seuil.
+     Colonne <code>integrite: OK/ROUGE</code>, items fautifs nommés.
+  4. <strong><code>failed ≤ 1 % de found_tile</code></strong> — seul seuil légitime : un échec technique EST un
      défaut de pipeline.</li>
 <li>⭐ <strong>Publiés SANS seuil, par site, pires en tête</strong> : <code>off_tile</code>, <code>skipped_scene_cloud</code>,
   ratio <code>ingested / found_tile</code> avec son dénominateur. Ce sont des <strong>caractéristiques de
@@ -95,4 +107,4 @@ l0-03.5) ; la campagne réelle et la recette sont un acte humain (l0-04.H).</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé par le chapeau</strong> : fraîcheur (l0-05) ; CDSE (hors lot).</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><strong>Non testé par le chapeau</strong> : fraîcheur (l0-05) ; CDSE (hors lot).</p><p class="gen">Généré le 21/08/2026 18:20 — le .md fait foi.</p></article></body></html>

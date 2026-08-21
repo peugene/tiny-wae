@@ -60,12 +60,12 @@ tbody tr:nth-child(even){background:#f3f7fa}
 </tr>
 <tr>
 <td>O2 [local, hors gate]</td>
-<td><code>cwltool update.cwl</code> sur data_root issu du run O2 de l0-06.1</td>
-<td>exit 0, <code>ingested == 0</code> (rien de neuf sur fenêtre close) — comportement identique au CLI</td>
+<td><strong>1)</strong> amorcer un data_root vierge : <code>ingest --site A01 --from &lt;J−20&gt; --to &lt;J−1&gt;</code> ; <strong>2)</strong> <code>cwltool update.cwl</code> (1er run) ; <strong>3)</strong> <code>cwltool update.cwl</code> (2e run, quelques minutes après)</td>
+<td><strong>le 2e run</strong> rend <code>ingested == 0</code> et <code>assets_read == 0</code>. ⚠ Deux formulations antérieures étaient fausses : « sur le data_root de l0-06.1 » (fenêtre close → <code>update</code> va jusqu'à <code>now</code>, il trouve du neuf) et « data_root vierge » (aucun manifeste → <code>NoManifests</code> → exit 1 renvoyant vers <code>backfill</code>, cf. l0-05.2/O4 : <strong>le 1er run ne peut rien ingérer</strong>). L'amorçage est donc obligatoire</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Non testé</strong> : exécution planifiée réelle (infra).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 17:17 — le .md fait foi.</p></article></body></html>

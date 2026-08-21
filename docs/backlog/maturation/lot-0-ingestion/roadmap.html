@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap v3 (figée) — Lot 0 Ingestion</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap v4 (figée) — Lot 0 Ingestion</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><h1>Roadmap v3 (figée) — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _roadmap.md — le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-0-ingestion-sentinel-2-v3-figee-post-revue-v2">Roadmap — Lot 0 : Ingestion Sentinel-2 (v3, FIGÉE post-revue v2)</h1>
+</style></head><body><div class="banner"><div class="inner"><h1>Roadmap v4 (figée) — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _roadmap.md — le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-0-ingestion-sentinel-2-v4-figee-post-revue-v3-relectures-equipe">Roadmap — Lot 0 : Ingestion Sentinel-2 (v4, FIGÉE post-revue v3 + relectures équipe)</h1>
 <blockquote>
 <p><strong>v3 du 21/08/2026</strong> — restructuration en <strong>chapeaux + sous-tâches</strong> (pattern pid-flow,
 décision Philippe : chaque fiche doit être implémentable par un agent Sonnet effort
@@ -67,11 +67,13 @@ portées ») — la roadmap ne les duplique plus, elle les indexe :</p>
   STAC (il ne couvre pas GDAL — mesuré)</strong> · manifeste + run.json complets avec API.</li>
 <li><strong>l0-04</strong> : pool workers (G6) · ~11 000 items instruits (<code>found_tile</code>) · ⭐ <strong>oracle de
   recette refondu par E-a : 3 critères mécaniques — conservation (identité comptable),
-  complétude vs <code>/aggregate</code> (tolérance 0, sur <code>found_stac</code>), <code>failed ≤ 1 % de
-  found_tile</code> ; <code>off_tile</code>/<code>skipped_scene_cloud</code>/ratio d'ingestion PUBLIÉS SANS SEUIL
-  (caractéristiques de site). La « cohérence statistique » de la v3 est supprimée :
-  non calculable et circulaire</strong> · report = seul instrument, testé sur comptes connus,
-  porte aussi <code>--check-completeness</code>.</li>
+  complétude par </strong>ENSEMBLES d'item_id<strong> (requête témoin reproduisant les 3 filtres :
+  bbox + fenêtre + tuile + pré-filtre scène), <code>failed ≤ 1 % de found_tile</code>, </strong>intégrité<strong>
+  (fichiers/hashes/grid_hash courant/nodata, depuis les manifestes) ;
+  <code>off_tile</code>/<code>skipped_scene_cloud</code>/ratio d'ingestion PUBLIÉS SANS SEUIL (caractéristiques
+  de site). La « cohérence statistique » de la v3 est supprimée : non calculable et
+  circulaire</strong> · report = seul instrument, testé sur comptes connus, porte aussi
+  <code>--check-completeness</code>.</li>
 <li><strong>l0-05</strong> : marge 3 j (config) · rattrapage mensuel documenté non automatisé · cron =
   infra Philippe.</li>
 <li><strong>l0-06</strong> : Q-D = validation locale seule (G7) · 3 tools + 1 workflow, liste fermée ·
@@ -81,7 +83,7 @@ portées ») — la roadmap ne les duplique plus, elle les indexe :</p>
   fiches HUMAINES : <code>categorie: humain</code>, préfixe titre <code>[HUMAIN]</code>, bandeau ⛔, jamais
   dispatchées (règle également à reporter dans la commande <code>/run</code> du kit).</li>
 </ul>
-<h2 id="2-graphe-6-chapeaux-17-sous-taches-agent-2-fiches-humaines">2. Graphe (6 chapeaux · 17 sous-tâches agent · 2 fiches humaines)</h2>
+<h2 id="2-graphe-6-chapeaux-18-sous-taches-agent-2-fiches-humaines">2. Graphe (6 chapeaux · 18 sous-tâches agent · 2 fiches humaines)</h2>
 <p>⭐ <strong>Grain du graphe — décision Philippe E-c (21/08)</strong> : <strong>seules les fiches dispatchables
 ordonnent le run</strong>. Un <strong>chapeau</strong> a <code>depends_on: []</code> et n'ordonne rien (sa place dans la
 chaîne est écrite en prose dans son corps, et ci-dessous à titre indicatif) ; une fiche
@@ -95,29 +97,35 @@ moitié (« levée au merge ») est <strong>REJETÉE</strong> — le dossier fai
 <code>just dashboard</code> contrôle désormais sa cohérence à chaque génération). Niveaux
 topologiques, <code>⛔</code> = fiche humaine :</p>
 <pre><code>N0  l0-01.1
-N1  l0-01.2 · l0-03.2
-N2  l0-01.3 · l0-05.1
-N3  l0-02.1 · l0-03.1
-N4  l0-02.2 · l0-03.3
-N5  l0-03.4
-N6  l0-03.5 · l0-06.1
-N7  l0-03.6 · l0-04.1 · l0-05.2
-N8  ⛔ l0-03.H · l0-04.2 · l0-06.2
-N9  ⛔ l0-04.H
+N1  l0-01.2 · l0-03.1 · l0-03.2
+N2  l0-01.3 · l0-02.1 · l0-05.1
+N3  l0-02.2 · l0-03.3
+N4  l0-03.4
+N5  l0-03.5 · l0-06.1
+N6  l0-03.6 · l0-03.7 · l0-04.1 · l0-05.2
+N7  ⛔ l0-03.H · l0-04.2 · l0-06.2
+N8  ⛔ l0-04.H
 </code></pre>
-<p><strong>Profondeur réelle : 10 niveaux</strong> (les fiches d'un même niveau sont parallélisables une
-fois leurs dépendances satisfaites). Feuilles : <code>l0-04.H</code> (recette) et <code>l0-06.2</code>.
-Corrections apportées par ce geste : <code>l0-01.3</code> n'était déclarée par personne (les grilles
-seraient restées vides) · <code>l0-02.1</code>, <code>l0-03.1</code> exigent les grilles REMPLIES · <code>l0-03.6</code>,
-<code>l0-04.2</code>, <code>l0-05.2</code> consomment les fixtures COG de <code>l0-03.5</code> · <code>l0-06.1</code> emballe aussi
+<p><strong>Profondeur : 9 niveaux, largeur moyenne 2,2</strong> (les fiches d'un même niveau sont
+parallélisables une fois leurs dépendances satisfaites). Feuilles : <code>l0-04.H</code> (recette),
+<code>l0-06.2</code>, <code>l0-03.7</code>. ⭐ <strong>18 fiches sur 20 s'enchaînent sans aucune intervention
+humaine</strong> : <code>l0-03.H</code> n'a qu'un dépendant (<code>l0-04.H</code>, une feuille), donc les deux gates
+sont groupés à la toute fin — c'est le comportement voulu, pas une contrainte subie.</p>
+<p>Corrections successives apportées à ce graphe (revue v3 + passe PO du 21/08) :
+<code>l0-01.3</code> n'était déclarée par personne (les grilles seraient restées vides) ·
+<code>l0-03.6</code>/<code>l0-04.2</code>/<code>l0-05.2</code> consomment le corpus de <code>l0-03.5</code> · <code>l0-06.1</code> emballe aussi
 le CLI <code>search</code> (<code>l0-02.2</code>) · l'arête inversée <code>l0-02.1 → l0-02.2</code> (pytest-socket) est
-supprimée : <strong>toutes les dépendances sont pré-posées par l0-01.1</strong>.</p>
+supprimée par la <strong>pré-pose de toutes les dépendances en l0-01.1</strong> · <code>l0-03.1</code> et
+<code>l0-02.1</code> sont <strong>desserrées</strong> (grille synthétique et tuile littérale dans leurs tests
+plutôt que <code>sites.yaml</code> réel) : deux niveaux gagnés sur le chemin critique.</p>
 <p><strong>Zones partagées</strong> (une seule fiche propriétaire chacune, plus de conflit possible) :
-<code>pyproject.toml</code> → <strong>l0-01.1 seule</strong> · <code>__main__.py</code> → l0-01.2 seule (auto-découverte
-ensuite) · <code>justfile</code> → l0-03.5 (smoke) puis l0-06.1 (cwl) — séquentiels au graphe ·
-<code>cli/contact_sheet.py</code> → l0-03.6 puis l0-04.2 (extension actée) · <code>tests/fixtures/</code> →
-l0-02.1 (stac) · l0-03.2 (manifests) · l0-03.5 (cog) — sous-dossiers disjoints ·
-<code>pixi.lock</code> versionné mais <strong>jamais mergé</strong> (régénérer sur la branche cible).</p>
+<code>pyproject.toml</code> → <strong>l0-01.1 seule</strong> (les 8 dépendances y sont pré-posées) ·
+<code>__main__.py</code> → l0-01.2 seule (auto-découverte ensuite) · <code>scripts/smoke.py</code> → l0-03.4
+(minimal) puis l0-03.7 (complet) · <code>justfile</code> → l0-01.3 (survey-tiles) · l0-03.7 (smoke) ·
+l0-06.1 (cwl) — tous séquentiels au graphe · <code>cli/contact_sheet.py</code> → l0-03.6 puis
+l0-04.2 (extension actée) · <code>tests/fixtures/</code> → l0-02.1 (stac) · l0-03.2 (manifests) ·
+l0-03.5 (cog) — sous-dossiers disjoints · <code>pixi.lock</code> versionné mais <strong>jamais mergé</strong>
+(régénérer sur la branche cible).</p>
 <h2 id="3-pieges-transverses-mesures-cf-revues">3. Pièges transverses (mesurés — cf. revues)</h2>
 <p>Multi-tuiles fréquent (A03, A04, C07 sur 7 sondés) · ~50 % des granules d'une tuile ne
 touchent pas le chip (bbox obligatoire) · baselines multiples DANS la fenêtre (04.00 →
@@ -127,11 +135,20 @@ gelés en 2023/2024/2026 · Hinkley ~16 % de scènes &lt; 30 % de nuages (niveau
 taux chip sera mesuré par la campagne) · volumétrie : ~11 000 items (par tuile), transfert
 50-100 Go ≠ stocké ~×1,41 · revisite 2,1-4,6 j → l'incrémental n'est pas « souvent vide ».</p>
 <h2 id="4-verrous">4. Verrous</h2>
-<p><strong>Aucun verrou bloquant restant.</strong> V1 : item ids gelés dans le chapeau l0-02 (mesurés en
-revue v2 — un run <code>search</code> de confirmation est intégré à l'oracle O4 de l0-02.2). V2 :
-donnée d'implémentation (l0-01.3, fiche à réseau assumée). V3 : décision différée
-documentée (instrument : agrégat SCL du report, l0-04.2) — une fiche de décision sera
-créée en maturation après la campagne.</p>
+<p><strong>Aucun verrou bloquant restant.</strong></p>
+<ul>
+<li><strong>V1 — item ids gelés</strong> : les 3 du chapeau l0-02 (clair <code>S2A_31TGJ_20240801_0_L2A</code>,
+  nuageux <code>S2B_31TGJ_20230315_0_L2A</code>, S2C <code>S2C_31TGJ_20260513_0_L2A</code>), <strong>plus</strong> le
+  <code>sequence=1</code> (<code>S2A_31TGJ_20260813_1_L2A</code>, mesuré en revue v3) et <strong>la fixture bi-tuile
+  C07</strong>, tous deux entrés au périmètre de l0-02.1 / l0-03.5 lors de la passe PO du 21/08
+  (ils manquaient : la roadmap annonçait « aucun verrou » alors que 2 oracles en
+  dépendaient). ⚠ <strong>Adressage par id et par fenêtre absolue</strong> dans <code>record_fixtures.py</code> :
+  deux de ces items sortiront de la fenêtre 48 mois glissante (le nuageux le 15/03/2027).</li>
+<li><strong>V2</strong> — donnée d'implémentation (l0-01.3, fiche à réseau assumée, avec sa source
+  d'emprise de tuile désormais spécifiée).</li>
+<li><strong>V3</strong> — décision différée documentée (instrument : agrégat <code>scl_class_counts</code> du
+  report, l0-04.2) ; une fiche de décision sera créée en maturation après la campagne.</li>
+</ul>
 <h2 id="annexe-a-les-25-sites">Annexe A — Les 25 sites</h2>
 <p>Inchangée depuis la v2 (GO 20/08 + C08 Bouconne 43.628, 1.217 GO 21/08) — voir
 <code>docs/lots/lot-0-sites.md</code> §3, désormais l'unique copie de la liste (la duplication

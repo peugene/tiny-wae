@@ -29,17 +29,29 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.3</b></nav><h1>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li>→ <a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li></ul></div><h1 id="l0-013-tuiles-de-reference-et-grilles">[l0-01.3] — Tuiles de référence et grilles</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.3</b></nav><h1>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li>→ <a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li></ul></div><h1 id="l0-013-tuiles-de-reference-et-grilles">[l0-01.3] — Tuiles de référence et grilles</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Remplir <code>reference_tile</code> et <code>grid</code> pour les 25 sites. ⚠ Fiche à <strong>réseau réel</strong> (25
 requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises dans
 <code>sites.yaml</code>.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
-<li><code>scripts/survey_tiles.py</code> (rejouable, hors package) : pour chaque site, bbox du chip
-  (5,12 km centré) → <code>GET {stac_url}/aggregate?collections={collection}&amp;bbox=…&amp;datetime=
-  &lt;48 mois&gt;&amp;aggregations=grid_code_frequency</code>. Multi-tuiles = cas FRÉQUENT (mesuré :
-  A03, A04, C07 sur 7 sondés).</li>
+<li><code>scripts/survey_tiles.py</code> (rejouable, hors package) — ⭐ <strong>CLI avec l'option
+  <code>--sites A01,C07</code> (défaut : tous)</strong>, indispensable à la re-passe ciblée que la fiche
+  humaine l0-03.H prescrit après correction de coordonnées. <strong>Recette dédiée
+  <code>just survey-tiles [sites]</code></strong> dans le justfile (règle façade : jamais <code>python …</code> à la
+  main — sinon l'environnement pixi n'est pas actif et <code>pyproj</code>/<code>httpx</code> manquent).</li>
+<li>Pour chaque site : bbox du chip (5,12 km centré) →
+  <code>GET {stac_url}/aggregate?collections={collection}&amp;bbox=…&amp;datetime=&lt;48 mois&gt;&amp;aggregations=grid_code_frequency</code>
+  pour lister les tuiles candidates. Multi-tuiles = cas FRÉQUENT (mesuré : A03, A04, C07
+  sur 7 sondés).</li>
+<li>⭐ <strong>Source de l'emprise d'une tuile (le point que la v3 disait manquant)</strong> : <code>/aggregate</code>
+  ne rend que des codes MGRS. Pour chaque tuile candidate, faire <strong>un <code>/search?limit=1</code>
+  filtré sur ce <code>grid:code</code></strong> et lire <code>proj:transform</code> + <code>proj:shape</code> de l'asset <code>blue</code>
+  → origine (ULX/ULY) et emprise (109 800 m de côté à 10 m). ~2 requêtes par site.
+  <em>(Les origines suivent la règle « coin MGRS 100 km calé sur le réseau 60 m » — vérifié
+  sur 4 tuiles — mais on la LIT plutôt que de la recalculer : une mesure vaut mieux
+  qu'une dérivation.)</em></li>
 <li><strong>Règle D-c (décision Philippe 21/08)</strong> : <code>reference_tile</code> = tuile offrant la <strong>marge
   géométrique maximale</strong> entre le chip et le bord de l'emprise nominale de la tuile
   (calcul en UTM) ; en cas d'égalité, la plus fournie en items. Exemple attendu : C07 →
@@ -54,8 +66,10 @@ requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] <code>sites.yaml</code> complété pour les 25 sites, rapport commité.</li>
-<li>[ ] Logique de choix (marge, arrondi 20 m, epsg depuis MGRS) en fonctions PURES dans
-      <code>core/</code> testées à sec sur cas connus (C07 : 52TEL ; A01 : 31TGJ mono-tuile).</li>
+<li>[ ] Logique de choix (marge géométrique, arrondi 20 m, epsg depuis MGRS) en fonctions
+      PURES dans <code>core/</code> testées à sec sur cas connus (C07 : 52TEL ; A01 : 31TGJ
+      mono-tuile).</li>
+<li>[ ] <code>just survey-tiles</code> en place ; <code>--sites</code> fonctionnel (re-passe ciblée).</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
 <table>
@@ -74,8 +88,13 @@ requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises
 </tr>
 <tr>
 <td>O2</td>
-<td>Cas C07 (test pur sur les buckets mesurés 52TDL 319/52TEL 317)</td>
-<td>choix = <strong>52TEL</strong></td>
+<td>Cas C07, <strong>test PUR</strong> sur des entrées littérales : bbox du chip + emprises des deux tuiles (52TDL ULX 399960, 52TEL ULX 499980, côté 109 800 m)</td>
+<td>choix = <strong>52TEL</strong> (marges calculées ≈ 495 m vs 4 155 m). ⚠ L'oracle porte sur des <strong>géométries</strong>, pas sur les comptes d'items — un décompte ne contient aucune marge (défaut de la v3 corrigé)</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>Départage : deux tuiles de marges égales, comptes 319 vs 317</td>
+<td>choix = la plus fournie (règle secondaire, testée séparément)</td>
 </tr>
 <tr>
 <td>O3</td>
@@ -93,4 +112,4 @@ requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises
 réelle des chips (l0-03).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 17:18 — le .md fait foi.</p></article></body></html>
