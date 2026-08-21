@@ -1,0 +1,9 @@
+# Fixture de test l0-01.2 (O3) : un site avec lat hors bornes -> SiteValidationError.
+# Le message doit nommer le site ("X01") ET le champ fautif ("lat").
+sites:
+  - id: X01
+    name: "Site cassé (lat hors bornes)"
+    lat: 95.0
+    lon: 1.0
+    category: nuclear-construction
+    note: "Fixture — validation attendue en erreur"
