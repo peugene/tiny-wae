@@ -322,6 +322,25 @@ def chantier_block(ch: Chantier, base: Path, index: dict[str, Fiche]) -> str:
     )
 
 
+# Horodatage de génération : la seule ligne qui bouge d'une génération à l'autre.
+GEN_STAMP_RE = re.compile(r"Généré le \d{2}/\d{2}/\d{4}(?: \d{2}:\d{2})?")
+
+
+def write_if_changed(path: Path, content: str) -> bool:
+    """Écrit `content` UNIQUEMENT si le fichier diffère ailleurs que sur son horodatage.
+
+    Sans ce filtre, chaque génération réécrit tous les .html avec une date fraîche : le
+    diff git se remplit de fichiers au contenu identique, et le churn masque les vraies
+    évolutions du backlog. Retourne True si le fichier a été écrit.
+    """
+    if path.exists():
+        old = path.read_text(encoding="utf-8")
+        if GEN_STAMP_RE.sub("", old) == GEN_STAMP_RE.sub("", content):
+            return False
+    path.write_text(content, encoding="utf-8")
+    return True
+
+
 def page(title: str, sub: str, body: str, css: str = DARK_CSS) -> str:
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     return (
@@ -383,9 +402,11 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> list[str]:
     return sorted(set(anomalies))
 
 
-def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> None:
+def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
     """Dispatch .md -> .html d'une fiche : breadcrumb, navigation parent/sœurs/enfants,
-    dépendances cliquables. Écrit à côté de la source (vue humaine dérivée)."""
+    dépendances cliquables. Écrit à côté de la source (vue humaine dérivée).
+
+    Retourne True si le .html a réellement été réécrit (cf. write_if_changed)."""
     here = f.path.parent
     text = f.path.read_text(encoding="utf-8")
     _, body_md = parse_frontmatter(text)
@@ -444,7 +465,8 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> None:
         nav += f'<div class="nav"><b>Débloque</b><ul>{items}</ul></div>'
 
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
-    f.path.with_suffix(".html").write_text(
+    return write_if_changed(
+        f.path.with_suffix(".html"),
         f'<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>[{esc(f.id)}] {esc(f.titre)}</title><style>{LIGHT_CSS}</style></head><body>"
@@ -453,7 +475,6 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> None:
         f"<p>{esc(meta)} · depends_on : {dep}</p></div></div>"
         f"<article>{warn}{nav}{body}"
         f'<p class="gen">Généré le {now} — le .md fait foi.</p></article></body></html>',
-        encoding="utf-8",
     )
 
 
@@ -462,8 +483,7 @@ def cmd_dashboard(project: str, backlog: Path) -> int:
     all_fiches = fiches + [f for c in chantiers for f in c.fiches]
     index = {f.id: f for f in all_fiches}
     # dispatch .md -> .html de TOUTES les fiches (les ids du dashboard pointent dessus)
-    for f in all_fiches:
-        render_fiche_page(f, backlog, index)
+    rewritten = sum(render_fiche_page(f, backlog, index) for f in all_fiches)
     counters = "".join(
         f'<a class="counter" href="#{s}"><b style="color:{STATE_COLORS[s]}">'
         f"{sum(1 for f in all_fiches if f.state == s)}</b>"
@@ -492,25 +512,26 @@ def cmd_dashboard(project: str, backlog: Path) -> int:
         body += "</section>"
     out = backlog / "maturation" / "etat.html"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(
+    write_if_changed(
+        out,
         page(
             f"{project} — backlog",
             "Le dossier fait foi. Cycle : maturation → à-faire → en-cours → fait.",
             body,
         ),
-        encoding="utf-8",
     )
     # archives des chantiers terminés
     for ch in (c for c in chantiers if c.state == "fait"):
         apath = backlog / "maturation" / f"chantier-{ch.id}.html"
-        apath.write_text(
+        write_if_changed(
+            apath,
             page(f"Chantier {ch.label} — archive", ch.desc, chantier_block(ch, base, index)),
-            encoding="utf-8",
         )
         print(f"  archive : {apath.name}")
     for s in STATES:
         n = sum(1 for f in all_fiches if f.state == s)
         print(f"  {STATE_LABELS[s]:<12} {n}")
+    print(f"  {'Fiches .html':<12} {rewritten}/{len(all_fiches)} réécrite(s)")
     for a in anomalies:
         print(f"  ⚠ {a}")
     print(f"✓ dashboard : {out}" + (f" — {len(anomalies)} anomalie(s)" if anomalies else ""))
@@ -556,16 +577,16 @@ def cmd_md2html(src: Path, dest: Path, title: str, banner: str) -> int:
     _, body_md = parse_frontmatter(text)
     body = markdown.Markdown(extensions=MD_EXT).convert(body_md)
     now = datetime.now().strftime("%d/%m/%Y")
-    dest.write_text(
+    written = write_if_changed(
+        dest,
         f'<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>{esc(title)}</title><style>{LIGHT_CSS}</style></head><body>"
         f'<div class="banner"><div class="inner"><h1>{esc(title)}</h1>'
         f"<p>{esc(banner or f'Généré le {now} depuis {src.name} — le .md fait foi.')}"
         f"</p></div></div><article>{body}</article></body></html>",
-        encoding="utf-8",
     )
-    print(f"✓ {src} -> {dest}")
+    print(f"✓ {src} -> {dest}" if written else f"= {dest} inchangé")
     return 0
 
 
