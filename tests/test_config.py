@@ -140,6 +140,24 @@ def test_o3_env_overrides_yaml() -> None:
     assert settings.cloud_pct_max == 40
 
 
+def test_chip_nodata_pct_max_default() -> None:
+    """chip_nodata_pct_max (garde nodata, arbitrage n°3) vaut 1 dans la config livrée."""
+    settings = load_settings(SETTINGS_PATH, env={})
+    assert settings.chip_nodata_pct_max == 1
+
+
+def test_chip_nodata_pct_max_env_override() -> None:
+    """TINY_WAE_CHIP_NODATA_PCT_MAX=5 (env) gagne sur chip_nodata_pct_max=1 (YAML)."""
+    settings = load_settings(SETTINGS_PATH, env={"TINY_WAE_CHIP_NODATA_PCT_MAX": "5"})
+    assert settings.chip_nodata_pct_max == 5
+
+
+def test_chip_nodata_pct_max_out_of_bounds_rejected() -> None:
+    """Une valeur hors bornes [0, 100] pour chip_nodata_pct_max est rejetée, champ nommé."""
+    with pytest.raises(Exception, match="chip_nodata_pct_max"):
+        load_settings(SETTINGS_PATH, env={"TINY_WAE_CHIP_NODATA_PCT_MAX": "150"})
+
+
 def test_settings_invalid_percentage_rejected(tmp_path: Path) -> None:
     """Une surcharge env hors bornes [0, 100] est rejetée par la validation pure."""
     path = tmp_path / "settings.yaml"

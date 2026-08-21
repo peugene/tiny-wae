@@ -27,6 +27,9 @@ asset_keys:
 cloud_pct_max: 30
 scene_cloud_max: 95
 invalid_pct_max: 1
+# Seuil de la garde nodata au niveau chip (arbitrage n°3 du lot) : rejette un chip dont
+# la part de pixels nodata dépasse ce pourcentage.
+chip_nodata_pct_max: 1
 
 # Chemins et fenêtres.
 data_root: "./data"

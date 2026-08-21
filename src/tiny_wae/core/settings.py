@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Les 9 clés d'assets source earth-search attendues (docs l0-01.1).
+# Les 11 clés d'assets source earth-search attendues (10 bandes + le masque scl ; docs l0-01.1).
 EXPECTED_ASSET_KEYS = (
     "blue",
     "green",
@@ -38,6 +38,7 @@ class Settings:
     cloud_pct_max: int = 30
     scene_cloud_max: int = 95
     invalid_pct_max: int = 1
+    chip_nodata_pct_max: int = 1
     data_root: str = "./data"
     incremental_margin_days: int = 3
     http_retries: int = 3
@@ -52,6 +53,7 @@ class Settings:
             ("cloud_pct_max", self.cloud_pct_max),
             ("scene_cloud_max", self.scene_cloud_max),
             ("invalid_pct_max", self.invalid_pct_max),
+            ("chip_nodata_pct_max", self.chip_nodata_pct_max),
         ):
             if not (0 <= value <= 100):
                 raise SettingsValidationError(f"settings.{field_name}={value} hors bornes [0, 100]")

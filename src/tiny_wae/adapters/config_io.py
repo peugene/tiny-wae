@@ -32,6 +32,7 @@ _INT_FIELDS = frozenset(
         "cloud_pct_max",
         "scene_cloud_max",
         "invalid_pct_max",
+        "chip_nodata_pct_max",
         "incremental_margin_days",
         "http_retries",
         "http_backoff_s",
