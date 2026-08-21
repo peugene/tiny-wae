@@ -76,6 +76,36 @@ qui rend le gestionnaire d'environnement remplaçable à coût quasi nul.
   n'a PAS été testé.
 - `just psql "<sql>"` pour asserter l'état réel en base après une mutation.
 
+## ⚠ Worktrees d'agents (`/run`) — À CRÉER À LA MAIN
+
+**L'isolation automatique `isolation: "worktree"` est CASSÉE sur ce dépôt** : elle crée le
+worktree depuis `origin/<branche par défaut>` (`origin/main`), jamais depuis la branche de
+chantier courante. Mesuré le 21/08 : un agent a lu une version **périmée de sa propre fiche**
+et livré du code amputé d'un champ ; au dispatch suivant son worktree était encore 14 commits
+en retard. Poser `worktree.baseRef: "head"` dans `.claude/settings.json` **n'y change rien**
+(essayé, mesuré) — le réglage n'est pas honoré.
+
+Donc, pour chaque agent de `/run`, **hors du dépôt** (pour que ruff/pytest/`just` du dépôt
+primaire ne le voient jamais) :
+
+```
+git worktree add -b wt/<id> /mnt/d/git/_wt-<id> <branche-de-chantier>
+cp /mnt/d/git/tiny-wae/.env /mnt/d/git/_wt-<id>/.env      # gitignoré, donc absent du worktree
+```
+
+⛔ **NE JAMAIS partager `.pixi/` par lien** (le réflexe « symlink du `node_modules` » ne
+transpose PAS ici) : le projet est installé **en éditable**, et
+`.pixi/envs/default/lib/.../_editable_impl_tiny_wae.pth` contient le chemin **absolu**
+`/mnt/d/git/tiny-wae/src`. Un `.pixi` partagé ferait tourner `just check` du worktree **sur le
+code du dépôt primaire** — gate au vert sur le mauvais code, le pire des faux positifs.
+Dans le worktree : **`just install`** (le solve est figé par `pixi.lock` versionné et les
+paquets viennent du cache local — pas de re-téléchargement).
+
+Si un agent part malgré tout avec `isolation: "worktree"`, **exiger dans son prompt** qu'il
+commence par `git merge --ff-only <branche-de-chantier>` : c'est le seul contournement qui ait
+fonctionné. En fin de fiche : `git worktree remove /mnt/d/git/_wt-<id>` puis suppression de la
+branche.
+
 ## Commandes (.claude/commands/)
 `/new-fiche` · `/dashboard` · `/md2html` · `/run` (producteur/consommateur) · `/review`
 (adversariale).
