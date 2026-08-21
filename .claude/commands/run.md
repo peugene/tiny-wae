@@ -9,8 +9,21 @@ Les fiches `a-faire/` sont **rédigées pour être exécutées par un agent (eff
 question ni décision (critères « Prêt à faire », **oracle figé** compris). Si une fiche ne
 l'est pas → la mûrir d'abord, pas la lancer.
 
+⛔ **Ne JAMAIS dispatcher** : une fiche `categorie: humain` (bandeau « NE PAS DISPATCHER » —
+elle est réalisée par l'humain ; ses dépendants restent bloqués, c'est voulu) ni une fiche
+`categorie: chapeau` (elle ne porte que le contexte de ses `subtasks:`). Un chapeau passe
+en `fait/` quand toutes ses sous-tâches y sont.
+
 ## 1. Cadrage (AVANT de lancer)
-- Lis les fiches `a-faire/` et calcule leur **ordre topologique** (via `depends_on`).
+- Lis les fiches `a-faire/` et calcule leur **ordre topologique** (via `depends_on`)
+  ⭐ **sur les seules fiches DISPATCHABLES** (ni `chapeau`, ni `humain`) : un chapeau a
+  `depends_on: []` et n'ordonne rien ; une fiche humaine bloque volontairement ses
+  dépendants. Un `depends_on` est **satisfait quand la fiche visée est en `fait/`**.
+- ⭐ **Fournis le CHAPEAU dans le prompt de l'agent** quand la fiche a un `parent:` : il
+  porte le contexte et les décisions actées que la sous-tâche ne répète pas.
+- Lance `just dashboard` avant de commencer : il **contrôle le graphe** (ids inexistants,
+  cycles, parent/subtasks non appariés, fiche isolée). Toute anomalie se corrige en
+  maturation AVANT le run.
 - Repère celles **parallélisables de façon SÛRE** (zones de code **disjointes**). **Au
   moindre doute → séquentiel.**
 - Crée la **liste de tâches** (outil Task) pour le suivi.
@@ -38,7 +51,9 @@ Toutes les fiches faites : **régénérer le dashboard** (`just dashboard`), bra
 **débrief final** (réalisations + décisions prises en cours + fiches différées créées).
 
 ## 4. Autonomie — la règle d'or
-**Un run ne s'interrompt PAS**, sauf gros blocage insoluble. Sur blocage/question : (1)
+**Un run ne s'interrompt PAS**, sauf gros blocage insoluble — ou fiche humaine non faite
+(alors : traiter tout ce qui est dispatchable, puis s'arrêter en le signalant au débrief,
+avec la liste des fiches en attente de l'humain). Sur blocage/question : (1)
 **trancher et documenter** dans la fiche, signalé au débrief ; ou (2) **différer** via une
 nouvelle fiche en `maturation/`, et continuer. Cette règle **prime** sur toute convention
 « demander un GO » héritée d'ailleurs.

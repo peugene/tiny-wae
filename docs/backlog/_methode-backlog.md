@@ -9,7 +9,11 @@
 > récent fait foi) : 1) les deux scripts Node sont fusionnés en UN CLI Python
 > (`scripts/backlog.py dashboard|md2html`, dépendance unique `markdown`) ; 2) le modèle de
 > fiche gagne une section **« Oracle / recette »** (mesures + seuils figés avant
-> implémentation, distincte de « Définition de terminé »).
+> implémentation, distincte de « Définition de terminé ») ; 3) **`dashboard` génère aussi
+> le `.html` de CHAQUE fiche** (ids cliquables — le backlog se parcourt entièrement en
+> HTML) ; 4) **fiches CHAPEAU + sous-tâches** (`parent:` / `subtasks:`, pattern `pid-flow`) ;
+> 5) **fiches HUMAINES** (`categorie: humain`) et interdiction des gates humains dans les
+> fiches d'implémentation ; 6) **barème S/M/L/XL** explicite.
 
 ## Ce que c'est (et pourquoi)
 
@@ -39,6 +43,48 @@ se prend en amont (maturation), jamais pendant l'implémentation.**
 - **`en-cours/`** — en réalisation (une à la fois de préférence).
 - **`fait/`** — terminée, avec son **« Résumé de réalisation »** (fait, verdict d'oracle,
   commit(s), date).
+
+### ⭐ Taille d'une fiche : le barème (invariant)
+
+**Une fiche en `a-faire/` doit être implémentable par un agent d'effort MEDIUM** (type
+Sonnet), en autonomie, sans poser de question. Barème : **S** ≤ 1 session d'agent · **M**
+≤ 2-3 · **L** = plusieurs (à scinder si possible) · **XL** = interdit en `a-faire/`.
+Une fiche qui cumule plusieurs préoccupations (un contrat + un CLI + un harnais + une
+campagne) est **hors gabarit** : la scinder en **CHAPEAU + sous-tâches**.
+
+### Fiche CHAPEAU + sous-tâches (pattern `pid-flow`)
+
+Un thème trop gros pour une fiche devient un **chapeau** (`categorie: chapeau`,
+`subtasks: [...]`) qui **ne se dispatche pas** : il porte le contexte, les faits vérifiés
+et les décisions communes **une seule fois**, pour que chaque sous-tâche (`parent: <id>`)
+reste courte. Le chapeau passe en `fait/` quand toutes ses sous-tâches y sont. Modèle :
+`_modele-chapeau.md`.
+
+### ⭐ Grain du graphe : seules les fiches dispatchables ordonnent le run
+
+Un **chapeau** a `depends_on: []` — **il n'ordonne rien** ; sa place dans la chaîne s'écrit
+en prose dans son corps. Toutes les vraies arêtes vivent dans les **sous-tâches**. Une
+fiche **humaine**, elle, porte un `depends_on` et **bloque volontairement** ses dépendants.
+Un `depends_on` est **satisfait quand la fiche visée est en `fait/`** — un seul critère,
+le dossier fait foi (pas de « levée au merge »).
+
+*Motif : mélanger les deux grains produit deux graphes contradictoires — au grain chapeau,
+tout l'aval se retrouve bloqué derrière un gate humain, y compris des fiches sans rapport.*
+
+Le filet de sécurité n'est plus le `depends_on` de groupe mais un **contrôle mécanique** :
+`dashboard` vérifie le graphe à chaque génération (ids inexistants, cycles, `parent`/
+`subtasks` non appariés, chapeau qui ordonne, fiche isolée) et affiche les anomalies en
+tête du tableau de bord **et** en sortie console.
+
+### ⛔ Fiches HUMAINES — un gate humain n'est JAMAIS dans une fiche d'implémentation
+
+Une validation humaine (revue visuelle, lancement d'infra, recette) ne doit apparaître ni
+dans une définition de terminé, ni dans une table d'oracle : la fiche agent produit un
+**artefact** avec des critères mécaniques, et la validation devient une **fiche séparée**
+`categorie: humain`, titre préfixé `[HUMAIN]`, avec un bandeau ⛔ « ne pas dispatcher ».
+Les fiches aval en dépendent par `depends_on` : **le run se met en pause** tant qu'elle
+n'est pas en `fait/` — comportement voulu. Modèle : `_modele-fiche-humaine.md`.
+⚠ La commande `/run` doit refuser de dispatcher toute fiche `categorie: humain`.
 
 ### Critère « Prêt à faire » (passage `maturation/` → `a-faire/`)
 
@@ -120,19 +166,34 @@ python scripts/backlog.py dashboard --project "Mon projet" [--backlog docs/backl
 python scripts/backlog.py md2html _roadmap.md roadmap.html "Titre" ["Bandeau"]
 ```
 
-Dépendance : `markdown` (déclarée par le scaffolder dans l'environnement pixi du projet).
-Écrit `maturation/etat.html` + une archive par chantier terminé. **Ne rien éditer à la main**
-(écrasé). Régénérer après **toute** évolution du backlog. Via la façade : `just dashboard`.
+Dépendance : `markdown` (déclarée par le scaffolder dans l'environnement du projet).
+`dashboard` écrit `maturation/etat.html`, une archive par chantier terminé, **et le `.html`
+de chaque fiche** — le backlog entier se parcourt en HTML, sans jamais ouvrir un `.md` :
+
+- **dashboard** : compteurs cliquables (ancres par état), ids en liens, sous-tâches
+  **imbriquées sous leur chapeau** (`↳`), chapeaux marqués `▣`, fiches humaines `⛔`,
+  `depends_on` cliquables.
+- **page de fiche** : **breadcrumb** (`🏠 Backlog › chantier › ▣ chapeau › fiche`),
+  bandeau d'état/effort/catégorie, `depends_on` en liens, bloc de navigation
+  (sous-tâches si chapeau · chapeau + fratrie si sous-tâche · « Débloque » = les fiches
+  qui dépendent de celle-ci), et bandeau d'avertissement pour les fiches
+  chapeau/humaines.
+
+**Ne rien éditer à la main** (écrasé). Régénérer après **toute** évolution du backlog.
+Via la façade : `just dashboard`.
 
 ## Le pattern producteur / consommateur (run autonome)
 
 Le backlog **alimente** un **run autonome** : l'**agent principal** (orchestrateur) pilote,
 des **agents d'implémentation** réalisent les fiches en tâche de fond. Le brief opérationnel
-est la commande `/run` (`.claude/commands/run.md`). Règles clés : fiches validées **ancrées
-dans le code réel** avant dispatch (section « ⚠ Ancrage » gravée dans la fiche) ; agents
-isolés en **worktree git**, commit sans push ; conformité validée **avant** merge
+est la commande `/run` (`.claude/commands/run.md`). Règles clés : **ne jamais dispatcher
+une fiche `categorie: humain` ni une fiche `categorie: chapeau`** ; fiches validées
+**ancrées dans le code réel** avant dispatch (section « ⚠ Ancrage » gravée dans la fiche) ;
+agents isolés en **worktree git**, commit sans push ; conformité validée **avant** merge
 (`--no-ff`) ; revalidation `just check` **après** merge ; un run **ne s'interrompt pas** —
-sur blocage : trancher-et-documenter, ou différer via une fiche en `maturation/`.
+sur blocage : trancher-et-documenter, ou différer via une fiche en `maturation/`. Seule
+exception à la non-interruption : une fiche humaine non faite bloque légitimement ses
+dépendants (le run traite les autres, puis s'arrête en le signalant au débrief).
 
 > La **validation autonome** (`just check` : lint + types + tests + smoke) est **la
 > condition** de ce mode — cf. la fiche *harnais* du kit.
