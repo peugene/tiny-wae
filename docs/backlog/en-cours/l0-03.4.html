@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.4] CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.4</b></nav><h1>[l0-03.4] CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.2.html"><code>l0-03.2</code></a>, <a href="../fait/l0-03.3.html"><code>l0-03.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li>→ <a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li></ul></div><h1 id="l0-034-cli-ingest">[l0-03.4] — CLI ingest</h1>
+<h2 id="objectif">Objectif</h2>
+<p>Assembler : recherche (ou liste fournie) → pour chaque item : garde → SCL → verdict →
+chips → manifeste. Relançable à l'infini.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/cli/ingest.py</code> (auto-découvert) : <code>ingest --acquisitions &lt;envelope.json&gt;</code>
+  (chaînage CWL) ET <code>ingest --site A01 --from … --to …</code> (appelle StacSource). ⚠ <strong>PAS
+  d'option <code>--now</code></strong> (décision E-d : les deux formes portent une fenêtre explicite, l'option
+  serait morte — <code>--now</code> vit sur <code>backfill</code> et <code>update</code>). Compteurs finaux sur STDERR (<strong>found_stac /
+  skipped_scene_cloud / off_tile / found_tile</strong> puis ingested/rejected_*/skipped/failed +
+  bytes + durée) ; <code>run.json</code> écrit via manifests API (les 4 compteurs de l'enveloppe y
+  sont recopiés — cf. schéma l0-03.2, avec ses deux invariants de conservation).</li>
+<li><strong>Ordre invariant</strong> (chapeau) : garde epsg → SCL seul → verdict → bandes 10 puis 20 m →
+  ⭐ <strong>garde nodata finale</strong> (<code>chip_nodata_pct &gt; chip_nodata_pct_max</code> → statut
+  <code>rejected_nodata</code>, fichiers écrits <strong>supprimés</strong>, manifeste conservé — arbitrage n°3) →
+  manifeste (dernier, atomique). Un rejet écrit un manifeste SANS chips.</li>
+<li><strong>Idempotence</strong> : manifeste existant pour item_id <strong>ET <code>grid_hash</code> identique</strong> → skip
+  compté. <code>grid_hash</code> différent (coordonnées corrigées) → ré-ingestion. <code>--force</code> →
+  ré-ingestion inconditionnelle.</li>
+<li>
+<p><strong>Retry/backoff au niveau requête</strong> (paramètres <code>http_retries</code>/<code>http_backoff_s</code> de
+  settings) sur STAC et lectures COG ; échec définitif → manifeste <code>failed</code> + cause,
+  JAMAIS d'exception avalée. Un item en échec n'arrête pas les suivants. <strong>Codes de
+  sortie</strong> (règle du chapeau l0-01) : <code>OK=0</code> · <code>FAILURE=1</code> si ≥ 1 failed avec au moins un
+  succès · ⭐ <strong><code>INCONCLUSIVE=3</code> si TOUS les échecs sont d'origine réseau et aucun item
+  n'a abouti</strong> (amont injoignable ≠ bug — obligatoire aussi dans <code>backfill</code> et <code>update</code>).</p>
+</li>
+<li>
+<p>⭐ <strong>Smoke MINIMAL (ajout PO du 21/08 — le gate était creux)</strong> : <code>scripts/smoke.py</code>
+  cesse d'être un placeholder ici, pas six niveaux plus loin. Il exécute <code>ingest</code> de bout
+  en bout sur un <strong>double en mémoire du port <code>StacSource</code></strong> + un raster synthétique écrit
+  par le script (aucun réseau, aucune fixture externe), et asserte : 3 fichiers produits,
+  manifeste conforme, <code>assets_read &gt; 0</code>. Le smoke <strong>complet</strong> (corpus réel, 2 modes,
+  garde de contrat) viendra en l0-03.7 et le remplacera.
+  <em>Motif : sans cela, dix fiches se valideraient sur un <code>just check</code> dont le volet smoke
+  passe vert sans rien exécuter — conforme à la lettre de la règle « le gate appartient à
+  la fiche qui le change », contraire à son esprit.</em></p>
+</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n4">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N4)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>4e20384</code>, <strong>après</strong> le merge de l0-03.3 et l0-02.2 — faits, pas
+suppositions. Les faits marqués « à reconfirmer post-merge » pendant le run N3 ont TOUS été
+reconfirmés sur le code mergé (signatures relevées ci-dessous).</p>
+<h3 id="lexistant-a-consommer-tel-quel">L'existant à consommer tel quel</h3>
+<ul>
+<li><strong><code>adapters/chips.py</code> (l0-03.3, mergé)</strong> — contrat exact :
+  <code>python
+  NODATA_VALUE = 0 · OFFLINE_ENV_VAR = "TINY_WAE_OFFLINE"
+  CHIP_10M_FILENAME = "chip.tif" · CHIP_20M_FILENAME = "chip_20m.tif" · SCL_FILENAME = "scl.tif"
+  class EpsgMismatchError(ValueError) · class RemoteAccessForbidden(ValueError)
+  class ChipResult: files · assets_read · content_hashes · bytes_written · chip_nodata_pct
+  check_epsg(acq, grid) -&gt; None
+  read_scl(acq, grid, settings)       -&gt; tuple[np.ndarray, int]
+  read_bands_10m(acq, grid, settings) -&gt; tuple[np.ndarray, int]
+  read_bands_20m(acq, grid, settings) -&gt; tuple[np.ndarray, int]
+  write_chips(dest_dir, *, bands_10m, bands_20m, scl, grid, item_id, assets_read) -&gt; ChipResult</code>
+  Les <code>read_*</code> rendent <code>(array, nombre d'ouvertures)</code> — <strong>c'est toi qui sommes</strong> les trois
+  compteurs pour obtenir l'<code>assets_read</code> de l'item. Arrays <strong>band-major</strong> <code>(bands, H, W)</code>.
+  ⭐ <code>chip_nodata_pct</code> est déjà en <strong>pourcentage 0–100</strong> ; <code>write_chips</code> le calcule mais ne
+  décide RIEN : la comparaison à <code>settings.chip_nodata_pct_max</code>, le statut <code>rejected_nodata</code>
+  et la <strong>suppression des 3 fichiers</strong> sont à faire ICI.</li>
+<li><strong><code>adapters/manifests.py</code> (l0-03.2)</strong> — API complète, ⛔ ne rien y réécrire :
+  <code>write_manifest(data_root, manifest) -&gt; Path</code> (atomique, <strong>à appeler EN DERNIER</strong>),
+  <code>read_manifest(data_root, site_id, item_id) -&gt; Manifest</code> (<code>FileNotFoundError</code> si absent),
+  <code>list_for_site</code>, <code>item_ids_for_site(data_root, site_id) -&gt; set[str]</code>, <code>last_datetime</code>,
+  <code>write_run(data_root, run) -&gt; Path</code> (valide les <strong>deux</strong> invariants avant d'écrire, lève
+  <code>ConservationError</code> sans rien écrire), <code>read_run</code>, <code>list_runs</code>, <code>aggregate_counters</code>, et
+  <code>grid_hash(grid, settings, *, band_order_10m=…, band_order_20m=…) -&gt; str</code>.
+  Chemins figés : <code>&lt;data_root&gt;/{site_id}/{item_id}/manifest.json</code> et
+  <code>&lt;data_root&gt;/{site_id}/runs/{run_id}.json</code>.
+  ⚠ <code>read_manifest</code> fait <code>Manifest(**data)</code> : le manifeste écrit porte <strong>exactement</strong> les
+  24 champs du dataclass — ni plus, ni moins.</li>
+<li><strong><code>Manifest</code></strong> : <code>schema_version, site_id, item_id, datetime, tile, sequence, platform,
+  status, cause, invalid_pct, cloud_pct, chip_nodata_pct, scl_class_counts,
+  processing_baseline, boa_offset_applied, radiometry, grid_hash, assets_read,
+  content_hashes, bytes_downloaded, bytes_written, duration_s, files, versions</code>.
+  ⚠ <strong><code>scl_class_counts</code> y est un <code>dict[str, int]</code> (clés CHAÎNES — c'est du JSON)</strong> alors que
+  <code>core.scl.verdict</code> attend un <code>dict[int, int]</code>. La conversion est à ta charge, dans les deux
+  sens. Un test doit la figer, sinon la relecture d'un manifeste rendra des clés muettes.
+  ⚠ <code>radiometry</code> au manifeste est <code>dict[str, dict[str, float] | None]</code> (<code>{"scale":…, "offset":…}</code>),
+  alors que <code>Acquisition.radiometry</code> est <code>dict[str, tuple[float,float] | None]</code> — <strong>conversion
+  à faire aussi</strong>.</li>
+<li><strong><code>Run</code></strong> : <code>schema_version, site_id, run_id, window, counters, assets_read,
+  bytes_downloaded, tile_suspect, duration_s</code>. ⭐ <strong><code>tile_suspect</code> existe déjà</strong> — l'oracle
+  O5ter n'a AUCUN champ à ajouter au schéma.</li>
+<li><strong><code>MANIFEST_STATUSES</code></strong> (5 valeurs, <code>skipped</code> jamais écrit à un manifeste) et
+  <strong><code>RUN_STATUSES</code></strong> (les 6 statuts normatifs) : les <strong>importer</strong>, jamais les recopier.</li>
+<li><strong><code>core/scl.verdict(scl_class_counts: dict[int,int], settings) -&gt; Verdict</code></strong> →
+  <code>Verdict(status, invalid_pct, cloud_pct)</code>, <code>status ∈ {ingested, rejected_invalid,
+  rejected_clouds}</code>. Ordre des seuils déjà appliqué, dénominateur = somme de TOUTES les
+  classes, lève <code>ValueError</code> si la somme est nulle. ⭐ Il ne connaît PAS <code>rejected_nodata</code> :
+  la garde nodata est <strong>postérieure</strong> (ordre invariant du chapeau).</li>
+<li><strong><code>adapters/stac.py</code></strong> : <code>StacSource</code> (Protocol, <code>search(site, window) -&gt; Envelope</code>),
+  <code>EarthSearchSource(settings)</code>, <strong><code>StacUnreachable(Exception)</code></strong> (l0-02.2 — c'est l'exception
+  qui porte l'exit 3 de l'oracle O6), <code>StacSourceError(ValueError)</code>.</li>
+<li><strong><code>core/envelope.Envelope</code></strong> : <code>schema_version, site_id, window, counters, items</code> +
+  <code>to_dict()</code> / <code>from_dict(data)</code>, invariants vérifiés <strong>à la construction</strong>.</li>
+<li><strong><code>cli/exit_codes.py</code></strong> : <code>OK=0 · FAILURE=1 · USAGE=2 · INCONCLUSIVE=3</code>.</li>
+<li><strong>Auto-découverte</strong> : déposer <code>cli/ingest.py</code> avec <code>register(app)</code> ; ⛔ <code>__main__.py</code> figé.
+  Modèle de wiring à copier : <code>cli/search.py</code> (l0-02.2).</li>
+<li><strong><code>scripts/smoke.py</code> est encore le placeholder de scaffold</strong> (imprime une ligne, sort 0).
+  C'est bien cette fiche qui le remplace. ⚠ <strong><code>mypy</code> ne couvre PAS <code>scripts/</code></strong>
+  (<code>files = ["src"]</code> dans <code>pyproject.toml</code>) — d'où la décision n°2 ci-dessous.</li>
+<li><strong><code>tests/fixtures/manifests/C07/runs/run-2026-01-31.json</code></strong> montre le format de run_id
+  déjà présent dans le dépôt (<code>run-2026-01-31</code>) : le schéma ne contraint PAS ce format.</li>
+</ul>
+<h3 id="decisions-dancrage-prises-ici-ne-pas-rouvrir-ne-pas-re-deliberer">Décisions d'ancrage (prises ici — ne pas rouvrir, ne pas re-délibérer)</h3>
+<ol>
+<li>⭐ <strong>L'orchestration NE VIT PAS dans <code>cli/</code></strong> (règle de couche : <code>cli/</code> = wiring pur).
+   Créer <strong><code>src/tiny_wae/adapters/ingestion.py</code></strong> qui porte toute la boucle (garde epsg →
+   SCL → verdict → bandes → garde nodata → manifeste), et <strong><code>src/tiny_wae/cli/ingest.py</code></strong>
+   qui ne fait que : parser les options, charger la config, appeler l'orchestrateur, écrire
+   les compteurs sur STDERR, mapper les exceptions sur les codes de sortie.
+   <em>Motif décisif : le smoke doit exécuter le pipeline réel en important l'orchestrateur.
+   Si la boucle vit dans le CLI, le smoke doit passer par un sous-processus — et l'oracle O7
+   (« test négatif : double du port qui ne rend rien → smoke ROUGE ») devient intestable.</em></li>
+<li><strong>La logique du smoke RESTE dans <code>scripts/smoke.py</code></strong> — le chapeau l0-01 gèle la taxonomie
+   des sous-commandes à 9 et dit explicitement que <code>smoke</code> <strong>n'est pas</strong> un module <code>cli/</code>.
+   Structure-le en fonctions (<code>build_fake_source()</code>, <code>run_smoke(dest) -&gt; None</code>, <code>main()</code>), et
+   fais que le test O7 l'importe par
+   <code>importlib.util.spec_from_file_location("smoke", "scripts/smoke.py")</code>. Le script écrit ses
+   sorties dans un <code>tempfile.TemporaryDirectory()</code>, <strong>jamais dans <code>./data</code></strong>.</li>
+<li><strong><code>run_id</code></strong> : fonction interne <code>_new_run_id() -&gt; str</code> dans <code>adapters/ingestion.py</code>, format
+   <code>run-YYYYMMDDTHHMMSSZ</code> (UTC, à la seconde), <strong>monkeypatchée par les tests</strong>.
+   ⛔ <strong>Ne PAS ajouter d'option <code>--now</code> ni <code>--run-id</code></strong> : <code>--now</code> est explicitement banni de
+   <code>ingest</code> par la décision E-d du chapeau, et une option de plus serait une décision de
+   contrat non demandée. La date seule (format des fixtures) est <strong>refusée</strong> : deux runs le
+   même jour écraseraient le même <code>run.json</code>, et l'oracle O2 fait justement deux runs.</li>
+<li><strong>Point de couture du port</strong> : <code>cli/ingest.py</code> expose <strong>son propre</strong>
+   <code>build_source(settings) -&gt; StacSource</code>. ⛔ Ne pas importer celui de <code>cli/search.py</code> (deux
+   CLIs qui partagent un point de monkeypatch se contaminent en test).</li>
+<li>⭐ <strong>Distinguer « grille non calculée » de « epsg qui ne correspond pas »</strong> (défaut de
+   diagnostic relevé à la revue de l0-03.3) : <code>check_epsg</code> lève <code>EpsgMismatchError</code> dans les
+   DEUX cas. Avant la boucle, vérifie <code>site.grid.epsg is None</code> → message explicite pointant
+   <code>just survey-tiles</code> et <strong>exit <code>USAGE</code> (2)</strong>, jamais un item <code>failed</code>. Une config
+   incomplète n'est pas un item en échec.</li>
+<li><strong>Retry/backoff</strong> : <code>settings.http_retries</code> et <code>settings.http_backoff_s</code>, appliqués aux
+   appels STAC ET aux lectures de rasters. Isole l'attente dans une fonction interne
+   (<code>_sleep(seconds)</code>) pour que les tests la neutralisent — ⛔ <strong>aucun test ne doit dormir</strong>.
+   Un item en échec définitif → manifeste <code>failed</code> + <code>cause</code> renseignée ; il <strong>n'arrête
+   jamais</strong> les items suivants ; aucune exception n'est avalée en silence.</li>
+<li><strong><code>bytes_downloaded</code> = 0 pour les lectures de rasters</strong> (GDAL n'est pas instrumentable
+   depuis Python — mesuré en revue v3). C'est une donnée de rapport, <strong>jamais un critère de
+   gate ni d'oracle</strong>. Ne l'invente pas.</li>
+<li><strong><code>tile_suspect</code></strong> (O5ter) : vrai quand <code>rejected_nodata / found_tile &gt; 0,20</code> — le
+   dénominateur est <strong><code>found_tile</code></strong> (les items réellement instruits), jamais <code>found_stac</code>
+   (décision E-a du chapeau l0-02 : le mot <code>found</code> seul est banni). Le CLI <strong>signale et
+   s'arrête là</strong> : ⛔ aucune auto-correction de tuile en cours de run.</li>
+<li><strong><code>versions</code></strong> au manifeste : <code>{"tiny_wae": tiny_wae.__version__}</code>.</li>
+<li><strong>Codes de sortie</strong> : <code>0</code> si aucun <code>failed</code> · <code>1</code> si ≥ 1 <code>failed</code> <strong>et</strong> au moins un item
+    abouti · <code>3</code> si <strong>tous</strong> les échecs sont d'origine réseau <strong>et</strong> aucun item n'a abouti ·
+    <code>2</code> pour toute erreur de config/usage (dont la grille non calculée, cf. n°5).</li>
+</ol>
+<p><strong>Versions mesurées</strong> : rasterio 1.5.1 · pystac-client 0.9.0 · numpy 2.5.2 · affine 3.0.0.
+⛔ Aucune montée de version, <code>pyproject.toml</code> non touché.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] CLI 2 formes + idempotence + retry, tests sur doubles en mémoire du port
+      <code>StacSource</code> (les fixtures COG réelles arrivent en l0-03.5).</li>
+<li>[ ] <code>scripts/smoke.py</code> remplacé par le smoke minimal ci-dessus ; <code>just check</code> l'exécute
+      réellement.</li>
+</ul>
+<h2 id="oracle-recette-sur-fixtures-le-live-vit-en-l0-037">Oracle / recette (sur fixtures — le live vit en l0-03.7)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Run sur fixture N items (mix clair/nuageux/invalide)</td>
+<td>manifestes conformes au verdict attendu de chaque item ; <strong>les deux invariants de conservation bouclent</strong> dans le <code>run.json</code> produit ; compteurs == valeurs gelées dans le test (pas recopiées de l'enveloppe à l'exécution)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><strong>Run double</strong> (décision E-d — témoins positif ET négatif)</td>
+<td><strong>1er run : <code>assets_read &gt; 0</code></strong> (le compteur fonctionne) ; <strong>2e run : <code>assets_read == 0</code>, <code>skipped == N</code>, <code>content_hashes</code> identiques</strong> (hash du tableau décodé + CRS/transform/dtype, jamais des octets du GeoTIFF). <code>bytes_downloaded</code> n'est PAS un critère ici</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>grid_hash</code> changé (grille mutée dans la config du test)</td>
+<td>l'item est RÉ-ingéré, nouveau transform correct</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Item <code>sequence=1</code> même date que le <code>_0</code></td>
+<td>2 répertoires distincts, zéro écrasement</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Échec injecté (double du port lève) sur 1 item / N</td>
+<td>manifeste <code>failed</code>+cause, les N-1 autres traités, exit 1</td>
+</tr>
+<tr>
+<td>O5bis</td>
+<td><strong>Garde nodata</strong> (arbitrage n°3) : fixture à 40 % de nodata sur le chip</td>
+<td>statut <code>rejected_nodata</code>, <code>chip_nodata_pct</code> au manifeste, <strong>aucun fichier laissé sur disque</strong> ; à 0,5 % → <code>ingested</code></td>
+</tr>
+<tr>
+<td>O5ter</td>
+<td>⭐ <strong>Règle de repli tuile</strong> (correction PO v2 n°31, jamais écrite avant) : un site dont <strong>&gt; 20 % des items de sa <code>reference_tile</code> sont <code>rejected_nodata</code></strong></td>
+<td>le CLI <strong>signale</strong> le site en fin de run (STDERR + champ <code>tile_suspect: true</code> dans <code>run.json</code>) et <strong>s'arrête là</strong> : la bascule de tuile est une <strong>décision de config</strong> (édition de <code>sites.yaml</code> + <code>just survey-tiles</code>), jamais une auto-correction en cours de run</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>Amont injoignable simulé (le double du port lève une erreur réseau sur tous les items)</td>
+<td><strong>exit 3</strong> (<code>INCONCLUSIVE</code>), distinct du cas O5 qui rend 1</td>
+</tr>
+<tr>
+<td>O7</td>
+<td><strong>Smoke minimal</strong> dans <code>just check</code></td>
+<td>s'exécute RÉELLEMENT (assertion : le script produit 3 fichiers et un manifeste) ; test négatif : double du port qui ne rend rien → smoke ROUGE</td>
+</tr>
+<tr>
+<td>O8</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : réseau réel (l0-03.7 --live) ; parallélisme (l0-04.1).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 00:30 — le .md fait foi.</p></article></body></html>
