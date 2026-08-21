@@ -1,10 +1,13 @@
 ---
 id: NN-slug
 titre: Titre court de la tâche
-effort: S            # S | M | L | XL
-categorie: pipeline  # taxonomie libre du projet
+effort: S            # S | M | L | XL — barème : S ≤ 1 session d'agent · M ≤ 2-3 ·
+                     # L = plusieurs (scinder si possible) · XL = INTERDIT en a-faire/
+categorie: pipeline  # taxonomie libre ; valeurs réservées : `chapeau`, `humain`
 phase:               # optionnel : id de phase DANS un chantier (ex. O1) — sinon vide
 depends_on: []       # ids de fiches à terminer avant celle-ci (ex. [00-socle])
+parent:              # optionnel : id de la fiche CHAPEAU dont celle-ci est une sous-tâche
+subtasks: []         # si CHAPEAU : ids des sous-tâches (le chapeau ne se dispatche pas)
 ---
 
 # [NN] — Titre de la tâche
