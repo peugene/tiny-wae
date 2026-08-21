@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.2</b></nav><h1>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</h1><p>À faire · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li>→ <a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li></ul></div><h1 id="l0-032-le-contrat-du-lot-manifestes-et-journal-de-run">[l0-03.2] — Le contrat du lot : manifestes et journal de run</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.2</b></nav><h1>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li>→ <a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li></ul></div><h1 id="l0-032-le-contrat-du-lot-manifestes-et-journal-de-run">[l0-03.2] — Le contrat du lot : manifestes et journal de run</h1>
 <h2 id="objectif">Objectif</h2>
 <p>LE module-interface du lot : tout ce qui lit ou écrit un manifeste ou un journal passe par
 lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
@@ -84,6 +84,40 @@ lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
 <li>Tests sur fixtures : corpus de manifestes synthétiques (réutilisé par l0-04.2 et l0-05) —
   livré dans <code>tests/fixtures/manifests/</code> avec comptes CONNUS documentés.</li>
 </ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li><code>core.sites.Grid</code> : <code>epsg</code>/<code>origin_x</code>/<code>origin_y</code> sont <strong>à <code>None</code> par défaut</strong> (les grilles sont
+  posées par l0-01.3, hors de cette vague). <code>grid_hash</code> doit donc <strong>lever une erreur typée</strong> sur une
+  grille vide plutôt que hacher la chaîne <code>"None|None|None|…"</code> — un tel hash serait stable et
+  passerait les tests tout en étant faux.</li>
+<li><code>core.settings.Settings</code> porte <code>chip_px_10m = 512</code>, <code>chip_px_20m = 256</code> et <code>data_root = "./data"</code>.
+  <code>data/</code> est gitignoré : <strong>les tests écrivent dans <code>tmp_path</code></strong>, jamais dans <code>data/</code>.</li>
+<li>⚠ <strong><code>BAND_ORDER_10M</code> et <code>BAND_ORDER_20M</code> N'EXISTENT NULLE PART</strong> dans le code, alors que la
+  formule canonique du <code>grid_hash</code> (chapeau l0-03) les référence et que O3bis teste leur effet
+  (3 → 6 bandes doit changer le hash). C'est le trou que cette fiche doit combler.</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li><strong>Cette fiche crée <code>src/tiny_wae/core/bands.py</code></strong> (module neuf, pur) portant
+   <code>BAND_ORDER_10M = ("blue", "green", "red", "nir")</code> et
+   <code>BAND_ORDER_20M = ("rededge1", "rededge2", "rededge3", "nir08", "swir16", "swir22")</code> —
+   valeurs du chapeau l0-03 (D-b : 6 bandes à 20 m).
+   ⚠ <strong>Surtout pas dans <code>core/geometry.py</code></strong> : ce fichier appartient à l0-03.1, dispatchée EN
+   PARALLÈLE — y écrire produirait un conflit de merge. Un module dédié laisse aussi l0-03.3
+   (<code>adapters/chips.py</code>) lire les ordres de bandes sans dépendre de <code>manifests.py</code>.</li>
+<li><strong><code>grid_hash(grid, settings) -&gt; str</code> vit dans <code>adapters/manifests.py</code></strong> — le module-interface du
+   lot, d'où l0-03.4 l'importera pour l'idempotence. Chaîne canonique <strong>exactement</strong> celle du
+   chapeau l0-03, origines normalisées par <code>int()</code> (O3bis : <code>699960</code> et <code>699960.0</code> → même hash).</li>
+<li>Les 12 classes SCL (0…11) sont toutes portées par <code>scl_class_counts</code>. L'énumération normative des
+   statuts est celle du <strong>chapeau l0-02</strong> — y renvoyer, ne pas la redéfinir ici.</li>
+</ol>
+<p><strong>Zone d'écriture EXCLUSIVE de cette fiche</strong> — 3 agents travaillent en parallèle sur N1 :
+<code>src/tiny_wae/core/bands.py</code>, <code>src/tiny_wae/adapters/manifests.py</code>, <code>tests/test_manifests.py</code>,
+<code>tests/fixtures/manifests/</code>.
+⛔ Ne toucher NI <code>core/geometry.py|scl.py|windows.py</code> (l0-03.1, en parallèle), NI <code>cli/</code> ou
+<code>__main__.py</code> (l0-01.2, en parallèle), NI <code>core/sites.py</code>, <code>core/settings.py</code>,
+<code>adapters/config_io.py</code>, <code>pyproject.toml</code>, <code>justfile</code>, <code>config/</code>.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] Module + 2 schémas + API complète + corpus fixtures ; round-trip testé.</li>
@@ -143,4 +177,4 @@ lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
 <p><strong>Non testé</strong> : volumes réels (l0-04.H).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:06 — le .md fait foi.</p></article></body></html>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:10 — le .md fait foi.</p></article></body></html>
