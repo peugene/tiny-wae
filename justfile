@@ -69,6 +69,13 @@ dashboard:
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"
 
-# ⭐ lint + types + tests + smoke = définition de « fini ». À lancer AVANT de dire « fini ».
+# validation statique des tools/workflow CWL (cwltool --validate, un fichier à la fois :
+# passer plusieurs chemins à --validate fait interpréter les suivants comme job order).
+cwl:
+    pixi run cwltool --validate cwl/search.cwl
+    pixi run cwltool --validate cwl/ingest.cwl
+    pixi run cwltool --validate cwl/workflow.cwl
+
+# ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:
-    just lint && just types && just test && just smoke
+    just lint && just types && just test && just smoke && just cwl
