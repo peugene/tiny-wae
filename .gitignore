@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Kit _tools_python : environnement pixi local + log dev greppable
+.pixi/
+dev.log

@@ -1,0 +1,1 @@
+"""Entrées typer — wiring uniquement."""

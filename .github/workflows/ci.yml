@@ -1,0 +1,24 @@
+# CI — tiny-wae : le gate `just check` en version CI (scaffoldé le 2026-08-21).
+# Principe : la CI rejoue le harnais local, elle n'invente rien. Les recettes vivent dans
+# le justfile ; ici on n'appelle QUE `just` (façade — cf. CLAUDE.md, règle façade).
+# ⚠ Le smoke local peut faire du réseau réel ; en CI, le câbler sur fixtures/rejeu
+# (cf. harnais du kit) ou le sortir du gate CI si non déterministe.
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0
+        with:
+          cache: true
+      - uses: extractions/setup-just@v2
+      - run: just install
+      - run: just lint
+      - run: just types
+      - run: just test
