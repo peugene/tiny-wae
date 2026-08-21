@@ -76,35 +76,44 @@ qui rend le gestionnaire d'environnement remplaçable à coût quasi nul.
   n'a PAS été testé.
 - `just psql "<sql>"` pour asserter l'état réel en base après une mutation.
 
-## ⚠ Worktrees d'agents (`/run`) — À CRÉER À LA MAIN
+## ⚠ Worktrees d'agents (`/run`) — isolation native, sous conditions
 
-**L'isolation automatique `isolation: "worktree"` est CASSÉE sur ce dépôt** : elle crée le
-worktree depuis `origin/<branche par défaut>` (`origin/main`), jamais depuis la branche de
-chantier courante. Mesuré le 21/08 : un agent a lu une version **périmée de sa propre fiche**
-et livré du code amputé d'un champ ; au dispatch suivant son worktree était encore 14 commits
-en retard. Poser `worktree.baseRef: "head"` dans `.claude/settings.json` **n'y change rien**
-(essayé, mesuré) — le réglage n'est pas honoré.
+L'isolation `isolation: "worktree"` (dynamic workflow) **fonctionne** et donne un worktree par
+agent sous `.claude/worktrees/` (gitignoré, nettoyé automatiquement). **Mais sa base doit être
+choisie**, sinon l'agent code sur un arbre périmé : au run N0, un agent a lu une version
+**antérieure de sa propre fiche** et livré du code amputé d'un champ.
 
-Donc, pour chaque agent de `/run`, **hors du dépôt** (pour que ruff/pytest/`just` du dépôt
-primaire ne le voient jamais) :
+**Deux réglages, à tenir tous les deux :**
 
-```
-git worktree add -b wt/<id> /mnt/d/git/_wt-<id> <branche-de-chantier>
-cp /mnt/d/git/tiny-wae/.env /mnt/d/git/_wt-<id>/.env      # gitignoré, donc absent du worktree
-```
+1. `git remote set-head origin <branche-de-chantier>` — réglage **local** du clone, lu **à
+   chaud**. Sans lui, la base par défaut (`fresh`) est `origin/main`, figée depuis le scaffold.
+   ⚠ **Corollaire : pousser la branche de chantier AVANT chaque run** — cette base est le ref
+   *distant*, pas ton HEAD local.
+2. `.claude/settings.json` → `worktree.baseRef: "head"` — base = **HEAD local**, ce qui lève
+   l'obligation de pousser. ⚠ **Les settings ne sont lus qu'au DÉMARRAGE de session** : un
+   fichier créé en cours de session reste sans effet — c'est ce qui a fait conclure à tort que
+   le réglage était inopérant.
 
-⛔ **NE JAMAIS partager `.pixi/` par lien** (le réflexe « symlink du `node_modules` » ne
-transpose PAS ici) : le projet est installé **en éditable**, et
-`.pixi/envs/default/lib/.../_editable_impl_tiny_wae.pth` contient le chemin **absolu**
-`/mnt/d/git/tiny-wae/src`. Un `.pixi` partagé ferait tourner `just check` du worktree **sur le
-code du dépôt primaire** — gate au vert sur le mauvais code, le pire des faux positifs.
-Dans le worktree : **`just install`** (le solve est figé par `pixi.lock` versionné et les
-paquets viennent du cache local — pas de re-téléchargement).
+⭐ **Sonde de contrôle avant tout dispatch réel** (~30 s, lecture seule) : un agent trivial en
+`isolation: 'worktree'` qui rapporte `pwd` et `git rev-parse --short HEAD`, comparé au HEAD
+attendu. Mesuré le 21/08 : 2 agents en parallèle, worktrees distincts, tous deux sur `13b483f`.
+**On ne dispatche pas sans cette vérification** — elle coûte 30 s, l'erreur a coûté un dispatch
+entier.
 
-Si un agent part malgré tout avec `isolation: "worktree"`, **exiger dans son prompt** qu'il
-commence par `git merge --ff-only <branche-de-chantier>` : c'est le seul contournement qui ait
-fonctionné. En fin de fiche : `git worktree remove /mnt/d/git/_wt-<id>` puis suppression de la
-branche.
+⛔ **`.pixi/` ne se partage JAMAIS entre worktrees** (le réflexe « symlink du `node_modules` »
+ne transpose PAS ici) : le projet est installé **en éditable**, et
+`.pixi/envs/default/lib/.../_editable_impl_tiny_wae.pth` contient un chemin **absolu**. Un
+`.pixi` partagé ferait tourner `just check` du worktree **sur le code d'un autre arbre** — gate
+au vert sur le mauvais code, le pire des faux positifs. Chaque worktree fait son `just install`.
+
+**Coût mesuré** : le worktree est gratuit (~1 Mo), mais `just install` y coûte **1 min 5 s et
+696 Mo réels** — `/mnt/d` est un montage Windows (drvfs) sans liens durs, pixi recopie donc
+l'environnement entier au lieu de le lier. 3 agents en parallèle ≈ 2,1 Go et 3 min d'install.
+
+**Repli si la sonde est rouge** : worktree à la main
+(`git worktree add -b wt/<id> /mnt/d/git/_wt-<id> <branche>`, copier `.env`, `just install`),
+agent lancé **sans** `isolation:` avec le chemin absolu dans son prompt — l'isolation n'est
+alors garantie que par la consigne, donc relire le diff avant merge.
 
 ## Commandes (.claude/commands/)
 `/new-fiche` · `/dashboard` · `/md2html` · `/run` (producteur/consommateur) · `/review`

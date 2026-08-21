@@ -9,9 +9,10 @@ producteur/consommateur** sur les fiches prêtes (`docs/backlog/a-faire/`), selo
 Les fiches `a-faire/` sont **rédigées pour être exécutées par un agent Sonnet (effort medium)** sans
 question ni décision (critères « Prêt à faire », **oracle figé** compris). Si une fiche ne l'est pas
 → la mûrir d'abord, pas la lancer.
-⭐ **Les fiches sont en `a-faire/` ET COMMITÉES avant le lancement** — leur mise en `a-faire/` est un
-geste préalable de Philippe, hors `/run`. Une fiche non commitée peut être lue **périmée** par
-l'agent (mesuré au run N0 : code livré amputé d'un champ).
+⭐ **Les fiches sont en `a-faire/`, COMMITÉES ET POUSSÉES avant le lancement** — leur mise en
+`a-faire/` est un geste préalable de Philippe, hors `/run`. Le worktree d'un agent se base sur
+`origin/<branche-de-chantier>` : une fiche non commitée — ou commitée mais non poussée — est lue
+**périmée** par l'agent (mesuré au run N0 : code livré amputé d'un champ).
 
 ⛔ **Ne JAMAIS dispatcher** : une fiche `categorie: humain` (bandeau « NE PAS DISPATCHER » — elle est
 réalisée par l'humain ; ses dépendants restent bloqués, c'est voulu) ni une fiche
@@ -29,6 +30,10 @@ quand toutes ses sous-tâches y sont.
   non appariés, chapeau qui ordonne, fiche isolée) et **liste les feuilles à relire**. Toute
   anomalie se corrige en maturation AVANT le run.
 - Crée la **liste de tâches via l'outil Task** (une tâche par fiche + une de clôture) pour le suivi.
+- ⭐ **Sonde de contrôle du worktree** (~30 s, lecture seule) : dispatcher UN agent trivial en
+  `isolation: 'worktree'` qui rapporte `pwd` et `git rev-parse --short HEAD`. Si le HEAD ne
+  correspond pas à celui de la branche de chantier → **ne pas dispatcher** : appliquer les réglages
+  de `CLAUDE.md` § « Worktrees d'agents », ou basculer sur le repli manuel qui y est décrit.
 - Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
   sans attendre ma validation.**
 
@@ -44,17 +49,10 @@ quand toutes ses sous-tâches y sont.
    Un ancrage qui ne vit que dans le prompt d'un agent ne laisse aucune trace pour la fiche
    suivante ni pour une relecture a posteriori.
 2. `a-faire/ → en-cours/` ; `TaskUpdate` → in_progress.
-3. ⭐ **Créer le worktree TOI-MÊME, à la main** : `isolation: "worktree"` est **cassée sur ce
-   dépôt** (elle part d'`origin/main`, jamais de la branche de chantier). Procédure complète et
-   pièges — dont ⛔ **le `.pixi/` partagé, qui ferait tester le code du dépôt primaire** — dans
-   `CLAUDE.md` § « Worktrees d'agents ». En bref :
-   `git worktree add -b wt/<id> /mnt/d/git/_wt-<id> <branche-de-chantier>`, copier `.env`, puis
-   `just install` **dans** le worktree.
-   Lancer ensuite un **agent Sonnet medium en TÂCHE DE FOND** via un **dynamic workflow**, **sans
-   `isolation:`** : son prompt lui donne le **chemin absolu du worktree** comme répertoire de
-   travail, et lui impose de **vérifier sa base AVANT d'écrire une ligne** (`git log -1` ; si son
-   arbre est en retard, `git merge --ff-only <branche-de-chantier>` — seul contournement qui ait
-   fonctionné — et de le signaler).
+3. Lancer un **agent Sonnet medium en TÂCHE DE FOND** via un **dynamic workflow**, isolé par
+   `isolation: 'worktree'` — la sonde du §1 a validé la base. Conditions, coût mesuré et repli
+   manuel : `CLAUDE.md` § « Worktrees d'agents » (⛔ dont le `.pixi/` jamais partagé).
+   L'agent commence par un `just install` dans son worktree (~1 min, 696 Mo).
    Il code et **commit sur sa branche, sans push, sans toucher `docs/backlog/`**. (Plusieurs agents en
    parallèle seulement pour les fiches jugées sûres au §1.)
    ⭐ **Si la fiche a un `parent:`, fournis-lui le CHAPEAU dans son prompt** : il porte le contexte,
@@ -76,8 +74,8 @@ quand toutes ses sous-tâches y sont.
    ⚠ `pixi.lock` : versionné mais **jamais mergé** — en cas de conflit, le régénérer sur la branche
    cible (`just install`) plutôt que de résoudre à la main.
 6. « Résumé de réalisation » — avec le **verdict d'oracle chiffré** — → `fait/` → **UN commit pour
-   cette fiche** → `TaskUpdate` → completed → `git worktree remove /mnt/d/git/_wt-<id>` +
-   suppression de la branche `wt/<id>`.
+   cette fiche** → `TaskUpdate` → completed → nettoyage du worktree (automatique avec
+   `isolation:`, sinon `git worktree remove <chemin>` + suppression de la branche).
 
 ## 3. Clôture
 - Quand **TOUTES** les fiches sont terminées : **régénérer le dashboard** (`/dashboard`).
