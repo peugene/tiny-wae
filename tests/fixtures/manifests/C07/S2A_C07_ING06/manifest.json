@@ -1,0 +1,67 @@
+{
+  "assets_read": 5,
+  "boa_offset_applied": true,
+  "bytes_downloaded": 12000000,
+  "bytes_written": 9000000,
+  "cause": null,
+  "chip_nodata_pct": 0.0,
+  "cloud_pct": 0.0,
+  "content_hashes": {
+    "chip.tif": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "chip_20m.tif": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "scl.tif": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "datetime": "2026-01-06T10:15:00Z",
+  "duration_s": 3.5,
+  "files": [
+    "chip.tif",
+    "chip_20m.tif",
+    "scl.tif"
+  ],
+  "grid_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "invalid_pct": 0.0,
+  "item_id": "S2A_C07_ING06",
+  "platform": "sentinel-2a",
+  "processing_baseline": "05.00",
+  "radiometry": {
+    "blue": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "green": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "nir": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "red": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "scl": null
+  },
+  "schema_version": 1,
+  "scl_class_counts": {
+    "0": 0,
+    "1": 0,
+    "10": 0,
+    "11": 0,
+    "2": 0,
+    "3": 0,
+    "4": 65536,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0
+  },
+  "sequence": "0",
+  "site_id": "C07",
+  "status": "ingested",
+  "tile": "31TGM",
+  "versions": {
+    "tiny_wae": "0.1.0"
+  }
+}

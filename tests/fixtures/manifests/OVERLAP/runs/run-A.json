@@ -1,0 +1,25 @@
+{
+  "assets_read": 25,
+  "bytes_downloaded": 75000000,
+  "counters": {
+    "failed": 0,
+    "found_stac": 6,
+    "found_tile": 5,
+    "ingested": 5,
+    "off_tile": 0,
+    "rejected_clouds": 0,
+    "rejected_invalid": 0,
+    "rejected_nodata": 0,
+    "skipped": 0,
+    "skipped_scene_cloud": 1
+  },
+  "duration_s": 42.0,
+  "run_id": "run-A",
+  "schema_version": 1,
+  "site_id": "OVERLAP",
+  "tile_suspect": false,
+  "window": {
+    "end": "2026-02-05T00:00:00Z",
+    "start": "2026-02-01T00:00:00Z"
+  }
+}
