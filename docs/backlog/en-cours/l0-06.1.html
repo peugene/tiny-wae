@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.1</b></nav><h1>[l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</h1><p>En cours · effort M · outillage · phase O3 · depends_on : <a href="../fait/l0-02.2.html"><code>l0-02.2</code></a>, <a href="../fait/l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li>→ <a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-061-tools-cwl-searchingest-workflow">[l0-06.1] — Tools CWL search/ingest + workflow</h1>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>cwl/search.cwl</code>, <code>cwl/ingest.cwl</code> (CommandLineTool, <strong>CWL v1.2 en 1re ligne</strong>,
+  <code>baseCommand: [python, -m, tiny_wae, &lt;cmd&gt;]</code>) ; <code>cwl/workflow.cwl</code> : step search →
+  fichier enveloppe JSON → step ingest <code>--acquisitions</code> (le chaînage repose sur
+  l'invariant STDOUT-JSON de l0-02.2).</li>
+<li><code>cwl/README.md</code> : conventions, écart assumé vs cwl-assets (package installé, pas de
+  scripts rsyncés), périmètre (PAS d'enregistrement server, PAS de pid:Milestone — cf.
+  chapeau), commandes de validation et de run local.</li>
+<li><code>justfile</code> : recette <code>cwl</code> (<code>cwltool --validate</code> sur tous les <code>.cwl</code>) ajoutée à
+  <code>check</code>. Dépendance utilisée : <code>cwltool</code> — <strong>déjà posée par l0-01.1</strong> (ne pas toucher au
+  <code>pyproject.toml</code>). ⚠ Conséquence assumée : à partir de cette fiche, <code>just check</code> exige
+  <code>cwltool</code> dans tous les worktrees. <code>pixi.lock</code> : versionné, jamais mergé.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n5-en-parallele-de-l0-035">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N5, en parallèle de l0-03.5)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>5e4ab01</code>. Cette fiche part <strong>en parallèle de l0-03.5</strong> : ses deux
+dépendances (l0-02.2 et l0-03.4) sont en <code>fait/</code>, ses fichiers sont disjoints de ceux de
+l0-03.5, et aucune des deux ne crée un contrat que l'autre consomme.</p>
+<h3 id="faits-verifies">Faits vérifiés</h3>
+<ul>
+<li>⭐ <strong><code>cwltool</code> EST bien déjà posé</strong> — le fait de la fiche est exact, vérifié :
+  <code>pyproject.toml</code> ligne 55, dans <code>[tool.pixi.feature.dev.pypi-dependencies]</code>, avec le
+  commentaire « pas de build conda-forge compatible python 3.12 disponible — PyPI ».
+  Version installée : <strong>3.2.20260720092025</strong>, <code>pixi run cwltool --version</code> répond.
+  ⛔ <strong>Ne touche donc PAS <code>pyproject.toml</code>.</strong></li>
+<li><strong>Options RÉELLES de <code>search</code></strong> (relevées par <code>just run search --help</code>) :
+  <code>--site &lt;str&gt;</code> (requis) · <code>--from &lt;str&gt;</code> YYYY-MM-DD (requis) · <code>--to &lt;str&gt;</code> (requis) ·
+  <code>--json &lt;path&gt;</code> (écrit l'enveloppe dans un fichier <strong>au lieu de STDOUT</strong>) ·
+  <code>--sites-path &lt;path&gt;</code> (défaut <code>config/sites.yaml</code>) · <code>--settings-path &lt;path&gt;</code> (défaut
+  <code>config/settings.yaml</code>).</li>
+<li><strong>Options RÉELLES de <code>ingest</code></strong> (relevées par <code>just run ingest --help</code>) :
+  <code>--acquisitions &lt;path&gt;</code> (enveloppe JSON déjà produite — <strong>c'est le point de chaînage</strong>) ·
+  <code>--site &lt;str&gt;</code> · <code>--from &lt;str&gt;</code> · <code>--to &lt;str&gt;</code> · <code>--force</code> · <code>--sites-path &lt;path&gt;</code> ·
+  <code>--settings-path &lt;path&gt;</code>. ⚠ <strong>Il n'y a AUCUNE option de <code>data_root</code></strong> : il vient de
+  <code>settings.data_root</code>, surchargeable par la variable d'environnement <strong><code>TINY_WAE_DATA_ROOT</code></strong>
+  (mécanisme de surcharge <code>TINY_WAE_*</code> d'<code>adapters/config_io.py</code>). C'est le levier de
+  l'oracle O2 — en CWL, il passe par un <code>EnvVarRequirement</code>.</li>
+<li><strong>Codes de sortie de <code>ingest</code></strong> : <code>0</code> · <code>1</code> (≥ 1 failed avec au moins un succès) ·
+  <code>2</code> (config/usage, dont grille non calculée) · <code>3</code> (tous les échecs réseau, aucun abouti).
+  Un CWL qui ne déclare que <code>successCodes: [0]</code> fera échouer le workflow sur un <code>1</code> légitime :
+  décide explicitement de ce que tu déclares, et écris-le dans le README.</li>
+<li><strong>Le dossier <code>cwl/</code> n'existe pas encore</strong> — tu le crées.</li>
+<li><strong><code>just check</code></strong> enchaîne aujourd'hui <code>lint &amp;&amp; types &amp;&amp; test &amp;&amp; smoke</code>. Tu y ajoutes <code>cwl</code>.
+  ⚠ Le <code>justfile</code> est à toi sur ce run : l'autre agent a interdiction d'y toucher.</li>
+<li><strong>Versions</strong> : cwltool 3.2.20260720092025 · rasterio 1.5.1 · pystac-client 0.9.0.</li>
+</ul>
+<h3 id="decisions-dancrage-prises-ici-ne-pas-rouvrir">Décisions d'ancrage (prises ici — ne pas rouvrir)</h3>
+<ol>
+<li><strong><code>baseCommand: [python, -m, tiny_wae, &lt;cmd&gt;]</code></strong> comme le veut le chapeau. ⚠ Ce <code>python</code>
+   en dur n'enfreint PAS la règle façade : un <code>.cwl</code> est destiné à un exécuteur externe
+   (worker PID-FLOW), il ne peut pas connaître <code>just</code>. La règle façade s'applique aux
+   recettes, à la doc et aux prompts — écris cette justification dans <code>cwl/README.md</code>,
+   pour que personne ne « corrige » ces fichiers plus tard.</li>
+<li><strong>La recette <code>just cwl</code> ne fait QUE de la validation statique</strong> :
+   <code>cwltool --validate</code> sur les 3 fichiers, et rien d'autre. ⛔ Aucune exécution réelle dans
+   le gate (l'oracle O2 est explicitement « local, hors gate » : il fait du réseau).</li>
+<li>⭐ <strong>L'oracle O3 mérite mieux qu'une redite.</strong> L'invariant « STDOUT du step search = JSON
+   parsable seul » est déjà couvert par les tests de l0-02.2. Ce qu'il faut tester ICI, et
+   qui n'existe nulle part ailleurs, c'est la <strong>cohérence entre les <code>.cwl</code> et les CLI réels</strong> :
+   un test pytest qui charge les 3 fichiers CWL (ce sont des YAML — <code>yaml.safe_load</code>) et
+   vérifie que chaque <code>inputBinding.prefix</code> déclaré correspond à une option réellement
+   exposée par le CLI correspondant. Motif : le jour où une option du CLI est renommée, la
+   validation <code>cwltool --validate</code> restera <strong>verte</strong> (elle ne connaît pas nos CLI) et le
+   workflow cassera silencieusement en production. C'est le seul test de cette fiche qui
+   échouerait sur du code faux.</li>
+<li><strong>Chaînage du workflow</strong> : <code>search</code> écrit son enveloppe via <code>--json &lt;fichier&gt;</code> (et NON par
+   capture de STDOUT — c'est plus robuste en CWL et l'option existe pour ça), le step
+   <code>ingest</code> la consomme par <code>--acquisitions</code>. Déclare l'enveloppe en <code>outputBinding.glob</code>.</li>
+<li><strong><code>cwl/README.md</code></strong> : conventions, écart assumé vs cwl-assets (package installé, pas de
+   scripts rsyncés), périmètre (⛔ <strong>PAS d'enregistrement server, PAS de <code>pid:Milestone</code></strong> —
+   retiré du périmètre en revue v2, c'est du scope creep), la justification du <code>python</code> en
+   dur (décision n°1), le choix de <code>successCodes</code> (voir ci-dessus), et les commandes de
+   validation et de run local.</li>
+<li><strong>Oracle O2 (local, hors gate)</strong> : tente-le sur <strong>1 site / 10 jours, fenêtre PASSÉE ET
+   CLOSE (<code>--to</code> ≤ J−7)</strong>, deux <code>TINY_WAE_DATA_ROOT</code> <strong>vierges</strong> (un pour le run CWL, un pour
+   le run CLI direct), et compare les ensembles <code>(item_id, statut)</code>. ⚠ <strong>Clause bornée de la
+   fiche</strong> : en cas de ≥ 1 <code>failed</code>, tu rejoues <strong>une seule fois</strong> ; un <code>failed</code> au second
+   essai est un <strong>ÉCHEC de l'oracle</strong>, pas une invitation à rejouer. Si le réseau est
+   indisponible, déclare O2 <strong>non mesuré</strong> — ⛔ ne le déclare jamais vert sans l'avoir exécuté.</li>
+</ol>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] 3 fichiers CWL validés + README + gate branché.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just cwl</code></td>
+<td>0 erreur sur les 3 fichiers ; <code>just check</code> vert avec la recette intégrée</td>
+</tr>
+<tr>
+<td>O2 [local, hors gate]</td>
+<td><code>cwltool workflow.cwl</code> sur 1 site / 10 jours, <code>TINY_WAE_DATA_ROOT</code> VIERGE, fenêtre PASSÉE ET CLOSE (<code>--to</code> ≤ J−7) vs run CLI direct sur un second data_root vierge</td>
+<td>ensembles <code>(item_id, statut)</code> identiques. ⚠ <strong>Clause bornée</strong> : si l'un des deux runs contient ≥ 1 <code>failed</code>, rejouer <strong>une seule fois</strong> ; un <code>failed</code> au second essai est un <strong>ÉCHEC de l'oracle</strong>, pas une invitation à rejouer indéfiniment</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>STDOUT du step search</td>
+<td>JSON parsable seul (test)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : tool update (l0-06.2) ; worker PID-FLOW (hors lot).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 01:20 — le .md fait foi.</p></article></body></html>
