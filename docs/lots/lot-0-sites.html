@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lot 0 — Sites &amp; ingestion Sentinel-2</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><h1>Lot 0 — Sites &amp; ingestion Sentinel-2</h1><p>Généré le 21/08/2026 depuis lot-0-sites.md — le .md fait foi.</p></div></div><article><h1 id="fiche-lot-0-sites-de-surveillance-ingestion-sentinel-2">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</h1>
+<p><strong>Projet</strong> : tiny-wae — POC Earth Intelligence perso
+<strong>Statut</strong> : validé — GO Philippe (liste des 25 sites arbitrée) ; historique porté à 48 mois le 21/08
+<strong>Date</strong> : 20/08/2026 — transférée le 21/08/2026 depuis un dossier de travail hors dépôt ; <strong>la source est désormais ce fichier</strong>. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-0-ingestion/</code></p>
+<hr />
+<h2 id="1-objet-du-lot">1. Objet du lot</h2>
+<p>Mettre en place la plomberie données : sélection de ~25 sites, récupération automatisée des
+vignettes (chips) Sentinel-2 L2A sur un historique d'un an minimum, masquage nuages,
+stockage NAS. Aucune IA dans ce lot — uniquement de l'ingestion fiable et mesurée.</p>
+<h2 id="2-parametres-techniques-proposes">2. Paramètres techniques proposés</h2>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Valeur proposée</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source données</td>
+<td>STAC API <code>earth-search</code> (AWS, Element84) en priorité ; Copernicus Data Space (CDSE) en secours</td>
+<td>earth-search : sans authentification, COG directs. CDSE : officiel, compte gratuit, quotas</td>
+</tr>
+<tr>
+<td>Produit</td>
+<td>Sentinel-2 L2A (réflectance surface, correction atmosphérique faite)</td>
+<td>Le L1C imposerait la correction à notre charge</td>
+</tr>
+<tr>
+<td>Taille chip</td>
+<td>512 × 512 px @ 10 m = <strong>5,12 × 5,12 km</strong></td>
+<td>Compatible avec les tailles d'entrée des GFMs (multiples de 224/256)</td>
+</tr>
+<tr>
+<td>Bandes</td>
+<td>B02, B03, B04, B08 (10 m) + SCL (masque) ; B11/B12 optionnelles</td>
+<td>RGB+NIR = minimum GFM ; SCL = filtrage nuages</td>
+</tr>
+<tr>
+<td>Filtre nuages</td>
+<td>SCL : rejet si &gt; 30 % de pixels nuage/ombre sur le chip</td>
+<td>Seuil à ajuster après mesure réelle</td>
+</tr>
+<tr>
+<td>Historique</td>
+<td><strong>48 mois glissants</strong> (arbitrage Philippe, 20/08/2026)</td>
+<td>Saisonnalité + profondeur pour la détection de changement du Lot 2. Archive S2 L2A disponible depuis 2017. Utiliser la collection <strong>harmonized</strong> (changement de baseline janv. 2022 : offset radiométrique corrigé)</td>
+</tr>
+<tr>
+<td>Stockage</td>
+<td>NAS : <code>/{site_id}/{date}/chip.tif</code> (GeoTIFF/COG) + <code>manifest.json</code> par acquisition</td>
+<td>Idempotent, rejouable</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ <strong>Coordonnées ci-dessous : de mémoire, précision estimée ±1–2 km.</strong> La validation visuelle
+de centrage de chaque chip fait partie de l'oracle (§5). Certains mégachantiers dépassent la
+taille d'un chip : un segment représentatif est désigné.</p>
+<h2 id="3-liste-des-sites-25">3. Liste des sites (25)</h2>
+<h3 id="categorie-a-nucleaire-en-construction-8-verite-terrain-riche-chronologies-publiques">Catégorie A — Nucléaire en construction (8) — vérité terrain riche, chronologies publiques</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Site</th>
+<th>Pays</th>
+<th>Lat, Lon (approx.)</th>
+<th>Signature attendue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A01</td>
+<td>ITER (Cadarache)</td>
+<td>FR</td>
+<td>43.708, 5.776</td>
+<td>Assemblage, bâtiments annexes, parkings</td>
+</tr>
+<tr>
+<td>A02</td>
+<td>Hinkley Point C</td>
+<td>UK</td>
+<td>51.208, −3.130</td>
+<td>Chantier EPR massif — <strong>cas défavorable nuages</strong></td>
+</tr>
+<tr>
+<td>A03</td>
+<td>Sizewell C</td>
+<td>UK</td>
+<td>52.215, 1.620</td>
+<td>Terrassements en démarrage</td>
+</tr>
+<tr>
+<td>A04</td>
+<td>Flamanville</td>
+<td>FR</td>
+<td>49.536, −1.882</td>
+<td>Post-chantier : activité décroissante</td>
+</tr>
+<tr>
+<td>A05</td>
+<td>Akkuyu</td>
+<td>TR</td>
+<td>36.144, 33.541</td>
+<td>4 réacteurs en construction, très actif</td>
+</tr>
+<tr>
+<td>A06</td>
+<td>El Dabaa</td>
+<td>EG</td>
+<td>31.043, 28.494</td>
+<td>Chantier actif, ciel clair quasi permanent</td>
+</tr>
+<tr>
+<td>A07</td>
+<td>Zhangzhou</td>
+<td>CN</td>
+<td>23.816, 117.578</td>
+<td>Réacteurs Hualong One en série</td>
+</tr>
+<tr>
+<td>A08</td>
+<td>Vogtle 3-4</td>
+<td>US</td>
+<td>33.143, −81.762</td>
+<td>Achevé 2023-24 : transition chantier → stable</td>
+</tr>
+</tbody>
+</table>
+<h3 id="categorie-b-megachantiers-mondiaux-9-signatures-enormes-ideal-detection-de-changement">Catégorie B — Mégachantiers mondiaux (9) — signatures énormes, idéal détection de changement</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Site</th>
+<th>Pays</th>
+<th>Lat, Lon (approx.)</th>
+<th>Signature attendue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B01</td>
+<td>NEOM "The Line" (segment Hidden Marina)</td>
+<td>SA</td>
+<td>28.09, 35.23</td>
+<td>Terrassement massif, désert = ciel clair</td>
+</tr>
+<tr>
+<td>B02</td>
+<td>Aéroport King Salman (Riyad)</td>
+<td>SA</td>
+<td>24.96, 46.70</td>
+<td>Pistes et terminaux en construction</td>
+</tr>
+<tr>
+<td>B03</td>
+<td>Nouvelle capitale administrative</td>
+<td>EG</td>
+<td>30.03, 31.73</td>
+<td>Urbanisation massive</td>
+</tr>
+<tr>
+<td>B04</td>
+<td>Barrage GERD</td>
+<td>ET</td>
+<td>11.215, 35.093</td>
+<td>Niveau du réservoir (saisonnier + remplissage)</td>
+</tr>
+<tr>
+<td>B05</td>
+<td>Parc solaire M. bin Rashid (Dubaï)</td>
+<td>AE</td>
+<td>24.76, 55.36</td>
+<td>Extension par phases datées</td>
+</tr>
+<tr>
+<td>B06</td>
+<td>Mine d'Escondida</td>
+<td>CL</td>
+<td>−24.27, −69.07</td>
+<td>Extension fosse/terrils, désert d'Atacama</td>
+</tr>
+<tr>
+<td>B07</td>
+<td>Salar d'Atacama (bassins lithium)</td>
+<td>CL</td>
+<td>−23.50, −68.30</td>
+<td>Évolution des bassins d'évaporation</td>
+</tr>
+<tr>
+<td>B08</td>
+<td>Port de Chancay</td>
+<td>PE</td>
+<td>−11.57, −77.27</td>
+<td>Mise en service 2024, extension</td>
+</tr>
+<tr>
+<td>B09</td>
+<td>Autoroute A69 Toulouse-Castres (section)</td>
+<td>FR</td>
+<td>43.60, 2.00</td>
+<td>Chantier linéaire — <strong>contrôle local visitable</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="categorie-c-sites-stables-veille-type-osint-8-mesure-des-faux-positifs-thematique-surveillance">Catégorie C — Sites stables &amp; veille type OSINT (8) — mesure des faux positifs + thématique surveillance</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Site</th>
+<th>Pays</th>
+<th>Lat, Lon (approx.)</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>Centrale de Golfech</td>
+<td>FR</td>
+<td>44.11, 0.85</td>
+<td>Contrôle négatif nucléaire, proche Toulouse</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>Airbus Toulouse-Blagnac</td>
+<td>FR</td>
+<td>43.63, 1.36</td>
+<td>Contrôle négatif industriel, vérifiable de visu</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>Port de Fos-sur-Mer</td>
+<td>FR</td>
+<td>43.42, 4.85</td>
+<td>Industriel stable, trafic variable</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>Raffinerie de Lacq</td>
+<td>FR</td>
+<td>43.42, −0.62</td>
+<td>Industriel stable</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>Natanz</td>
+<td>IR</td>
+<td>33.72, 51.73</td>
+<td>Veille OSINT documentée, changements épisodiques</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>Base aérienne d'Engels</td>
+<td>RU</td>
+<td>51.48, 46.21</td>
+<td>Veille OSINT documentée</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>Punggye-ri</td>
+<td>KP</td>
+<td>41.28, 129.08</td>
+<td>Site quasi statique, OSINT</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>Zone témoin rurale (forêt, SO Toulouse)</td>
+<td>FR</td>
+<td>à définir</td>
+<td>Contrôle négatif pur</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Équilibre</strong> : 12 sites « changement attendu », 8 « stables » (dont 4 contrôles négatifs stricts),
+5 intermédiaires. Les stables sont aussi importants que les actifs : c'est eux qui mesurent le
+taux de faux positifs du futur Lot 2.</p>
+<h2 id="4-livrables-du-lot">4. Livrables du lot</h2>
+<ol>
+<li>Pipeline d'ingestion Python (STAC → chips GeoTIFF sur NAS), idempotent, rejouable, configurable par fichier de sites (YAML/JSON). Chaque étape livrée comme <strong>CLI autonome à I/O explicites, orchestrable par l'outil de workflow CWL de Philippe</strong>.</li>
+<li>Historique 48 mois ingéré pour les 25 sites.</li>
+<li>Mode incrémental : le même pipeline, borné par fenêtre temporelle, pour l'ingestion quotidienne des nouvelles acquisitions.</li>
+<li>Rapport de recette chiffré (voir oracle).</li>
+<li>Planche de contrôle visuel : 1 mosaïque par site (premier chip, dernier chip) pour validation du centrage.</li>
+</ol>
+<h2 id="5-oracle-de-recette-fige-avant-implementation">5. Oracle de recette (figé avant implémentation)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Centrage : le site est visuellement identifiable et centré sur le chip</td>
+<td>25/25 sites validés sur planche visuelle (gate Philippe)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Historique : nombre d'acquisitions exploitables (&lt; 30 % nuages) par site sur 48 mois</td>
+<td>≥ 60 par site ; <strong>chiffre par site publié, y compris les pires</strong></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Intégrité : chips lisibles, géoréférencés, 4 bandes + SCL présentes</td>
+<td>100 % des chips ingérés</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Idempotence : relance du script = zéro doublon, zéro re-téléchargement</td>
+<td>vérifié par run double</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Volume et durée d'ingestion mesurés</td>
+<td>publiés (pas de seuil — c'est la baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé dans ce lot</strong> : qualité radiométrique fine, recalage sub-pixel entre dates,
+Sentinel-1, tout ce qui touche aux GFMs.</p>
+<h2 id="6-risques-identifies">6. Risques identifiés</h2>
+<ul>
+<li>Sites UK/tropicaux : perte nuages pouvant dépasser 60 % (O2 le mesurera — argument S1 en V2).</li>
+<li>Coordonnées de mémoire : correction possible au moment de la planche visuelle (O1).</li>
+<li>earth-search : pérennité du service non garantie — l'abstraction STAC rend le basculement CDSE peu coûteux.</li>
+<li>The Line : ralentissements de chantier documentés en 2025 — signature possiblement plus faible qu'espéré.</li>
+<li>Historique 48 mois : certains sites n'existaient pas il y a 4 ans (Sizewell, Chancay) — c'est une vérité terrain en soi, pas un défaut d'ingestion. Volume estimé ~15-25 Go total (<strong>non mesuré</strong> — O5 le chiffrera).</li>
+</ul></article></body></html>
