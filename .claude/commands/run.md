@@ -41,7 +41,8 @@ quand toutes ses sous-tâches y sont.
    Un ancrage qui ne vit que dans le prompt d'un agent ne laisse aucune trace pour la fiche
    suivante ni pour une relecture a posteriori.
 2. `a-faire/ → en-cours/` ; `TaskUpdate` → in_progress.
-3. Lancer un **agent Sonnet medium en TÂCHE DE FOND**, isolé dans un **worktree git** (`wt/<id>`) ;
+3. Lancer un **agent Sonnet medium en TÂCHE DE FOND** en utilisant un **dynamic workflow**, isolé
+   dans un **worktree git** (`wt/<id>`) ;
    il code et **commit sur sa branche, sans push, sans toucher `docs/backlog/`**. (Plusieurs agents en
    parallèle seulement pour les fiches jugées sûres au §1.)
    ⭐ **Si la fiche a un `parent:`, fournis-lui le CHAPEAU dans son prompt** : il porte le contexte,

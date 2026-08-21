@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>En cours · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="../maturation/lot-0-ingestion/l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../maturation/lot-0-ingestion/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="../maturation/lot-0-ingestion/l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../maturation/lot-0-ingestion/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Poser les deux fichiers de config et leurs modèles typés. Aucun CLI, aucun réseau.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
@@ -140,4 +140,56 @@ dans <code>[tool.pixi.dependencies]</code> »). Répartition retenue :
 (l0-03.H).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 19:04 — le .md fait foi.</p></article></body></html>
+<p><strong>Fait le 21/08/2026</strong> — run autonome, agent Sonnet effort medium en worktree isolé.</p>
+<p><strong>Livré</strong> : <code>config/sites.yaml</code> (25 sites) · <code>config/settings.yaml</code> · <code>core/sites.py</code>
+(<code>Site</code>, <code>Grid</code>, validation pure) · <code>core/settings.py</code> (<code>Settings</code>) ·
+<code>adapters/config_io.py</code> (YAML + surcharges env) · <code>.env.example</code> (variables <code>TINY_WAE_*</code>
+dont <code>TINY_WAE_OFFLINE</code>) · <code>.gitignore</code> (+ <code>data/</code>) · <code>pyproject.toml</code> (8 dépendances) ·
+<code>tests/test_config.py</code> · <code>pixi.lock</code> régénéré.</p>
+<p><strong>Verdict d'oracle (chiffré, mesuré par l'orchestrateur — pas sur déclaration de l'agent)</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅ VERT</td>
+<td>25 ids exactement <code>{A01..A08, B01..B09, C01..C08}</code> ; répartition mesurée <code>nuclear-construction: 8, megaproject: 9, stable-watch: 8</code> ; <strong>les 50 <code>lat</code>/<code>lon</code> chargent en <code>float</code></strong> (piège U+2212 neutralisé — vérifié indépendamment sur les 7 sites concernés) ; C08 = Forêt de Bouconne 43.628, 1.217</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅ VERT</td>
+<td>5 mutations couvertes (id dupliqué · <code>lat=95</code> · catégorie inconnue · <code>origin_x=13</code> · <code>lon=200</code>), chaque message nommant le site ET le champ</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅ VERT</td>
+<td><code>TINY_WAE_CLOUD_PCT_MAX=40</code> l'emporte sur le YAML (30) ; idem <code>TINY_WAE_CHIP_NODATA_PCT_MAX=5</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅ VERT</td>
+<td><code>just check</code> sur <code>develop</code> <strong>après merge</strong> : ruff OK (119 fichiers) · mypy strict OK (8 modules) · <strong>15 tests passés</strong> · smoke = placeholder de scaffold (hors périmètre, non touché)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : <code>reference_tile</code>/<code>grid</code> restent vides (remplis par l0-01.3) · exactitude
+géographique des coordonnées (fiche humaine l0-03.H) · surcharge env de <code>asset_keys</code>
+(format CSV codé mais hors oracle).</p>
+<p><strong>Décisions prises en cours de run</strong> (règle d'autonomie §4.1)
+1. <strong>Répartition des 8 dépendances</strong> entre les trois sections du <code>pyproject.toml</code> — la fiche
+   ne la nommait pas (cf. Ancrage). Appliquée telle qu'ancrée.
+2. <strong><code>cwltool</code> en <code>pypi-dependencies</code> du feature <code>dev</code></strong>, et non en <code>dependencies</code> : aucun
+   build conda-forge compatible Python 3.12 (mesuré par l'agent). Seul le canal change, la
+   répartition logique demandée est respectée.</p>
+<p><strong>Écart de process rencontré</strong> : le premier worktree était basé sur <code>origin/main</code> (périmé de
+14 commits), l'agent a donc lu une version de la fiche <strong>antérieure à l'arbitrage n°3</strong> et
+livré sans <code>chip_nodata_pct_max</code>. Détecté à la relecture du code, corrigé par un second
+dispatch (commit <code>fe82978</code>). Cause et correctif consignés au débrief du run.</p>
+<p><strong>Commits</strong> : <code>731630e</code> (implémentation) · <code>fe82978</code> (correctif <code>chip_nodata_pct_max</code> +
+comptage des clés) · merges <code>1f24335</code> et le merge du correctif.</p><p class="gen">Généré le 21/08/2026 19:26 — le .md fait foi.</p></article></body></html>
