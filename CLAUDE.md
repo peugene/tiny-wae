@@ -14,7 +14,7 @@ Deux types d'instances Claude travaillent sur ce dépôt **en parallèle** :
   `scripts/`, et ne fait **ni commit ni push**.
 - **L'équipe d'implémentation** (instances Claude Code) écrit dans `src/`, `tests/`,
   `scripts/`, et gère les **déplacements** de fiches (`a-faire/ → en-cours/ → fait/`) ainsi
-  que git. Elle ne rédige pas de nouvelles fiches en `maturation/` — sauf fiches **différées**
+  que git. L'éauipe peut :  modidier ou  rédiger des nouvelles fiches en maturation après une revue. Elle rédige aussi des fiches **différées**
   pendant un `/run` (règle d'autonomie de la méthode).
 
 **Une troisième source alimente le dépôt** : le **tooling** (`scripts/`, en particulier
