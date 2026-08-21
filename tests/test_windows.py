@@ -103,3 +103,29 @@ def test_update_window_for_site_parse_le_suffixe_z() -> None:
         "2026-08-15T00:00:00Z", margin_days=3, now=datetime(2026, 8, 21)
     )
     assert window == Window(start=datetime(2026, 8, 12), end=datetime(2026, 8, 21))
+
+
+def test_update_window_for_site_o3_isole_rejected_clouds_vs_ingested(tmp_path: Path) -> None:
+    """O3, cas ISOLÉ : sans le manifeste `failed` qui domine tout le corpus, c'est bien un
+    `rejected_clouds` — et non le dernier `ingested` — que `last_datetime` doit rendre.
+
+    Le test livré par l'agent asserte la date du `failed` (2026-01-25) : il prouve que
+    `last_datetime` ne filtre pas sur `ingested`, mais n'isole pas le cas exact de la fiche.
+    Ici le corpus est réduit aux 6 `ingested` (01→06) et aux 3 `rejected_clouds` (07→09).
+    """
+    site = tmp_path / "C07"
+    site.mkdir()
+    garde = {"ING", "CLD"}
+    for item in (FIXTURES_ROOT / "C07").iterdir():
+        if item.is_dir() and any(marqueur in item.name for marqueur in garde):
+            cible = site / item.name
+            cible.mkdir()
+            (cible / "manifest.json").write_text(
+                (item / "manifest.json").read_text(encoding="utf-8"), encoding="utf-8"
+            )
+
+    last = manifests_last_datetime(tmp_path, "C07")
+
+    assert last == "2026-01-09T10:15:00Z"  # CLD03 (rejected_clouds), pas ING06 (2026-01-06)
+    fenetre = update_window_for_site(last, margin_days=3, now=datetime(2026, 1, 12))
+    assert fenetre == Window(start=datetime(2026, 1, 6, 10, 15), end=datetime(2026, 1, 12))
