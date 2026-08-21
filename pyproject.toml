@@ -74,4 +74,9 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# ⚠ Portée réelle de la garde --disable-socket (décision E-b, fiche l0-02.2) : le chemin
+# STAC UNIQUEMENT (httpx/pystac-client, qui passent par le module `socket` de Python).
+# Elle NE COUVRE PAS les lectures rasterio/GDAL (C/libcurl, hors socket Python) — celles-ci
+# sont gardées par le contrat TINY_WAE_OFFLINE dans adapters/chips.py (l0-03.3). Un seul
+# dispositif ne suffit donc pas à garantir l'absence totale de réseau dans les tests.
 addopts = "-q --disable-socket"

@@ -22,10 +22,18 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import pystac_client.exceptions
 import pytest
 
-from tiny_wae.adapters.stac import StacSourceError, build_envelope, parse_item
-from tiny_wae.core.settings import EXPECTED_ASSET_KEYS
+from tiny_wae.adapters.stac import (
+    EarthSearchSource,
+    StacSourceError,
+    StacUnreachable,
+    build_envelope,
+    parse_item,
+)
+from tiny_wae.core.settings import EXPECTED_ASSET_KEYS, Settings
+from tiny_wae.core.sites import Site
 from tiny_wae.core.windows import Window
 
 FIXTURES_ROOT = Path("tests/fixtures/stac")
@@ -237,3 +245,68 @@ def test_proj_epsg_depuis_proj_code() -> None:
 def test_fixture_empty_zero_item() -> None:
     """La fixture 'réponse vide' contient bien 0 item — sinon O5 la testerait pour rien."""
     assert _load_items("empty.json") == []
+
+
+# ── StacUnreachable — décision n°2 de l'ancrage de la fiche l0-02.2 ──────────────────
+
+
+def _settings(stac_url: str) -> Settings:
+    """Settings minimaux valides pour construire un EarthSearchSource dans ces tests."""
+    return Settings(stac_url=stac_url, stac_collection="sentinel-2-l2a")
+
+
+def _site_with_tile() -> Site:
+    """Site minimal valide, reference_tile posée (condition d'entrée de EarthSearchSource)."""
+    return Site(
+        id="C07",
+        name="Punggye-ri",
+        lat=41.28,
+        lon=129.08,
+        category="stable-watch",
+        note="",
+        reference_tile="52TEL",
+    )
+
+
+def test_earthsearch_source_wraps_api_error_as_stac_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`pystac_client.exceptions.APIError` -> `StacUnreachable`, message avec l'URL."""
+    stac_url = "https://earth-search.test/v1"
+
+    def _raise_api_error(_url: str) -> None:
+        raise pystac_client.exceptions.APIError("serveur en 502")
+
+    monkeypatch.setattr("tiny_wae.adapters.stac.Client.open", _raise_api_error)
+
+    source = EarthSearchSource(_settings(stac_url))
+    with pytest.raises(StacUnreachable, match="injoignable"):
+        source.search(
+            _site_with_tile(), Window(start=datetime(2024, 1, 1), end=datetime(2024, 2, 1))
+        )
+
+
+def test_earthsearch_source_wraps_os_error_as_stac_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`OSError` (DNS, timeout bas niveau…) -> `StacUnreachable` également."""
+    stac_url = "https://earth-search.test/v1"
+
+    def _raise_os_error(_url: str) -> None:
+        raise OSError("Name or service not known")
+
+    monkeypatch.setattr("tiny_wae.adapters.stac.Client.open", _raise_os_error)
+
+    source = EarthSearchSource(_settings(stac_url))
+    with pytest.raises(StacUnreachable, match=stac_url):
+        source.search(
+            _site_with_tile(), Window(start=datetime(2024, 1, 1), end=datetime(2024, 2, 1))
+        )
+
+
+def test_stac_unreachable_ne_derive_pas_de_stac_source_error() -> None:
+    """Garde de la décision n°2 : StacUnreachable hérite d'Exception, PAS de StacSourceError
+    (sémantique opposée — un héritage ferait remonter un endpoint mort en « échec métier »,
+    et un `except StacSourceError` amont attraperait à tort une simple coupure réseau)."""
+    assert not issubclass(StacUnreachable, StacSourceError)
+    assert issubclass(StacUnreachable, Exception)

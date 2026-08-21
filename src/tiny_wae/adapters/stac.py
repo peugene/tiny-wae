@@ -27,6 +27,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+import pystac_client.exceptions
 from pystac_client import Client
 
 from tiny_wae.core.acquisition import Acquisition, Radiometry
@@ -42,6 +43,16 @@ _MGRS_VENDOR_PREFIX = "MGRS-"
 
 class StacSourceError(ValueError):
     """Erreur de parsing ou de filtrage d'un item STAC (href s3:// sur un asset mappé…)."""
+
+
+class StacUnreachable(Exception):
+    """Endpoint STAC injoignable (transport) — décision n°2 de l'ancrage de la fiche l0-02.2.
+
+    ⚠ Hérite d'``Exception``, PAS de ``StacSourceError`` (qui est un ``ValueError`` de
+    parsing → sémantique « échec métier », exit ``FAILURE``) : un endpoint mort n'est pas
+    un bug métier, le CLI le mappe sur ``INCONCLUSIVE`` (exit 3), jamais confondu avec un
+    ``StacSourceError``.
+    """
 
 
 class StacSource(Protocol):
@@ -196,6 +207,10 @@ class EarthSearchSource:
         tuile à filtrer). ``datetime`` est passé en objets ``datetime`` natifs à
         ``pystac-client`` — RFC3339 complet, earth-search rejette une plage date seule
         (découverte de terrain de l0-01.3, cf. ancrage de la fiche).
+
+        Lève ``StacUnreachable`` si l'endpoint est injoignable (erreur de transport
+        ``pystac_client.exceptions.APIError`` ou ``OSError`` — décision n°2 de l'ancrage de
+        la fiche l0-02.2) : c'est le CLI ``search`` qui la mappe sur l'exit ``INCONCLUSIVE``.
         """
         if site.reference_tile is None:
             raise StacSourceError(f"site {site.id} : reference_tile non posée — recherche refusée")
@@ -203,13 +218,16 @@ class EarthSearchSource:
         span_m = float(self.settings.chip_px_10m * 10)
         bbox = wgs84_survey_bbox(site.lat, site.lon, span_m)
 
-        client = Client.open(self.settings.stac_url)
-        item_search = client.search(
-            collections=[self.settings.stac_collection],
-            bbox=bbox,
-            datetime=(window.start, window.end),
-        )
-        raw_items = [item.to_dict() for item in item_search.items()]
+        try:
+            client = Client.open(self.settings.stac_url)
+            item_search = client.search(
+                collections=[self.settings.stac_collection],
+                bbox=bbox,
+                datetime=(window.start, window.end),
+            )
+            raw_items = [item.to_dict() for item in item_search.items()]
+        except (pystac_client.exceptions.APIError, OSError) as exc:
+            raise StacUnreachable(f"{self.settings.stac_url} injoignable : {exc}") from exc
 
         return build_envelope(
             site_id=site.id,
