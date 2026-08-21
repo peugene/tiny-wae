@@ -71,7 +71,12 @@ quand toutes ses sous-tâches y sont.
      suivante, **lancer son agent immédiatement**, sans attendre le précédent.
    - **Séquentiel** (doute sur les zones) : après l'ancrage de la fiche suivante, **s'arrêter et
      attendre** que l'agent précédent ait rendu la main — l'ancrage est fait, le dispatch attend.
-   Dans les deux cas, l'ancrage anticipé ne porte que sur la fiche **immédiatement** suivante. **Exception** : si cette fiche suivante dépend de la fiche en cours de
+   Dans les deux cas, l'ancrage anticipé ne porte que sur la fiche **immédiatement** suivante.
+   ⭐ **Un ancrage a une date de péremption.** Une fiche mise en attente — parce qu'un couplage
+   l'a fait basculer en séquentiel, ou parce qu'un merge est passé entre-temps — se **RÉ-ANCRE
+   avant dispatch** : le code sur lequel l'ancrage a été établi n'est plus celui que l'agent
+   recevra. Marquer dans la fiche, dès l'ancrage anticipé, la liste explicite des faits **« à
+   reconfirmer post-merge »**, pour que l'oubli soit impossible. **Exception** : si cette fiche suivante dépend de la fiche en cours de
    dispatch — explicitement (`depends_on`) ou implicitement (elle consomme un type/port/schéma que
    la fiche en cours est en train de créer/modifier) — l'ancrage anticipé ne peut porter que sur les
    faits **indépendants** de cette dépendance ; les faits qui en dépendent (forme exacte d'un port
