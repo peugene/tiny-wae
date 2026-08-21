@@ -72,9 +72,32 @@ le dossier fait foi (pas de « levée au merge »).
 tout l'aval se retrouve bloqué derrière un gate humain, y compris des fiches sans rapport.*
 
 Le filet de sécurité n'est plus le `depends_on` de groupe mais un **contrôle mécanique** :
-`dashboard` vérifie le graphe à chaque génération (ids inexistants, cycles, `parent`/
-`subtasks` non appariés, chapeau qui ordonne, fiche isolée) et affiche les anomalies en
-tête du tableau de bord **et** en sortie console.
+`dashboard` vérifie le graphe à chaque génération et affiche, en tête du tableau de bord
+**et** en console, deux niveaux :
+
+- **⚠ anomalies** (à corriger) : `depends_on`/`subtasks` pointant vers un id inexistant,
+  cycles, `parent`/`subtasks` non appariés, chapeau portant un `depends_on`, fiche isolée.
+- **ℹ à relire** : les **feuilles** du graphe (aucune fiche n'en dépend). Certaines sont
+  légitimes — recette finale, dernier maillon d'outillage — d'autres révèlent une **arête
+  oubliée**. Le contrôle ne peut pas trancher : il liste, le PO juge. *Cas vécu : une
+  fiche produisant la configuration de tout le lot s'est retrouvée sans aucun dépendant
+  après un desserrage de dépendances ; elle serait apparue ici.*
+
+### ⭐ Règle de rédaction : une énumération normative n'existe qu'à UN endroit
+
+Statuts, codes de sortie, ordre de bandes, liste de clés : dès qu'une **énumération** est
+normative, elle est **définie dans le chapeau** et les sous-tâches y **renvoient** (« les
+6 statuts du chapeau X ») au lieu de la recopier. *Motif : une même liste recopiée dans
+cinq fiches a produit quatre incohérences le jour où un statut y a été ajouté — corrigé au
+point de définition, jamais chez les consommateurs.* Aucun contrôle mécanique ne rattrape
+cela de façon fiable ; la seule parade robuste est de **ne pas dupliquer**.
+
+### ⭐ Après toute correction : la question de propagation
+
+Une correction n'est finie que lorsqu'on a répondu à **« qui consomme ce que je viens de
+changer ? »** — schéma, oracle d'une autre fiche, document de lot, checklist humaine. Une
+passe de correction qui ne se pose pas cette question crée autant de défauts qu'elle en
+répare, et les nouveaux sont plus difficiles à voir car ils sont *cohérents localement*.
 
 ### ⛔ Fiches HUMAINES — un gate humain n'est JAMAIS dans une fiche d'implémentation
 
@@ -179,8 +202,33 @@ de chaque fiche** — le backlog entier se parcourt en HTML, sans jamais ouvrir 
   qui dépendent de celle-ci), et bandeau d'avertissement pour les fiches
   chapeau/humaines.
 
+⭐ **Écriture conditionnelle** : un `.html` n'est réécrit que si son contenu diffère
+**ailleurs que sur son horodatage de génération**. Sans ce filtre, chaque `just dashboard`
+réécrivait *tous* les fichiers avec une date fraîche : le diff git se remplissait de
+fichiers au contenu identique et le churn masquait les vraies évolutions du backlog. La
+sortie console affiche `Fiches .html N/M réécrite(s)` — un `N` non nul signale exactement
+ce qui a bougé (la fiche modifiée **et** celles dont la navigation la référence).
+
 **Ne rien éditer à la main** (écrasé). Régénérer après **toute** évolution du backlog.
 Via la façade : `just dashboard`.
+
+## ⚠ `maturation/` est une zone PARTAGÉE
+
+Quand un PO (ou une instance pilote) et une équipe d'implémentation travaillent en
+parallèle, les zones d'écriture se séparent naturellement — `src/` et git à l'équipe,
+`docs/lots/` au PO — **sauf `maturation/`, qui appartient aux deux** :
+
+- le **PO** y rédige et y mûrit les fiches ;
+- l'**équipe** y écrit les fiches **différées** pendant un `/run` (règle d'autonomie) et y
+  **corrige ou complète** une fiche après une revue — c'est elle qui découvre, en
+  implémentant, ce qu'un brief a d'inexact.
+
+Conséquence pratique : sur ce dossier, **une fiche à la fois par instance**, et on annonce
+ce qu'on touche. Les autres dossiers d'état (`a-faire/`, `en-cours/`, `fait/`) restent
+gérés par l'équipe seule — le **déplacement** d'une fiche est un geste d'implémentation.
+
+*(La section « Multi-instances » du `CLAUDE.md` scaffoldé porte la version détaillée, à
+adapter ou supprimer selon le projet.)*
 
 ## Le pattern producteur / consommateur (run autonome)
 

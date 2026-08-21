@@ -337,18 +337,18 @@ taux de faux positifs du futur Lot 2.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><strong>Conservation</strong> (identité comptable, par site et sur l'agrégat) : <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code></td>
+<td><strong>Conservation</strong> (identité comptable, par site et sur l'agrégat) : <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile = somme des 6 statuts</code> (<code>ingested | rejected_clouds | rejected_invalid | rejected_nodata | failed | skipped</code> — énumération normative du chapeau l0-02)</td>
 <td>boucle exactement — 25/25 sites. C'est ce critère qui attrape la <strong>perte silencieuse</strong> que les oracles v1/v2 laissaient passer</td>
 </tr>
 <tr>
 <td>O2</td>
-<td><strong>Complétude vs source</strong> : <code>found_stac</code> == compte d'une requête <code>/aggregate</code> aux <strong>mêmes bbox et fenêtre</strong>, sans filtre tuile (<code>report --check-completeness</code>)</td>
-<td>écart <strong>0</strong>, tout écart listé item par item. ⚠ Le comparant est <code>found_stac</code>, jamais <code>found_tile</code> (sinon écart ~50 % sur les sites multi-tuiles)</td>
+<td><strong>Complétude vs source</strong> : <strong>comparaison d'ENSEMBLES d'<code>item_id</code></strong> — manifestes du site vs ids d'un <code>/search</code> paginé reproduisant les <strong>trois</strong> filtres du pipeline (bbox + fenêtre + <code>grid:code</code> + <code>eo:cloud_cover &lt; 95 %</code>) via <code>report --check-completeness</code></td>
+<td>écart <strong>0</strong>, ids manquants nommés. ⚠ Ni somme de compteurs (sur-comptage par recouvrement), ni filtre incomplet (l'oubli du pré-filtre scène rendrait l'écart = <code>skipped_scene_cloud</code>)</td>
 </tr>
 <tr>
 <td>O3</td>
-<td><strong>Intégrité</strong> : 3 fichiers (chip 10 m, chip 20 m à 6 bandes, SCL) lisibles, CRS/transform identiques à la grille du site au bit près, nodata &lt; 1 %</td>
-<td>100 % des items <code>ingested</code></td>
+<td><strong>Intégrité</strong> — colonne <code>integrite: OK/ROUGE</code> de <code>report</code>, calculée <strong>depuis les manifestes</strong> (pas de relecture des rasters) : les 3 fichiers listés, <code>content_hashes</code> complets, <code>grid_hash</code> == grille <strong>courante</strong> du site, <strong><code>chip_nodata_pct</code> &lt; 1 %</strong> (garde nodata du GO G8, instrumentée : seuil en settings, champ au manifeste, statut <code>rejected_nodata</code>)</td>
+<td>100 % des items <code>ingested</code> ; items fautifs nommés</td>
 </tr>
 <tr>
 <td>O4</td>

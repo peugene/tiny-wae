@@ -91,9 +91,9 @@ taux de faux positifs du futur Lot 2.
 
 | # | Critère | Seuil de succès |
 |---|---|---|
-| O1 | **Conservation** (identité comptable, par site et sur l'agrégat) : `found_stac = skipped_scene_cloud + off_tile + found_tile` ET `found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped` | boucle exactement — 25/25 sites. C'est ce critère qui attrape la **perte silencieuse** que les oracles v1/v2 laissaient passer |
-| O2 | **Complétude vs source** : `found_stac` == compte d'une requête `/aggregate` aux **mêmes bbox et fenêtre**, sans filtre tuile (`report --check-completeness`) | écart **0**, tout écart listé item par item. ⚠ Le comparant est `found_stac`, jamais `found_tile` (sinon écart ~50 % sur les sites multi-tuiles) |
-| O3 | **Intégrité** : 3 fichiers (chip 10 m, chip 20 m à 6 bandes, SCL) lisibles, CRS/transform identiques à la grille du site au bit près, nodata < 1 % | 100 % des items `ingested` |
+| O1 | **Conservation** (identité comptable, par site et sur l'agrégat) : `found_stac = skipped_scene_cloud + off_tile + found_tile` ET `found_tile = somme des 6 statuts` (`ingested | rejected_clouds | rejected_invalid | rejected_nodata | failed | skipped` — énumération normative du chapeau l0-02) | boucle exactement — 25/25 sites. C'est ce critère qui attrape la **perte silencieuse** que les oracles v1/v2 laissaient passer |
+| O2 | **Complétude vs source** : **comparaison d'ENSEMBLES d'`item_id`** — manifestes du site vs ids d'un `/search` paginé reproduisant les **trois** filtres du pipeline (bbox + fenêtre + `grid:code` + `eo:cloud_cover < 95 %`) via `report --check-completeness` | écart **0**, ids manquants nommés. ⚠ Ni somme de compteurs (sur-comptage par recouvrement), ni filtre incomplet (l'oubli du pré-filtre scène rendrait l'écart = `skipped_scene_cloud`) |
+| O3 | **Intégrité** — colonne `integrite: OK/ROUGE` de `report`, calculée **depuis les manifestes** (pas de relecture des rasters) : les 3 fichiers listés, `content_hashes` complets, `grid_hash` == grille **courante** du site, **`chip_nodata_pct` < 1 %** (garde nodata du GO G8, instrumentée : seuil en settings, champ au manifeste, statut `rejected_nodata`) | 100 % des items `ingested` ; items fautifs nommés |
 | O4 | **`failed ≤ 1 % de found_tile`** — seul seuil légitime : un échec technique EST un défaut de pipeline | par site |
 
 **Idempotence** (vérifiée dans le harnais, pas en recette — décision E-d) : run double →
