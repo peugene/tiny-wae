@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.2</b></nav><h1>[l0-02.2] CLI search + garde anti-socket + oracles live séparés</h1><p>En cours · effort S · pipeline · phase O1 · depends_on : <a href="../fait/l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li><a href="../fait/l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li>→ <a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li></ul></div><h1 id="l0-022-cli-search">[l0-02.2] — CLI search</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.2</b></nav><h1>[l0-02.2] CLI search + garde anti-socket + oracles live séparés</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : <a href="l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li>→ <a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li></ul></div><h1 id="l0-022-cli-search">[l0-02.2] — CLI search</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Exposer la recherche en CLI, avec la discipline logs/données et la garde anti-réseau des
 tests.</p>
@@ -154,4 +154,69 @@ tests.</p>
 <p><strong>Non testé</strong> : quotas earth-search en charge (l0-04.H le mesurera).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 00:06 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>1f80bdd</code>, mergé en <code>b955517</code>) : <code>cli/search.py</code> (nouveau, 112 l.),
+<code>adapters/stac.py</code> (+<code>StacUnreachable</code>, enrobage du transport), <code>tests/test_cli_search.py</code>
+(nouveau), <code>tests/test_stac.py</code> (+3 tests), <code>pyproject.toml</code> (commentaire de portée).
+<strong>105 → 114 tests</strong> (+9). <code>just check</code> vert sur <code>develop</code> après merge : ruff OK, mypy strict
+<strong>22 fichiers</strong>, <strong>114 passed</strong> en 13,9 s, smoke placeholder.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1 [fixtures]</td>
+<td>compteurs EXACTS gelés, conservation, STDOUT = JSON seul</td>
+<td><code>found_stac=12 · skipped_scene_cloud=2 · off_tile=6 · found_tile=4</code> écrits <strong>en littéral</strong> dans le test (12 = 2+6+4 ✓) ; STDOUT parsé par <code>json.loads</code> seul, table sur STDERR</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2 [fixtures]</td>
+<td>fenêtre vide → <code>items == []</code>, exit 0</td>
+<td><code>items == []</code>, <code>found_stac == 0</code>, exit 0</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3 [fixtures]</td>
+<td>réseau coupé → exit 3, STDERR porte l'URL ET « injoignable »</td>
+<td>exit <strong>3</strong> ; assertion littérale sur l'URL et sur le mot</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4 [live, hors gate]</td>
+<td>A01 sept. 2022 : ≥ 3 items ; item gelé trouvé avec cc &lt; 2 %</td>
+<td><strong>6 items</strong> mesurés (attendu ~6 en revue) ; <strong>complété par l'orchestrateur</strong> le 22/08 sur la fenêtre propre de l'item gelé : <code>search --site A01 --from 2024-08-01 --to 2024-08-02</code> → <code>found_stac=1</code>, <code>S2A_31TGJ_20240801_0_L2A</code>, tuile 31TGJ, <strong>cc = 0,00217 %</strong> (&lt; 2 %)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert (cf. ci-dessus)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong><code>--sites-path</code> / <code>--settings-path</code> ajoutées</strong> au-delà des options de la fiche : rend le
+   CLI testable sans dépendre des chemins par défaut, et servira au chaînage CWL (l0-06.1).</li>
+<li><strong>Site inconnu et date malformée → <code>USAGE=2</code></strong>, regroupés avec <code>ConfigError</code> /
+   <code>SiteValidationError</code> — conforme au mapping de l'ancrage.</li>
+<li>Le double de test <code>_FixtureSource</code> vit bien dans <code>tests/</code>, pas dans <code>src/</code> : le nom
+   <code>FixtureSource</code> reste <strong>libre</strong> pour l0-03.5.</li>
+</ol>
+<h3 id="verrou-pose">Verrou posé</h3>
+<p><code>test_stac_unreachable_ne_derive_pas_de_stac_source_error</code> fige la décision n°2 de
+l'ancrage : un futur refactor qui ferait hériter <code>StacUnreachable</code> de <code>StacSourceError</code>
+rendrait le test rouge — sans lui, un endpoint mort remonterait en « échec métier » (exit 1)
+et le diagnostic serait faux sans qu'aucun test ne bronche.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Quotas earth-search en charge (l0-04.H) · bascule CDSE et Sentinel-1 (hors lot) ·
+absence combinée de <code>sites.yaml</code>/<code>settings.yaml</code> avec <code>--json</code> (le chargement est le même
+que <code>sites-list</code>/<code>sites-validate</code>, déjà couvert, mais pas re-testé pour <code>search</code>).</p><p class="gen">Généré le 22/08/2026 00:21 — le .md fait foi.</p></article></body></html>
