@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../maturation/lot-0-ingestion/l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-corpus-de-fixtures-et-fixturesource">[l0-03.5] — Corpus de fixtures et FixtureSource</h1>
+<blockquote>
+<p>Scission de l'ex-l0-03.5 (PO, 21/08 — elle cumulait un script d'enregistrement réseau
+<strong>jetable</strong> et le <strong>gate permanent</strong>, deux natures et deux rythmes de vie différents,
+sur le point de passage unique du graphe). <strong>Ici : le corpus.</strong> Le smoke est en l0-03.7.
+Mise en œuvre de <strong>D-a</strong>.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Constituer le matériau qui rend tous les tests aval déterministes et hors ligne : des
+GeoTIFF locaux clippés + les enveloppes STAC correspondantes, servis par une
+implémentation du port <code>StacSource</code>.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><strong><code>scripts/record_fixtures.py</code></strong> (rejouable, RÉSEAU, hors package) — télécharge et
+  <strong>clippe</strong> les fenêtres utiles :</li>
+<li>les <strong>3 items gelés</strong> du chapeau l0-02 (clair <code>S2A_31TGJ_20240801_0_L2A</code>, nuageux
+    <code>S2B_31TGJ_20230315_0_L2A</code>, S2C <code>S2C_31TGJ_20260513_0_L2A</code>) ;</li>
+<li>un item <strong><code>sequence=1</code></strong> (candidat mesuré : <code>S2A_31TGJ_20260813_1_L2A</code>) ;</li>
+<li>la <strong>fenêtre A01 × 1 mois</strong> (6 items, mesuré) pour l0-04.1 ;</li>
+<li>un <strong>second site</strong> (B09 A69, mono-tuile, 3 items suffisent) — exigé par les oracles
+    multi-sites de l0-04.1/O2 et l0-05.2/O3/O5, que l'ex-fiche déclarait « non couverts ».
+  ⚠ <strong>Adressage par ID et par fenêtre ABSOLUE</strong>, jamais « 48 mois glissants » : deux des
+  items gelés sortiront de la fenêtre glissante (le nuageux le 15/03/2027) — le script
+  doit rester rejouable après cette date.</li>
+<li>Sortie : <code>tests/fixtures/cog/</code> (GeoTIFF clippés) + <code>tests/fixtures/stac/</code> (enveloppes
+  JSON, réutilise le format de l0-02.1). ⭐ <strong>Budget mesuré : ~2,84 MiB brut par item →
+  ~14 items ≈ 40 MiB brut, ~20 MiB en DEFLATE</strong> (l'ex-fiche annonçait « 2-5 Mo », faux
+  d'un facteur 5-10). Si le dépôt s'en trouve trop lourd : réduire les fenêtres des items
+  non-smoke à 128×128, décision à prendre <strong>à la mesure</strong>, pas d'avance.</li>
+<li><strong><code>src/tiny_wae/adapters/fixture_source.py</code></strong> : <code>FixtureSource(StacSource)</code> — sert les
+  enveloppes enregistrées, hrefs <code>file://</code> vers les GeoTIFF locaux. <strong>AUCUN mock HTTP.</strong></li>
+<li>Dépendances : déjà posées par l0-01.1 (<code>rasterio</code>, <code>httpx</code>). <code>pixi.lock</code> : versionné,
+  jamais mergé.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n5">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N5)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>93998d8</code>, <strong>après</strong> le merge de l0-03.4 — faits, pas suppositions.
+Les points marqués « à reconfirmer post-merge » pendant N4 l'ont tous été (ci-dessous).</p>
+<h3 id="lexistant-a-consommer-tel-quel">L'existant à consommer tel quel</h3>
+<ul>
+<li>⭐ <strong><code>scripts/record_stac_fixtures.py</code> EXISTE déjà</strong> (l0-02.1) et enregistre les <strong>5
+  fixtures d'items bruts</strong> de <code>tests/fixtures/stac/</code> (<code>s2b_cloudy</code>, <code>s2c_new_schema</code>,
+  <code>sequence_1</code>, <code>empty</code>, <code>bi_tile</code>) au format <code>{"items": [&lt;item STAC brut, non retouché&gt;]}</code>.
+  Il porte déjà le verrou « adressage par ID + <strong>fenêtre absolue</strong> » (<code>_search_by_ids</code> sur
+  2020-2027) et le mapping <code>RecordNetworkError → exit_codes.INCONCLUSIVE</code>. Structure :
+  <code>_search_by_ids</code>, <code>_search_by_bbox</code>, <code>_write_fixture</code>, <code>run() -&gt; int</code>, <code>main()</code>.
+  <strong>Va le lire avant d'écrire quoi que ce soit : tu réutilises ses idiomes.</strong></li>
+<li><strong><code>adapters/ingestion.py</code> (l0-03.4, mergé)</strong> — contrat reconfirmé :
+  <code>python
+  class IngestOutcome: run: Run · all_failures_network: bool
+  ingest_from_envelope(*, envelope, grid, settings, data_root, force=False) -&gt; IngestOutcome
+  ingest_from_source(*, site, window, source, settings, data_root, force=False) -&gt; IngestOutcome</code></li>
+<li><strong><code>scripts/smoke.py</code> (l0-03.4)</strong> expose <code>build_fake_source(raw_dir, *, with_item=True)
+  -&gt; StacSource</code> et <code>run_smoke(dest: Path, source: StacSource) -&gt; None</code>. ⭐ <strong>C'est le point
+  de substitution de l0-03.7</strong> : ta <code>FixtureSource</code> doit pouvoir être passée à <code>run_smoke</code>
+  à la place du double en mémoire, sans rien changer d'autre. Le smoke actuel produit des
+  hrefs en <strong>chemin nu</strong> ; toi tu produis des <code>file://</code> (oracle O3) — <code>_guard_href</code> de
+  <code>chips.py</code> accepte les DEUX (vérifié).</li>
+<li><strong><code>adapters/stac.py</code></strong> : <code>StacSource</code> (Protocol : <code>search(site, window) -&gt; Envelope</code>),
+  <code>build_envelope(*, site_id, window, raw_items, reference_tile, scene_cloud_max,
+  asset_keys) -&gt; Envelope</code> (<strong>pure</strong>), <code>parse_item(item, asset_keys) -&gt; Acquisition</code>,
+  <code>EarthSearchSource(settings)</code>, <code>StacUnreachable</code>, <code>StacSourceError</code>.</li>
+<li><strong>Sites vérifiés dans <code>config/sites.yaml</code></strong> (grilles remplies par l0-01.3) :</li>
+<li><strong><code>A01</code></strong> ITER Cadarache — tuile <strong>31TGJ</strong>, EPSG 32631, origine 721080 / 4845740 ;</li>
+<li><strong><code>B09</code></strong> Autoroute A69 — tuile <strong>31TDJ</strong>, EPSG 32631, origine 416720 / 4830480
+    (<strong>mono-tuile</strong> — c'est le second site exigé par l0-04.1/O2 et l0-05.2/O3-O5) ;</li>
+<li><code>C07</code> Punggye-ri — tuile 52TEL, EPSG <strong>32652</strong> (le site bi-tuile, déjà couvert côté STAC).</li>
+<li><strong><code>tests/fixtures/cog/</code> n'est PAS gitignoré</strong> (<code>data/</code> l'est, pas <code>tests/</code>). Le dépôt fait
+  <strong>3,1 MiB</strong> de <code>.git</code> aujourd'hui : le corpus va le multiplier par ~7. C'est prévu et
+  accepté (budget PO), mais <strong>mesure-le et publie-le</strong>.</li>
+<li><strong><code>mypy</code> ne couvre PAS <code>scripts/</code></strong> (<code>files = ["src"]</code>) — mais il couvre <code>src/</code>, donc
+  <code>adapters/fixture_source.py</code> sera bien sous mypy strict.</li>
+<li><strong>Versions</strong> : rasterio 1.5.1 · pystac-client 0.9.0 · numpy 2.5.2. ⛔ Pas de montée.</li>
+</ul>
+<h3 id="decisions-dancrage-prises-ici-ne-pas-rouvrir-ne-pas-re-deliberer">Décisions d'ancrage (prises ici — ne pas rouvrir, ne pas re-délibérer)</h3>
+<ol>
+<li>⭐ <strong>Collision de noms résolue</strong> : la fiche demande <code>scripts/record_fixtures.py</code>. <strong>Ne
+   crée PAS ce fichier</strong> — il serait indistinguable de <code>record_stac_fixtures.py</code> qui existe
+   déjà. Crée <strong><code>scripts/record_cog_fixtures.py</code></strong>, qui enregistre les rasters clippés ET
+   les enveloppes STAC dont ils dépendent (les deux sont indissociables : les hrefs des
+   rasters viennent des items). ⛔ <strong>Ne modifie PAS <code>record_stac_fixtures.py</code></strong>, dont les
+   5 fixtures servent déjà des tests verts.</li>
+<li><strong>Format des nouvelles fixtures STAC : <code>{"items": [&lt;item brut&gt;]}</code></strong>, identique à
+   l'existant. ⛔ <strong>Ne sérialise PAS d'<code>Envelope.to_dict()</code> sur disque.</strong>
+   <code>FixtureSource.search</code> <strong>construit</strong> son <code>Envelope</code> en appelant
+   <code>adapters.stac.build_envelope(...)</code> sur les items bruts — c'est ce qui rend l'oracle O1
+   (substituabilité au port) réellement discriminant, et ça évite un second format à
+   maintenir en parallèle.</li>
+<li><strong><code>FixtureSource</code> vit dans <code>src/tiny_wae/adapters/fixture_source.py</code></strong> — le nom est libre
+   (le double de test de l0-02.2 s'appelle <code>_FixtureSource</code> et vit dans <code>tests/</code>). Elle
+   réécrit les hrefs des items vers les GeoTIFF locaux en <strong><code>file://</code> absolu</strong> (oracle O3).</li>
+<li><strong>Test de substituabilité (O1) sans réseau</strong> : <code>StacSource</code> est un <code>Protocol</code> <strong>non</strong>
+   <code>runtime_checkable</code> — ⛔ ne le rends pas <code>runtime_checkable</code> pour les besoins d'un test.
+   La substituabilité se vérifie à DEUX niveaux : (a) <strong>statiquement par mypy strict</strong> —
+   écris une fonction annotée <code>def _consume(source: StacSource) -&gt; Envelope</code> et appelle-la
+   avec <code>FixtureSource</code> ET avec <code>EarthSearchSource</code> (sans l'exécuter pour la seconde) ;
+   (b) <strong>à l'exécution</strong> — <code>FixtureSource.search()</code> rend bien une <code>Envelope</code> dont les
+   <code>items</code> sont des <code>Acquisition</code>, avec les mêmes champs peuplés.</li>
+<li><strong>Composition du corpus</strong> — viser <strong>≥ 14 items sur 2 sites</strong> :
+   les 3 items gelés du chapeau l0-02 (<code>S2A_31TGJ_20240801_0_L2A</code> clair,
+   <code>S2B_31TGJ_20230315_0_L2A</code> nuageux, <code>S2C_31TGJ_20260513_0_L2A</code> schéma S2C) + l'item
+   <code>sequence=1</code> (<code>S2A_31TGJ_20260813_1_L2A</code>) + la fenêtre <strong>A01 × 1 mois</strong> + <strong>B09</strong>
+   (≥ 3 items). 3+1+6+3 = 13 : <strong>complète la fenêtre A01 ou B09 pour atteindre 14</strong>, ne
+   bloque pas sur le compte exact, mais <strong>publie le compte réel</strong>.
+   ⚠ <strong>Adressage par ID et par fenêtre ABSOLUE</strong>, jamais relative à <code>now()</code> — deux des items
+   gelés sortiront d'une fenêtre glissante de 48 mois (le nuageux le 15/03/2027). C'est le
+   verrou V1, déjà tenu par <code>record_stac_fixtures.py</code> : reprends-le.</li>
+<li><strong>Taille des fenêtres enregistrées : 512×512 @ 10 m / 256×256 @ 20 m</strong> (les valeurs des
+   settings par défaut), pour TOUT le corpus d'abord. Puis <strong>mesure <code>du -sh
+   tests/fixtures/cog/</code> et publie le chiffre</strong>. Repli du PO (réduction à 128×128 pour les
+   items <strong>non-gelés</strong> uniquement) : à appliquer <strong>seulement si la mesure dépasse 30 MiB</strong> —
+   sinon, n'y touche pas. Si tu l'appliques, documente les <code>chip_px_*</code> réduits dans un
+   <code>tests/fixtures/cog/README.md</code>, car les tests qui consomment ces items devront passer des
+   <code>Settings</code> correspondants.</li>
+<li><strong>Compression DEFLATE</strong> à l'écriture des GeoTIFF de fixtures (<code>compress="deflate"</code>) — le
+   budget PO (~20 MiB) en dépend. Ce sont des fixtures, pas des sorties de pipeline : la
+   contrainte « GeoTIFF simple, pas COG » (G5) porte sur les sorties de <code>chips.py</code>, pas ici.</li>
+<li><strong>Le script est RÉSEAU et LENT</strong> : ~14 items × 11 assets = ~154 lectures fenêtrées via
+   GDAL (range requests). Compte plusieurs minutes. ⛔ <strong>Ne l'abandonne pas au premier
+   ralentissement</strong> et ne réduis pas le corpus pour aller plus vite. Il tourne <strong>hors du
+   gate</strong>, via <code>just script record_cog_fixtures</code>.</li>
+</ol>
+<p><strong>Reconfirmations post-merge effectuées</strong> : signature d'<code>adapters/ingestion.py</code> ✅ · point de
+substitution <code>run_smoke(dest, source)</code> ✅ · <code>_guard_href</code> accepte <code>file://</code> et chemin nu ✅.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>record_fixtures.py</code> + corpus enregistré et commis (2 sites, ≥ 14 items).</li>
+<li>[ ] <code>FixtureSource</code> + tests de contrat (sert les mêmes types que <code>EarthSearchSource</code>).</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>FixtureSource</code> vs le port</td>
+<td>mêmes types retournés que <code>EarthSearchSource</code> (test de substituabilité : la même fonction consomme les deux)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Corpus</td>
+<td>≥ 14 items sur <strong>2 sites</strong> ; les 4 items gelés présents par id ; taille totale du dossier <strong>mesurée et publiée</strong> dans le Résumé</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Tous les hrefs servis par <code>FixtureSource</code></td>
+<td>commencent par <code>file://</code> (aucun <code>https://</code> résiduel — c'est ce qui rend la garde de l0-03.7 effective)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>record_fixtures.py</code> rejoué (réseau, hors gate)</td>
+<td>régénère un corpus <strong>identique</strong> aux hashes de contenu près</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne (le smoke minimal de l0-03.4 est toujours en place à ce stade)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : le smoke complet et sa garde de contrat (l0-03.7) ; les mesures live
+(l0-03.7/O5).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 01:15 — le .md fait foi.</p></article></body></html>
