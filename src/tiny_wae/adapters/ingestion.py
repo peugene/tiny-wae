@@ -47,7 +47,7 @@ from tiny_wae.adapters.manifests import (
     write_manifest,
     write_run,
 )
-from tiny_wae.adapters.stac import StacSource
+from tiny_wae.adapters.stac import StacSource, StacUnreachable
 from tiny_wae.core.acquisition import Acquisition
 from tiny_wae.core.envelope import Envelope
 from tiny_wae.core.scl import verdict as scl_verdict
@@ -94,17 +94,27 @@ def _is_network_error(exc: BaseException) -> bool:
 
     ``OSError`` couvre à la fois les erreurs de transport HTTP et les échecs d'ouverture
     GDAL/rasterio (``RasterioIOError`` en hérite) : c'est la même famille d'erreur que
-    l'amont soit injoignable ou qu'un asset soit illisible. Toute autre exception (garde
-    epsg, clé d'asset manquante, bug de logique) n'est PAS d'origine réseau.
+    l'amont soit injoignable ou qu'un asset soit illisible. ``StacUnreachable`` (l0-02.2)
+    en fait partie explicitement : elle N'hérite PAS d'``OSError`` (c'est voulu — elle ne
+    doit pas être confondue avec un ``StacSourceError`` de parsing), et l'omettre ici
+    classerait l'erreur réseau la PLUS explicite du projet comme « pas réseau ».
+    Toute autre exception (garde epsg, clé d'asset manquante, bug de logique) n'est pas
+    d'origine réseau.
     """
-    return isinstance(exc, OSError)
+    return isinstance(exc, OSError | StacUnreachable)
 
 
 def _retry_call[T](fn: Callable[[], T], settings: Settings) -> T:
     """Exécute ``fn`` avec retry/backoff (``settings.http_retries`` tentatives EN PLUS de
-    la première), appliqué indifféremment aux appels STAC et aux lectures COG (décision
-    d'ancrage n°6). N'avale RIEN : la dernière exception est relancée telle quelle après
-    épuisement des tentatives, pour que l'appelant la classe et lui donne une cause."""
+    la première), appliqué aux appels STAC et aux lectures COG (décision d'ancrage n°6).
+    N'avale RIEN : la dernière exception est relancée telle quelle après épuisement des
+    tentatives, pour que l'appelant la classe et lui donne une cause.
+
+    ⭐ Seules les erreurs D'ORIGINE RÉSEAU (``_is_network_error``) sont retentées : une
+    erreur déterministe (clé d'asset absente de l'item, bug de logique) ne se résoudra
+    jamais d'elle-même, et la retenter ferait perdre ``http_retries × http_backoff_s``
+    secondes PAR ITEM — 6 s ici, multipliées par les 25 sites × 48 mois de la campagne
+    l0-04.H. Elle est donc relancée immédiatement, sans attente."""
     attempts = settings.http_retries + 1
     last_exc: Exception | None = None
     for attempt in range(attempts):
@@ -112,6 +122,8 @@ def _retry_call[T](fn: Callable[[], T], settings: Settings) -> T:
             return fn()
         except Exception as exc:  # noqa: BLE001 — reclassifiée par l'appelant, jamais avalée
             last_exc = exc
+            if not _is_network_error(exc):
+                raise
             if attempt < attempts - 1:
                 _sleep(settings.http_backoff_s)
     assert (

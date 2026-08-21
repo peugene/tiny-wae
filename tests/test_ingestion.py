@@ -25,6 +25,7 @@ import rasterio
 import tiny_wae.adapters.ingestion as ingestion_module
 from tiny_wae.adapters.ingestion import ingest_from_envelope
 from tiny_wae.adapters.manifests import grid_hash, list_for_site, read_manifest
+from tiny_wae.adapters.stac import StacUnreachable
 from tiny_wae.core.acquisition import Acquisition
 from tiny_wae.core.envelope import Envelope
 from tiny_wae.core.geometry import transform_for
@@ -572,3 +573,57 @@ def test_o5ter_tile_pas_suspecte_a_vingt_pour_cent_pile(tmp_path: Path) -> None:
 
     assert outcome.run.counters["rejected_nodata"] == 1
     assert outcome.run.tile_suspect is False
+
+
+# ── Retry : témoins positif et négatif (ajout de l'orchestrateur au merge de l0-03.4) ──
+
+
+def test_retry_reussit_a_la_seconde_tentative(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Témoin POSITIF du retry : une erreur réseau transitoire est bien retentée.
+
+    L'agent de l0-03.4 avait signalé ce trou : seul le chemin « échoue toujours » était
+    couvert (O5/O6), donc rien ne prouvait que `http_retries` serve à quelque chose. Un
+    retry qui ne retenterait jamais aurait laissé O5 et O6 verts.
+    """
+    tentatives = {"n": 0}
+    attentes: list[float] = []
+    monkeypatch.setattr(ingestion_module, "_sleep", attentes.append)
+
+    def _flaky() -> str:
+        tentatives["n"] += 1
+        if tentatives["n"] == 1:
+            raise OSError("connexion réinitialisée (transitoire)")
+        return "ok"
+
+    assert ingestion_module._retry_call(_flaky, _SETTINGS) == "ok"
+    assert tentatives["n"] == 2  # une seule reprise a suffi
+    assert attentes == [_SETTINGS.http_backoff_s]  # exactement UNE attente de backoff
+
+
+def test_retry_ne_retente_pas_une_erreur_deterministe(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Témoin NÉGATIF : une erreur qui ne se résoudra jamais n'est PAS retentée.
+
+    Une clé d'asset absente de l'item ne deviendra pas présente à la 2e tentative :
+    la retenter coûterait `http_retries × http_backoff_s` secondes par item, pour rien.
+    """
+    tentatives = {"n": 0}
+    attentes: list[float] = []
+    monkeypatch.setattr(ingestion_module, "_sleep", attentes.append)
+
+    def _broken() -> str:
+        tentatives["n"] += 1
+        raise KeyError("scl")
+
+    with pytest.raises(KeyError):
+        ingestion_module._retry_call(_broken, _SETTINGS)
+    assert tentatives["n"] == 1  # une seule tentative, aucune reprise
+    assert attentes == []  # et surtout : aucune attente
+
+
+def test_stac_unreachable_est_classee_erreur_reseau() -> None:
+    """`StacUnreachable` n'hérite PAS d'OSError (décision l0-02.2) : sans mention explicite
+    dans `_is_network_error`, l'erreur réseau la plus explicite du projet serait classée
+    « pas réseau » — et ni retentée, ni comptée dans l'exit 3 de l'oracle O6."""
+    assert ingestion_module._is_network_error(StacUnreachable("endpoint injoignable"))
+    assert ingestion_module._is_network_error(OSError("timeout"))
+    assert not ingestion_module._is_network_error(KeyError("scl"))
