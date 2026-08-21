@@ -17,6 +17,11 @@ Deux types d'instances Claude travaillent sur ce dépôt **en parallèle** :
   que git. Elle ne rédige pas de nouvelles fiches en `maturation/` — sauf fiches **différées**
   pendant un `/run` (règle d'autonomie de la méthode).
 
+**Une troisième source alimente le dépôt** : le **tooling** (`scripts/`, en particulier
+`backlog.py`) est mis au point **hors de ce dépôt**, puis déposé ici. Y trouver des
+modifications qu'aucune instance n'a écrites est **normal** — on les commite comme le
+reste, sans les traiter comme un écart de zone.
+
 Règles : créer un fichier neuf ne conflicte jamais ; ne pas modifier un fichier hors de sa
 zone (le signaler plutôt) ; `etat.html` est dérivé et régénérable (dernier écrit gagne, sans
 enjeu) ; les caches d'outils (`.pixi/`, `.mypy_cache/`…) restent locaux à chaque instance.
