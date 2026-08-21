@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.1</b></nav><h1>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</h1><p>En cours · effort S · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li>→ <a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-031-core-geometrie-pur-zero-io">[l0-03.1] — Core géométrie (pur, zéro I/O)</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.1</b></nav><h1>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li>→ <a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-031-core-geometrie-pur-zero-io">[l0-03.1] — Core géométrie (pur, zéro I/O)</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Toute la logique pure de l'ingestion, testable à sec en millisecondes. Aucun réseau, aucun
 fichier.</p>
@@ -132,4 +132,48 @@ NI <code>__main__.py</code>, NI <code>pyproject.toml</code>, <code>justfile</cod
 <p><strong>Non testé</strong> : lecture de vrais pixels (l0-03.3).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:10 — le .md fait foi.</p></article></body></html>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>b8fa3da</code>) : les trois modules purs de
+<code>core/</code>, testables à sec.</p>
+<p>Livré : <code>core/geometry.py</code>, <code>core/scl.py</code>, <code>core/windows.py</code>, <strong>20 tests</strong> (8 + 7 + 5).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Grille synthétique (EPSG 32631, origine 699960/4900020) : <code>chip_bounds</code> = (699960.0, 4894900.0, 705080.0, 4900020.0) au mètre près ; emprises 10 m et 20 m <strong>identiques</strong> (5120 m) ; alignement ×2 exact (bornes multiples de 20 m, span/10 = 512, span/20 = 256)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>100 % classe 0 → <code>rejected_invalid</code> · 40 % classe 8 → <code>rejected_clouds</code> · 29 % de {3,8} → <code>ingested</code> (29 ≤ 30) · 50 % classe 11 → <code>ingested</code> (non décisionnelle). +2 tests sur l'ordre et la stricte inégalité</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><code>update_window(now=2026-08-21, last=2026-08-15, margin=3)</code> → <code>Window(2026-08-12, 2026-08-21)</code>, horloge injectée, aucun <code>datetime.now()</code> dans le code</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Décisions prises en cours de fiche</strong> :
+1. <strong><code>chip_bounds(grid, settings)</code> sans paramètre <code>resolution</code></strong> — l'emprise est unique par
+   construction (<code>chip_px_10m × 10 == chip_px_20m × 20</code>), ce qui est précisément ce qu'exige O1
+   (« emprises identiques »). <code>transform_for(grid, resolution)</code> garde bien son paramètre.
+2. <code>InconsistentChipSizesError</code> ajoutée (non demandée) : lève si <code>chip_px_10m × 10 ≠ chip_px_20m × 20</code>,
+   plutôt que de rendre silencieusement deux emprises désynchronisées.
+3. <code>backfill_windows</code> découpe par <strong>mois calendaires</strong>, la dernière fenêtre bornée par <code>now</code> (pas
+   de fenêtre dans le futur).</p>
+<p><strong>Vérifié par l'orchestrateur après merge</strong> : <code>core/geometry.py</code> importe <code>affine.Affine</code> et
+<strong>n'importe pas <code>rasterio</code></strong> — la couche pure est respectée ; <code>core/bands.py</code> non créé ici (il
+appartenait à l0-03.2, dispatchée en parallèle) ; aucun fichier hors zone touché.</p><p class="gen">Généré le 21/08/2026 20:35 — le .md fait foi.</p></article></body></html>

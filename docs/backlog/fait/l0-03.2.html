@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.2</b></nav><h1>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li>→ <a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li></ul></div><h1 id="l0-032-le-contrat-du-lot-manifestes-et-journal-de-run">[l0-03.2] — Le contrat du lot : manifestes et journal de run</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.2</b></nav><h1>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li>→ <a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li></ul></div><h1 id="l0-032-le-contrat-du-lot-manifestes-et-journal-de-run">[l0-03.2] — Le contrat du lot : manifestes et journal de run</h1>
 <h2 id="objectif">Objectif</h2>
 <p>LE module-interface du lot : tout ce qui lit ou écrit un manifeste ou un journal passe par
 lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
@@ -177,4 +177,69 @@ lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
 <p><strong>Non testé</strong> : volumes réels (l0-04.H).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:10 — le .md fait foi.</p></article></body></html>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>d046c78</code>) : le module-interface du lot,
+ses deux schémas versionnés et son corpus de fixtures.</p>
+<p>Livré : <code>core/bands.py</code>, <code>adapters/manifests.py</code>, <strong>18 tests</strong>, et un corpus de fixtures de
+<strong>19 manifestes + 3 run.json</strong> sur deux sites (<code>C07</code> pour la conservation, <code>OVERLAP</code> pour
+l'arbitrage n°2).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Round-trip manifeste et run.json : objet relu strictement <code>==</code> à l'original</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td><code>aggregate_counters(C07)</code> = found_stac <strong>15</strong>, skipped_scene_cloud <strong>1</strong>, off_tile <strong>2</strong>, found_tile <strong>12</strong>, puis ingested <strong>6</strong>, rejected_clouds <strong>3</strong>, rejected_invalid <strong>1</strong>, rejected_nodata <strong>1</strong>, failed <strong>1</strong>, skipped <strong>0</strong> — les deux invariants bouclent (15 = 1+2+12 ; 12 = 6+3+1+1+1+0)</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>✅</td>
+<td><code>off_tile</code> porté à 3 → <code>ConservationError</code>, <strong>et rien n'est écrit</strong> (<code>list_runs</code> vide après). Vérifié sur les deux chemins : <code>write_run</code> et <code>aggregate_counters</code></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>Tmp orphelin <code>.manifest.json.&lt;pid&gt;.tmp</code> sans <code>manifest.json</code> → <code>read_manifest</code> lève, <code>list_for_site</code> rend <code>[]</code> : aucun manifeste fantôme</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>✅</td>
+<td><code>699960</code> (int) et <code>699960.0</code> (float) → <strong>même hash</strong> ; 3 vs 6 bandes à 20 m → <strong>hash différent</strong>. Les deux sens testés. Grille vide → <code>EmptyGridError</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>last_datetime(C07)</code> = <code>2026-01-25T10:15:00Z</code>, date du manifeste <code>failed</code> (statuts rejetés inclus) ; site vide → <code>None</code></td>
+</tr>
+<tr>
+<td>O4bis</td>
+<td>✅</td>
+<td>Corpus <code>OVERLAP</code> (2 runs partageant 3 items) : <code>item_ids_for_site</code> = <strong>7</strong> ids exacts, alors que <code>aggregate_counters['ingested']</code> = <strong>10</strong> — l'écart de <strong>3</strong> est asserté dans le test. La preuve que seul l'ensemble est exact</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Décisions prises en cours de fiche</strong> : <code>grid_hash</code> prend les ordres de bandes en <strong>paramètres à
+défaut</strong> (teste le passage 3 → 6 bandes sans monkeypatcher <code>core.bands</code>) ; <code>MANIFEST_STATUSES</code>
+(5 valeurs) et <code>RUN_STATUSES</code> (6) déclarés en renvoyant au chapeau l0-02, sans le redéfinir ;
+<code>item_ids_for_site</code> lit les <strong>manifestes</strong> sur disque, jamais les <code>run.json</code> — c'est ce qui le
+rend exact face aux runs recouvrants ; tmp nommé <code>.{fichier}.{pid}.tmp</code>, jamais capté par les
+globs de listing.</p>
+<p><strong>Vérifié par l'orchestrateur après merge</strong> : la chaîne canonique du <code>grid_hash</code> est
+<strong>exactement</strong> celle du chapeau l0-03 (<code>epsg|int(origin_x)|int(origin_y)|chip_px_10m|chip_px_20m|
+bandes_10m|bandes_20m</code>) ; <code>EmptyGridError</code> bien levée sur grille non posée — la décision
+d'ancrage est appliquée, pas contournée ; aucun fichier hors zone touché.</p><p class="gen">Généré le 21/08/2026 20:35 — le .md fait foi.</p></article></body></html>

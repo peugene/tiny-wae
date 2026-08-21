@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</h1><p>En cours · effort S · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="../fait/l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li><li><a href="../maturation/lot-0-ingestion/l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li></ul></div><h1 id="l0-012-socle-cli">[l0-01.2] — Socle CLI</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li><li><a href="../maturation/lot-0-ingestion/l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li></ul></div><h1 id="l0-012-socle-cli">[l0-01.2] — Socle CLI</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Le mécanisme qui rend les fiches aval parallélisables : chaque commande = un module déposé
 dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> n'est plus jamais modifié ensuite.</p>
@@ -128,4 +128,52 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 <p><strong>Non testé</strong> : les <strong>6</strong> sous-commandes restantes (fiches aval) — cf. taxonomie ci-dessus.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:10 — le .md fait foi.</p></article></body></html>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>8d000ab</code>) : auto-découverte des
+commandes, codes de sortie figés, <code>sites-validate</code> et <code>sites-list</code>.</p>
+<p>Livré : <code>cli/discovery.py</code>, <code>cli/exit_codes.py</code>, <code>cli/sites_validate.py</code>, <code>cli/sites_list.py</code>,
+<code>__main__.py</code> (modifié une dernière fois), 2 fixtures de config cassée, <strong>11 tests</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Module factice dans un package temporaire → apparaît dans <code>--help</code> et s'exécute, <strong>sans modification de <code>__main__.py</code></strong>. Test complémentaire : <code>__main__.py</code> ne référence nominativement aucun module de commande</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td><code>just run sites-validate</code> → exit <strong>0</strong>, STDERR « 25 site(s) valide(s) »</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>Config cassée → exit <strong>2</strong> ; STDERR <code>site X01 : lat=95.0 hors bornes [-90.0, 90.0]</code> — contient <strong>l'id ET le champ</strong>. <strong>2 fixtures</strong> couvrant les deux exceptions imposées par l'ancrage (<code>SiteValidationError</code> et <code>ConfigError</code>)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>just run version</code> → <code>0.1.0</code>, exit 0 — inchangé</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Décisions prises en cours de fiche</strong> : convention <code>register(app)</code> (fixée à l'ancrage, non
+rouverte) ; paramètre nommé <code>package_name</code> ; deux fixtures plutôt qu'une, pour couvrir les deux
+exceptions ; <code># noqa: B008</code> inline sur les <code>Option()</code> en défaut d'argument (idiome typer) plutôt
+que de toucher <code>pyproject.toml</code>, hors zone.</p>
+<p><strong>Vérifié par l'orchestrateur après merge</strong> : callback <code>_main</code> et commande <code>version</code> préservés,
+<code>discover_commands(app)</code> appelé au bon endroit ; aucun fichier hors zone touché.
+⚠ <strong>Correction d'un chiffre de l'agent</strong> : il annonçait « 8 nouveaux tests », en oubliant un de
+ses deux fichiers. Le compte réel est <strong>11</strong> (<code>test_cli_commands.py</code> 8 + <code>test_cli_discovery.py</code>
+3) ; son total de 26 était juste.</p><p class="gen">Généré le 21/08/2026 20:35 — le .md fait foi.</p></article></body></html>

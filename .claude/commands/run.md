@@ -53,13 +53,25 @@ quand toutes ses sous-tâches y sont.
    `isolation: 'worktree'` — la sonde du §1 a validé la base. Conditions, coût mesuré et repli
    manuel : `CLAUDE.md` § « Worktrees d'agents » (⛔ dont le `.pixi/` jamais partagé).
    L'agent commence par un `just install` dans son worktree (~1 min, 696 Mo).
-   Il code et **commit sur sa branche, sans push, sans toucher `docs/backlog/`**. (Plusieurs agents en
-   parallèle seulement pour les fiches jugées sûres au §1.)
+   Il code et **commit sur sa branche, sans push, sans toucher `docs/backlog/`**.
+   ⭐ **UN dynamic workflow PAR AGENT — jamais un `parallel()` de N agents dans un seul
+   workflow.** Un workflow ne notifie l'orchestrateur qu'à sa **complétion** : regrouper les
+   agents fait attendre le plus lent avant de pouvoir merger le premier. Un workflow par fiche
+   = une notification par fiche = on enchaîne dès qu'un agent rend la main. (Mesuré au run N1 :
+   les 3 branches portaient déjà leur commit bien avant la notification unique.)
    ⭐ **Si la fiche a un `parent:`, fournis-lui le CHAPEAU dans son prompt** : il porte le contexte,
    les faits vérifiés et les décisions actées que la sous-tâche ne répète pas.
    ⭐ **Ancrage anticipé pendant l'attente** : le temps d'attente de cet agent se met à profit pour
    ancrer la fiche **SUIVANTE — et seulement elle**, jamais plus loin dans la file (pas de
-   pré-ancrage en rafale). **Exception** : si cette fiche suivante dépend de la fiche en cours de
+   pré-ancrage en rafale).
+   ⭐ **La boucle, décision Philippe du 21/08** — elle est la même dans les deux modes, seule la
+   dernière étape change : *prendre la fiche → l'ancrer dans le code réel → lancer son agent dans
+   SON dynamic workflow → passer à la fiche suivante*.
+   - **Parallèle** (fiches jugées sûres au §1, zones disjointes) : après l'ancrage de la fiche
+     suivante, **lancer son agent immédiatement**, sans attendre le précédent.
+   - **Séquentiel** (doute sur les zones) : après l'ancrage de la fiche suivante, **s'arrêter et
+     attendre** que l'agent précédent ait rendu la main — l'ancrage est fait, le dispatch attend.
+   Dans les deux cas, l'ancrage anticipé ne porte que sur la fiche **immédiatement** suivante. **Exception** : si cette fiche suivante dépend de la fiche en cours de
    dispatch — explicitement (`depends_on`) ou implicitement (elle consomme un type/port/schéma que
    la fiche en cours est en train de créer/modifier) — l'ancrage anticipé ne peut porter que sur les
    faits **indépendants** de cette dépendance ; les faits qui en dépendent (forme exacte d'un port
