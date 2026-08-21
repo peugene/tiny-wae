@@ -1,9 +1,20 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lot 0 — Sites &amp; ingestion Sentinel-2</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lot 0 — Sites &amp; ingestion Sentinel-2 (v3)</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
 .banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
 .inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
 article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
 border-radius:10px;padding:34px 44px}
 article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
@@ -18,59 +29,65 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><h1>Lot 0 — Sites &amp; ingestion Sentinel-2</h1><p>Généré le 21/08/2026 depuis lot-0-sites.md — le .md fait foi.</p></div></div><article><h1 id="fiche-lot-0-sites-de-surveillance-ingestion-sentinel-2">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</h1>
+</style></head><body><div class="banner"><div class="inner"><h1>Lot 0 — Sites &amp; ingestion Sentinel-2 (v3)</h1><p>Généré le 21/08/2026 depuis lot-0-sites.md — le .md fait foi.</p></div></div><article><h1 id="fiche-lot-0-sites-de-surveillance-ingestion-sentinel-2">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</h1>
 <p><strong>Projet</strong> : tiny-wae — POC Earth Intelligence perso
-<strong>Statut</strong> : validé — GO Philippe (liste des 25 sites arbitrée) ; historique porté à 48 mois le 21/08
-<strong>Date</strong> : 20/08/2026 — transférée le 21/08/2026 depuis un dossier de travail hors dépôt ; <strong>la source est désormais ce fichier</strong>. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-0-ingestion/</code></p>
+<strong>Statut</strong> : validé — GO Philippe (liste des 25 sites arbitrée) ; <strong>v3 du 21/08/2026</strong> : aligné sur les trois revues adversariales et les GO Philippe <strong>G1-G10</strong> puis <strong>D-a/D-b/D-c</strong> et <strong>E-a/E-b/E-c/E-d</strong>. C08 = Bouconne.
+<strong>Date</strong> : 20/08/2026 — transférée le 21/08/2026 depuis un dossier de travail hors dépôt ; <strong>la source est désormais ce fichier</strong>. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-0-ingestion/</code> (roadmap v3 figée + revues v1/v2/v3)</p>
 <hr />
 <h2 id="1-objet-du-lot">1. Objet du lot</h2>
-<p>Mettre en place la plomberie données : sélection de ~25 sites, récupération automatisée des
-vignettes (chips) Sentinel-2 L2A sur un historique d'un an minimum, masquage nuages,
-stockage NAS. Aucune IA dans ce lot — uniquement de l'ingestion fiable et mesurée.</p>
-<h2 id="2-parametres-techniques-proposes">2. Paramètres techniques proposés</h2>
+<p>Mettre en place la plomberie données : sélection de 25 sites, récupération automatisée des
+vignettes (chips) Sentinel-2 L2A sur <strong>48 mois glissants</strong>, masquage nuages, stockage NAS,
+puis ingestion incrémentale quotidienne. Aucune IA dans ce lot — uniquement de l'ingestion
+fiable et mesurée.</p>
+<h2 id="2-parametres-techniques-v3-post-revues-go-philippe-2108">2. Paramètres techniques (v3 — post-revues, GO Philippe 21/08)</h2>
 <table>
 <thead>
 <tr>
 <th>Paramètre</th>
-<th>Valeur proposée</th>
+<th>Valeur actée</th>
 <th>Justification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Source données</td>
-<td>STAC API <code>earth-search</code> (AWS, Element84) en priorité ; Copernicus Data Space (CDSE) en secours</td>
-<td>earth-search : sans authentification, COG directs. CDSE : officiel, compte gratuit, quotas</td>
+<td>STAC <code>earth-search</code> v1, collection <strong><code>sentinel-2-l2a</code></strong> (la « c1 » a un trou avant déc. 2022, mesuré). CDSE : hors Lot 0, port <code>StacSource</code> prévu</td>
+<td>Sans auth, COG directs. ⚠ Assets réels nommés <code>blue/green/red/nir/…/scl</code> (pas B02…) ; COG <code>https://</code> uniquement (variantes <code>-jp2</code> = bucket requester-pays)</td>
 </tr>
 <tr>
 <td>Produit</td>
-<td>Sentinel-2 L2A (réflectance surface, correction atmosphérique faite)</td>
-<td>Le L1C imposerait la correction à notre charge</td>
+<td>Sentinel-2 L2A</td>
+<td>L'offset baseline (janv. 2022) se lit dans les métadonnées de chaque asset et se journalise — la « collection harmonized » n'existe pas sur earth-search (vocable Earth Engine, corrigé en revue)</td>
 </tr>
 <tr>
-<td>Taille chip</td>
-<td>512 × 512 px @ 10 m = <strong>5,12 × 5,12 km</strong></td>
-<td>Compatible avec les tailles d'entrée des GFMs (multiples de 224/256)</td>
+<td>Chips</td>
+<td><code>chip.tif</code> 512×512 @ 10 m (blue/green/red/nir) + <strong><code>chip_20m.tif</code> 256×256 @ 20 m à SIX bandes : <code>rededge1/rededge2/rededge3/nir08/swir16/swir22</code></strong> (<strong>décision D-b</strong>) + <strong><code>scl.tif</code> 20 m</strong> (<strong>GO G2</strong>)</td>
+<td>Clay v1.5 attend 10 bandes S2 <strong>dont les 3 red-edge</strong> ; les capter maintenant coûte <strong>×1,41</strong> au total (sous le budget ×1,5 accordé — le « +50 % » de la v2 était faux : la variante à 3 bandes coûtait ×1,22). GeoTIFF simple, pas COG (<strong>GO G5</strong>)</td>
 </tr>
 <tr>
-<td>Bandes</td>
-<td>B02, B03, B04, B08 (10 m) + SCL (masque) ; B11/B12 optionnelles</td>
-<td>RGB+NIR = minimum GFM ; SCL = filtrage nuages</td>
+<td>Grille</td>
+<td>CRS UTM + origine par site, calée multiple de 20 m, figée dans <code>sites.yaml</code> ; <strong>tuile MGRS de référence épinglée par MARGE GÉOMÉTRIQUE maximale</strong> (<strong>GO G8 + décision D-c</strong>)</td>
+<td>Chips superposables au bit près entre dates (condition du Lot 2). Multi-tuiles = cas <strong>fréquent</strong> (A03, A04, C07 mesurés) ; la règle « tuile majoritaire » choisissait la MAUVAISE tuile sur C07 (marge 495 m vs 4 155 m)</td>
 </tr>
 <tr>
 <td>Filtre nuages</td>
-<td>SCL : rejet si &gt; 30 % de pixels nuage/ombre sur le chip</td>
-<td>Seuil à ajuster après mesure réelle</td>
+<td>SCL lu EN PREMIER à 20 m : <code>invalid_pct</code> {0,1} → rejet dur ; <code>cloud_pct</code> {3,8,9,10} → seuil 30 % configurable ; classes 2/11 comptées (décision différée sur chiffres). Pré-filtre <strong>scène</strong> <code>eo:cloud_cover &lt; 95 %</code> en amont, les écartés étant comptés (<code>skipped_scene_cloud</code>)</td>
+<td>Classe 0 absente = chip vide classé « clair » (bug attrapé en revue) ; SCL-first économise le transfert des rejets</td>
 </tr>
 <tr>
 <td>Historique</td>
-<td><strong>48 mois glissants</strong> (arbitrage Philippe, 20/08/2026)</td>
-<td>Saisonnalité + profondeur pour la détection de changement du Lot 2. Archive S2 L2A disponible depuis 2017. Utiliser la collection <strong>harmonized</strong> (changement de baseline janv. 2022 : offset radiométrique corrigé)</td>
+<td><strong>48 mois glissants</strong> (arbitrage Philippe, 20/08/2026) puis incrémental quotidien (marge 3 j, rattrapage mensuel des retraitements tardifs)</td>
+<td>Volumes mesurés <strong>par tuile épinglée</strong> (la convention du pipeline) : <strong>~11 000 items instruits</strong> pour 25 sites, transfert estimé 50-100 Go (<strong>non mesuré</strong> — cf. §5/O5), stocké ~×1,41 du 10 m seul ; backfill en pool 4-8 workers (<strong>GO G6</strong>)</td>
+</tr>
+<tr>
+<td>Dénominateurs</td>
+<td><strong><code>found_stac</code></strong> (items STAC bruts, avant tout filtre) et <strong><code>found_tile</code></strong> (= <code>found_stac − skipped_scene_cloud − off_tile</code>, les items réellement instruits) — <strong>décision E-a</strong>, le mot <code>found</code> seul est banni</td>
+<td>Un ratio bâti sur <code>found_stac</code> mesurerait la géométrie du site : <code>off_tile</code> vaut <strong>49,8 %</strong> sur C07 (chip à cheval sur 2 tuiles) contre <strong>0 %</strong> sur A01</td>
 </tr>
 <tr>
 <td>Stockage</td>
-<td>NAS : <code>/{site_id}/{date}/chip.tif</code> (GeoTIFF/COG) + <code>manifest.json</code> par acquisition</td>
-<td>Idempotent, rejouable</td>
+<td>NAS : <code>/{site_id}/{item_id}/</code> (<strong>GO G9</strong> — clé = item id STAC) + <code>manifest.json</code> par item (contrat gravé, versionné)</td>
+<td>Le layout par date collisionne (tuiles multiples même jour, retraitements <code>s2:sequence</code>) — prouvé en revue</td>
 </tr>
 </tbody>
 </table>
@@ -284,14 +301,14 @@ taille d'un chip : un segment représentatif est désigné.</p>
 <td>Punggye-ri</td>
 <td>KP</td>
 <td>41.28, 129.08</td>
-<td>Site quasi statique, OSINT</td>
+<td>Site quasi statique, OSINT — ⚠ multi-tuiles avéré (52TDL/52TEL), tuile de référence à épingler</td>
 </tr>
 <tr>
 <td>C08</td>
-<td>Zone témoin rurale (forêt, SO Toulouse)</td>
+<td><strong>Forêt de Bouconne</strong></td>
 <td>FR</td>
-<td>à définir</td>
-<td>Contrôle négatif pur</td>
+<td>43.628, 1.217</td>
+<td>Contrôle négatif pur — <strong>décision Philippe, GO du 21/08/2026</strong>. Massif ~2 000 ha à l'ouest de Toulouse, vérifiable sur place. Forêt gérée : coupes d'entretien possibles = « faux positifs explicables », notés</td>
 </tr>
 </tbody>
 </table>
@@ -300,13 +317,15 @@ taille d'un chip : un segment représentatif est désigné.</p>
 taux de faux positifs du futur Lot 2.</p>
 <h2 id="4-livrables-du-lot">4. Livrables du lot</h2>
 <ol>
-<li>Pipeline d'ingestion Python (STAC → chips GeoTIFF sur NAS), idempotent, rejouable, configurable par fichier de sites (YAML/JSON). Chaque étape livrée comme <strong>CLI autonome à I/O explicites, orchestrable par l'outil de workflow CWL de Philippe</strong>.</li>
+<li>Pipeline d'ingestion Python (STAC → chips GeoTIFF sur NAS), idempotent, rejouable, configurable par fichier de sites (YAML). Chaque étape livrée comme <strong>CLI autonome à I/O explicites, orchestrable par l'outil de workflow CWL de Philippe</strong>.</li>
 <li>Historique 48 mois ingéré pour les 25 sites.</li>
 <li>Mode incrémental : le même pipeline, borné par fenêtre temporelle, pour l'ingestion quotidienne des nouvelles acquisitions.</li>
-<li>Rapport de recette chiffré (voir oracle).</li>
-<li>Planche de contrôle visuel : 1 mosaïque par site (premier chip, dernier chip) pour validation du centrage.</li>
+<li>Rapport de recette chiffré (<code>report</code>, voir §5) + <code>report --check-completeness</code>.</li>
+<li>Planches de contrôle visuel : <strong>précoce</strong> (1 chip récent/site, AVANT le backfill) et <strong>first/last</strong> en fin de campagne.</li>
+<li>Emballage <strong>CWL local</strong> : 3 CommandLineTools (<code>search</code>, <code>ingest</code>, <code>update</code>) + 1 Workflow, validés par <code>cwltool</code> (l'enregistrement PID-FLOW réel est <strong>hors lot</strong> — GO G7).</li>
 </ol>
-<h2 id="5-oracle-de-recette-fige-avant-implementation">5. Oracle de recette (figé avant implémentation)</h2>
+<h2 id="5-oracle-de-recette-v3-decision-e-a-criteres-mecaniques-uniquement">5. Oracle de recette (v3 — décision E-a : critères MÉCANIQUES uniquement)</h2>
+<p><strong>Les 4 critères ci-dessous sont prononcés par l'outil</strong> (<code>report</code>), pas par un humain :</p>
 <table>
 <thead>
 <tr>
@@ -318,38 +337,50 @@ taux de faux positifs du futur Lot 2.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td>Centrage : le site est visuellement identifiable et centré sur le chip</td>
-<td>25/25 sites validés sur planche visuelle (gate Philippe)</td>
+<td><strong>Conservation</strong> (identité comptable, par site et sur l'agrégat) : <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code></td>
+<td>boucle exactement — 25/25 sites. C'est ce critère qui attrape la <strong>perte silencieuse</strong> que les oracles v1/v2 laissaient passer</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Historique : nombre d'acquisitions exploitables (&lt; 30 % nuages) par site sur 48 mois</td>
-<td>≥ 60 par site ; <strong>chiffre par site publié, y compris les pires</strong></td>
+<td><strong>Complétude vs source</strong> : <code>found_stac</code> == compte d'une requête <code>/aggregate</code> aux <strong>mêmes bbox et fenêtre</strong>, sans filtre tuile (<code>report --check-completeness</code>)</td>
+<td>écart <strong>0</strong>, tout écart listé item par item. ⚠ Le comparant est <code>found_stac</code>, jamais <code>found_tile</code> (sinon écart ~50 % sur les sites multi-tuiles)</td>
 </tr>
 <tr>
 <td>O3</td>
-<td>Intégrité : chips lisibles, géoréférencés, 4 bandes + SCL présentes</td>
-<td>100 % des chips ingérés</td>
+<td><strong>Intégrité</strong> : 3 fichiers (chip 10 m, chip 20 m à 6 bandes, SCL) lisibles, CRS/transform identiques à la grille du site au bit près, nodata &lt; 1 %</td>
+<td>100 % des items <code>ingested</code></td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Idempotence : relance du script = zéro doublon, zéro re-téléchargement</td>
-<td>vérifié par run double</td>
-</tr>
-<tr>
-<td>O5</td>
-<td>Volume et durée d'ingestion mesurés</td>
-<td>publiés (pas de seuil — c'est la baseline)</td>
+<td><strong><code>failed ≤ 1 % de found_tile</code></strong> — seul seuil légitime : un échec technique EST un défaut de pipeline</td>
+<td>par site</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé dans ce lot</strong> : qualité radiométrique fine, recalage sub-pixel entre dates,
-Sentinel-1, tout ce qui touche aux GFMs.</p>
+<p><strong>Idempotence</strong> (vérifiée dans le harnais, pas en recette — décision E-d) : run double →
+1er run <code>assets_read &gt; 0</code>, 2e run <code>assets_read == 0</code> et <code>content_hashes</code> (hash du tableau
+<strong>décodé</strong>) inchangés. <code>bytes_downloaded</code> n'est PAS un critère : il ne couvre que le
+chemin STAC (les lectures GDAL ne sont pas instrumentables depuis Python).</p>
+<p><strong>Publiés SANS seuil, par site, pires en tête</strong> — ce sont des caractéristiques de site, pas
+des critères de qualité : <code>off_tile</code> (49,8 % sur C07 vs 0 % sur A01 — géométrie),
+<code>skipped_scene_cloud</code>, <strong>ratio <code>ingested / found_tile</code> avec son dénominateur</strong>, agrégat
+<code>scl_class_counts</code>, <code>bytes_written</code> (octets réellement écrits — seule mesure de volume
+exacte), durée. Leur <strong>lecture et le verdict qu'on en tire relèvent du jugement humain</strong>
+(fiche <code>l0-04.H</code>), pas d'un seuil automatique.</p>
+<p><strong>Centrage</strong> : validé par les <strong>fiches humaines</strong> <code>l0-03.H</code> (planche précoce, AVANT le
+backfill — 25/25) puis <code>l0-04.H</code> (planche first/last, contrôle de non-régression). Ce ne
+sont pas des oracles : ce sont des fiches de backlog à part entière, jamais dispatchées à
+un agent.</p>
+<p><strong>Non testé dans ce lot</strong> : qualité radiométrique fine (l'offset baseline est <em>journalisé</em>,
+pas appliqué), recalage sub-pixel entre dates, mosaïque multi-tuiles, Sentinel-1,
+enregistrement PID-FLOW, bascule CDSE, tout ce qui touche aux GFMs. <strong>Volume réellement
+transféré</strong> : hors instrument (relevé système ou déclaré non mesuré).</p>
 <h2 id="6-risques-identifies">6. Risques identifiés</h2>
 <ul>
-<li>Sites UK/tropicaux : perte nuages pouvant dépasser 60 % (O2 le mesurera — argument S1 en V2).</li>
-<li>Coordonnées de mémoire : correction possible au moment de la planche visuelle (O1).</li>
+<li>Sites UK/tropicaux : forte perte nuages — mesuré au niveau <strong>scène</strong> sur Hinkley : 111 items sous 30 % de nuages sur 688 (16,1 %). Le taux au grain <strong>chip</strong> (le seul qui compte) n'est pas mesuré et sera vraisemblablement meilleur. Argument S1 pour la V2.</li>
+<li>Coordonnées de mémoire (±1-2 km) : corrigées à la <strong>planche précoce</strong> (<code>l0-03.H</code>), avant le backfill. Le <code>grid_hash</code> du manifeste garantit la ré-ingestion automatique des sites corrigés.</li>
 <li>earth-search : pérennité du service non garantie — l'abstraction STAC rend le basculement CDSE peu coûteux.</li>
 <li>The Line : ralentissements de chantier documentés en 2025 — signature possiblement plus faible qu'espéré.</li>
-<li>Historique 48 mois : certains sites n'existaient pas il y a 4 ans (Sizewell, Chancay) — c'est une vérité terrain en soi, pas un défaut d'ingestion. Volume estimé ~15-25 Go total (<strong>non mesuré</strong> — O5 le chiffrera).</li>
+<li>~~Sites récents = peu d'acquisitions~~ — <strong>corrigé en revue (21/08)</strong> : faux. Sizewell est le site le MIEUX fourni du parc (1383 items/48 mois) ; S2 image depuis 2015, chantier ou pas. Ce qui manque en début de fenêtre d'un site récent, c'est le <em>signal de changement</em>, pas l'imagerie.</li>
+<li>Retraitements tardifs (<code>s2:sequence ≥ 1</code>, phénomène massif mesuré) : échappent à la fenêtre incrémentale — rattrapage mensuel documenté, non automatisé au POC.</li>
 </ul></article></body></html>
