@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.1</b></nav><h1>[l0-02.1] Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</h1><p>À faire · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li>→ <a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="../maturation/lot-0-ingestion/l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-021-stacsource-et-contrat-acquisition">[l0-02.1] — StacSource et contrat Acquisition</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.1</b></nav><h1>[l0-02.1] Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search<ul><li>→ <a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="../maturation/lot-0-ingestion/l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li><li><a href="../maturation/lot-0-ingestion/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-021-stacsource-et-contrat-acquisition">[l0-02.1] — StacSource et contrat Acquisition</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Le port, le contrat et son implémentation earth-search — testés sur fixtures des DEUX
 générations d'items (S2A/B et S2C).</p>
@@ -96,8 +96,8 @@ générations d'items (S2A/B et S2C).</p>
 </tr>
 <tr>
 <td><code>proj_epsg</code></td>
-<td><code>properties.proj:epsg</code></td>
-<td>garde epsg de l0-03.3</td>
+<td>⚠ <code>properties.proj:code</code> (<code>"EPSG:32631"</code>)</td>
+<td>garde epsg de l0-03.3. <strong><code>proj:epsg</code> a DISPARU des items live</strong> — mesuré le 21/08/2026 sur les 5 fixtures : l'extension STAC <code>proj</code> a migré côté vendeur. L'adapter accepte les deux formes</td>
 </tr>
 <tr>
 <td><code>assets</code></td>
@@ -138,6 +138,74 @@ générations d'items (S2A/B et S2C).</p>
 <li>Dépendance utilisée : <code>pystac-client</code> — <strong>déjà posée par l0-01.1</strong> (ne pas toucher au
   <code>pyproject.toml</code>). <code>pixi.lock</code> : versionné, jamais mergé — régénérer au besoin.</li>
 </ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-e1df087">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base e1df087)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li><code>pystac-client</code> <strong>0.9.0</strong> installé (mesuré) — rien à ajouter au <code>pyproject.toml</code>.</li>
+<li><code>pytest</code> tourne déjà avec <code>addopts = "-q --disable-socket"</code> (mesuré dans <code>pyproject.toml</code>) :
+  <strong>O6 est structurellement acquis</strong>, et surtout <strong>aucun test ne peut faire de réseau</strong>. Les
+  fixtures doivent donc être enregistrées <strong>hors pytest</strong>.</li>
+<li><code>core/settings.py</code> porte <code>EXPECTED_ASSET_KEYS</code> (<strong>11 clés</strong> : blue, green, red, nir, rededge1,
+  rededge2, rededge3, nir08, swir16, swir22, scl) et <code>Settings.asset_keys</code> — ce sont <strong>les clés
+  mappées</strong>, et la garde anti-<code>s3://</code> ne porte <strong>que</strong> sur elles.</li>
+<li><code>core/sites.py</code> : <code>Site.reference_tile: str | None</code>. Aucun des trois modules de cette fiche
+  (<code>core/acquisition.py</code>, <code>core/envelope.py</code>, <code>adapters/stac.py</code>) n'existe : tout est neuf.</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li>⭐ <strong>Format du domaine : code MGRS NU — <code>52TEL</code>, sans le préfixe <code>MGRS-</code>.</strong>
+   ⚠ <strong>Cette décision CORRIGE celle du premier ancrage</strong>, qui disait l'inverse (<code>MGRS-52TEL</code>).
+   Le code mergé tranche, et il est unanime : <code>config/sites.yaml</code> écrit <code>reference_tile: 52TEL</code>
+   (l0-01.3), les manifestes de <code>tests/fixtures/manifests/</code> portent <code>tile: "31TGM"</code> (l0-03.2), et
+   <code>core/tiles.mgrs_zone_epsg</code> normalise explicitement par <code>removeprefix("MGRS-")</code>. <strong>Trois
+   composants déjà en <code>fait/</code> fixent le format ; cette fiche s'y conforme, elle ne le redéfinit
+   pas.</strong>
+   Conséquence : <strong><code>adapters/stac.py</code> NORMALISE</strong> <code>properties.grid:code</code> (<code>MGRS-52TEL</code>) en
+   <code>Acquisition.tile == "52TEL"</code>, et le filtre tuile compare <strong>des codes nus</strong>. C'est le rôle de
+   l'adapter d'absorber une convention de vendeur : le préfixe <code>MGRS-</code> est propre à earth-search,
+   au même titre que <code>earthsearch:boa_offset_applied</code>, et disparaîtrait à une bascule CDSE.
+   ⭐ <strong>Test de verrouillage OBLIGATOIRE</strong> : un item dont <code>grid:code</code> vaut <code>"MGRS-52TEL"</code> doit
+   produire <code>tile == "52TEL"</code>, et le filtre doit le retenir face à un <code>reference_tile</code> valant
+   <code>"52TEL"</code>. Sans ce test, le défaut revient à la première régression.</li>
+<li><strong>L'exception de conservation de l'enveloppe est définie DANS <code>core/envelope.py</code>.</strong>
+   ⛔ Ne pas importer <code>ConservationError</code> depuis <code>adapters/manifests.py</code> : <code>core/</code> ne dépend
+   jamais d'<code>adapters/</code> (règle de couche). La duplication du nom est assumée et documentée.</li>
+<li><strong>Script d'enregistrement : <code>scripts/record_stac_fixtures.py</code></strong>, lancé par
+   <strong><code>just script record_stac_fixtures</code></strong> — la recette générique <code>script</code> existe déjà.
+   ⛔ <strong>Ne pas ajouter de recette au <code>justfile</code></strong> : il appartient à l0-01.3 pour cette vague.</li>
+<li>⭐ <strong>Adressage des fixtures par ID et par FENÊTRE ABSOLUE</strong> dans le script (verrou V1 de la
+   roadmap) : deux des items gelés sortiront de la fenêtre 48 mois glissante (le nuageux le
+   15/03/2027). Une fenêtre relative rendrait le script non rejouable.</li>
+</ol>
+<h3 id="re-ancrage-post-merge-fait-le-21082026-base-1175b2b">✅ RÉ-ANCRAGE POST-MERGE (fait le 21/08/2026, base <code>1175b2b</code>)</h3>
+<p>Le premier ancrage datait de <code>e1df087</code>, avant les merges de l0-01.3 et l0-05.1. Les quatre points
+marqués comme périssables ont été revérifiés <strong>dans le code mergé</strong> :</p>
+<ol>
+<li>⭐ <strong>Format de <code>reference_tile</code> : <code>52TEL</code>, code nu</strong> — mesuré dans <code>config/sites.yaml</code>
+   (25 sites, dont <code>C07 → 52TEL</code> et <code>A01 → 31TGJ</code>). <strong>La décision n°1 ci-dessus a été corrigée
+   en conséquence</strong> : c'était exactement le couplage qui justifiait de ne PAS dispatcher cette
+   fiche en parallèle de l0-01.3.</li>
+<li><strong><code>core/tiles.py</code> (l0-01.3) est disponible et à RÉUTILISER</strong> — ne pas réécrire ce qu'il porte :
+   <code>mgrs_zone_epsg(grid_code)</code> (tolère les deux formes, normalise le préfixe),
+   <code>latlon_to_epsg</code>, <code>natural_utm_epsg</code>, <code>wgs84_survey_bbox(lat, lon, span_m)</code>,
+   <code>chip_bounds_utm</code>, <code>tile_bounds</code>, <code>geometric_margin_m</code>, <code>round_down_to_step</code>,
+   <code>TileCandidate</code>, <code>choose_reference_tile</code>, <code>chip_origin</code>. La bbox du chip pour la requête STAC
+   se dérive de <code>wgs84_survey_bbox</code> — <strong>ne pas en écrire une seconde version</strong>.</li>
+<li><strong><code>justfile</code></strong> : la recette générique <code>script</code> est intacte, <code>survey-tiles</code> a été ajoutée par
+   l0-01.3. L'interdiction d'y toucher <strong>reste valable</strong>.</li>
+<li><strong><code>core/windows.py</code></strong> porte désormais <code>NoManifests</code> et <code>update_window_for_site</code> (l0-05.1) —
+   sans incidence sur cette fiche. <strong>Total de référence : 82 tests, mypy strict sur 18 modules.</strong></li>
+</ol>
+<p>⚠ <strong>Découverte de terrain de l0-01.3, applicable ici</strong> : earth-search <strong>rejette</strong> une plage
+<code>datetime</code> au format date seule (<code>YYYY-MM-DD/YYYY-MM-DD</code> → 400 BadRequest) et exige le <strong>RFC3339
+complet avec heure</strong> (<code>2022-08-21T00:00:00Z/2026-08-21T00:00:00Z</code>). À appliquer dans le script
+d'enregistrement des fixtures.</p>
+<p><strong>Zone d'écriture EXCLUSIVE</strong> : <code>src/tiny_wae/core/acquisition.py</code>, <code>core/envelope.py</code>,
+<code>src/tiny_wae/adapters/stac.py</code>, <code>scripts/record_stac_fixtures.py</code>, <code>tests/fixtures/stac/</code>,
+<code>tests/test_acquisition.py</code>, <code>tests/test_envelope.py</code>, <code>tests/test_stac.py</code>.
+⛔ Ne toucher NI <code>justfile</code>, NI <code>config/sites.yaml</code>, NI <code>core/tiles.py</code> (tous à l0-01.3),
+NI <code>core/windows.py</code> (l0-05.1), NI <code>pyproject.toml</code>, <code>pixi.lock</code>, <code>adapters/manifests.py</code>,
+<code>core/settings.py</code>, <code>core/sites.py</code>.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] Port + implémentation + contrat + enveloppe, tests fixtures verts.</li>
@@ -170,7 +238,7 @@ générations d'items (S2A/B et S2C).</p>
 </tr>
 <tr>
 <td>O4</td>
-<td>Fixture 2 tuiles (C07 — <strong>à enregistrer par cette fiche</strong>, cf. périmètre), <code>reference_tile</code> passée <strong>en paramètre littéral du test</strong> (<code>MGRS-52TEL</code>)</td>
+<td>Fixture 2 tuiles (C07 — <strong>à enregistrer par cette fiche</strong>, cf. périmètre), <code>reference_tile</code> passée <strong>en paramètre littéral du test</strong> (<code>52TEL</code> — code nu, cf. ré-ancrage)</td>
 <td>items hors tuile → <code>counters.off_tile</code>, absents de <code>items</code>. ⚠ Volontairement <strong>découplé de <code>sites.yaml</code></strong> : le filtre est une fonction de (items, tuile), il n'a pas à attendre le relevé réseau de l0-01.3 (desserrage PO du 21/08 — la fiche remonte de N3 à N2)</td>
 </tr>
 <tr>
@@ -189,4 +257,77 @@ générations d'items (S2A/B et S2C).</p>
 des <code>reference_tile</code> réelles (l0-01.3).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 20:40 — le .md fait foi.</p></article></body></html>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé) : le port <code>StacSource</code>, le contrat <code>Acquisition</code>,
+l'enveloppe versionnée et l'implémentation earth-search.</p>
+<p>Livré : <code>core/acquisition.py</code>, <code>core/envelope.py</code>, <code>adapters/stac.py</code>,
+<code>scripts/record_stac_fixtures.py</code>, <strong>5 fixtures</strong> enregistrées sur réseau réel (~584 Ko),
+<strong>23 tests</strong> (3 + 6 + 14). Total du projet : <strong>105 tests</strong>, mypy strict sur <strong>21 modules</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+<th>Discriminant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Fixture S2B : 11 hrefs <code>https://</code>, <code>proj_epsg=32631</code>, <code>sequence == "0"</code> (chaîne), <code>radiometry["blue"] == (0.0001, -0.1)</code>, <strong><code>radiometry["scl"] is None</code></strong></td>
+<td>une implémentation qui recopierait le scale/offset de <code>blue</code> sur tous les assets échouerait sur <code>scl</code> — l'arbitrage n°1 est vraiment testé</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>Fixture S2C parsée sans erreur, <code>platform="sentinel-2c"</code>, <code>cloud</code>/<code>snow</code> en <code>s3://</code> absents de <code>.assets</code></td>
+<td>si la garde anti-<code>s3://</code> portait sur <strong>tous</strong> les assets et non sur les seuls mappés, le test lèverait</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><code>sequence == "1"</code>, item distinct du <code>_0</code></td>
+<td>comparaison à la valeur exacte, pas à une non-nullité</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td>Bi-tuile C07, <code>reference_tile="52TEL"</code> littéral : <code>found_stac=12</code>, <code>skipped_scene_cloud=2</code>, <code>off_tile=6</code>, <code>found_tile=4</code> ; aucun 52TDL dans <code>items</code></td>
+<td>les 6 chiffres sont assertés sans tolérance, et l'absence de 52TDL par un assert dédié</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td>Conservation exacte sur les <strong>5</strong> fixtures, avec en plus <code>found_stac == len(raw_items)</code></td>
+<td>cette dernière assertion est <strong>indépendante</strong> de la garantie interne de <code>Envelope</code>, qui pourrait être cohérente et fausse</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>✅</td>
+<td><code>just check</code> vert, tests sous <code>--disable-socket</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>⭐ <strong>Le couplage de format est verrouillé.</strong> <code>adapters/stac.py</code> normalise <code>properties.grid:code</code>
+(<code>MGRS-52TEL</code>) en <code>Acquisition.tile == "52TEL"</code>, et <code>test_verrou_normalisation_tile_mgrs_prefix</code>
+part d'un item <strong>réel</strong> de la fixture bi-tuile, vérifie la normalisation, <strong>puis</strong> que le filtre
+retient l'item face à un <code>reference_tile</code> nu. Une comparaison non normalisée ferait basculer
+l'item en <code>off_tile=1</code> au lieu de <code>found_tile=1</code> : le test ne peut pas passer avec le bug.</p>
+<p>⚠⚠ <strong>Écart de terrain majeur, mesuré sur les 5 fixtures : <code>properties.proj:epsg</code> N'EXISTE PLUS.</strong>
+L'extension STAC <code>proj</code> a migré côté vendeur ; la clé est désormais <strong><code>proj:code</code></strong>, une chaîne
+<code>"EPSG:32631"</code> et non un entier. La fiche documentait l'ancienne clé. <code>_extract_epsg</code> accepte les
+deux formes (<code>proj:epsg</code> prioritaire s'il revenait). <strong>Le fait a été remonté au chapeau l0-02</strong> —
+l'agent l'a signalé sans toucher à <code>docs/backlog/</code>, conformément à sa zone. Vérifié : l0-03.3
+consomme <code>acq.proj_epsg</code> (le contrat), jamais la clé brute — <strong>elle n'est pas affectée</strong>.</p>
+<p><strong>Décisions prises en cours de fiche</strong> : filtre appliqué dans l'ordre <strong>nuage puis tuile</strong> (non
+explicité par la fiche) — un item nuageux hors tuile compte en <code>skipped_scene_cloud</code>, jamais en
+<code>off_tile</code>, et les 2 items TEL à cc ≥ 95 % de la fixture le vérifient ; <code>build_envelope</code> est une
+<strong>fonction pure publique</strong> séparée de <code>EarthSearchSource.search</code>, ce qui permet à O4/O5 de tester
+le filtre avec un littéral, découplé de <code>sites.yaml</code> ; un asset mappé absent d'un item est omis
+silencieusement plutôt que de lever ; <code>wgs84_survey_bbox</code> de <code>core/tiles.py</code> est réutilisé, aucune
+seconde implémentation.</p>
+<p><strong>Réserve consignée</strong> : <code>bi_tile.json</code> pèse <strong>475 Ko</strong> (12 items earth-search complets), plus que
+les quatre autres fixtures réunies. Conservé fidèle à la réponse brute ; réductible plus tard en
+retirant <code>links</code> et <code>stac_extensions</code> si le poids du dépôt devient un sujet.</p><p class="gen">Généré le 21/08/2026 21:24 — le .md fait foi.</p></article></body></html>
