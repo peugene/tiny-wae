@@ -223,3 +223,6 @@ dev.log
 
 # tiny-wae : données du pipeline (chips, artefacts) — jamais commitées
 data/
+
+# Worktrees des agents de /run (jamais versionnés)
+.claude/worktrees/
