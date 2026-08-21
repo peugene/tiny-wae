@@ -8,10 +8,20 @@ Couvre l'oracle de la fiche :
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
-from tiny_wae.core.windows import Window, backfill_windows, update_window
+from tiny_wae.adapters.manifests import last_datetime as manifests_last_datetime
+from tiny_wae.core.windows import (
+    NoManifests,
+    Window,
+    backfill_windows,
+    update_window,
+    update_window_for_site,
+)
+
+FIXTURES_ROOT = Path("tests/fixtures/manifests")
 
 
 def test_update_window_o3_deterministe() -> None:
@@ -55,3 +65,41 @@ def test_backfill_windows_months_invalide() -> None:
     """months <= 0 -> ValueError explicite."""
     with pytest.raises(ValueError):
         backfill_windows(0, datetime(2026, 8, 21))
+
+
+# --- l0-05.1 : update_window_for_site ------------------------------------------------------
+
+
+def test_update_window_for_site_o1_lit_le_corpus_fixtures() -> None:
+    """O1 : la fenêtre est obtenue en lisant réellement les manifestes du corpus C07.
+
+    Le manifeste le plus récent de C07 est ``S2A_C07_FAIL01`` (statut ``failed``,
+    2026-01-25T10:15:00Z) — c'est cette date qui doit border la fenêtre, marge soustraite.
+    """
+    last = manifests_last_datetime(FIXTURES_ROOT, "C07")
+    now = datetime(2026, 1, 28)
+    window = update_window_for_site(last, margin_days=3, now=now)
+    assert window == Window(start=datetime(2026, 1, 22, 10, 15), end=now)
+
+
+def test_update_window_for_site_o2_site_sans_manifeste_rend_nomanifests() -> None:
+    """O2 : site sans manifeste -> `NoManifests`, pas d'exception, pas de fenêtre par défaut."""
+    last = manifests_last_datetime(FIXTURES_ROOT, "INCONNU")
+    result = update_window_for_site(last, margin_days=3, now=datetime(2026, 8, 21))
+    assert result == NoManifests()
+
+
+def test_update_window_for_site_o3_rejected_clouds_plus_recent_que_ingested() -> None:
+    """O3 : un manifeste `rejected_clouds` plus récent qu'un `ingested` est bien pris en
+    compte dans `last_datetime` (C07 : les CLD0x, rejetés, dominent tous les ING0x)."""
+    last = manifests_last_datetime(FIXTURES_ROOT, "C07")
+    assert last == "2026-01-25T10:15:00Z"  # domine aussi les CLD0x (rejected_clouds)
+
+
+def test_update_window_for_site_parse_le_suffixe_z() -> None:
+    """Le suffixe `Z` (UTC) des dates ISO rendues par `manifests.last_datetime` est bien
+    géré par `datetime.fromisoformat` (converti/retiré avant de rejoindre `update_window`)."""
+    window = update_window_for_site(
+        "2026-08-15T00:00:00Z", margin_days=3, now=datetime(2026, 8, 21)
+    )
+    assert window == Window(start=datetime(2026, 8, 12), end=datetime(2026, 8, 21))

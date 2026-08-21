@@ -13,6 +13,14 @@ from datetime import datetime, timedelta
 
 
 @dataclass(frozen=True, slots=True)
+class NoManifests:
+    """Valeur typée : le site n'a aucun manifeste (pas d'exception, pas de fenêtre par défaut).
+
+    L'appelant (CLI de l0-05.2) en fait un exit 1 pointant vers ``backfill``.
+    """
+
+
+@dataclass(frozen=True, slots=True)
 class Window:
     """Fenêtre temporelle demi-ouverte [start, end[ utilisée pour une recherche STAC.
 
@@ -61,3 +69,25 @@ def update_window(last_datetime: datetime, margin_days: int, now: datetime) -> W
     """
     start = last_datetime - timedelta(days=margin_days)
     return Window(start=start, end=now)
+
+
+def update_window_for_site(
+    last_datetime: str | None, margin_days: int, now: datetime
+) -> Window | NoManifests:
+    """Fenêtre incrémentale d'un site à partir de la sortie brute de ``manifests.last_datetime``.
+
+    Prend en entrée exactement ce que rend ``adapters.manifests.last_datetime`` (une chaîne
+    ISO 8601, éventuellement suffixée ``Z``, ou ``None`` si le site n'a aucun manifeste) —
+    ``core/`` reste pur, la lecture des manifestes reste chez l'appelant (CLI de l0-05.2).
+    Marge par défaut dérivée de la latence mesurée du catalogue STAC (~3-5 h) ; 3 jours
+    absorbent largement cette latence, le recouvrement résultant est sans risque car
+    ``update_window`` (l0-03.1) est idempotent en aval.
+    """
+    if last_datetime is None:
+        return NoManifests()
+    # Le projet manipule des datetimes naïfs (cf. now/last des tests l0-03.1) : le suffixe
+    # ``Z`` (UTC) est retiré plutôt que traduit en offset, pour rester cohérent avec `now`
+    # et éviter un mélange naïf/aware dans le `Window` résultant.
+    iso = last_datetime[:-1] if last_datetime.endswith("Z") else last_datetime
+    parsed = datetime.fromisoformat(iso)
+    return update_window(parsed, margin_days=margin_days, now=now)
