@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.5] Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</h1><p>Maturation · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-le-harnais-de-rejeu-et-le-smoke">[l0-03.5] — Le harnais de rejeu et le smoke</h1>
+<h2 id="objectif">Objectif</h2>
+<p>Rendre <code>just check</code> déterministe et hors ligne (D-a), et livrer le chemin live. Cette
+fiche REMPLACE <code>scripts/smoke.py</code> — le gate lui appartient.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><strong>Enregistrement des fixtures</strong> : <code>scripts/record_fixtures.py</code> (rejouable, réseau) —
+  télécharge et CLIPPE localement les fenêtres des items gelés (chapeau l0-02 : le clair
+  2024, le nuageux 2023, le S2C) + <strong>la fenêtre complète A01 × sept. 2022 (6 items,
+  mesuré)</strong> pour l0-04.1/l0-05 → GeoTIFF locaux sous <code>tests/fixtures/cog/</code> (~2-5 Mo,
+  versionnés) + enveloppes JSON correspondantes sous <code>tests/fixtures/stac/</code>.</li>
+<li><code>src/tiny_wae/adapters/fixture_source.py</code> : <code>FixtureSource(StacSource)</code> — sert les
+  enveloppes enregistrées, hrefs <code>file://</code> vers les GeoTIFF locaux. AUCUN mock HTTP.</li>
+<li><strong>Smoke</strong> : <code>scripts/smoke.py</code> réécrit — mode <code>--replay</code> (défaut) : <code>ingest</code> complet via
+  FixtureSource sur l'item clair, assertions (3 fichiers, tailles, hashes attendus gravés,
+  manifeste conforme) ; mode <code>--live</code> : même chemin via EarthSearchSource, data_root
+  temporaire, hors gate. <code>just check</code> inchangé dans sa forme (<code>just smoke</code> = replay).</li>
+<li>⭐ <strong>Garde réseau — amendement à D-a (décision Philippe E-b, 21/08)</strong>. Le mécanisme de
+  rejeu ne change pas ; <strong>la garde passe du TRANSPORT au CONTRAT</strong>, pour la raison
+  suivante, <strong>mesurée</strong> en revue v3 : <code>pytest-socket</code>/monkeypatch patchent le module
+  <code>socket</code> de Python, mais rasterio lit via <strong>GDAL (C, libcurl)</strong> qui ne l'emprunte
+  jamais — <code>rasterio.open("https://…")</code> sous <code>disable_socket()</code> <strong>atteint le réseau</strong>.
+  Le risque réel est donc le <strong>faux-vert</strong> : un smoke qui passe en téléchargeant.</li>
+<li><strong>Bretelles (garde de contrat, la vraie)</strong> : mode <code>TINY_WAE_OFFLINE=1</code> posé par
+    <code>smoke --replay</code> (et hérité par <code>just check</code>). Sous ce mode, <strong><code>adapters/chips.py</code></strong>
+    refuse d'ouvrir tout href dont le schéma n'est pas <code>file://</code> → exception typée
+    <code>RemoteAccessForbidden</code>. ⚠ La garde vit dans <strong><code>chips.py</code></strong> (celui qui OUVRE), pas
+    seulement dans <code>FixtureSource</code> (qui ne fait que servir des hrefs) : tout autre chemin
+    d'appel reste ainsi couvert.</li>
+<li><strong>Ceinture (garde de transport, partielle et assumée)</strong> : <code>pytest-socket</code> continue de
+    couvrir le chemin <strong>STAC</strong> (<code>httpx</code>/<code>pystac-client</code>, qui passent bien par le <code>socket</code>
+    Python). Écrire dans la fiche qu'il <strong>ne couvre pas</strong> les lectures GDAL — pour que
+    personne ne croie qu'un seul dispositif suffit.</li>
+<li>Mesures live publiées (volume/durée/octets par chip — baseline pour l0-04).</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Fixtures enregistrées et commises ; FixtureSource ; smoke 2 modes ; <code>just check</code>
+      vert de bout en bout hors ligne.</li>
+<li>[ ] Garde de contrat dans <code>chips.py</code> (<code>TINY_WAE_OFFLINE</code> → <code>RemoteAccessForbidden</code>) +
+      test unitaire dédié ; la limite de <code>pytest-socket</code> (ne couvre pas GDAL) écrite dans
+      le docstring du smoke.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just smoke</code> (replay), machine hors ligne</td>
+<td>vert ; <strong><code>content_hashes</code> des sorties == valeurs gravées</strong> (hash du tableau décodé + CRS/transform/dtype — E-d ; jamais les octets du GeoTIFF)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Cas négatif : une fixture retirée</td>
+<td>smoke ROUGE avec message clair (le gate sait échouer)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><strong>Garde de contrat</strong> : fixture dont un href est <code>https://</code>, sous <code>TINY_WAE_OFFLINE=1</code></td>
+<td>smoke ROUGE, exit ≠ 0, cause <strong><code>RemoteAccessForbidden</code></strong> nommée en STDERR — <strong>aucune requête réseau émise</strong> (l'exception précède l'ouverture)</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>Même fixture, <code>TINY_WAE_OFFLINE</code> absent (mode live)</td>
+<td>l'ouverture est tentée normalement (la garde n'est pas un blocage permanent)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><strong>Répétabilité</strong> (E-d — remplace l'ancien test <code>--now</code>, option morte sur <code>ingest</code>) : <code>just smoke</code> deux fois d'affilée sur data_root vierge à chaque fois</td>
+<td><code>content_hashes</code> identiques entre les deux exécutions ; <code>assets_read &gt; 0</code> aux deux (chaque run part de zéro)</td>
+</tr>
+<tr>
+<td>O5 [live, hors gate]</td>
+<td><code>smoke --live</code> avant livraison</td>
+<td>vert ; mesures volume/durée publiées dans le Résumé</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : couverture fixtures d'autres sites que A01 (suffisant pour le lot — dit).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
+<h2 id="objectif">Objectif</h2>
+<p>Poser les deux fichiers de config et leurs modèles typés. Aucun CLI, aucun réseau.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>config/sites.yaml</code> : les 25 sites de <code>_roadmap.md</code> annexe A — champs <code>id</code>, <code>name</code>,
+  <code>lat</code>, <code>lon</code>, <code>category</code> (<code>nuclear-construction|megaproject|stable-watch</code>), <code>note</code> ;
+  champs <code>reference_tile</code> et <code>grid</code> (<code>epsg</code>, <code>origin_x</code>, <code>origin_y</code>) <strong>présents mais
+  vides</strong> (remplis par l0-01.3). C08 = Bouconne (43.628, 1.217).</li>
+<li><code>config/settings.yaml</code> + surcharges env (une variable par clé, préfixe <code>TINY_WAE_</code>) :
+  <code>stac_url</code>, <code>stac_collection</code> (<code>sentinel-2-l2a</code>), <code>asset_keys</code> (les 9 clés d'assets
+  source : <code>blue, green, red, nir, rededge1, rededge2, rededge3, nir08, swir16, swir22,
+  scl</code> — la clé logique tiny-wae EST la clé earth-search ; les libellés <code>B0x</code> sont
+  documentaires en commentaire), <code>cloud_pct_max</code> (30), <code>scene_cloud_max</code> (95),
+  <code>invalid_pct_max</code> (1), <code>data_root</code> (défaut <code>./data</code>), <code>incremental_margin_days</code> (3),
+  <code>http_retries</code> (3), <code>http_backoff_s</code> (2), <code>backfill_workers</code> (6), <code>chip_px_10m</code> (512),
+  <code>chip_px_20m</code> (256).</li>
+<li><code>src/tiny_wae/core/sites.py</code>, <code>core/settings.py</code> : dataclasses frozen + validation pure
+  (bornes lat/lon, ids uniques, catégories, origine multiple de 20 quand renseignée).</li>
+<li><code>src/tiny_wae/adapters/config_io.py</code> : YAML+env → objets typés. Parse aux frontières.</li>
+<li><code>.env.example</code> : TOUTES les variables de surcharge listées, <strong>dont
+  <code>TINY_WAE_OFFLINE</code></strong> (garde réseau de contrat, décision E-b — posée par
+  <code>smoke --replay</code>, consommée par <code>adapters/chips.py</code> en l0-03.3). <code>.gitignore</code> : + <code>data/</code>.</li>
+<li>⭐ <strong>TOUTES les dépendances du lot sont posées ICI, en une fois</strong> (geste PO issu de la
+  revue v3 : <code>pyproject.toml</code> était une zone partagée par 7 fiches, dont 4 parallélisables
+  — source de conflits de merge et de régénérations de lockfile concurrentes) :
+  <code>pyyaml</code> · <code>pyproj</code> · <code>httpx</code> · <code>pystac-client</code> · <code>rasterio</code> · <code>Pillow</code> · <code>cwltool</code> ·
+  <code>pytest-socket</code> (+ <code>--disable-socket</code> dans la config pytest). Les fiches aval <strong>ne
+  touchent plus jamais</strong> au <code>pyproject.toml</code> ; elles se contentent d'importer.</li>
+<li>⚠ <strong>Lockfile</strong> : <code>pixi.lock</code> est <strong>versionné</strong> mais <strong>jamais mergé</strong> — en cas de conflit,
+  le régénérer sur la branche cible (<code>just install</code>) plutôt que de résoudre à la main.
+  Consigne rappelée dans chaque fiche qui suit.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Les 2 YAML livrés, les modèles typés, le chargeur.</li>
+<li>[ ] Tests unitaires : nominal + 5 mutations d'erreur + priorité env&gt;YAML.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Chargement config livrée</td>
+<td>ids exactement {A01..A08, B01..B09, C01..C08}, répartition 8/9/8 (test à liste littérale)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Mutations (id dupliqué, lat=95, catégorie inconnue, origine=13)</td>
+<td>erreur nommant site et champ</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>TINY_WAE_CLOUD_PCT_MAX=40</code> posé</td>
+<td>la valeur env gagne (test)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : contenu de <code>reference_tile</code>/<code>grid</code> (l0-01.3) ; exactitude des coordonnées
+(l0-03.H).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>

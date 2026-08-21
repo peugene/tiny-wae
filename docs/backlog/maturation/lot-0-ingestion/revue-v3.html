@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue adversariale v3 — Lot 0 Ingestion</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue adversariale v3 — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _revue-v3.md — le .md fait foi.</p></div></div><article><h1 id="revue-adversariale-v3-chantier-lot-0-ingestion-structure-chapeaux-sous-taches">Revue adversariale v3 — Chantier Lot 0 Ingestion (structure chapeaux + sous-tâches)</h1>
+<p><strong>Date</strong> : 21/08/2026 · <strong>Protocole</strong> : identique aux v1/v2 (5 angles Opus aveugles + réfuteur
+Opus indépendant, vérifications API/mesures refaites).
+<strong>Objet</strong> : absorption des 72 confirmés de la v2 + passe fraîche sur la restructuration
+(6 chapeaux · 17 sous-tâches · 2 fiches humaines).</p>
+<p><strong>Chiffres (réfuteur)</strong> : 45 items examinés → <strong>39 confirmés (87 %), 5 partiels, 0 réfuté en
+bloc</strong>, 1 non vérifiable · <strong>~28 défauts DISTINCTS</strong> après dédoublonnage · <strong>6 findings que
+les 5 angles ont manqués</strong> · 9 mesures refaites par le réfuteur.
+(v1 : 52/16/0 — v2 : 72/12/0.)</p>
+<h2 id="verdict-global">Verdict global</h2>
+<p><strong>Pas prêt pour <code>a-faire/</code>, mais pour une raison plus étroite que le volume ne le suggère.</strong>
+La restructuration a réussi sur le fond : le cluster « l0-03 regonflée » est entièrement
+absorbé, les gates humains sont sortis des fiches agent, <code>just check</code> est dans 17/17 oracles,
+les comptes sont gelés dans les fiches, deux oracles négatifs exemplaires existent, la
+hiérarchie <code>parent</code>/<code>subtasks</code> est rigoureusement cohérente (19/19 appariées, zéro orpheline).
+Ce qui reste : <strong>4 décisions</strong> pour toi, et une <strong>passe PO mécanique</strong> dominée par deux
+gestes — re-dériver le graphe depuis les corps de fiches, et republier <code>lot-0-sites.md</code> en v3.</p>
+<p>⚠ <strong>Deux findings ★ ont mesuré juste et conclu faux</strong> (voir §Sous-assertions) : ne pas
+reprendre les actions proposées par l'angle « faits externes » sur C2 et C3.</p>
+<h2 id="decisions-demandees-4">Décisions demandées (4)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Recommandation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E-a</strong></td>
+<td><strong>Définition unique de <code>found</code></strong> (pré- ou post-filtre tuile) et objet réel de l'oracle de recette. Mesuré : C07 <code>found</code>=636 / tuile=319 → <code>off_tile</code> = <strong>49,8 %</strong> contre un seuil de 1 % ; A01 = 0 %. Le seuil mesure la géométrie du site, pas le pipeline. Et <code>cloud_pct</code> (taux chip, SCL) n'existe pas pour les items <code>off_tile</code>/<code>skipped_scene_cloud</code> : la « distribution cloud_pct sur found » n'a pas de dénominateur. La fixture canonique du lot elle-même (found=14, off_tile=2) donne 21,4 %.</td>
+<td><code>found</code> <strong>post-filtre tuile</strong> partout (enveloppe, run.json, report, contrôle l0-04.H) ; recette = ratio <code>ingested/found</code> publié par site <strong>avec dénominateur</strong> + <code>failed ≤ 1 %</code> seul ; <code>off_tile</code> <strong>publié mais non oraclé</strong> (donnée de site)</td>
+</tr>
+<tr>
+<td><strong>E-b</strong></td>
+<td><strong>Garde réseau du gate — amendement à D-a.</strong> Mesuré par le réfuteur : sous <code>pytest_socket.disable_socket()</code>, <code>rasterio.open("https://…")</code> atteint le réseau (<code>CURL error</code> du proxy, pas <code>SocketBlockedError</code>). ⚠ Le mode de défaillance est <strong>l'inverse</strong> de ce qu'annonçait l'angle EXT : sur ta machine connectée, le smoke passerait <strong>VERT en téléchargeant</strong>.</td>
+<td>Garde <strong>sur le contrat</strong> : <code>assert href.startswith("file://")</code> dans <code>FixtureSource</code> + refus explicite dans <code>chips.read_*</code> ; O3 réécrit dessus. Monkeypatch socket conservé en ceinture pour le chemin STAC/httpx uniquement</td>
+</tr>
+<tr>
+<td><strong>E-c</strong></td>
+<td><strong>Grain du graphe : chapeau ou sous-tâche ?</strong> <code>l0-03.subtasks</code> contient <code>l0-03.H</code> et l0-04/05/06 portent <code>depends_on: [l0-03]</code> → au grain chapeau, tout l'aval est bloqué par le gate humain ; au grain sous-tâche, presque rien. Deux graphes contradictoires. ⚠ Lié : <strong>D-d n'a jamais été formellement close</strong> (la v2 recommandait « depends_on levé au merge » ; la v3 a adopté l'inverse sans consigner le refus).</td>
+<td><strong>Seuls les <code>depends_on</code> de sous-tâche ordonnent le run</strong> ; celui d'un chapeau est documentaire. À graver dans la méthode <strong>et</strong> dans <code>/run</code> (le kit ne le dit pas non plus — cf. M5)</td>
+</tr>
+<tr>
+<td><strong>E-d</strong></td>
+<td><strong>Que doit prouver le gate d'idempotence ?</strong> Sous fixtures <code>file://</code>, <code>bytes_downloaded == 0</code> <strong>dès le 1er run</strong> : les 3 oracles « 2e run : bytes == 0 » sont vrais par construction, sans témoin positif nulle part. Et <code>--now</code> de <code>ingest</code> est une <strong>option sans effet</strong> (ses 2 formes d'appel ont une fenêtre explicite) — or l0-03.5/O4 teste le déterminisme dessus.</td>
+<td>Compteur <code>assets_read</code> + <code>skipped == N</code> + hash du <strong>tableau décodé</strong> (pas des octets) ; <code>--now</code> remonté à <code>backfill</code>/<code>update</code> seulement ; <code>bytes_downloaded</code> = octets HTTP du <strong>seul chemin instrumentable</strong> (STAC), le reste déclaré estimation ou non mesuré</td>
+</tr>
+</tbody>
+</table>
+<h2 id="corrections-po-mecaniques-sans-nouveau-go">Corrections PO (mécaniques, sans nouveau GO)</h2>
+<p><strong>Geste 1 — re-dériver le graphe</strong> (clusters C1+C8+C13, une seule cause : les frontmatters
+n'ont pas été relus après le redécoupage) : <code>l0-01.3</code> n'est déclarée par <strong>personne</strong> alors
+qu'elle seule remplit <code>reference_tile</code>/<code>grid</code> ; 5 arêtes manquantes (l0-05.2→l0-03.5 ·
+l0-03.6→l0-03.5 · l0-04.2→l0-03.5 · l0-01.3→l0-01.2 · l0-06.1→l0-02.2) ; 1 arête inversée
+(l0-02.1/O5 exige <code>--disable-socket</code> livré par son dépendant → remonter <code>pytest-socket</code> dans
+l0-02.1 ou l0-01.2) ; graphe de la roadmap à régénérer depuis les frontmatters (4 arêtes
+fausses, profondeur réelle <strong>8 niveaux</strong>).</p>
+<p><strong>Geste 2 — republier <code>docs/lots/lot-0-sites.md</code> en v3</strong> (7 divergences confirmées) : 3 bandes
+au lieu de 6 (contredit D-b) · « +50 % » et « ×1,5 » au lieu de ×1,41 · « ~16 000 items » et
+« 100-200 Go » au lieu de ~11 000 et 50-100 Go · O2 « aucun site &lt; 15 % » alors que le seuil
+n'est plus décisionnel · O1 garde le gate humain <strong>dans la table d'oracle</strong> (correction PO v2
+n°38 jamais faite) · pré-filtre 95 % absent (n°39 jamais faite) · en-tête « roadmap v2 ».
+C'est le document que l0-01.1 désigne comme unique copie de la liste des sites et où l0-04.H
+consigne la recette.</p>
+<p><strong>Geste 3 — remettre le projet au niveau du kit</strong> : le kit <code>_tools_python</code> <strong>est à jour</strong> ;
+c'est le projet qui est en retard. Recopier <code>backlog-kit/README.md</code> →
+<code>docs/backlog/_methode-backlog.md</code> et <code>scaffold/templates/commands/{run,new-fiche}.md</code> →
+<code>.claude/commands/</code>. ⚠ <strong>Insuffisant seul</strong> (M5) : ni le kit ni le projet ne disent (a)
+d'ignorer le <code>depends_on</code> d'un chapeau au tri topologique, (b) de fournir le chapeau à l'agent
+dans son prompt. Ces deux règles sont à écrire ici <strong>et</strong> dans le kit.</p>
+<p><strong>Autres corrections confirmées</strong> : garde nodata de <strong>G8</strong> sans aucun instrument (pas de
+<code>nodata_pct_max</code>, pas de champ manifeste, l0-03.3/O3 calcule une fraction qui ne va nulle part
+— un critère GO'd est tombé) · <code>report</code> doit publier « octets stockés » et « requêtes » : aucun
+champ ne les porte et la lecture disque est interdite · doublon
+<code>core/windows.py</code>/<code>core/update_bounds.py</code> avec oracle <strong>littéralement identique</strong>, décision
+laissée à l'agent · <code>aggregate_counters</code> promet un dédoublonnage par <code>item_id</code> alors que
+<code>run.json</code> ne porte que des scalaires (recouvrement quotidien de 3 j → double comptage de
+<code>found</code>) · <code>grid_hash</code> : sérialisation non spécifiée, signature n'incluant ni bandes ni
+tailles (D-b vient pourtant d'en changer 3→6), aucun filtre en lecture, pas de purge ·
+<code>pyproject.toml</code> zone partagée par 7 fiches, jamais déclarée (recommandation : <strong>pré-poser les
+8 dépendances en l0-01.1</strong>) · artefact du gate humain déposé dans un <code>data_root</code> gitignoré
+d'un worktree supprimé (prescrire un <code>TINY_WAE_DATA_ROOT</code> absolu) · règle de repli tuile
+(correction PO v2 n°31) : zéro occurrence dans les 25 fiches · <code>smoke</code> compté comme 9ᵉ
+commande auto-découverte alors que c'est un script (+ <code>version</code> = 10ᵉ point d'entrée hors
+liste) · code <code>3 INCONCLUSIVE</code> jamais décliné dans ingest/backfill/update · oracles
+auto-référentiels (l0-02.2/O1 « N de la fixture » sans N gelé ; l0-03.4/O1 teste une copie) ·
+seuils non chiffrés (« variance &gt; seuil », « message clair ») · clause non bornée « rejouer »
+(l0-06.1/O2) · l0-06.2/O2 faux (<code>update</code> va jusqu'à <code>now</code>, et <code>update.cwl</code> n'expose pas
+<code>--now</code>) · SIGINT dans le gate sans traiter win-64 · <code>chip_px_10m/20m</code> en settings que
+personne ne lit · l0-05 chapeau sans section « Décisions portées » · 10/17 sous-tâches ne
+mentionnent jamais leur chapeau (l0-03.5 renvoie aux « items gelés (chapeau l0-02) » sans
+recopier les 3 ids) · l0-03.5 surchargée (script réseau + corpus + FixtureSource + réécriture
+du smoke + mesures live, sur le point de passage unique du graphe) · <code>skipped_scene_cloud</code>
+produit mais jamais publié, aucune équation de bouclage <code>found = Σ</code> · renvois morts
+(« l0-03.5/O-mesure », « l0-02.2/O-live ») · DoD « 5 mutations » vs O2 qui en liste 4 · « les
+9 clés » suivi de 11 · l0-03.H invoque <code>survey_tiles.py --sites</code> inexistant, hors façade
+<code>just</code> (les deps ne seront pas là) · fixtures annoncées ~2-5 Mo, réel ~25 MiB brut /
+12-15 MiB compressés · ids <code>sequence=1</code> et C07 bi-tuile toujours non gelés malgré « aucun
+verrou restant » — 🎁 <strong>candidat mesuré par le réfuteur : <code>S2A_31TGJ_20260813_1_L2A</code></strong> (réel,
+dans la fenêtre, tuile de A01).</p>
+<h2 id="les-6-defauts-que-les-5-angles-ont-manques-refuteur">Les 6 défauts que les 5 angles ont MANQUÉS (réfuteur)</h2>
+<ol>
+<li><strong><code>raster_scale</code>/<code>raster_offset</code> sont par ASSET, pas par item</strong> — mesuré : les 10 bandes de
+   réflectance ont <code>0.0001/-0.1</code>, mais <code>aot</code>/<code>wvp</code> ont <code>0.001/0</code> et <code>scl</code> n'en a aucun. Or ces
+   champs sont gravés <strong>scalaires</strong> dans <code>Acquisition</code> et au manifeste, et c'est la traçabilité
+   radiométrique promise au Lot 1. Contrat lossy à requalifier.</li>
+<li><strong>Les clés STAC réelles ne sont écrites nulle part</strong> — <code>s2:processing_baseline</code>,
+   <code>s2:nodata_pixel_percentage</code>, <strong><code>earthsearch:boa_offset_applied</code></strong> (préfixe <strong>vendeur</strong>, qui
+   disparaîtra à la bascule CDSE que <code>StacSource</code> doit rendre bon marché), <code>s2:sequence</code> dont
+   la valeur est la <strong>chaîne</strong> <code>"0"</code>. L'agent devra deviner.</li>
+<li><strong><code>--now</code> de <code>ingest</code> est une option morte</strong> et un oracle du gate repose dessus (M3/E-d).</li>
+<li><strong>D-d n'a jamais été formellement close</strong> — la v3 a renversé la recommandation v2 sans
+   consigner le refus ; c'est la racine de E-c, et la v4 rouvrirait le sujet.</li>
+<li><strong>Le geste 3 donnera un faux sentiment de résolution</strong> — le kit lui-même ne couvre ni le
+   grain du graphe ni la transmission du chapeau à l'agent.</li>
+<li><strong>l0-02.1 exige à l'oracle O4 une fixture bi-tuile (C07) absente de son propre périmètre</strong> —
+   et c'est la seule qui teste <code>off_tile</code>, au cœur de E-a. Invisible à une analyse de graphe.</li>
+</ol>
+<h2 id="sous-assertions-refutees-ne-pas-propager">Sous-assertions RÉFUTÉES (ne pas propager)</h2>
+<ul>
+<li><strong>D-c est implémentable</strong> : les origines de tuiles se dérivent bien (coin MGRS 100 km calé
+  sur le réseau 60 m — vérifié sur 4 tuiles) et le réfuteur a <strong>reproduit les marges</strong> au mètre
+  près (52TDL 509 m / 52TEL 4 151 m). La lacune est <strong>documentaire</strong> (la fiche ne dit pas la
+  règle ni la source ; <code>/aggregate</code> ne la donne pas, <code>/search</code> si) — pas une refonte. L'oracle
+  O2 reste néanmoins incohérent (des comptes d'items ne portent aucune marge).</li>
+<li><strong>Garde socket</strong> : le danger est le <strong>faux-vert</strong> (smoke qui télécharge), pas le faux-rouge.</li>
+<li><strong>Hash GeoTIFF</strong> : rasterio n'écrit <strong>aucune</strong> chaîne de version GDAL ; le risque réel est le
+  WKT PROJ embarqué. Un hash d'octets reste fragile → hasher le tableau décodé.</li>
+<li>« Profondeur 4-5 annoncée » : la roadmap v3 n'annonce aucun chiffre (c'était la v2).</li>
+<li>« l0-05.x parallèle en interne » : sur-lecture du §2.</li>
+</ul>
+<h2 id="non-verifie-par-cette-revue">Non vérifié par cette revue</h2>
+<p>Spec de bandes Clay v1.5 (l'ordre <code>nir</code> en 4ᵉ vs 7ᵉ — de toute façon déclaré « contrat du
+Lot 1 ») · existence réelle de la fixture <code>S2C_31TGJ_20260513_0_L2A</code> · comptes des 23 sites non
+sondés (~11 000 reste une extrapolation sur 6 points) · SIGINT sur win-64 · quotas earth-search
+en charge · facteur de sur-lecture COG · reproductibilité des hashes entre plateformes ·
+taux de nuages au grain <strong>chip</strong> (toutes les mesures restent au niveau scène).</p>
+<h2 id="prochaine-etape">Prochaine étape</h2>
+<p>GO Philippe sur E-a → E-d, puis passe PO v4 (les 3 gestes + les corrections listées), puis
+re-passage « Prêt à faire » fiche par fiche.</p></article></body></html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue adversariale — Lot 0 Ingestion</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue adversariale — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _revue.md — le .md fait foi.</p></div></div><article><h1 id="revue-de-coherence-adversariale-chantier-lot-0-ingestion">Revue de cohérence adversariale — Chantier Lot 0 Ingestion</h1>
+<p><strong>Date</strong> : 21/08/2026 · <strong>Orchestrateur</strong> : architecte/PO (Cowork, Fable) · <strong>Protocole</strong> : 5 angles
+Opus indépendants et aveugles (découpage, séquençage, faits externes avec vérification API réelle,
+couverture des 28 décisions actées, effort/oracles) + réfutation Opus indépendante.</p>
+<p><strong>Chiffres de la revue</strong> : 81 findings bruts → 68 après dédoublonnage → <strong>52 confirmés,
+16 partiels (sous-énoncés corrigés), 0 réfuté en bloc</strong> → 11 clusters de fond → 5 critiques.
+L'angle « faits externes » a interrogé l'API earth-search réelle (48 requêtes cumulées,
+reproductibles) ; la réfutation a re-mesuré indépendamment les bloquants.</p>
+<h2 id="verdict-global">Verdict global</h2>
+<p><strong>Le chantier n'est PAS prêt à passer en <code>a-faire/</code>.</strong> La structure (chantier, phases, oracles
+présents partout, « Non testé » systématique) est saine — mais les fiches n'avaient jamais été
+confrontées à l'API réelle, et la revue révèle 5 défauts critiques dont un <strong>irréversible</strong>
+(choix des bandes) et deux qui rendraient la recette du lot <strong>auto-validante</strong> (oracle
+inéchouable, rapport non testé). C'est exactement ce que la revue devait attraper : aucun de
+ces défauts n'aurait été détecté par les oracles tels qu'écrits.</p>
+<h2 id="les-5-critiques-consolides-classement-du-refuteur">Les 5 critiques (consolidés, classement du réfuteur)</h2>
+<p><strong>C1 — Clé de stockage non unique (EXT-3/EXT-4, bloquant).</strong> Le layout <code>{site}/{YYYY-MM-DD}/</code>
+entre en collision de façon <em>déterministe</em> : deux tuiles MGRS le même jour (prouvé sur C07
+Punggye-ri : items 52TDL <strong>et</strong> 52TEL du 2026-06-30 ; 636 items sur 48 mois, 319+317) et les
+retraitements <code>_1_L2A</code> (452 310 items <code>s2:sequence=1</code> mesurés sur 8 mois de 2026). Perte de
+données silencieuse que l'oracle d'idempotence validerait au vert.
+→ <strong>Clé = item id STAC</strong> (<code>{site_id}/{item_id}/</code>), une entrée de manifeste par item.</p>
+<p><strong>C2 — Noms d'assets faux (EXT-1, bloquant).</strong> earth-search nomme les assets
+<code>blue/green/red/nir/scl</code> — les clés <code>B02/B03/B04/B08/SCL</code> écrites dans l0-02 (périmètre ET
+oracle O1) n'existent pas ; piège aggravant : <code>eo:bands[].name</code> vaut bien « B02 ».
+→ Table de correspondance en config, oracle reformulé.</p>
+<p><strong>C3 — Contrat manifeste non gravé (SEQ-4/SEQ-5, bloquant).</strong> <code>manifest.json</code> est consommé
+par l0-04/05/06 mais décrit en prose dans l0-03 seul, avec 2 statuts (<code>ingested|rejected_clouds</code>)
+alors que le rapport de recette exige « trouvées/échecs » : <strong>l'oracle du lot est insatisfiable
+tel quel</strong>. → <code>adapters/manifests.py</code> (write/read/list/last_date), schéma versionné, statuts
+<code>ingested|rejected_clouds|failed</code> + journal <code>found</code> par (site, fenêtre).</p>
+<p><strong>C4 — Recette auto-validante (EFF-3 + EXT-10 + EFF-23 + EFF-15, bloquant).</strong> L'oracle-phare
+« ≥ 60 acquisitions/site » ne peut pas échouer (clause d'exemption), ne discrimine rien
+(324 à <strong>1383</strong> items disponibles par site mesurés — un pipeline perdant 80 % passe), son
+exemption « sites récents » repose sur un fait faux (Sizewell = 1383 items, le mieux fourni du
+parc — S2 image depuis 2015, chantier ou pas), et le CLI <code>report</code> qui produit ces chiffres n'a
+lui-même aucun test. → Oracle en <strong>ratio exploitables/trouvés avec dénominateur publié par
+site</strong> ; <code>report</code> testé sur manifestes fixtures aux comptes connus ; exemption supprimée.</p>
+<p><strong>C5 — l0-04 incompatible avec le run autonome (SEQ-1/DEC-1/EFF-2, bloquant).</strong> Une seule
+fiche cumule 3 CLIs, une campagne réelle de <strong>15-30 h</strong> (séquentiel, ~16 000 items mesurés
+pour 25 sites — pas ~11 000) et un gate humain, sous un effort « M », en tête de chaîne de
+l0-05/06 : le <code>/run</code> s'y arrête ou s'auto-valide. → Scission 04a/04b + graphe rebranché (§graphe).</p>
+<p><strong>Hors podium mais IRRÉVERSIBLE (EXT-11)</strong> : 4 bandes 10 m sans SWIR condamnent le Lot 1 —
+TerraMind attend 12 canaux S2 dont SWIR (224×224), Clay ~10 bandes. Corriger après backfill =
+<strong>re-télécharger l'intégralité</strong> (~100-200 Go transférés mesurés en ordre de grandeur, 15-30 h).
+La justification « multiples de 224/256 » de la fiche source est fausse pour 224 (512/224=2,29).
+→ Décision AVANT l0-03 : ajouter <code>nir08/swir16/swir22</code> en fichier 20 m séparé (<code>chip_20m.tif</code>,
++50 % stockage) — recommandé — ou assumer par écrit la ré-ingestion au Lot 1.</p>
+<h2 id="autres-confirmes-majeurs-par-cluster">Autres confirmés majeurs (par cluster)</h2>
+<ul>
+<li><strong>Config applicative sans propriétaire</strong> (DEC-4/SEQ-7/COV-9) : URL STAC, collection, seuil
+  nuages, data_root invoqués par 3 fiches, possédés par aucune ; <code>.env.example</code> réel = 1 ligne
+  DATABASE_URL. → l0-01 étendue : <code>config/settings</code> + <code>.env.example</code> enrichi + liste de clés figée.</li>
+<li><strong>« Harmonized » n'existe pas</strong> (EXT-2 partiel) : vocabulaire Google Earth Engine, pas
+  earth-search. L'offset baseline (scale 0.0001/offset −0.1, <code>boa_offset_applied</code>) est à LIRE
+  des métadonnées et journaliser. Nuance réfuteur : pas de mélange de conventions dans la fenêtre
+  actuelle (démarre 2022-08 &gt; bascule 2022-01) — mais la fenêtre est glissante : à instrumenter.</li>
+<li><strong>SCL incomplet et 20 m</strong> (EXT-5/DEC-8/EXT-6) : classes 0 (NO_DATA — chip vide classé
+  « clair » !), 1, 2, 11 (neige : Escondida, Punggye-ri) absentes ; grille 20 m jamais traitée.
+  → deux compteurs (<code>invalid_pct</code> {0,1} rejet dur ; <code>cloud_pct</code> {3,8,9,10} seuil 30 %), origine
+  chip calée sur multiple de 20 m, % calculé à 20 m (256×256), <code>nearest</code> obligatoire.</li>
+<li><strong>Grille cible par site non figée</strong> (EXT-7 partiel) : figer CRS+origine par site dans
+  <code>sites.yaml</code> ; oracle « transform/CRS identiques au bit près pour tous les chips d'un site ».
+  Nuance : sur les 6 sites testés, même zone UTM — risque latent, pas systématique.</li>
+<li><strong><code>just check</code> devient réseau-dépendant</strong> (DEC-7/SEQ-6/EFF-5) : smoke <strong>replay sur cassette
+  par défaut</strong> dans <code>check</code>, <code>--live</code> à la demande ; cache data partagé hors worktree ;
+  ⚠ découverte réfuteur : <code>data/</code> n'est <strong>pas</strong> dans <code>.gitignore</code>.</li>
+<li><strong>Ordre des opérations</strong> (EXT-8 partiel) : SCL d'abord, court-circuit avant lecture 10 m —
+  gain fort sur sites nuageux (Hinkley : 526/688 scènes ≥ 40 %), faible sur désertiques.</li>
+<li><strong>Volumétrie transférée ≠ stockée</strong> (EXT-9) : ~16 000 items, transfert ~100-200 Go (blocs
+  COG 1024² → sur-lecture ×2-15, non mesuré finement), 15-30 h séquentiel. O4/O5 doivent
+  distinguer octets transférés / stockés / requêtes. Éclaire Q-C.</li>
+<li><strong>Contrat search→ingest implicite</strong> (COV-3) : <code>ingest --acquisitions &lt;json&gt;</code> à ajouter
+  (sinon le workflow CWL refait la recherche → O2 de l0-06 compromis) ; O2 exige aussi deux
+  <code>data_root</code> distincts (EFF-4 : l'idempotence rend « mêmes comptes » impossible sinon).</li>
+<li><strong>Planche de centrage trop tardive</strong> (EXT-13) : planche précoce (1 chip récent/site,
+  ~15 min) validée AVANT le backfill 48 mois ; coordonnées ±1-2 km corrigées à ce moment-là.</li>
+<li><strong>Requester-pays</strong> (EXT-14) : sélectionner les assets COG <code>https://</code>, refuser <code>s3://</code> (les
+  variantes <code>-jp2</code> sont sur bucket payant).</li>
+<li><strong>Incrémental</strong> (EXT-15/EFF-17) : revisite réelle 2,1-4,6 j selon site (pas ~5 j) — la
+  prémisse « runs souvent vides » est fausse (~8-12 acquisitions/jour sur le parc) ; marge
+  3 j OK pour la latence (~3-5 h mesurée) mais <strong>aucune détection des publications tardives</strong> →
+  rescan périodique (<code>backfill --months 2</code>) + le dire en « Non testé ».</li>
+<li><strong>Gates humains dans les tables d'oracle</strong> (EFF-2) : section « Gate humain (hors run) »
+  distincte, règle de flux : la fiche reste en <code>en-cours/</code>, le run continue.</li>
+<li><strong>Oracles sur acquisitions « connues » jamais identifiées</strong> (EFF-6) : geler des item ids
+  littéraux dans les fiches avant <code>a-faire/</code>.</li>
+<li><strong>Hygiène</strong> : <code>just check</code> dans chaque oracle (DEC-10) ; modules core/adapters nommés dans
+  l0-04/05/06 (COV-14) ; invariant logs-STDERR décliné (COV-7) ; deps Pillow + cwltool à
+  arbitrer (COV-5/EFF-18) ; références <code>LOT0-fiche-sites.md</code> → <code>docs/lots/lot-0-sites.md</code>
+  (COV-10) ; contradiction « un an minimum » dans lot-0-sites §1 (COV-11) ; oracle l0-01
+  durci ids/8-9-8 (COV-12/EFF-11) ; contradiction C08 DoD vs Notes (EFF-12) ; barème S/M/L à
+  définir dans la méthode (EFF-20 — amélioration kit, à reporter) ; CDSE = acter hors Lot 0
+  avec abstraction <code>StacSource</code> en DoD de l0-02 (COV-6) ; pré-filtre scène 80 % : décision à
+  tracer + comptage des écartés (COV-2/EXT-16 partiel).</li>
+</ul>
+<h2 id="graphe-de-dependances-cible-post-scission">Graphe de dépendances cible (post-scission)</h2>
+<pre><code>l0-01-sites-config    []           + config applicative + grilles cibles + taxonomie CLI
+l0-02-stac-search     [l0-01]      + assets réels + StacSource + item ids gelés
+l0-03-chip-ingest     [l0-02]      + manifests.py + clé item_id + SCL 2 compteurs + smoke replay + planche précoce
+l0-04a-outillage      [l0-03]      backfill/report/contact-sheet + tests fixtures  ─┐
+l0-05-incremental     [l0-03]      ‖ parallélisable                                 ├─ après correctifs C3 + SEQ-8
+l0-06-cwl-steps       [l0-03, l0-05 si tool update conservé]  ‖                    ─┘
+l0-04b-recette        [l0-04a]     campagne réelle 25×48 + gate humain Philippe (hors run)
+</code></pre>
+<p>⚠ Parallélisation conditionnée à : contrat manifeste gravé (C3), auto-découverte des
+sous-commandes dans <code>__main__.py</code>, <code>pixi.lock</code> régénéré au merge (jamais mergé).</p>
+<h2 id="questions-necessitant-un-go-philippe">Questions nécessitant un GO Philippe</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Recommandation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 ⚠ irréversible</td>
+<td>Bandes : ajouter <code>nir08/swir16/swir22</code> (20 m, fichier séparé) pour le Lot 1 ?</td>
+<td><strong>OUI</strong> (+50 % stockage, évite ré-ingestion 100-200 Go)</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>SCL conservé en sortie (fichier 20 m à côté du chip) ?</td>
+<td><strong>OUI</strong> (exigé par lot-0-sites O3, nécessaire au Lot 2)</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Scission l0-04a/04b + graphe ci-dessus</td>
+<td><strong>OUI</strong></td>
+</tr>
+<tr>
+<td>G4 = Q-A</td>
+<td>pystac-client</td>
+<td><strong>OUI</strong> (défaut confirmé par l'usage réel de l'API)</td>
+</tr>
+<tr>
+<td>G5 = Q-B</td>
+<td>GeoTIFF simple (pas COG)</td>
+<td><strong>OUI</strong></td>
+</tr>
+<tr>
+<td>G6 = Q-C</td>
+<td>Backfill : pool 4-8 workers d'emblée (15-30 h → ~3-5 h)</td>
+<td><strong>OUI</strong> (mesuré, ~15 lignes)</td>
+</tr>
+<tr>
+<td>G7 = Q-D</td>
+<td>CWL : validation locale cwltool seule, enregistrement PID-FLOW hors lot</td>
+<td><strong>OUI</strong></td>
+</tr>
+<tr>
+<td>G8</td>
+<td>Multi-tuiles : tuile de référence par site + garde nodata (pas de mosaïque)</td>
+<td><strong>OUI</strong> (KISS ; à vérifier sur C07 au 1er chip)</td>
+</tr>
+<tr>
+<td>G9</td>
+<td>Clé de stockage = item id STAC</td>
+<td><strong>OUI</strong></td>
+</tr>
+<tr>
+<td>G10</td>
+<td>C08 zone témoin : candidat à proposer en maturation de l0-01</td>
+<td>à trancher avec la fiche</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sous-enonces-corriges-par-la-refutation-ne-pas-propager">Sous-énoncés corrigés par la réfutation (ne pas propager)</h2>
+<p>Pas de mélange de baselines dans la fenêtre actuelle (mesuré) ; le pré-filtre 80 % économise
+réellement sur sites nuageux ; marge nette incrémentale ≈ 3 j (latence ~3 h, pas 2 j) ;
+volumes revus À LA HAUSSE (16 000 items, 324-1383/site) ; rien n'est en <code>fait/</code> (preuve de
+SEQ-12 fausse, fond valide). Non vérifié par la revue : facteur de sur-lecture COG exact,
+liste de bandes Clay précise, délai réel des retraitements tardifs.</p>
+<h2 id="prochaines-actions">Prochaines actions</h2>
+<ol>
+<li>GO Philippe sur G1-G10 (G1 en premier — il conditionne l0-03).</li>
+<li>PO : réécriture des fiches (scission 04a/04b, correctifs C1-C5 + majeurs), roadmap figée v2,
+   corrections lot-0-sites.md, report des améliorations kit (barème S/M/L, gate humain).</li>
+<li>Re-passage « Prêt à faire » fiche par fiche → <code>a-faire/</code> → l'équipe enchaîne en <code>/run</code>.</li>
+</ol></article></body></html>

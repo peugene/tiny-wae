@@ -1,9 +1,20 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap — Lot 0 Ingestion</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap v3 (figée) — Lot 0 Ingestion</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
 .banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
 .inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
 article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
 border-radius:10px;padding:34px 44px}
 article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
@@ -18,131 +29,110 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><h1>Roadmap — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _roadmap.md — le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-0-ingestion-sentinel-2-phase-1-indicative">Roadmap — Lot 0 : Ingestion Sentinel-2 (phase 1, indicative)</h1>
+</style></head><body><div class="banner"><div class="inner"><h1>Roadmap v3 (figée) — Lot 0 Ingestion</h1><p>Généré le 21/08/2026 depuis _roadmap.md — le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-0-ingestion-sentinel-2-v3-figee-post-revue-v2">Roadmap — Lot 0 : Ingestion Sentinel-2 (v3, FIGÉE post-revue v2)</h1>
 <blockquote>
-<p>Roadmap <strong>indicative</strong> posée avant le code. Sera figée après la <strong>revue de cohérence</strong>
-(<code>_revue.md</code>, phase 2). Transposition au format chantier de la fiche <code>LOT0-fiche-sites.md</code>
-validée par Philippe le 20/08/2026 (GO sur les 25 sites, historique 48 mois, pipeline CWL).</p>
+<p><strong>v3 du 21/08/2026</strong> — restructuration en <strong>chapeaux + sous-tâches</strong> (pattern pid-flow,
+décision Philippe : chaque fiche doit être implémentable par un agent Sonnet effort
+medium en autonomie) et <strong>fiches humaines séparées</strong> (décision Philippe : les gates
+humains existent, comme fiches dédiées <code>catégorie: humain</code>, jamais dispatchées — le
+<code>depends_on</code> met le run en pause). Intègre D-a (rejeu = GeoTIFF locaux + FixtureSource),
+D-b (chip 20 m à 6 bandes : rededge1/2/3 + nir08 + swir16 + swir22), D-c (tuile de
+référence par marge géométrique) et les corrections PO de <code>_revue-v2.md</code>.
+Historique : v1 → <code>_revue.md</code> ; v2 → <code>_revue-v2.md</code>. Source du lotissement :
+<code>docs/lots/lot-0-sites.md</code>.</p>
 </blockquote>
-<h2 id="1-cible-decisions-actees-ne-pas-rouvrir">1. Cible &amp; décisions actées (ne pas rouvrir)</h2>
+<h2 id="1-decisions-actees-ne-pas-rouvrir">1. Décisions actées (ne pas rouvrir)</h2>
+<p>Les décisions détaillées vivent dans les CHAPEAUX (l0-01 à l0-06, section « Décisions
+portées ») — la roadmap ne les duplique plus, elle les indexe :</p>
 <ul>
-<li><strong>25 sites</strong> en 3 catégories (annexe A), <strong>48 mois</strong> d'historique glissant, puis
-  <strong>ingestion incrémentale quotidienne</strong> (même pipeline, fenêtre bornée).</li>
-<li>Produit : <strong>Sentinel-2 L2A</strong> (collection <em>harmonized</em> — offset baseline janv. 2022 corrigé),
-  chips <strong>512×512 px @ 10 m</strong> (5,12 km), bandes <strong>B02/B03/B04/B08 + SCL</strong>, rejet si
-  <strong>&gt; 30 % nuages/ombres</strong> sur le chip (seuil ajustable).</li>
-<li>Source STAC : <strong>earth-search (AWS)</strong> en priorité, <strong>CDSE</strong> en secours — l'abstraction STAC
-  rend le basculement peu coûteux.</li>
-<li>Stockage : NAS, layout <code>&lt;racine&gt;/{site_id}/{date}/chip.tif</code> + <code>manifest.json</code> par
-  acquisition. <strong>Idempotence obligatoire</strong> (run double = zéro doublon, zéro re-téléchargement).</li>
-<li><strong>Chaque étape = un CLI typer à I/O explicites</strong>, pensé pour devenir un step <strong>CWL</strong>
-  (moteur PID-FLOW ; cwl-assets sert d'exemple pour le tooling).</li>
-<li>Aucune IA dans ce lot. Hors périmètre : Sentinel-1 (V2), recalage sub-pixel, qualité
-  radiométrique fine.</li>
+<li><strong>l0-01</strong> : C08 Bouconne · règle D-c (marge géométrique) · grilles 20 m · codes de
+  sortie 0/1/2/3 · auto-découverte CLI, taxonomie 9 commandes (<code>smoke</code> inclus).</li>
+<li><strong>l0-02</strong> : assets réels (clés stables ; <code>eo:bands[].name</code> hétérogène — jamais s'y
+  fier) · S2C (schéma différent, garde s3 limitée aux assets mappés, lire <code>platform</code>) ·
+  collection <code>sentinel-2-l2a</code> · filtre tuile dans search (compté <code>off_tile</code>) · bbox
+  toujours dans la requête · enveloppe JSON versionnée · ⭐ <strong><code>found_stac</code> / <code>found_tile</code>
+  (décision E-a, 21/08 : deux dénominateurs nommés, le mot <code>found</code> seul est banni ;
+  invariants de conservation)</strong> · item ids GELÉS (clair 2024 / nuageux 2023 / S2C 2026 —
+  mesurés en revue v2).</li>
+<li><strong>l0-03</strong> : layout <code>{site}/{item_id}</code> (G9) · 3 fichiers dont chip 20 m à 6 bandes (D-b,
+  ×1,41) et GeoTIFF simple (G5) · SCL-first, 2 compteurs, classes 2/11 journalisées
+  (décision différée, instrument = report) · idempotence <strong>+ grid_hash</strong> (correction de
+  coordonnées → ré-ingestion automatique) + <code>--force</code> · retry paramétré au niveau
+  requête · ⭐ <strong>instrumentation E-d : <code>assets_read</code> = critère d'idempotence (témoins
+  positif ET négatif), <code>content_hashes</code> = hash du tableau DÉCODÉ (jamais les octets du
+  GeoTIFF), <code>bytes_downloaded</code> = STAC seul et hors gate, <code>bytes_written</code> = seule mesure
+  de volume exacte, <code>--now</code> retiré d'<code>ingest</code></strong> · rejeu D-a · ⭐ <strong>garde réseau de CONTRAT
+  (décision E-b, 21/08) : <code>TINY_WAE_OFFLINE=1</code> + refus des hrefs non-<code>file://</code> dans
+  <code>chips.py</code> → <code>RemoteAccessForbidden</code> ; <code>pytest-socket</code> en ceinture pour le seul chemin
+  STAC (il ne couvre pas GDAL — mesuré)</strong> · manifeste + run.json complets avec API.</li>
+<li><strong>l0-04</strong> : pool workers (G6) · ~11 000 items instruits (<code>found_tile</code>) · ⭐ <strong>oracle de
+  recette refondu par E-a : 3 critères mécaniques — conservation (identité comptable),
+  complétude vs <code>/aggregate</code> (tolérance 0, sur <code>found_stac</code>), <code>failed ≤ 1 % de
+  found_tile</code> ; <code>off_tile</code>/<code>skipped_scene_cloud</code>/ratio d'ingestion PUBLIÉS SANS SEUIL
+  (caractéristiques de site). La « cohérence statistique » de la v3 est supprimée :
+  non calculable et circulaire</strong> · report = seul instrument, testé sur comptes connus,
+  porte aussi <code>--check-completeness</code>.</li>
+<li><strong>l0-05</strong> : marge 3 j (config) · rattrapage mensuel documenté non automatisé · cron =
+  infra Philippe.</li>
+<li><strong>l0-06</strong> : Q-D = validation locale seule (G7) · 3 tools + 1 workflow, liste fermée ·
+  <code>pid:Milestone</code> retiré (hors lot) · <code>just cwl</code> dans le gate, impact cwltool assumé.</li>
+<li>Transverses : logs STDERR / données STDOUT-JSON ou fichiers · aucune IA · hors lot :
+  S1, recalage sub-pixel, radiométrie fine, mosaïque, enregistrement PID-FLOW, CDSE ·
+  fiches HUMAINES : <code>categorie: humain</code>, préfixe titre <code>[HUMAIN]</code>, bandeau ⛔, jamais
+  dispatchées (règle également à reporter dans la commande <code>/run</code> du kit).</li>
 </ul>
-<h2 id="2-objectifs-phases">2. Objectifs / phases</h2>
-<ul>
-<li><strong>O1 — Plomberie STAC</strong> : config des sites typée et validée ; recherche d'acquisitions ;
-  téléchargement fenêtré + masque SCL + chip GeoTIFF + manifeste. Le smoke réel remplace le
-  placeholder ici.</li>
-<li><strong>O2 — Historique 48 mois</strong> : orchestration du backfill 25 sites × 48 mois ; rapport de
-  recette chiffré (oracle O2 de la fiche d'origine : ≥ 60 acquisitions exploitables/site,
-  chiffres par site publiés y compris les pires) ; planche de contrôle visuel (gate Philippe).</li>
-<li><strong>O3 — Incrémental &amp; CWL</strong> : mode quotidien (fenêtre depuis le dernier manifeste) ;
-  définitions CWL des steps + chaîne enregistrable dans PID-FLOW.</li>
-</ul>
-<h2 id="3-pieges-critiques-transverses">3. Pièges critiques transverses</h2>
-<ul>
-<li><strong>Coordonnées des sites de mémoire (±1-2 km)</strong> : la planche visuelle (O2) est LE filet —
-  toute correction de centrage se reporte dans la config, puis ré-ingestion ciblée.</li>
-<li><strong>Nuages</strong> : sites UK/tropicaux peuvent perdre &gt; 60 % des acquisitions — c'est une mesure
-  attendue (argument S1 en V2), pas un échec d'ingestion.</li>
-<li><strong>Quotas/latence des sources STAC</strong> : earth-search est sans auth mais sans SLA ; prévoir
-  reprise sur erreur (backoff) et reprise de run (idempotence).</li>
-<li><strong>Téléchargement fenêtré</strong> : lire les COG par fenêtres (rasterio) — jamais la scène
-  entière (des Go pour 5 km²).</li>
-<li><strong>Mélange logs/données</strong> : logs sur STDERR, données/manifestes en fichiers — invariant CWL.</li>
-<li><strong>Sites récents</strong> (Sizewell, Chancay) : peu ou pas d'acquisitions utiles en début de
-  fenêtre 48 mois — vérité terrain, à distinguer d'un bug.</li>
-</ul>
-<h2 id="4-sequencage-recommande">4. Séquençage recommandé</h2>
-<p>O1 strictement séquentiel (config → recherche → ingestion, chaque fiche dépend de la
-précédente). O2 après O1 complet. O3 après O2 (l'incrémental réutilise tout ; le CWL
-emballe des CLIs stabilisés).</p>
-<h2 id="5-questions-ouvertes-a-trancher-en-maturation-revue">5. Questions ouvertes (à trancher en maturation / revue)</h2>
-<ul>
-<li><strong>Q-A</strong> (l0-02) : bibliothèque cliente STAC — <code>pystac-client</code> (mûr, standard) vs requêtes
-  HTTP directes ? Défaut recommandé : pystac-client.</li>
-<li><strong>Q-B</strong> (l0-03) : format de sortie — GeoTIFF simple vs COG ? Défaut : GeoTIFF (COG inutile
-  pour des chips de 5 km lus localement).</li>
-<li><strong>Q-C</strong> (l0-04) : parallélisme du backfill — séquentiel simple d'abord, paralléliser
-  seulement si la mesure l'exige ?</li>
-<li><strong>Q-D</strong> (l0-06) : niveau d'intégration PID-FLOW dans CE lot — définitions CWL validées
-  (<code>cwltool --validate</code> + run local) suffisent-elles, ou enregistrement réel sur le server ?</li>
-</ul>
-<h2 id="6-liste-des-fiches-du-chantier">6. Liste des fiches du chantier</h2>
-<table>
-<thead>
-<tr>
-<th>Phase</th>
-<th>Fiche</th>
-<th>Effort</th>
-<th>Objet</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>O1</td>
-<td><code>l0-01-sites-config</code></td>
-<td>S</td>
-<td>Config YAML des 25 sites + modèle typé + CLI de validation</td>
-</tr>
-<tr>
-<td>O1</td>
-<td><code>l0-02-stac-search</code></td>
-<td>M</td>
-<td>Adapter STAC : acquisitions par site/fenêtre/nuages + CLI</td>
-</tr>
-<tr>
-<td>O1</td>
-<td><code>l0-03-chip-ingest</code></td>
-<td>L</td>
-<td>Chip : lecture fenêtrée, masque SCL, GeoTIFF + manifeste, idempotent ; câble le smoke réel</td>
-</tr>
-<tr>
-<td>O2</td>
-<td><code>l0-04-backfill</code></td>
-<td>M</td>
-<td>Backfill 48 mois × 25 sites + rapport chiffré + planche visuelle</td>
-</tr>
-<tr>
-<td>O3</td>
-<td><code>l0-05-incremental</code></td>
-<td>S</td>
-<td>Mode quotidien : fenêtre depuis dernier manifeste</td>
-</tr>
-<tr>
-<td>O3</td>
-<td><code>l0-06-cwl-steps</code></td>
-<td>M</td>
-<td>Définitions CWL des steps + chaîne (exemple : cwl-assets)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="annexe-a-les-25-sites-go-philippe-20082026">Annexe A — Les 25 sites (GO Philippe 20/08/2026)</h2>
-<p>Coordonnées de mémoire (±1-2 km), <strong>à valider/corriger via la planche visuelle d'O2</strong>.</p>
-<p><strong>A — Nucléaire en construction (8)</strong> : A01 ITER Cadarache FR (43.708, 5.776) · A02 Hinkley
-Point C UK (51.208, −3.130) <em>cas défavorable nuages</em> · A03 Sizewell C UK (52.215, 1.620) ·
-A04 Flamanville FR (49.536, −1.882) · A05 Akkuyu TR (36.144, 33.541) · A06 El Dabaa EG
-(31.043, 28.494) · A07 Zhangzhou CN (23.816, 117.578) · A08 Vogtle US (33.143, −81.762).</p>
-<p><strong>B — Mégachantiers (9)</strong> : B01 NEOM The Line SA (28.09, 35.23) · B02 Aéroport King Salman
-SA (24.96, 46.70) · B03 Nouvelle capitale admin. EG (30.03, 31.73) · B04 Barrage GERD ET
-(11.215, 35.093) · B05 Parc solaire MBR Dubaï AE (24.76, 55.36) · B06 Mine Escondida CL
-(−24.27, −69.07) · B07 Salar d'Atacama CL (−23.50, −68.30) · B08 Port de Chancay PE
-(−11.57, −77.27) · B09 A69 Toulouse-Castres FR (43.60, 2.00) <em>contrôle local</em>.</p>
-<p><strong>C — Stables &amp; veille OSINT (8)</strong> : C01 Golfech FR (44.11, 0.85) · C02 Airbus
-Toulouse-Blagnac FR (43.63, 1.36) · C03 Fos-sur-Mer FR (43.42, 4.85) · C04 Lacq FR (43.42,
-−0.62) · C05 Natanz IR (33.72, 51.73) · C06 Engels RU (51.48, 46.21) · C07 Punggye-ri KP
-(41.28, 129.08) · C08 zone témoin rurale SO Toulouse <em>à définir dans l0-01</em>.</p>
-<p>Équilibre : 12 « changement attendu », 8 « stables » (mesure des faux positifs du futur
-Lot 2), 5 intermédiaires.</p></article></body></html>
+<h2 id="2-graphe-6-chapeaux-17-sous-taches-agent-2-fiches-humaines">2. Graphe (6 chapeaux · 17 sous-tâches agent · 2 fiches humaines)</h2>
+<p>⭐ <strong>Grain du graphe — décision Philippe E-c (21/08)</strong> : <strong>seules les fiches dispatchables
+ordonnent le run</strong>. Un <strong>chapeau</strong> a <code>depends_on: []</code> et n'ordonne rien (sa place dans la
+chaîne est écrite en prose dans son corps, et ci-dessous à titre indicatif) ; une fiche
+<strong>humaine</strong> porte un <code>depends_on</code> et <strong>bloque volontairement</strong> ses dépendants. Un
+<code>depends_on</code> est <strong>satisfait quand la fiche visée est en <code>fait/</code></strong> — pas d'autre critère.
+<strong>Clôture de D-d</strong> (restée ouverte depuis la revue v2, d'où sa réouverture en v3) : sa
+première moitié (« une fiche à gate humain reste en <code>en-cours/</code> sans bloquer le graphe »)
+est <strong>REJETÉE</strong> — remplacée par les fiches humaines séparées et bloquantes ; sa seconde
+moitié (« levée au merge ») est <strong>REJETÉE</strong> — le dossier fait foi, un seul critère.</p>
+<p><strong>Graphe RÉEL, dérivé des frontmatters</strong> (généré, pas dessiné — geste PO de la revue v3 ;
+<code>just dashboard</code> contrôle désormais sa cohérence à chaque génération). Niveaux
+topologiques, <code>⛔</code> = fiche humaine :</p>
+<pre><code>N0  l0-01.1
+N1  l0-01.2 · l0-03.2
+N2  l0-01.3 · l0-05.1
+N3  l0-02.1 · l0-03.1
+N4  l0-02.2 · l0-03.3
+N5  l0-03.4
+N6  l0-03.5 · l0-06.1
+N7  l0-03.6 · l0-04.1 · l0-05.2
+N8  ⛔ l0-03.H · l0-04.2 · l0-06.2
+N9  ⛔ l0-04.H
+</code></pre>
+<p><strong>Profondeur réelle : 10 niveaux</strong> (les fiches d'un même niveau sont parallélisables une
+fois leurs dépendances satisfaites). Feuilles : <code>l0-04.H</code> (recette) et <code>l0-06.2</code>.
+Corrections apportées par ce geste : <code>l0-01.3</code> n'était déclarée par personne (les grilles
+seraient restées vides) · <code>l0-02.1</code>, <code>l0-03.1</code> exigent les grilles REMPLIES · <code>l0-03.6</code>,
+<code>l0-04.2</code>, <code>l0-05.2</code> consomment les fixtures COG de <code>l0-03.5</code> · <code>l0-06.1</code> emballe aussi
+le CLI <code>search</code> (<code>l0-02.2</code>) · l'arête inversée <code>l0-02.1 → l0-02.2</code> (pytest-socket) est
+supprimée : <strong>toutes les dépendances sont pré-posées par l0-01.1</strong>.</p>
+<p><strong>Zones partagées</strong> (une seule fiche propriétaire chacune, plus de conflit possible) :
+<code>pyproject.toml</code> → <strong>l0-01.1 seule</strong> · <code>__main__.py</code> → l0-01.2 seule (auto-découverte
+ensuite) · <code>justfile</code> → l0-03.5 (smoke) puis l0-06.1 (cwl) — séquentiels au graphe ·
+<code>cli/contact_sheet.py</code> → l0-03.6 puis l0-04.2 (extension actée) · <code>tests/fixtures/</code> →
+l0-02.1 (stac) · l0-03.2 (manifests) · l0-03.5 (cog) — sous-dossiers disjoints ·
+<code>pixi.lock</code> versionné mais <strong>jamais mergé</strong> (régénérer sur la branche cible).</p>
+<h2 id="3-pieges-transverses-mesures-cf-revues">3. Pièges transverses (mesurés — cf. revues)</h2>
+<p>Multi-tuiles fréquent (A03, A04, C07 sur 7 sondés) · ~50 % des granules d'une tuile ne
+touchent pas le chip (bbox obligatoire) · baselines multiples DANS la fenêtre (04.00 →
+05.12) mais convention d'offset homogène (journalisée) · S2C en production (nouveau
+schéma) · l'item de référence 2022 sortait de la fenêtre glissante fin sept. 2026 → ids
+gelés en 2023/2024/2026 · Hinkley ~16 % de scènes &lt; 30 % de nuages (niveau scène ; le
+taux chip sera mesuré par la campagne) · volumétrie : ~11 000 items (par tuile), transfert
+50-100 Go ≠ stocké ~×1,41 · revisite 2,1-4,6 j → l'incrémental n'est pas « souvent vide ».</p>
+<h2 id="4-verrous">4. Verrous</h2>
+<p><strong>Aucun verrou bloquant restant.</strong> V1 : item ids gelés dans le chapeau l0-02 (mesurés en
+revue v2 — un run <code>search</code> de confirmation est intégré à l'oracle O4 de l0-02.2). V2 :
+donnée d'implémentation (l0-01.3, fiche à réseau assumée). V3 : décision différée
+documentée (instrument : agrégat SCL du report, l0-04.2) — une fiche de décision sera
+créée en maturation après la campagne.</p>
+<h2 id="annexe-a-les-25-sites">Annexe A — Les 25 sites</h2>
+<p>Inchangée depuis la v2 (GO 20/08 + C08 Bouconne 43.628, 1.217 GO 21/08) — voir
+<code>docs/lots/lot-0-sites.md</code> §3, désormais l'unique copie de la liste (la duplication
+roadmap/lot est supprimée : le lot fait foi).</p></article></body></html>

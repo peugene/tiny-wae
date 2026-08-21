@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <a href="l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.1</b></nav><h1>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</h1><p>Maturation · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.3.html"><code>l0-01.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li>→ <a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Fixtures GeoTIFF locaux + FixtureSource + smoke replay/--live (décision D-a)</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li></ul></div><h1 id="l0-031-core-geometrie-pur-zero-io">[l0-03.1] — Core géométrie (pur, zéro I/O)</h1>
+<h2 id="objectif">Objectif</h2>
+<p>Toute la logique pure de l'ingestion, testable à sec en millisecondes. Aucun réseau, aucun
+fichier.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/core/geometry.py</code> :</li>
+<li><code>chip_window_10m(grid) -&gt; (col_off, row_off, 512, 512)</code> et <code>chip_window_20m(grid) -&gt;
+    (…, 256, 256)</code> — fenêtres rasterio-compatibles depuis <code>grid</code> (epsg, origin_x/y).
+    L'origine étant calée multiple de 20, la fenêtre 20 m est entière par construction
+    (l'affirmer par un test).</li>
+<li><code>transform_for(grid, resolution)</code> : le transform affine attendu des sorties.</li>
+<li><code>src/tiny_wae/core/scl.py</code> : <code>verdict(scl_class_counts, settings) -&gt; Verdict</code> —
+  <code>invalid_pct</code> = classes {0,1} ; <code>cloud_pct</code> = {3,8,9,10} ; classes 2 et 11 comptées dans
+  le résultat (non décisionnelles — décision différée documentée) ; retourne
+  <code>ingested | rejected_invalid | rejected_clouds</code> + les deux pourcentages.</li>
+<li><code>src/tiny_wae/core/windows.py</code> : <code>backfill_windows(months, now)</code> et
+  <code>update_window(last_datetime, margin_days, now)</code> — <strong><code>now</code> en paramètre</strong> (horloge
+  injectable, D-a). Ce module est LE fournisseur des fenêtres pour l0-04 et l0-05.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Les 3 modules, docstrings courtes (rôle/entrées/sorties), tests à sec.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Grille C08 Bouconne (valeurs de sites.yaml)</td>
+<td>fenêtre 10 m = 512×512, fenêtre 20 m = 256×256, alignement exact ×2 (test)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Comptes SCL fabriqués : 100 % classe 0 · 40 % classe 8 · 29 % classes {3,8} · 50 % classe 11</td>
+<td><code>rejected_invalid</code> · <code>rejected_clouds</code> · <code>ingested</code> · <code>ingested</code> (classe 11 non décisionnelle) avec compteurs exacts</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>update_window(now=2026-08-21, last=2026-08-15, margin=3)</code></td>
+<td>fenêtre [2026-08-12 → 2026-08-21] (test déterministe)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : lecture de vrais pixels (l0-03.3).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>

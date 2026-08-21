@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-02] [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-02</b></nav><h1>[l0-02] [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search</h1><p>Maturation · effort L · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><h1 id="l0-02-chapeau-recherche-stac">[l0-02] — CHAPEAU : Recherche STAC</h1>
+<blockquote>
+<p>Fiche chapeau, non dispatchable, <code>depends_on: []</code> (E-c : un chapeau n'ordonne rien).
+<strong>Vient après l0-01</strong> — les arêtes réelles sont portées par les sous-tâches.</p>
+</blockquote>
+<h2 id="contexte">Contexte</h2>
+<p>Répondre à « quels items S2 L2A couvrent ce site sur cette fenêtre ? » sans télécharger un
+pixel. Faits VÉRIFIÉS par les revues (à ne pas re-déduire) : les clés d'assets earth-search
+sont <code>blue/green/red/nir/rededge1/rededge2/rededge3/nir08/swir16/swir22/scl</code> ; les libellés
+<code>B0x</code> n'existent que dans les noms de fichiers/titles — et <code>eo:bands[].name</code> est
+HÉTÉROGÈNE dans la fenêtre (<code>blue</code> sur S2A/B anciens, <code>B02</code> sur S2C ≥2025) : ne jamais s'y
+fier. Les items S2C portent des assets supplémentaires (<code>cloud</code>, <code>snow</code>) en <code>s3://</code> : la
+garde anti-<code>s3://</code> ne s'applique QU'AUX assets mappés. Collection <code>sentinel-2-l2a</code> figée
+(la c1 a un trou avant déc. 2022, mesuré).</p>
+<h2 id="decisions-portees-ne-pas-rouvrir">Décisions portées (ne pas rouvrir)</h2>
+<ul>
+<li>Port <code>StacSource</code> (bascule CDSE hors lot ; le port sert AUSSI à l'injection de fixtures —
+  décision D-a).</li>
+<li>Le <strong>filtre tuile de référence vit ICI</strong> (métadonnée <code>grid:code</code>, zéro I/O) — les écartés
+  sont comptés (<code>off_tile</code>) et retournés dans l'enveloppe. La bbox du chip reste TOUJOURS
+  dans la requête (50 % des granules d'une tuile ne touchent pas le chip — mesuré).</li>
+<li>Enveloppe JSON versionnée figée : <code>{schema_version, site_id, window,
+  counters: {found_stac, skipped_scene_cloud, off_tile, found_tile}, items: [Acquisition]}</code>
+  — consommée par <code>ingest --acquisitions</code> (l0-03.4) et le step CWL (l0-06).</li>
+<li>⭐ <strong>DEUX dénominateurs nommés (décision Philippe E-a, 21/08 — le mot <code>found</code> seul est
+  BANNI du lot)</strong> :</li>
+<li><strong><code>found_stac</code></strong> = items retournés par le STAC pour (bbox, fenêtre), <strong>avant tout
+    filtre</strong>. Sert à la traçabilité du volume et au contrôle de complétude vs la source.</li>
+<li><strong><code>found_tile</code></strong> = <code>found_stac − skipped_scene_cloud − off_tile</code> = les items
+    <strong>réellement instruits</strong> (ceux dont on lira le SCL). <strong>C'est le dénominateur de tous
+    les ratios de qualité.</strong></li>
+<li>Invariant de conservation à respecter partout :
+    <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code>, et
+    <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code>.</li>
+<li>Motif : mesuré sur C07, <code>off_tile</code> vaut <strong>49,8 %</strong> de <code>found_stac</code> (chip à cheval sur
+    52TDL/52TEL) contre 0 % sur A01 — un ratio bâti sur <code>found_stac</code> mesurerait la
+    géométrie du site, pas le pipeline.</li>
+<li>Item ids GELÉS pour les oracles (mesurés en revue v2) : clair
+  <code>S2A_31TGJ_20240801_0_L2A</code> (cc &lt; 2 %, milieu de fenêtre) ; très nuageux
+  <code>S2B_31TGJ_20230315_0_L2A</code> (cc 88,3 %, cirrus 82,7) ; robustesse S2C
+  <code>S2C_31TGJ_20260513_0_L2A</code> (nouveau schéma d'assets).</li>
+</ul>
+<h2 id="sous-taches">Sous-tâches</h2>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Effort</th>
+<th>Objet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>l0-02.1</td>
+<td>M</td>
+<td>Port StacSource + contrat Acquisition + enveloppe + implémentation earth-search</td>
+</tr>
+<tr>
+<td>l0-02.2</td>
+<td>S</td>
+<td>CLI search + garde anti-socket + oracles</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé par ce chapeau</strong> : CDSE (hors lot) ; pixels (l0-03) ; Sentinel-1 (hors lot).</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>

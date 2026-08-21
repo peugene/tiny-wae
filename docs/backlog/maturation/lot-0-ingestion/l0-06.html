@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-06</b></nav><h1>[l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</h1><p>Maturation · effort M · chapeau · phase O3 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li><a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-06-chapeau-emballage-cwl">[l0-06] — CHAPEAU : Emballage CWL</h1>
+<blockquote>
+<p>Fiche chapeau, non dispatchable, <code>depends_on: []</code> (E-c : un chapeau n'ordonne rien).
+<strong>Vient après l0-03 et l0-05</strong> (il emballe <code>search</code>, <code>ingest</code> et <code>update</code>) — les arêtes
+réelles sont portées par les sous-tâches.</p>
+</blockquote>
+<h2 id="contexte-et-decisions-ne-pas-rouvrir">Contexte et décisions (ne pas rouvrir)</h2>
+<p>Q-D tranchée (G7) : <strong>validation locale <code>cwltool</code> uniquement</strong> — l'enregistrement PID-FLOW
+réel est hors lot (fiche future, version PID-FLOW cible à nommer alors). Liste fermée :
+3 CommandLineTools (<code>search</code>, <code>ingest</code>, <code>update</code>) + 1 Workflow (search → ingest, chaîné
+par l'enveloppe JSON — c'est pour ça qu'<code>ingest --acquisitions</code> existe). CWL v1.2,
+<code>baseCommand: python -m tiny_wae &lt;cmd&gt;</code> (écart cwl-assets documenté). <code>pid:Milestone</code> :
+RETIRÉ du périmètre (scope creep pointé en revue v2 — le consommateur, l'IHM PID-FLOW,
+est hors lot ; à réintroduire dans la fiche d'enregistrement future). Recette <code>just cwl</code>
+(validation statique) branchée dans <code>just check</code> — impact assumé : <code>cwltool</code> entre dans
+l'environnement de tous les worktrees (dit ici, conformément à la règle « le gate
+appartient à la fiche qui l'ajoute »).</p>
+<h2 id="sous-taches">Sous-tâches</h2>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Effort</th>
+<th>Objet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>l0-06.1</td>
+<td>S</td>
+<td>search.cwl + ingest.cwl + workflow.cwl + README + just cwl dans check</td>
+</tr>
+<tr>
+<td>l0-06.2</td>
+<td>S</td>
+<td>update.cwl + run local comparatif</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : exécution par un worker PID-FLOW réel (hors lot, G7).</p><p class="gen">Généré le 21/08/2026 16:06 — le .md fait foi.</p></article></body></html>
