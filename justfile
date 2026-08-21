@@ -47,6 +47,11 @@ test:
 run *args:
     pixi run python -m tiny_wae {{args}}
 
+# exécute un script de scripts/ dans l'environnement du projet
+# (ex. just script record_stac_fixtures --sites C07) — évite tout `python …` à la main.
+script name *args:
+    pixi run python scripts/{{name}}.py {{args}}
+
 # smoke : le pipeline réel sur un périmètre minuscule (à câbler dès le Lot 0)
 smoke:
     pixi run python scripts/smoke.py
