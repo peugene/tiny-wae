@@ -207,6 +207,9 @@ padding:12px 20px;min-width:120px;text-decoration:none;display:block}
 .anomalies{background:#3a2020;border:1px solid #7a3030;border-radius:10px;
 padding:12px 20px;margin:0 0 22px;font-size:.9em}
 .anomalies ul{margin:8px 0 2px;padding-left:20px}.anomalies li{margin:2px 0}
+.infos{background:#1c2333;border:1px solid #33415e;border-radius:10px;
+padding:10px 20px;margin:0 0 22px;font-size:.86em;color:var(--muted)}
+.infos ul{margin:6px 0 2px;padding-left:20px}
 tr.child td:first-child{padding-left:26px}
 tr.child{background:rgba(255,255,255,.02)}
 td a{color:var(--accent);text-decoration:none}
@@ -353,7 +356,7 @@ def page(title: str, sub: str, body: str, css: str = DARK_CSS) -> str:
     )
 
 
-def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> list[str]:
+def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str], list[str]]:
     """Contrôle mécanique de cohérence du graphe. Retourne la liste des anomalies.
 
     Remplace le « filet » grossier que constituaient les depends_on de chapeau : ids
@@ -361,6 +364,7 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> list[str]:
     orphelines (personne ne les déclare et elles ne déclarent personne).
     """
     anomalies: list[str] = []
+    infos: list[str] = []
     for f in fiches:
         for d in f.depends_on:
             if d and d not in index:
@@ -381,6 +385,14 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> list[str]:
             continue
         if not any(f.depends_on) and f.id not in depended_on and not f.parent:
             anomalies.append(f"{f.id} : fiche isolée (aucun lien dans le graphe)")
+    # feuilles : personne n'en dépend. Certaines sont légitimes (recette finale, doc
+    # terminale) ; d'autres signalent une arête oubliée — c'est au PO de trancher, donc
+    # on les LISTE sans les traiter en erreur.
+    leaves = sorted(
+        f.id for f in fiches if not f.is_chapeau and f.id not in depended_on and not f.subtasks
+    )
+    if leaves:
+        infos.append("feuilles (aucun dépendant) — à relire : " + ", ".join(leaves))
     # cycles (DFS sur les seules fiches dispatchables)
     color: dict[str, int] = {}
 
@@ -399,7 +411,7 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> list[str]:
 
     for f in fiches:
         visit(f.id, [])
-    return sorted(set(anomalies))
+    return sorted(set(anomalies)), sorted(set(infos))
 
 
 def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
@@ -492,13 +504,16 @@ def cmd_dashboard(project: str, backlog: Path) -> int:
     )
     base = backlog / "maturation"
     body = f'<div class="counters">{counters}</div>'
-    anomalies = check_graph(all_fiches, index)
+    anomalies, infos = check_graph(all_fiches, index)
     if anomalies:
         items = "".join(f"<li>{esc(a)}</li>" for a in anomalies)
         body += (
             f'<div class="anomalies"><b>⚠ Graphe — {len(anomalies)} anomalie(s)</b>'
             f"<ul>{items}</ul></div>"
         )
+    if infos:
+        items = "".join(f"<li>{esc(i)}</li>" for i in infos)
+        body += f'<div class="infos"><b>ℹ À relire</b><ul>{items}</ul></div>'
     for state in STATES:
         flat = [f for f in fiches if f.state == state]
         chs = [c for c in chantiers if c.state == state]
@@ -534,6 +549,8 @@ def cmd_dashboard(project: str, backlog: Path) -> int:
     print(f"  {'Fiches .html':<12} {rewritten}/{len(all_fiches)} réécrite(s)")
     for a in anomalies:
         print(f"  ⚠ {a}")
+    for i in infos:
+        print(f"  ℹ {i}")
     print(f"✓ dashboard : {out}" + (f" — {len(anomalies)} anomalie(s)" if anomalies else ""))
     return 0
 
