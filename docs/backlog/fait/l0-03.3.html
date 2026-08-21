@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.3</b></nav><h1>[l0-03.3] Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.1.html"><code>l0-03.1</code></a>, <a href="../fait/l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li>→ <a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li></ul></div><h1 id="l0-033-chips-lecture-et-ecriture">[l0-03.3] — Chips : lecture et écriture</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.3</b></nav><h1>[l0-03.3] Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.1.html"><code>l0-03.1</code></a>, <a href="l0-02.1.html"><code>l0-02.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li>→ <a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../maturation/lot-0-ingestion/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li></ul></div><h1 id="l0-033-chips-lecture-et-ecriture">[l0-03.3] — Chips : lecture et écriture</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Depuis une <code>Acquisition</code> : lire les fenêtres nécessaires (SCL d'abord), écrire les 3
 fichiers sur la grille du site. Pas de CLI ici (l0-03.4), pas de manifeste (fonction pure
@@ -180,4 +180,94 @@ suppositions</strong> :</p>
 (mesurés en <strong>l0-03.7 / O5</strong>).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 00:06 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>8b38767</code>, mergé en <code>4b8e59c</code>) : <code>adapters/chips.py</code> (277 l.) et
+<code>tests/test_chips.py</code> (312 l.) — <strong>aucun autre fichier touché</strong>, périmètre respecté au
+fichier près. <strong>114 → 122 tests</strong> (+8). <code>just check</code> vert sur <code>develop</code> après merge :
+ruff OK, mypy strict <strong>23 fichiers</strong>, <strong>122 passed</strong> en 16,3 s.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>3 fichiers aux bonnes formes, CRS/transform au bit près, valeurs pixel, <code>assets_read &gt; 0</code></td>
+<td><code>chip.tif</code> (4, 512, 512) uint16 · <code>chip_20m.tif</code> (6, 256, 256) uint16 · <code>scl.tif</code> (256, 256) uint8 ; les 6 coefficients du transform comparés <strong>exactement</strong> à <code>transform_for(grid, {10,20})</code> ; valeurs pixel vérifiées <strong>bande par bande</strong> dans l'ordre gravé ; <code>assets_read == 4+6+1 = 11</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O1bis</td>
+<td>hash de contenu stable entre deux exécutions</td>
+<td>2 appels <code>write_chips</code> → <code>content_hashes</code> identiques (64 hex) ; hash = <code>sha256(array.tobytes() + EPSG + 6 coeffs + dtype)</code>, <strong>jamais</strong> les octets du GeoTIFF</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>epsg ≠ grille → exception typée, rien d'écrit</td>
+<td><code>EpsgMismatchError</code> (32632 vs 32631)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>href <code>https://</code> sous <code>TINY_WAE_OFFLINE=1</code> → refus avant ouverture</td>
+<td><code>RemoteAccessForbidden</code> levée avant tout <code>rasterio.open</code> ; <code>file://</code> <strong>et chemin nu</strong> testés acceptés sous la même variable</td>
+<td>✅ (partiel — voir non testé)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>fraction nodata == fraction injectée, dans les deux sens</td>
+<td>2/400 → <strong>0,5 %</strong> exact · 160/400 → <strong>40,0 %</strong> exact ; comparaison au seuil par défaut (1 %) vérifiée des deux côtés</td>
+<td>✅ (calcul)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert (cf. ci-dessus)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="contrat-expose-consomme-par-l0-034">Contrat exposé (consommé par l0-03.4)</h3>
+<pre><code class="language-python">NODATA_VALUE = 0 · OFFLINE_ENV_VAR = &quot;TINY_WAE_OFFLINE&quot;
+CHIP_10M_FILENAME = &quot;chip.tif&quot; · CHIP_20M_FILENAME = &quot;chip_20m.tif&quot; · SCL_FILENAME = &quot;scl.tif&quot;
+class EpsgMismatchError(ValueError) · class RemoteAccessForbidden(ValueError)
+class ChipResult:  files · assets_read · content_hashes · bytes_written · chip_nodata_pct
+check_epsg(acq, grid) -&gt; None
+read_scl(acq, grid, settings)        -&gt; tuple[np.ndarray, int]
+read_bands_10m(acq, grid, settings)  -&gt; tuple[np.ndarray, int]
+read_bands_20m(acq, grid, settings)  -&gt; tuple[np.ndarray, int]
+write_chips(dest_dir, *, bands_10m, bands_20m, scl, grid, item_id, assets_read) -&gt; ChipResult
+</code></pre>
+<p>Les <code>read_*</code> rendent un array <strong>band-major</strong> <code>(bands, H, W)</code> (convention rasterio), pas un dict.</p>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong><code>settings</code> ajouté en 3ᵉ paramètre des <code>read_*</code></strong> — la fiche écrivait <code>read_scl(acq, grid)</code>,
+   mais <code>chip_bounds(grid, settings)</code> a besoin des tailles de chip. Nécessaire, pas cosmétique.</li>
+<li>⭐ <strong>Convention nodata (décision produit, à connaître)</strong> : un pixel du chip 10 m n'est
+   compté nodata <strong>que si les 4 bandes y valent 0</strong> — pas si une seule vaut 0. Motif : sur
+   S2 L2A une bande isolée à 0 est une valeur légitime (surface très sombre en SWIR), alors
+   que hors emprise <strong>toutes</strong> les bandes tombent à 0. La convention inverse sur-compterait
+   le nodata et déclencherait des <code>rejected_nodata</code> fantômes.</li>
+<li>Forme <code>(bands, H, W)</code> et <code>files</code> en noms relatifs (<code>"chip.tif"</code>), pas en chemins absolus.</li>
+</ol>
+<h3 id="a-traiter-par-l0-034-releve-a-la-revue-du-diff-non-corrige-ici">⚠ À traiter par l0-03.4 (relevé à la revue du diff, non corrigé ici)</h3>
+<p><code>check_epsg</code> lève <code>EpsgMismatchError</code> <strong>aussi quand <code>grid.epsg is None</code></strong> (grille non
+calculée), avec un message <code>« … != grid.epsg=None »</code>. Le diagnostic est alors trompeur : la
+cause n'est pas un item non superposable (→ statut <code>failed</code>) mais une <strong>config incomplète</strong>
+(→ exit <code>USAGE</code>, <code>just survey-tiles</code> à lancer). <strong>l0-03.4 doit distinguer les deux cas</strong> au
+moment où il mappe les exceptions sur les statuts et les codes de sortie. Non corrigé ici :
+le chemin est protégé en amont par l'ordre invariant du chapeau, et la grille est remplie
+25/25 depuis l0-01.3 — c'est un défaut de diagnostic, pas de correction.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Lecture HTTPS réelle (smoke <code>--live</code>, l0-03.7) · performance et volumes (l0-03.7/O5) ·
+le déclenchement effectif de <code>rejected_nodata</code> et la suppression des fichiers (orchestration,
+l0-03.4) · la branche « sans <code>TINY_WAE_OFFLINE</code>, l'ouverture <code>https://</code> est tentée »
+(exigerait un appel réseau réel) · le rééchantillonnage <code>Resampling.nearest</code> (jamais exercé :
+les fixtures couvrent exactement l'emprise, ce qui est le cas nominal) · la stabilité du hash
+<strong>entre plateformes</strong> (attendue par construction — le WKT PROJ est exclu — mais non mesurée).</p><p class="gen">Généré le 22/08/2026 00:25 — le .md fait foi.</p></article></body></html>
