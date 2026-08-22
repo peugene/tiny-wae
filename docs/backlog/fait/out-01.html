@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>out-01</b></nav><h1>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</h1><p>En cours · effort M · outillage · phase O3 · depends_on : <a href="../fait/l0-06.2.html"><code>l0-06.2</code></a></p></div></div><article><h1 id="out-01-mypy-sur-tests">[out-01] — mypy sur <code>tests/</code></h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>out-01</b></nav><h1>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</h1><p>Fait · effort M · outillage · phase O3 · depends_on : <a href="l0-06.2.html"><code>l0-06.2</code></a></p></div></div><article><h1 id="out-01-mypy-sur-tests">[out-01] — mypy sur <code>tests/</code></h1>
 <blockquote>
 <p><strong>Fiche différée</strong>, rédigée pendant le run N5 (22/08/2026) au lieu d'interrompre le run.
 Elle capture un trou d'oracle constaté en clôturant l0-03.5, pas une idée d'amélioration.</p>
@@ -139,4 +139,56 @@ retyper les tests que les fiches restantes (l0-03.6, l0-03.7, l0-04.1, l0-04.2, 
 l0-06.2) vont ajouter — le même travail, deux fois. Rien dans out-01 ne bloque ces fiches.</p>
 <h2 id="non-couvert-par-cette-fiche">Non couvert par cette fiche</h2>
 <p>Le choix d'un <code>runtime_checkable</code> sur <code>StacSource</code> (rejeté à l'ancrage de l0-03.5 : ce
-serait rendre la production dépendante d'un besoin de test).</p><p class="gen">Généré le 22/08/2026 03:49 — le .md fait foi.</p></article></body></html>
+serait rendre la production dépendante d'un besoin de test).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Livré</strong> (commit <code>875fc76</code>, mergé en <code>4e7f2c1</code>, complété par <code>bd9156e</code>) :
+<code>pyproject.toml</code> → <code>files = ["src", "tests"]</code> avec <code>strict = true</code> <strong>conservé tel quel</strong>,
+et 8 fichiers de <code>tests/</code> annotés. <code>src/</code> <strong>identique à son état initial</strong> dans le commit
+(vérifié par <code>git diff -- src/</code>). <code>just check</code> vert : <strong>mypy 60 fichiers</strong>, 235 tests,
+smoke, 4 CWL.</p>
+<h3 id="le-resultat-qui-compte-la-substituabilite-est-enfin-gardee-par-le-gate">Le résultat qui compte : la substituabilité est enfin gardée par le GATE</h3>
+<p>Motif d'origine de la fiche : l'oracle O1 de l0-03.5 vérifiait que <code>FixtureSource</code> est
+substituable à <code>EarthSearchSource</code> derrière le <code>Protocol</code> <code>StacSource</code> — par une fonction
+annotée dans <code>tests/</code>, <strong>donc jamais vérifiée</strong>. Démonstration faite par mutation sur le
+vrai gate (<code>just types</code>), en cassant le type de retour de <code>FixtureSource.search</code> :</p>
+<pre><code>tests/test_fixture_source.py:85: error: Argument 1 to &quot;_consume&quot; has incompatible type
+    &quot;FixtureSource&quot;; expected &quot;StacSource&quot;  [arg-type]
+    note: Following member(s) of &quot;FixtureSource&quot; have conflicts:
+    note:     Expected: def search(self, site: Site, window: Window) -&gt; Envelope
+    note:     Got:      def search(self, site: Site, window: Window) -&gt; str
+</code></pre>
+<p>⭐ <strong>Enseignement de l'agent, à retenir</strong> : renommer un <em>paramètre</em> n'est PAS détecté — les
+appels de test sont positionnels. Seul un changement de <strong>type</strong> l'est. Un Protocol ne
+protège donc pas des noms de paramètres.</p>
+<h3 id="sans-la-correction-du-justfile-cette-fiche-naurait-rien-change">⚠ Sans la correction du <code>justfile</code>, cette fiche n'aurait rien changé</h3>
+<p><strong>Découverte de l'agent, signalée plutôt que contournée</strong> : la recette <code>types</code> lançait
+<code>pixi run mypy src</code>, et <strong>un chemin en ligne de commande PRIME sur <code>files=</code> de
+<code>pyproject.toml</code></strong>. La fiche configurait donc correctement mypy pendant que <code>just check</code>
+continuait d'analyser 34 fichiers au lieu de 60. Le <code>justfile</code> était <strong>hors de son
+périmètre</strong> et il a eu raison de ne pas y toucher — l'orchestrateur l'a corrigé (<code>bd9156e</code>).</p>
+<p>⚠ Effet de bord immédiat : une erreur est apparue dans un fichier que la fiche n'avait pas
+vu (<code>test_cli_commands.py</code>). <strong>Analyser <code>tests</code> seul et analyser <code>src+tests</code> ensemble ne
+donnent pas les mêmes erreurs</strong> sous <code>--no-implicit-reexport</code>. Corrigée par un import
+explicite du sous-module.</p>
+<h3 id="corrections-apportees-2930-erreurs-mesurees-0">Corrections apportées (29–30 erreurs mesurées → 0)</h3>
+<p><code>test_cli_search.py</code> <strong>14</strong> (le helper <code>_invoke</code> annoté <code>object</code> → <code>typer.testing.Result</code>,
+soit la moitié du lot d'un coup, comme l'ancrage l'annonçait) · <code>test_ingestion.py</code> 7 ·
+<code>test_stac.py</code> 3 · <code>test_report.py</code> 3 · <code>test_config.py</code> 2 · <code>test_cli_ingest.py</code> 3 ·
+<code>test_smoke.py</code> 1 · <code>test_cli_backfill.py</code> 1 · <code>test_cli_commands.py</code> 1 (orchestrateur).</p>
+<p><strong>Un seul <code>type: ignore</code></strong>, nommé et justifié (<code>run_backfill</code> importé sans ré-export dans
+<code>cli/backfill.py</code>), conformément à la décision n°2 — aucun ignore posé en masse.
+<strong>Aucun comportement de test modifié</strong> (décision n°3).</p>
+<h3 id="defaut-signale-non-corrige-comme-demande">Défaut signalé, non corrigé (comme demandé)</h3>
+<p><code>src/tiny_wae/cli/backfill.py</code> importe <code>run_backfill</code> sans le ré-exporter explicitement
+(pas d'<code>__all__</code>). Pas un bug fonctionnel — une lacune de style d'export, visible seulement
+parce qu'un test y accède par monkeypatch. À traiter hors de cette fiche, ou pas.</p>
+<h3 id="durees-mesurees">Durées mesurées</h3>
+<p><code>just types</code> : 34 fichiers en ~30 s <strong>avant</strong> → <strong>60 fichiers en ~46 s après</strong>. Le gate
+complet (<code>just check</code>) tourne en ~2 min 40 s. Coût accepté : le typage est le filet n°1 d'un
+dépôt dont la quasi-totalité du code est écrite par des agents, et il s'arrêtait jusqu'ici à
+la frontière des fichiers qui <strong>attestent</strong> que le reste est correct.</p>
+<h3 id="non-traite-explicite">Non traité (explicite)</h3>
+<p>Les 4 <code>unused-ignore</code> relevés à l'ancrage n'ont pas été retrouvés lors des mesures de
+l'agent (peut-être purgés entre-temps) — non vérifié plus avant · le défaut d'export de
+<code>cli/backfill.py</code> (signalé ci-dessus).</p><p class="gen">Généré le 22/08/2026 04:18 — le .md fait foi.</p></article></body></html>

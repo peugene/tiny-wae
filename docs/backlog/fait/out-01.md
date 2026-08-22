@@ -137,3 +137,74 @@ l0-06.2) vont ajouter — le même travail, deux fois. Rien dans out-01 ne bloqu
 
 Le choix d'un `runtime_checkable` sur `StacSource` (rejeté à l'ancrage de l0-03.5 : ce
 serait rendre la production dépendante d'un besoin de test).
+
+---
+## Résumé de réalisation
+
+**Livré** (commit `875fc76`, mergé en `4e7f2c1`, complété par `bd9156e`) :
+`pyproject.toml` → `files = ["src", "tests"]` avec `strict = true` **conservé tel quel**,
+et 8 fichiers de `tests/` annotés. `src/` **identique à son état initial** dans le commit
+(vérifié par `git diff -- src/`). `just check` vert : **mypy 60 fichiers**, 235 tests,
+smoke, 4 CWL.
+
+### Le résultat qui compte : la substituabilité est enfin gardée par le GATE
+
+Motif d'origine de la fiche : l'oracle O1 de l0-03.5 vérifiait que `FixtureSource` est
+substituable à `EarthSearchSource` derrière le `Protocol` `StacSource` — par une fonction
+annotée dans `tests/`, **donc jamais vérifiée**. Démonstration faite par mutation sur le
+vrai gate (`just types`), en cassant le type de retour de `FixtureSource.search` :
+
+```
+tests/test_fixture_source.py:85: error: Argument 1 to "_consume" has incompatible type
+    "FixtureSource"; expected "StacSource"  [arg-type]
+    note: Following member(s) of "FixtureSource" have conflicts:
+    note:     Expected: def search(self, site: Site, window: Window) -> Envelope
+    note:     Got:      def search(self, site: Site, window: Window) -> str
+```
+
+⭐ **Enseignement de l'agent, à retenir** : renommer un *paramètre* n'est PAS détecté — les
+appels de test sont positionnels. Seul un changement de **type** l'est. Un Protocol ne
+protège donc pas des noms de paramètres.
+
+### ⚠ Sans la correction du `justfile`, cette fiche n'aurait rien changé
+
+**Découverte de l'agent, signalée plutôt que contournée** : la recette `types` lançait
+`pixi run mypy src`, et **un chemin en ligne de commande PRIME sur `files=` de
+`pyproject.toml`**. La fiche configurait donc correctement mypy pendant que `just check`
+continuait d'analyser 34 fichiers au lieu de 60. Le `justfile` était **hors de son
+périmètre** et il a eu raison de ne pas y toucher — l'orchestrateur l'a corrigé (`bd9156e`).
+
+⚠ Effet de bord immédiat : une erreur est apparue dans un fichier que la fiche n'avait pas
+vu (`test_cli_commands.py`). **Analyser `tests` seul et analyser `src+tests` ensemble ne
+donnent pas les mêmes erreurs** sous `--no-implicit-reexport`. Corrigée par un import
+explicite du sous-module.
+
+### Corrections apportées (29–30 erreurs mesurées → 0)
+
+`test_cli_search.py` **14** (le helper `_invoke` annoté `object` → `typer.testing.Result`,
+soit la moitié du lot d'un coup, comme l'ancrage l'annonçait) · `test_ingestion.py` 7 ·
+`test_stac.py` 3 · `test_report.py` 3 · `test_config.py` 2 · `test_cli_ingest.py` 3 ·
+`test_smoke.py` 1 · `test_cli_backfill.py` 1 · `test_cli_commands.py` 1 (orchestrateur).
+
+**Un seul `type: ignore`**, nommé et justifié (`run_backfill` importé sans ré-export dans
+`cli/backfill.py`), conformément à la décision n°2 — aucun ignore posé en masse.
+**Aucun comportement de test modifié** (décision n°3).
+
+### Défaut signalé, non corrigé (comme demandé)
+
+`src/tiny_wae/cli/backfill.py` importe `run_backfill` sans le ré-exporter explicitement
+(pas d'`__all__`). Pas un bug fonctionnel — une lacune de style d'export, visible seulement
+parce qu'un test y accède par monkeypatch. À traiter hors de cette fiche, ou pas.
+
+### Durées mesurées
+
+`just types` : 34 fichiers en ~30 s **avant** → **60 fichiers en ~46 s après**. Le gate
+complet (`just check`) tourne en ~2 min 40 s. Coût accepté : le typage est le filet n°1 d'un
+dépôt dont la quasi-totalité du code est écrite par des agents, et il s'arrêtait jusqu'ici à
+la frontière des fichiers qui **attestent** que le reste est correct.
+
+### Non traité (explicite)
+
+Les 4 `unused-ignore` relevés à l'ancrage n'ont pas été retrouvés lors des mesures de
+l'agent (peut-être purgés entre-temps) — non vérifié plus avant · le défaut d'export de
+`cli/backfill.py` (signalé ci-dessus).
