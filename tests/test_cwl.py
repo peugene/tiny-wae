@@ -173,3 +173,35 @@ def test_workflow_cwl_output_sources_point_to_declared_steps() -> None:
         assert step_output in steps[step_name]["out"], (
             f"{source!r} référence une sortie absente de steps[{step_name!r}]['out']"
         )
+
+
+def _mentions_inline_javascript(node: Any) -> bool:
+    """Vrai si `node` déclare `InlineJavascriptRequirement`, sous l'une OU l'autre des
+    deux formes admises par CWL : clé d'une map de `requirements`/`hints`, ou entrée
+    `{class: InlineJavascriptRequirement}` d'une liste. Récursif : un
+    `requirements` niché dans un step de workflow compte aussi."""
+    if isinstance(node, dict):
+        if "InlineJavascriptRequirement" in node:
+            return True
+        if node.get("class") == "InlineJavascriptRequirement":
+            return True
+        return any(_mentions_inline_javascript(value) for value in node.values())
+    if isinstance(node, list):
+        return any(_mentions_inline_javascript(item) for item in node)
+    return False
+
+
+def test_aucun_cwl_ne_declare_inline_javascript_requirement() -> None:
+    """⛔ `InlineJavascriptRequirement` n'est pas supporté par PID-FLOW aujourd'hui.
+
+    `cwltool --validate` (`just cwl`) reste VERT si on le rajoute — l'exécuteur de
+    développement est plus permissif que celui de production : c'est exactement l'angle
+    mort que ce test comble. Nos `$(inputs.x)` sont des références de paramètre, le
+    sous-ensemble toujours disponible sans exigence déclarée (cf. cwl/README.md), donc
+    rien ne justifie de le réintroduire.
+    """
+    for name in ("search.cwl", "ingest.cwl", "update.cwl", "workflow.cwl"):
+        assert not _mentions_inline_javascript(_load_cwl(name)), (
+            f"{name} déclare InlineJavascriptRequirement — non supporté par PID-FLOW, "
+            "et inutile pour des références de paramètre (cf. cwl/README.md)"
+        )

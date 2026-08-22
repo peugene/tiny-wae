@@ -15,9 +15,9 @@ baseCommand: [python, -m, tiny_wae, search]
 # cf. cwl/README.md pour la justification complète des successCodes de chaque tool.
 successCodes: [0]
 
-requirements:
-  InlineJavascriptRequirement: {}
-
+# ⛔ PAS d'`InlineJavascriptRequirement` ici — non supporté par PID-FLOW aujourd'hui, et
+# inutile : `$(inputs.x)` est une référence de paramètre, toujours disponible sans lui.
+# Cf. cwl/README.md. Ne pas le (ré)ajouter par réflexe.
 inputs:
   site:
     type: string

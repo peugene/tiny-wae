@@ -23,8 +23,10 @@ baseCommand: [python, -m, tiny_wae, update]
 # QUE des erreurs réseau doit remonter en échec, pas se fondre dans le succès silencieux.
 successCodes: [0, 1]
 
+# ⛔ PAS d'`InlineJavascriptRequirement` ici — non supporté par PID-FLOW aujourd'hui, et
+# inutile : `$(inputs.x)` est une référence de paramètre, toujours disponible sans lui.
+# Cf. cwl/README.md. Ne pas le (ré)ajouter par réflexe.
 requirements:
-  InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
       # `update` n'a aucune option --data-root (comme `ingest`) : la racine de stockage

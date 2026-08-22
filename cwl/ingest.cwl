@@ -18,8 +18,10 @@ baseCommand: [python, -m, tiny_wae, ingest]
 # réseau uniquement) restent des échecs CWL. Détail : cwl/README.md.
 successCodes: [0, 1]
 
+# ⛔ PAS d'`InlineJavascriptRequirement` ici — non supporté par PID-FLOW aujourd'hui, et
+# inutile : `$(inputs.x)` est une référence de paramètre, toujours disponible sans lui.
+# Cf. cwl/README.md. Ne pas le (ré)ajouter par réflexe.
 requirements:
-  InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
       # Surcharge de settings.data_root (mécanisme TINY_WAE_* d'adapters/config_io.py) —

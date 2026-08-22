@@ -29,6 +29,30 @@ domaine d'application qui s'arrête à la frontière du dépôt. Ne pas « corri
 fichiers pour y mettre `just` — ça ne s'exécuterait nulle part en dehors du
 développeur qui a le dépôt cloné.
 
+## ⛔ Pas d'`InlineJavascriptRequirement` (contrainte PID-FLOW)
+
+**`InlineJavascriptRequirement` n'est pas supporté par PID-FLOW aujourd'hui.** Aucun des
+4 fichiers ne le déclare, et il ne faut pas l'y remettre : un tool qui l'exige ne
+tournerait pas chez le consommateur visé, alors même que `cwltool --validate` reste vert
+en local — l'exécuteur de développement est plus permissif que l'exécuteur de production.
+
+Il n'apportait de toute façon rien. Les 3 tools n'utilisent que des **références de
+paramètre** (`$(inputs.data_root)`, `$(inputs.json_out)`), c'est-à-dire le sous-ensemble
+restreint que la spec CWL rend **toujours disponible**, sans exigence à déclarer. Vérifié
+dans le moteur (`cwl_utils/expression.py`, `evaluator()`) : une expression qui matche la
+grammaire des références de paramètre est résolue directement, le drapeau `fullJS`
+(= `InlineJavascriptRequirement`) n'est consulté que dans la branche de repli. Mesuré :
+avec l'exigence déclarée et un `node` délibérément saboté (`exit 127`), le run reste vert
+— le moteur JS n'est jamais sollicité.
+
+Ce que l'exigence coûtait, en plus de fermer la porte de PID-FLOW : elle **désarme un
+garde-fou**. Sans elle, une `$(...)` mal formée est refusée avec un message explicite
+(« *Syntax error in parameter reference … could be due to using Javascript code without
+specifying InlineJavascriptRequirement* ») ; avec elle, la même expression part au moteur
+JS et s'évalue silencieusement. C'est précisément ce message qui doit sonner le jour où
+quelqu'un écrit du vrai JavaScript ici — parce que ce jour-là, le tool cesse d'être
+exécutable par PID-FLOW.
+
 ## Codes de sortie et `successCodes`
 
 Les CLI `search`/`ingest` partagent la même convention (`cli/exit_codes.py`) :
