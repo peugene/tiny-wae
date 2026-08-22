@@ -75,10 +75,53 @@ utilise une TrueType système, avec translittération ASCII en filet.</p>
 <li>[ ] Commit des corrections (<code>sites.yaml</code> + rapport survey).</li>
 <li>[ ] Déplacer CETTE fiche en <code>fait/</code> avec deux lignes de résumé (sites corrigés, verdict).</li>
 </ul>
+<h3 id="ce-que-le-rapport-ajoute-a-la-revue-produit-le-2208-apres-l0-042">⭐ Ce que le rapport ajoute à la revue (produit le 22/08 après l0-04.2)</h3>
+<p><code>just run report --out data/report.md</code> tourne maintenant sur ces données réelles.
+<strong>Conservation OK et intégrité OK sur les 25 sites</strong> — aucun chip orphelin, aucun manifeste
+incomplet. Mais il fait apparaître une question que la seule planche ne montre pas : la
+<strong>tuile de référence</strong> de certains sites.</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th><code>off_tile</code></th>
+<th>Lecture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A03 Sizewell C</strong></td>
+<td><strong>11/24 (46 %)</strong></td>
+<td>le chip est à cheval sur deux tuiles — la <code>reference_tile</code> mérite d'être revue</td>
+</tr>
+<tr>
+<td><strong>A04 Flamanville</strong></td>
+<td><strong>5/12 (42 %)</strong></td>
+<td>idem</td>
+</tr>
+<tr>
+<td><strong>C07 Punggye-ri</strong></td>
+<td>3/10 (30 %)</td>
+<td>connu et <strong>assumé</strong> : le chapeau l0-02 documente ce site comme bi-tuile (52TDL/52TEL)</td>
+</tr>
+<tr>
+<td><strong>B08 Port de Chancay</strong></td>
+<td>5/12 (42 %)</td>
+<td>s'ajoute aux nuages, qui expliquent déjà les 0 chip</td>
+</tr>
+</tbody>
+</table>
+<p>⚠ Un <code>off_tile</code> élevé n'est <strong>pas</strong> un défaut en soi — c'est la géométrie du site. Mais
+au-delà de ~40 %, il vaut la peine de vérifier si une autre tuile couvrirait mieux le chip :
+c'est deux fois moins d'items instruits pour le même coût de recherche. <code>just survey-tiles
+&lt;ids&gt;</code> recalcule la tuile après une correction de coordonnées.</p>
+<p><strong>Confirmation pour B08 et C07</strong> : leurs cases grises viennent bien des nuages, pas des
+coordonnées — <code>rejected_clouds = 5/6</code> et <code>3/3</code> respectivement, sur les items effectivement
+instruits. Aucun de leurs items n'a échoué.</p>
 <h2 id="critere-de-sortie">Critère de sortie</h2>
 <p>25/25 sites identifiables et centrés sur la planche régénérée. En cas de site
 irrécupérable (introuvable, inadapté) : décision de remplacement à consigner ici — c'est
 une décision de PO/pilotage, pas d'agent.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(rempli par Philippe : sites corrigés, date, verdict)</em></p><p class="gen">Généré le 22/08/2026 03:25 — le .md fait foi.</p></article></body></html>
+<p><em>(rempli par Philippe : sites corrigés, date, verdict)</em></p><p class="gen">Généré le 22/08/2026 03:47 — le .md fait foi.</p></article></body></html>
