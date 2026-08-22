@@ -215,9 +215,7 @@ def _record_item_cog(item: dict[str, Any], *, grid: Grid, settings: Settings) ->
     return written
 
 
-def _record_site(
-    client: Client, settings: Settings, site: Site, raw_items: list[dict[str, Any]]
-) -> None:
+def _record_site(settings: Settings, site: Site, raw_items: list[dict[str, Any]]) -> None:
     """Écrit l'enveloppe STAC brute du site puis clippe le corpus raster de chaque item."""
     _write_stac_fixture(f"cog_{site.id.lower()}.json", raw_items)
     print(
@@ -292,8 +290,8 @@ def run() -> int:
             file=sys.stderr,
         )
 
-        _record_site(client, settings, a01, a01_items)
-        _record_site(client, settings, b09, b09_items)
+        _record_site(settings, a01, a01_items)
+        _record_site(settings, b09, b09_items)
 
     except RecordNetworkError as exc:
         print(f"record-cog-fixtures : {exc}", file=sys.stderr)

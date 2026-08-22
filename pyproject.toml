@@ -130,14 +130,20 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 # `_report_counters`…). Tester l'unité derrière une porte publique serait un test moins
 # discriminant, pas un test plus propre.
 "tests/**" = ["S101", "ARG001", "ARG002", "ARG005", "SLF001"]
-# `scripts/` = outils en ligne de commande : ils écrivent sur la console (c'est leur
-# interface) et `smoke.py` utilise `assert` comme mécanisme de vérification assumé.
-"scripts/**" = ["S101", "T201", "ARG001", "ARG002"]
+# `scripts/` = outils en ligne de commande : écrire sur la console EST leur interface.
+# Seul T201 est exempté globalement ; les autres familles y sont tenues comme dans src/.
+"scripts/**" = ["T201"]
+# `smoke.py` SEUL : `assert` y est le mécanisme de vérification assumé (17 occurrences —
+# c'est la nature d'un script de contrôle), pas une négligence.
+"scripts/smoke.py" = ["S101"]
 
 [tool.mypy]
 # Strict sur NOTRE code, pragmatique sur l'écosystème (libs géospatiales mal typées).
 strict = true
-files = ["src", "tests"]
+# `scripts/` inclus : mesuré, il passait DÉJÀ le strict sans une seule erreur — l'exclure
+# ne protégeait rien, ça laissait juste `backlog.py`, `smoke.py` et les enregistreurs de
+# fixtures hors du filet n°1.
+files = ["src", "tests", "scripts"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

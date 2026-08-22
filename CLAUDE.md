@@ -32,7 +32,7 @@ Objectif : **simple, rapide à livrer, maintenable**.
 
 ## Stack
 - **Python 3.12 + pixi** (conda-forge + PyPI ; lockfile) · **ruff** (lint + format) ·
-  **mypy strict sur `src/`** · **pytest** · **typer** (CLIs) · **`just`** (lanceur).
+  **mypy strict sur `src/`, `tests/` et `scripts/`** · **pytest** · **typer** (CLIs) · **`just`** (lanceur).
 - **PostgreSQL + pgvector** (compose) pour l'état durable et les recherches vectorielles.
 - Référence de décision : `_tools_python/reco-stack-python.md` (pixi vs uv, mypy pragmatique).
 
