@@ -3,10 +3,14 @@
 backlog.py — le backlog-kit en Python : dashboard HTML + md→html. Zéro Node.
 
 Port Python (2026-08-21) des scripts `build-dashboard.mjs` / `md-to-html.mjs` du kit
-`_tools`/`_tools_js` — fusionnés en UN SEUL CLI à deux sous-commandes :
+`_tools`/`_tools_js` — fusionnés en UN SEUL CLI à trois sous-commandes :
 
     python scripts/backlog.py dashboard [--project "Nom"] [--backlog docs/backlog]
+    python scripts/backlog.py lots      [--project "Nom"] [--lots docs/lots]
     python scripts/backlog.py md2html <src.md> <dest.html> [titre] [bandeau]
+
+Fiches et lots partagent la même grammaire visuelle : bandeau à en-tête détaillé, pastille
+d'état, sommaire replié, précédent/suivant, navigation croisée.
 
 Dépendance unique : `markdown` (pip/conda-forge). Le reste est stdlib.
 Principes inchangés : le .md est la source (canal IA), le HTML est la vue humaine
@@ -380,6 +384,14 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str]
             anomalies.append(f"{f.id} : parent « {f.parent} » — fiche inexistante")
         if f.is_chapeau and any(f.depends_on):
             anomalies.append(f"{f.id} : un CHAPEAU ne doit pas porter de depends_on")
+        # un chapeau se ferme quand ses sous-tâches sont fermées : le rappeler, sans l'imposer
+        # (déplacer une fiche est un geste d'équipe, pas une erreur de graphe)
+        subs = [index[s] for s in f.subtasks if s in index]
+        if subs and f.state != "fait" and all(s.state == "fait" for s in subs):
+            infos.append(
+                f"{f.id} : chapeau en {f.state}/ alors que ses {len(subs)} sous-tâches "
+                "sont en fait/ — à clore ?"
+            )
     # fiches isolées : ni dépendance, ni dépendant, ni rattachement à un chapeau
     depended_on = {d for f in fiches for d in f.depends_on if d}
     for f in fiches:
@@ -416,15 +428,38 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str]
     return sorted(set(anomalies)), sorted(set(infos))
 
 
+def fiche_sequence(f: Fiche, index: dict[str, Fiche]) -> list[str]:
+    """Ordre de lecture dans lequel situer la fiche pour le « précédent / suivant ».
+
+    Une sous-tâche se lit dans l'ordre des `subtasks` de son chapeau (l'ordre voulu par le
+    PO) ; une fiche sans chapeau, dans l'ordre des ids de son chantier."""
+    parent = index.get(f.parent) if f.parent else None
+    if parent is not None and f.id in parent.subtasks:
+        return [s for s in parent.subtasks if s in index]
+    return sorted(o.id for o in index.values() if o.chantier == f.chantier and not o.parent)
+
+
 def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
-    """Dispatch .md -> .html d'une fiche : breadcrumb, navigation parent/sœurs/enfants,
-    dépendances cliquables. Écrit à côté de la source (vue humaine dérivée).
+    """Dispatch .md -> .html d'une fiche : breadcrumb, pastille d'état, en-tête détaillé,
+    sommaire, navigation parent/sœurs/enfants, précédent-suivant. Écrit à côté de la source.
 
     Retourne True si le .html a réellement été réécrit (cf. write_if_changed)."""
     here = f.path.parent
     text = f.path.read_text(encoding="utf-8")
     _, body_md = parse_frontmatter(text)
-    body = markdown.Markdown(extensions=MD_EXT).convert(body_md)
+    # l'en-tête `**Champ** : …` éventuel remonte dans le bandeau (comme pour les lots)
+    fields, body_md = split_header_fields(body_md)
+    md = markdown.Markdown(extensions=MD_EXT)
+    body = md.convert(body_md)
+    body = body.replace("<table>", '<div class="tablewrap"><table>').replace(
+        "</table>", "</table></div>"
+    )
+    # H1 retiré : le bandeau porte déjà « [id] titre » (le frontmatter fait foi)
+    body = re.sub(r"<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.DOTALL)
+    toc_html = getattr(md, "toc", "")
+    toc = ""
+    if toc_html.count("<li>") >= 2:
+        toc = f'<details class="toc-box" open><summary>Sommaire</summary>{toc_html}</details>'
 
     dash = Path(os.path.relpath(backlog / "maturation" / "etat.html", here)).as_posix()
     # ── breadcrumb : dashboard › chantier › [chapeau ›] fiche
@@ -437,11 +472,19 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
     crumbs.append(f"<b>{esc(f.id)}</b>")
     breadcrumb = '<nav class="crumb">' + " › ".join(crumbs) + "</nav>"
 
-    dep = ", ".join(link_to(d, index, here) for d in f.depends_on if d) or "—"
-    meta = (
-        f"{STATE_LABELS.get(f.state, f.state)} · effort {f.effort or '—'} · "
-        f"{f.categorie or '—'}{' · phase ' + f.phase if f.phase else ''}"
-    )
+    # ── bandeau = les ATTRIBUTS de la fiche (le graphe est en navigation, plus bas :
+    # le lister ici aussi ferait deux fois la même liste à deux centimètres d'écart)
+    rows: list[tuple[str, str]] = [("Effort", esc(f.effort) or "—")]
+    if f.priority:
+        rows.append(("Priorité", f'<span class="prio-{f.priority}">{f.priority}</span>'))
+    rows.append(("Catégorie", esc(f.categorie) or "—"))
+    if f.phase:
+        rows.append(("Phase", esc(f.phase)))
+    if f.chantier:
+        rows.append(("Chantier", esc(f.chantier)))
+    rows += [(k, inline_md(v)) for k, v in fields]
+    meta = "<br>".join(f"<b>{esc(k)}</b> : {v}" for k, v in rows)
+
     warn = ""
     if f.is_humaine:
         warn = (
@@ -454,29 +497,46 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
             "elle porte le contexte de ses sous-tâches.</div>"
         )
 
-    # ── navigation latérale : sous-tâches (chapeau) ou fratrie (sous-tâche)
+    # ── navigation : chaque fiche liée porte son ÉTAT, ce qui répond d'un coup d'œil à
+    # « suis-je débloqué ? » et « où en sont mes sous-tâches ? »
+    def item(fid: str, mark: str = "") -> str:
+        o = index.get(fid)
+        if o is None:
+            return f"<li>{mark}<code>{esc(fid)}</code> — fiche inconnue</li>"
+        return f"<li>{mark}{link_to(fid, index, here)} {esc(o.titre)} {pill(o.state)}</li>"
+
     nav = ""
-    if f.is_chapeau and f.subtasks:
-        items = "".join(
-            f"<li>{link_to(sid, index, here)} {esc(index[sid].titre) if sid in index else ''}</li>"
-            for sid in f.subtasks
-        )
-        nav = f'<div class="nav"><b>Sous-tâches</b><ul>{items}</ul></div>'
-    elif parent is not None and parent.subtasks:
-        items = "".join(
-            f"<li>{'→ ' if sid == f.id else ''}{link_to(sid, index, here)} "
-            f"{esc(index[sid].titre) if sid in index else ''}</li>"
-            for sid in parent.subtasks
-        )
-        nav = (
-            f'<div class="nav"><b>Chapeau</b> : {link_to(parent.id, index, here)} '
-            f"{esc(parent.titre)}<ul>{items}</ul></div>"
-        )
-    # fiches qui dépendent de celle-ci (navigation aval)
-    aval = [o for o in index.values() if f.id in o.depends_on]
+    amont = [d for d in f.depends_on if d]
+    aval = sorted((o.id for o in index.values() if f.id in o.depends_on), key=str)
+    if amont:
+        nav += f'<div class="nav"><b>Dépend de</b><ul>{"".join(item(d) for d in amont)}</ul></div>'
     if aval:
-        items = "".join(f"<li>{link_to(o.id, index, here)} {esc(o.titre)}</li>" for o in aval)
-        nav += f'<div class="nav"><b>Débloque</b><ul>{items}</ul></div>'
+        nav += f'<div class="nav"><b>Débloque</b><ul>{"".join(item(a) for a in aval)}</ul></div>'
+    if f.is_chapeau and f.subtasks:
+        items = "".join(item(sid) for sid in f.subtasks)
+        nav += f'<div class="nav"><b>Sous-tâches</b><ul>{items}</ul></div>'
+    elif parent is not None and parent.subtasks:
+        items = "".join(item(sid, "→ " if sid == f.id else "") for sid in parent.subtasks)
+        nav += (
+            f'<div class="nav"><b>Chapeau</b> : {link_to(parent.id, index, here)} '
+            f"{esc(parent.titre)} {pill(parent.state)}<ul>{items}</ul></div>"
+        )
+
+    # ── précédent / suivant dans l'ordre de lecture (fratrie du chapeau, sinon chantier)
+    seq = fiche_sequence(f, index)
+    i = seq.index(f.id) if f.id in seq else -1
+
+    def step(j: int) -> str:
+        if i < 0 or not (0 <= j < len(seq)):
+            return "<span></span>"
+        o = index[seq[j]]
+        arrow = "← " if j < i else ""
+        suffix = "" if j < i else " →"
+        return (
+            f'<a href="{esc(fiche_href(o, here))}">{arrow}[{esc(o.id)}] {esc(o.titre)}{suffix}</a>'
+        )
+
+    prevnext = f'<div class="prevnext">{step(i - 1)}{step(i + 1)}</div>' if i >= 0 else ""
 
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     return write_if_changed(
@@ -485,9 +545,9 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
         f'<meta name="viewport" content="width=device-width,initial-scale=1">'
         f"<title>[{esc(f.id)}] {esc(f.titre)}</title><style>{LIGHT_CSS}</style></head><body>"
         f'<div class="banner"><div class="inner">{breadcrumb}'
-        f"<h1>[{esc(f.id)}] {esc(f.titre)}</h1>"
-        f"<p>{esc(meta)} · depends_on : {dep}</p></div></div>"
-        f"<article>{warn}{nav}{body}"
+        f"<h1>[{esc(f.id)}] {esc(f.titre)} {pill(f.state)}</h1>"
+        f'<p class="meta">{meta}</p></div></div>'
+        f"<article>{warn}{nav}{toc}{body}{prevnext}"
         f'<p class="gen">Généré le {now} — le .md fait foi.</p></article></body></html>',
     )
 
@@ -593,7 +653,23 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
 """
 
 
@@ -748,9 +824,6 @@ def load_lot(path: Path) -> Lot:
 LOTS_CSS = (
     LIGHT_CSS
     + """
-.badge{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;font-size:.78em;
-font-weight:600;vertical-align:middle}
-.banner .badge{margin-left:8px}
 .wrap{max-width:1000px;margin:0 auto;padding:26px 16px 60px}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
 .card{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:18px 20px;
@@ -765,16 +838,7 @@ transition:box-shadow .15s,transform .15s}
 .counter{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:10px 18px;
 min-width:110px}
 .counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
-.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
-margin:0 0 22px;font-size:.93em}
-.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
-.toc-box ul{margin:4px 0;padding-left:20px}
-.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
-.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em}
-.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .roadmap{margin-top:38px}
-.tablewrap{overflow-x:auto;margin:1.2em 0}
-@media print{.toc-box,.prevnext,.crumb{display:none}}
 """
 )
 

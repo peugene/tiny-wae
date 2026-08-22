@@ -28,8 +28,37 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.3</b></nav><h1>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-01.2.html"><code>l0-01.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li>→ <a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li></ul></div><h1 id="l0-013-tuiles-de-reference-et-grilles">[l0-01.3] — Tuiles de référence et grilles</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.3</b></nav><h1>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-013-tuiles-de-reference-et-grilles">[l0-01.3] — Tuiles de référence et grilles</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-dafc58e">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base dafc58e)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="objectif">Objectif</h2>
 <p>Remplir <code>reference_tile</code> et <code>grid</code> pour les 25 sites. ⚠ Fiche à <strong>réseau réel</strong> (25
 requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises dans
@@ -116,7 +145,7 @@ parallèle), NI <code>core/windows.py</code> (l0-05.1, en parallèle), NI <code>
 <li>[ ] <code>just survey-tiles</code> en place ; <code>--sites</code> fonctionnel (re-passe ciblée).</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -151,7 +180,7 @@ parallèle), NI <code>core/windows.py</code> (l0-05.1, en parallèle), NI <code>
 <td>vert (le test réseau réel n'est PAS dans le gate)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : évolution future du catalogue (le script est rejouable) ; couverture
 réelle des chips (l0-03).</p>
 <hr />
@@ -163,7 +192,7 @@ calcul des grilles, et remplissage de <code>config/sites.yaml</code>.</p>
 Total du projet après merge : <strong>82 tests</strong>, mypy strict sur 18 modules.</p>
 <p><strong>Réseau réel</strong> : ~52 requêtes vers earth-search (25 sites × <code>/aggregate</code> + <code>/search</code>, plus les
 candidates supplémentaires des sites multi-tuiles), toutes en 200.</p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -198,7 +227,7 @@ candidates supplémentaires des sites multi-tuiles), toutes en 200.</p>
 <td><code>just check</code> vert, aucun test réseau (<code>--disable-socket</code> actif)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Résultats de référence</strong> : <strong>C07</strong> (Punggye-ri) → <code>52TEL</code>, epsg 32652, origine 504120/4572400 —
 2 candidates mesurées. <strong>A01</strong> (ITER) → <code>31TGJ</code>, epsg 32631, origine 721080/4845740, mono-tuile.</p>
 <p>⭐ <strong>Le piège de l'ancrage a été évité</strong> : <code>config/sites.yaml</code> conserve ses <strong>11 lignes de
@@ -215,4 +244,4 @@ ce stade.</p>
 l'implémentation — à savoir pour toute fiche aval qui interroge <code>/search</code> ou <code>/aggregate</code>.</p>
 <p>⭐ <strong>Contrat de format tranché ici</strong> : <code>reference_tile</code> est stocké en <strong>code MGRS nu</strong> (<code>52TEL</code>),
 pas en <code>grid:code</code> préfixé (<code>MGRS-52TEL</code>). Conséquence directe pour l0-02.1, dont le filtre tuile
-doit normaliser — voir le ré-ancrage de cette fiche.</p><p class="gen">Généré le 22/08/2026 03:02 — le .md fait foi.</p></article></body></html>
+doit normaliser — voir le ré-ancrage de cette fiche.</p><div class="prevnext"><a href="l0-01.2.html">← [l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

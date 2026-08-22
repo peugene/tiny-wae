@@ -28,8 +28,37 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : —</p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li></ul></div><h1 id="l0-011-settings-et-sites">[l0-01.1] — Settings et sites</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span><ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-011-settings-et-sites">[l0-01.1] — Settings et sites</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-orchestrateur-21082026-avant-dispatch">⚠ Ancrage dans le code réel (orchestrateur, 21/08/2026 — avant dispatch)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="objectif">Objectif</h2>
 <p>Poser les deux fichiers de config et leurs modèles typés. Aucun CLI, aucun réseau.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
@@ -105,7 +134,7 @@ dans <code>[tool.pixi.dependencies]</code> »). Répartition retenue :
       env &gt; YAML.</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -135,7 +164,7 @@ dans <code>[tool.pixi.dependencies]</code> »). Répartition retenue :
 <td>vert</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : contenu de <code>reference_tile</code>/<code>grid</code> (l0-01.3) ; exactitude des coordonnées
 (l0-03.H).</p>
 <hr />
@@ -147,7 +176,7 @@ dans <code>[tool.pixi.dependencies]</code> »). Répartition retenue :
 dont <code>TINY_WAE_OFFLINE</code>) · <code>.gitignore</code> (+ <code>data/</code>) · <code>pyproject.toml</code> (8 dépendances) ·
 <code>tests/test_config.py</code> · <code>pixi.lock</code> régénéré.</p>
 <p><strong>Verdict d'oracle (chiffré, mesuré par l'orchestrateur — pas sur déclaration de l'agent)</strong></p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -177,7 +206,7 @@ dont <code>TINY_WAE_OFFLINE</code>) · <code>.gitignore</code> (+ <code>data/</c
 <td><code>just check</code> sur <code>develop</code> <strong>après merge</strong> : ruff OK (119 fichiers) · mypy strict OK (8 modules) · <strong>15 tests passés</strong> · smoke = placeholder de scaffold (hors périmètre, non touché)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : <code>reference_tile</code>/<code>grid</code> restent vides (remplis par l0-01.3) · exactitude
 géographique des coordonnées (fiche humaine l0-03.H) · surcharge env de <code>asset_keys</code>
 (format CSV codé mais hors oracle).</p>
@@ -192,4 +221,4 @@ géographique des coordonnées (fiche humaine l0-03.H) · surcharge env de <code
 livré sans <code>chip_nodata_pct_max</code>. Détecté à la relecture du code, corrigé par un second
 dispatch (commit <code>fe82978</code>). Cause et correctif consignés au débrief du run.</p>
 <p><strong>Commits</strong> : <code>731630e</code> (implémentation) · <code>fe82978</code> (correctif <code>chip_nodata_pct_max</code> +
-comptage des clés) · merges <code>1f24335</code> et le merge du correctif.</p><p class="gen">Généré le 22/08/2026 01:59 — le .md fait foi.</p></article></body></html>
+comptage des clés) · merges <code>1f24335</code> et le merge du correctif.</p><div class="prevnext"><span></span><a href="l0-01.2.html">[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

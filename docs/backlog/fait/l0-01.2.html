@@ -28,8 +28,37 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</h1><p>Fait · effort S · pipeline · phase O1 · depends_on : <a href="l0-01.1.html"><code>l0-01.1</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI<ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li></ul></div><h1 id="l0-012-socle-cli">[l0-01.2] — Socle CLI</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.2</b></nav><h1>[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-012-socle-cli">[l0-01.2] — Socle CLI</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="objectif">Objectif</h2>
 <p>Le mécanisme qui rend les fiches aval parallélisables : chaque commande = un module déposé
 dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> n'est plus jamais modifié ensuite.</p>
@@ -89,7 +118,7 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 <li>[ ] Test de non-régression : <code>__main__.py</code> identique avant/après ajout d'un module.</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -124,7 +153,7 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 <td>vert</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : les <strong>6</strong> sous-commandes restantes (fiches aval) — cf. taxonomie ci-dessus.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
@@ -132,7 +161,7 @@ dans <code>cli/</code>, découvert automatiquement — <code>__main__.py</code> 
 commandes, codes de sortie figés, <code>sites-validate</code> et <code>sites-list</code>.</p>
 <p>Livré : <code>cli/discovery.py</code>, <code>cli/exit_codes.py</code>, <code>cli/sites_validate.py</code>, <code>cli/sites_list.py</code>,
 <code>__main__.py</code> (modifié une dernière fois), 2 fixtures de config cassée, <strong>11 tests</strong>.</p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -167,7 +196,7 @@ commandes, codes de sortie figés, <code>sites-validate</code> et <code>sites-li
 <td><code>just check</code> vert</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Décisions prises en cours de fiche</strong> : convention <code>register(app)</code> (fixée à l'ancrage, non
 rouverte) ; paramètre nommé <code>package_name</code> ; deux fixtures plutôt qu'une, pour couvrir les deux
 exceptions ; <code># noqa: B008</code> inline sur les <code>Option()</code> en défaut d'argument (idiome typer) plutôt
@@ -176,4 +205,4 @@ que de toucher <code>pyproject.toml</code>, hors zone.</p>
 <code>discover_commands(app)</code> appelé au bon endroit ; aucun fichier hors zone touché.
 ⚠ <strong>Correction d'un chiffre de l'agent</strong> : il annonçait « 8 nouveaux tests », en oubliant un de
 ses deux fichiers. Le compte réel est <strong>11</strong> (<code>test_cli_commands.py</code> 8 + <code>test_cli_discovery.py</code>
-3) ; son total de 26 était juste.</p><p class="gen">Généré le 22/08/2026 01:59 — le .md fait foi.</p></article></body></html>
+3) ; son total de 26 était juste.</p><div class="prevnext"><a href="l0-01.1.html">← [l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</a><a href="l0-01.3.html">[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

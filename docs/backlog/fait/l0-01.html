@@ -28,8 +28,35 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-01</b></nav><h1>[l0-01] [CHAPEAU] Socle configuration — sites, settings, CLI</h1><p>Fait · effort L · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env</li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</li></ul></div><h1 id="l0-01-chapeau-socle-configuration">[l0-01] — CHAPEAU : Socle configuration</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-01</b></nav><h1>[l0-01] [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : L<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O1</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-01-chapeau-socle-configuration">[l0-01] — CHAPEAU : Socle configuration</a><ul>
+<li><a href="#contexte">Contexte</a></li>
+<li><a href="#decisions-portees-par-ce-chapeau-rappel-ne-pas-rouvrir">Décisions portées par ce chapeau (rappel, ne pas rouvrir)</a></li>
+<li><a href="#sous-taches">Sous-tâches</a></li>
+<li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <blockquote>
 <p>Fiche chapeau : elle ne se dispatche PAS. Elle porte le contexte et les décisions
 communes ; l'implémentation vit dans les sous-tâches. Le chapeau passe en <code>fait/</code> quand
@@ -71,7 +98,7 @@ et les codes de sortie. Réécrit en v3 post-revues (GO Philippe G1-G10 + D-a/D-
   module de <code>cli/</code>. Le confondre ferait chercher un point d'entrée qui n'existe pas.</li>
 </ul>
 <h2 id="sous-taches">Sous-tâches</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Fiche</th>
@@ -96,7 +123,7 @@ et les codes de sortie. Réécrit en v3 post-revues (GO Philippe G1-G10 + D-a/D-
 <td>relevé réseau des tuiles de référence + calcul des grilles (D-c)</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
 <p>Toute lecture de pixel (l0-03), tout CLI métier (l0-02+). Non testé : exactitude
-géographique fine des coordonnées (planche l0-03.6 + fiche humaine l0-03.H).</p><p class="gen">Généré le 22/08/2026 01:59 — le .md fait foi.</p></article></body></html>
+géographique fine des coordonnées (planche l0-03.6 + fiche humaine l0-03.H).</p><div class="prevnext"><span></span><a href="l0-02.html">[l0-02] [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

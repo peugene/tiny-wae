@@ -28,8 +28,39 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.H</b></nav><h1>[l0-03.H] [HUMAIN] Validation de la planche précoce + corrections de coordonnées</h1><p>À faire · effort H · humain · phase O1 · depends_on : <a href="../fait/l0-03.6.html"><code>l0-03.6</code></a></p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../fait/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../fait/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../fait/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li>→ <a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-03h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l0-03.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.H</b></nav><h1>[l0-03.H] [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O1</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-03h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l0-03.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
+<li><a href="#objet">Objet</a></li>
+<li><a href="#i-etat-a-louverture-releve-par-lorchestrateur-22082026-factuel-pas-une-decision">ⓘ État à l'ouverture (relevé par l'orchestrateur, 22/08/2026 — factuel, pas une décision)</a></li>
+<li><a href="#checklist-philippe">Checklist Philippe</a><ul>
+<li><a href="#ce-que-le-rapport-ajoute-a-la-revue-produit-le-2208-apres-l0-042">⭐ Ce que le rapport ajoute à la revue (produit le 22/08 après l0-04.2)</a></li>
+</ul>
+</li>
+<li><a href="#critere-de-sortie">Critère de sortie</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <blockquote>
 <p><strong>Cette fiche est réalisée par Philippe.</strong> Aucun agent IA ne doit la prendre, l'implémenter
 ni la déplacer en son nom. Le <code>depends_on</code> des fiches aval met le run EN PAUSE tant
@@ -80,7 +111,7 @@ utilise une TrueType système, avec translittération ASCII en filet.</p>
 <strong>Conservation OK et intégrité OK sur les 25 sites</strong> — aucun chip orphelin, aucun manifeste
 incomplet. Mais il fait apparaître une question que la seule planche ne montre pas : la
 <strong>tuile de référence</strong> de certains sites.</p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Site</th>
@@ -110,7 +141,7 @@ incomplet. Mais il fait apparaître une question que la seule planche ne montre 
 <td>s'ajoute aux nuages, qui expliquent déjà les 0 chip</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>⚠ Un <code>off_tile</code> élevé n'est <strong>pas</strong> un défaut en soi — c'est la géométrie du site. Mais
 au-delà de ~40 %, il vaut la peine de vérifier si une autre tuile couvrirait mieux le chip :
 c'est deux fois moins d'items instruits pour le même coût de recherche. <code>just survey-tiles
@@ -124,4 +155,4 @@ irrécupérable (introuvable, inadapté) : décision de remplacement à consigne
 une décision de PO/pilotage, pas d'agent.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(rempli par Philippe : sites corrigés, date, verdict)</em></p><p class="gen">Généré le 22/08/2026 03:47 — le .md fait foi.</p></article></body></html>
+<p><em>(rempli par Philippe : sites corrigés, date, verdict)</em></p><div class="prevnext"><a href="../fait/l0-03.6.html">← [l0-03.6] contact-sheet --latest — la planche précoce de centrage (artefact)</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

@@ -28,8 +28,52 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>out-01</b></nav><h1>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</h1><p>Fait · effort M · outillage · phase O3 · depends_on : <a href="l0-06.2.html"><code>l0-06.2</code></a></p></div></div><article><h1 id="out-01-mypy-sur-tests">[out-01] — mypy sur <code>tests/</code></h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>out-01</b></nav><h1>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#out-01-mypy-sur-tests">[out-01] — mypy sur tests/</a><ul>
+<li><a href="#le-probleme-constate">Le problème constaté</a></li>
+<li><a href="#mesure-22082026-develop-run-n5">Mesure (22/08/2026, develop @ run N5)</a></li>
+<li><a href="#ce-quil-faudra-trancher">Ce qu'il faudra trancher</a></li>
+<li><a href="#pourquoi-ca-vaut-le-coup">Pourquoi ça vaut le coup</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n8">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N8)</a><ul>
+<li><a href="#mesure-fraiche-refaite-apres-le-merge-de-l0-042">Mesure fraîche (refaite après le merge de l0-04.2)</a></li>
+<li><a href="#lexistant">L'existant</a></li>
+<li><a href="#decisions-dancrage-prises-ici-ne-pas-rouvrir">Décisions d'ancrage (prises ici — ne pas rouvrir)</a></li>
+</ul>
+</li>
+<li><a href="#quand-la-faire-motif-du-depends_on">Quand la faire (motif du depends_on)</a></li>
+<li><a href="#non-couvert-par-cette-fiche">Non couvert par cette fiche</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#le-resultat-qui-compte-la-substituabilite-est-enfin-gardee-par-le-gate">Le résultat qui compte : la substituabilité est enfin gardée par le GATE</a></li>
+<li><a href="#sans-la-correction-du-justfile-cette-fiche-naurait-rien-change">⚠ Sans la correction du justfile, cette fiche n'aurait rien changé</a></li>
+<li><a href="#corrections-apportees-2930-erreurs-mesurees-0">Corrections apportées (29–30 erreurs mesurées → 0)</a></li>
+<li><a href="#defaut-signale-non-corrige-comme-demande">Défaut signalé, non corrigé (comme demandé)</a></li>
+<li><a href="#durees-mesurees">Durées mesurées</a></li>
+<li><a href="#non-traite-explicite">Non traité (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <blockquote>
 <p><strong>Fiche différée</strong>, rédigée pendant le run N5 (22/08/2026) au lieu d'interrompre le run.
 Elle capture un trou d'oracle constaté en clôturant l0-03.5, pas une idée d'amélioration.</p>
@@ -191,4 +235,4 @@ la frontière des fichiers qui <strong>attestent</strong> que le reste est corre
 <h3 id="non-traite-explicite">Non traité (explicite)</h3>
 <p>Les 4 <code>unused-ignore</code> relevés à l'ancrage n'ont pas été retrouvés lors des mesures de
 l'agent (peut-être purgés entre-temps) — non vérifié plus avant · le défaut d'export de
-<code>cli/backfill.py</code> (signalé ci-dessus).</p><p class="gen">Généré le 22/08/2026 04:18 — le .md fait foi.</p></article></body></html>
+<code>cli/backfill.py</code> (signalé ci-dessus).</p><div class="prevnext"><a href="l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

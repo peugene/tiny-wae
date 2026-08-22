@@ -28,8 +28,34 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-04</b></nav><h1>[l0-04] [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette</h1><p>Maturation · effort L · chapeau · phase O2 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="../../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-04-chapeau-historique-48-mois">[l0-04] — CHAPEAU : Historique 48 mois</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-04</b></nav><h1>[l0-04] [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-0-ingestion</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="../../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-04-chapeau-historique-48-mois">[l0-04] — CHAPEAU : Historique 48 mois</a><ul>
+<li><a href="#contexte">Contexte</a></li>
+<li><a href="#decisions-portees-ne-pas-rouvrir">Décisions portées (ne pas rouvrir)</a></li>
+<li><a href="#sous-taches">Sous-tâches</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <blockquote>
 <p>Fiche chapeau, non dispatchable, <code>depends_on: []</code> (E-c : un chapeau n'ordonne rien).
 <strong>Vient après l0-03</strong> — les arêtes réelles sont portées par les sous-tâches. Fusionne
@@ -81,7 +107,7 @@ l0-03.5) ; la campagne réelle et la recette sont un acte humain (l0-04.H).</p>
   <code>scl_class_counts</code> (classes 2/11 — l'instrument de la décision différée V3).</li>
 </ul>
 <h2 id="sous-taches">Sous-tâches</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Fiche</th>
@@ -106,5 +132,5 @@ l0-03.5) ; la campagne réelle et la recette sont un acte humain (l0-04.H).</p>
 <td>campagne réelle 25×48 + recette du lot</td>
 </tr>
 </tbody>
-</table>
-<p><strong>Non testé par le chapeau</strong> : fraîcheur (l0-05) ; CDSE (hors lot).</p><p class="gen">Généré le 22/08/2026 03:46 — le .md fait foi.</p></article></body></html>
+</table></div>
+<p><strong>Non testé par le chapeau</strong> : fraîcheur (l0-05) ; CDSE (hors lot).</p><div class="prevnext"><a href="l0-03.html">← [l0-03] [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

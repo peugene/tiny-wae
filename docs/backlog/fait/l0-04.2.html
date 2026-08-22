@@ -28,8 +28,49 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.2</b></nav><h1>[l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</h1><p>Fait · effort M · pipeline · phase O2 · depends_on : <a href="l0-03.6.html"><code>l0-03.6</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li>→ <a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-042-report-et-planche-firstlast">[l0-04.2] — Report et planche first/last</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.2</b></nav><h1>[l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-042-report-et-planche-firstlast">[l0-04.2] — Report et planche first/last</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n7">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N7)</a><ul>
+<li><a href="#le-corpus-de-fixtures-mesure-pas-suppose">Le corpus de fixtures, mesuré (pas supposé)</a></li>
+<li><a href="#lexistant-a-consommer-tel-quel">L'existant à consommer tel quel</a></li>
+<li><a href="#decisions-dancrage-prises-ici-ne-pas-rouvrir">Décisions d'ancrage (prises ici — ne pas rouvrir)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#la-decouverte-technique-de-la-fiche-protocol-vs-dataclass-frozen">⭐ La découverte technique de la fiche : Protocol vs dataclass frozen</a></li>
+<li><a href="#decision-prise-en-cours-de-realisation">Décision prise en cours de réalisation</a></li>
+<li><a href="#incident-de-merge-et-ce-quil-a-appris">⚠ Incident de merge, et ce qu'il a appris</a></li>
+<li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="objectif">Objectif</h2>
 <p>L'instrument de la recette — donc TESTÉ sur des comptes connus (la recette ne peut pas
 être auto-certifiée par un composant non vérifié). Livre aussi la <strong>commande de contrôle
@@ -170,7 +211,7 @@ l0-06.2</strong> : fichiers disjoints, aucun contrat partagé en cours de créat
 <li>[ ] <code>report</code> + <code>--first-last</code>, tests sur le corpus fixtures de l0-03.2.</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -215,7 +256,7 @@ l0-06.2</strong> : fichiers disjoints, aucun contrat partagé en cours de créat
 <td>vert, hors ligne</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : rendu html du rapport (hors périmètre — le .md suffit, conversion
 possible via <code>just md2html</code> à la main).</p>
 <hr />
@@ -226,7 +267,7 @@ possible via <code>just md2html</code> à la main).</p>
 <code>tests/test_contact_sheet.py</code>, 2 fixtures <code>/search</code> (<code>overlap_completeness.json</code>,
 <code>c07_completeness.json</code>). <strong>208 → 230 tests</strong> chez l'agent, <strong>235 sur <code>develop</code></strong> après merge.</p>
 <h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -279,7 +320,7 @@ possible via <code>just md2html</code> à la main).</p>
 <td>✅</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="la-decouverte-technique-de-la-fiche-protocol-vs-dataclass-frozen">⭐ La découverte technique de la fiche : Protocol vs dataclass frozen</h3>
 <p>Le point dur signalé à l'ancrage — <code>core/report.py</code> doit être pur, mais typer ses entrées sur
 <code>Manifest</code> importerait <code>adapters/</code> — a été résolu par un <code>Protocol</code> structurel local
@@ -313,4 +354,4 @@ surveiller.</p>
 <code>--check-completeness</code> en conditions réseau réelles (option hors gate par construction) ·
 <code>report</code> sur les 25 sites d'un vrai <code>data_root</code> de campagne (testé sur le corpus fixtures) ·
 <code>--first-last</code> sur un site à <strong>exactement un</strong> chip ingéré : le code duplique volontairement
-l'image des deux côtés, documenté en docstring, mais le corpus fixture ne fournit pas ce cas.</p><p class="gen">Généré le 22/08/2026 03:46 — le .md fait foi.</p></article></body></html>
+l'image des deux côtés, documenté en docstring, mais le corpus fixture ne fournit pas ce cas.</p><div class="prevnext"><a href="l0-04.1.html">← [l0-04.1] CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</a><a href="../maturation/lot-0-ingestion/l0-04.H.html">[l0-04.H] [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

@@ -28,8 +28,46 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.2</b></nav><h1>[l0-06.2] update.cwl — le tool du run quotidien</h1><p>Fait · effort S · outillage · phase O3 · depends_on : <a href="l0-06.1.html"><code>l0-06.1</code></a>, <a href="l0-05.2.html"><code>l0-05.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li>→ <a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="out-01.html"><code>out-01</code></a> Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</li></ul></div><h1 id="l0-062-tool-cwl-update">[l0-06.2] — Tool CWL update</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.2</b></nav><h1>[l0-06.2] update.cwl — le tool du run quotidien <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="out-01.html"><code>out-01</code></a> Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-062-tool-cwl-update">[l0-06.2] — Tool CWL update</a><ul>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n7">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N7)</a><ul>
+<li><a href="#lexistant-a-consommer-tel-quel">L'existant à consommer tel quel</a></li>
+<li><a href="#decisions-dancrage-prises-ici-ne-pas-rouvrir">Décisions d'ancrage (prises ici — ne pas rouvrir)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#successcodes-0-1-et-pourquoi">successCodes: [0, 1] — et pourquoi</a></li>
+<li><a href="#ce-qui-a-bien-fonctionne">Ce qui a bien fonctionné</a></li>
+<li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
 <li><code>cwl/update.cwl</code> (CommandLineTool v1.2, <code>baseCommand: [python, -m, tiny_wae, update]</code>),
@@ -94,7 +132,7 @@ aucun contrat partagé en cours de création.</p>
 <li>[ ] <code>update.cwl</code> validé, README complété.</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -114,7 +152,7 @@ aucun contrat partagé en cours de création.</p>
 <td><strong>le 2e run</strong> rend <code>ingested == 0</code> et <code>assets_read == 0</code>. ⚠ Deux formulations antérieures étaient fausses : « sur le data_root de l0-06.1 » (fenêtre close → <code>update</code> va jusqu'à <code>now</code>, il trouve du neuf) et « data_root vierge » (aucun manifeste → <code>NoManifests</code> → exit 1 renvoyant vers <code>backfill</code>, cf. l0-05.2/O4 : <strong>le 1er run ne peut rien ingérer</strong>). L'amorçage est donc obligatoire</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : exécution planifiée réelle (infra).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
@@ -123,7 +161,7 @@ aucun contrat partagé en cours de création.</p>
 <strong>208 → 213 tests</strong> (avec le correctif de planche mergé entre-temps). <code>just check</code> vert,
 <strong>4 fichiers CWL validés</strong>.</p>
 <h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -146,7 +184,7 @@ aucun contrat partagé en cours de création.</p>
 <td>✅ <strong>exécuté</strong>, pas déclaré</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="successcodes-0-1-et-pourquoi"><code>successCodes: [0, 1]</code> — et pourquoi</h3>
 <p>Même raisonnement qu'<code>ingest.cwl</code>, documenté dans le README : <code>FAILURE=1</code> recouvre à la fois
 un échec métier classique <strong>et</strong> le site vierge (qui renvoie vers <code>backfill</code>). Sur un run
@@ -164,4 +202,4 @@ périmètre.</p>
 <h3 id="non-teste-explicite">Non testé (explicite)</h3>
 <p>Exécution planifiée réelle en cron / PID-FLOW (hors lot, chapeau l0-06) · <code>--sites</code> avec une
 liste CSV multi-sites sur le tool CWL réel (seul <code>A01</code> a été exercé) · le cas
-<code>INCONCLUSIVE=3</code> (tous les échecs d'origine réseau), non déclenché pendant les runs d'O2.</p><p class="gen">Généré le 22/08/2026 04:18 — le .md fait foi.</p></article></body></html>
+<code>INCONCLUSIVE=3</code> (tous les échecs d'origine réseau), non déclenché pendant les runs d'O2.</p><div class="prevnext"><a href="l0-06.1.html">← [l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

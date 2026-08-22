@@ -28,8 +28,48 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-05.html"><code>▣ l0-05</code></a> › <b>l0-05.2</b></nav><h1>[l0-05.2] CLI update — run quotidien, oracles binarisés</h1><p>Fait · effort S · pipeline · phase O3 · depends_on : <a href="l0-05.1.html"><code>l0-05.1</code></a>, <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-05.html"><code>l0-05</code></a> [CHAPEAU] Incrémental quotidien — update<ul><li><a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li><li>→ <a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-052-cli-update">[l0-05.2] — CLI update</h1>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-05.html"><code>▣ l0-05</code></a> › <b>l0-05.2</b></nav><h1>[l0-05.2] CLI update — run quotidien, oracles binarisés <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-05.html"><code>l0-05</code></a> [CHAPEAU] Incrémental quotidien — update <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-052-cli-update">[l0-05.2] — CLI update</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n6">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N6)</a><ul>
+<li><a href="#socle-commun-livre-fige-a-consommer-tel-quel">Socle commun (livré, figé — à consommer tel quel)</a></li>
+<li><a href="#decisions-dancrage-propres-a-l0-052-prises-ici-ne-pas-rouvrir">Décisions d'ancrage propres à l0-05.2 (prises ici — ne pas rouvrir)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#un-fait-de-mon-ancrage-etait-faux-signale-par-lagent">⚠ Un fait de mon ancrage était FAUX — signalé par l'agent</a></li>
+<li><a href="#contrat-expose">Contrat exposé</a></li>
+<li><a href="#decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</a></li>
+<li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <h2 id="objectif">Objectif</h2>
 <p>Le run quotidien : pour chaque site, fenêtre depuis l0-05.1, <code>ingest</code>, résumé honnête.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
@@ -134,7 +174,7 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 <li>[ ] CLI + tests ; README complété (commande cron type + rattrapage).</li>
 </ul>
 <h2 id="oracle-recette">Oracle / recette</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -179,7 +219,7 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 <td>vert, hors ligne</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Non testé</strong> : le cron réel (infra Philippe) ; les retraitements tardifs réels
 (rattrapage documenté, assumé).</p>
 <hr />
@@ -188,7 +228,7 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 <code>tests/test_update.py</code>, <code>tests/test_cli_update.py</code>, section « Run quotidien » ajoutée au
 <code>README.md</code>. <strong>+16 tests.</strong></p>
 <h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -241,7 +281,7 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 <td>✅</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="un-fait-de-mon-ancrage-etait-faux-signale-par-lagent">⚠ Un fait de mon ancrage était FAUX — signalé par l'agent</h3>
 <p>Ma décision d'ancrage n°6 affirmait « <code>README.md</code> N'EXISTE PAS à la racine (vérifié) ».
 <strong>C'était faux</strong> : il existait bien à <code>ff20603</code>. Ma vérification avait tourné dans un shell
@@ -271,4 +311,4 @@ update_all(*, sites, settings, source, data_root, now, margin_days=None) -&gt; l
 affiché le 1er du mois mais son exécution (<code>backfill --months 2</code>) <strong>n'est pas automatisée</strong>,
 conformément à la décision · le cas <code>EmptyGridError</code> (cf. ci-dessus) · O5/O5bis côté CLI
 utilisent des enveloppes vides pour rester légers, la preuve « pipeline réel » venant des
-tests adapter sur corpus réel.</p><p class="gen">Généré le 22/08/2026 03:22 — le .md fait foi.</p></article></body></html>
+tests adapter sur corpus réel.</p><div class="prevnext"><a href="l0-05.1.html">← [l0-05.1] Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>
