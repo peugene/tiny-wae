@@ -77,6 +77,10 @@ markdown = "*"          # backlog-kit (dashboard + md2html)
 # inutile dans le venv du worker — débusqué par deptry (DEP002).
 httpx = "*"
 pytest-socket = "*"     # garde réseau des tests (--disable-socket)
+# pytest-cov : mesure À LA DEMANDE (`just coverage`), volontairement HORS du gate —
+# un seuil global de couverture se contourne avec des tests qui appellent sans
+# asserter. Ce qui protège ici, c'est le test de mutation, pas un pourcentage.
+pytest-cov = "*"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 # cwltool : pas de build conda-forge compatible python 3.12 disponible — PyPI.

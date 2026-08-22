@@ -77,6 +77,11 @@ lots:
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"
 
+# couverture — HORS gate, à la demande. Sert à repérer un module oublié, pas à produire
+# un pourcentage à défendre.
+coverage:
+    pixi run pytest --cov=tiny_wae --cov-report=term-missing:skip-covered --cov-report=
+
 # hygiène des dépendances : déclarée non utilisée, utilisée non déclarée, transitive
 # utilisée directement. Angle mort de ruff ET de mypy — c'est ce défaut qui avait laissé
 # `affine` hors du contrat de la wheel.
