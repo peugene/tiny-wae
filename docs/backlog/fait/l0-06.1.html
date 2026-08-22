@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.1</b></nav><h1>[l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</h1><p>En cours · effort M · outillage · phase O3 · depends_on : <a href="../fait/l0-02.2.html"><code>l0-02.2</code></a>, <a href="../fait/l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li>→ <a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-061-tools-cwl-searchingest-workflow">[l0-06.1] — Tools CWL search/ingest + workflow</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.1</b></nav><h1>[l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</h1><p>Fait · effort M · outillage · phase O3 · depends_on : <a href="l0-02.2.html"><code>l0-02.2</code></a>, <a href="l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li>→ <a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-061-tools-cwl-searchingest-workflow">[l0-06.1] — Tools CWL search/ingest + workflow</h1>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
 <li><code>cwl/search.cwl</code>, <code>cwl/ingest.cwl</code> (CommandLineTool, <strong>CWL v1.2 en 1re ligne</strong>,
@@ -144,4 +144,70 @@ l0-03.5, et aucune des deux ne crée un contrat que l'autre consomme.</p>
 <p><strong>Non testé</strong> : tool update (l0-06.2) ; worker PID-FLOW (hors lot).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 01:20 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>6245056</code>, mergé en <code>9c1d3a7</code>) : <code>cwl/search.cwl</code>, <code>cwl/ingest.cwl</code>,
+<code>cwl/workflow.cwl</code>, <code>cwl/README.md</code>, <code>tests/test_cwl.py</code>, recette <code>just cwl</code> branchée dans
+<code>just check</code>. <strong>+7 tests</strong> (161 au total après les deux merges du run N5). <code>just check</code> vert,
+validation CWL comprise.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just cwl</code> : 0 erreur sur 3 fichiers, <code>just check</code> vert</td>
+<td>3/3 « is valid CWL » ; gate complet vert</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2 [local, réseau]</td>
+<td>ensembles <code>(item_id, statut)</code> identiques entre run CWL et run CLI direct</td>
+<td>A01, 2026-08-01 → 08-10 (fenêtre close, <code>--to</code> ≤ J−7), deux <code>TINY_WAE_DATA_ROOT</code> <strong>vierges</strong> : <code>{(S2A_31TGJ_20260803_1_L2A, ingested), (S2B_31TGJ_20260806_0_L2A, ingested), (S2C_31TGJ_20260801_0_L2A, ingested)}</code> <strong>des deux côtés</strong> ; <code>ingested=3, failed=0</code> — aucun rejeu nécessaire</td>
+<td>✅ <strong>exécuté</strong>, pas déclaré</td>
+</tr>
+<tr>
+<td>O3 (remplacé par l'ancrage)</td>
+<td>cohérence <code>.cwl</code> ↔ options réelles des CLI</td>
+<td>7 tests, dont 2 confrontent chaque <code>inputBinding.prefix</code> aux options exposées, <strong>par introspection <code>typer.main.get_command</code></strong> (pas un parsing de <code>--help</code>)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="successcodes-la-decision-qui-netait-ecrite-nulle-part"><code>successCodes</code> — la décision qui n'était écrite nulle part</h3>
+<ul>
+<li><strong><code>search.cwl</code> : <code>[0]</code></strong> — un endpoint injoignable (3) ou une config invalide (2) doivent
+  <strong>arrêter</strong> le workflow. Chaîner un ingest sur une enveloppe absente n'a aucun sens.</li>
+<li><strong><code>ingest.cwl</code> : <code>[0, 1]</code></strong> — <code>FAILURE=1</code> (≥ 1 item en échec <strong>avec</strong> au moins un succès)
+  est un <strong>résultat métier légitime</strong> : l'idempotence <code>grid_hash</code> rattrapera les items
+  manqués au run suivant. <code>USAGE=2</code> et <code>INCONCLUSIVE=3</code> restent des échecs CWL.</li>
+</ul>
+<h3 id="decouvertes-de-terrain-lexecution-reelle-a-corrige-la-conception">Découvertes de terrain (l'exécution réelle a corrigé la conception)</h3>
+<ol>
+<li><strong><code>ingest.cwl</code> ne capture AUCUNE sortie CWL</strong> (<code>outputs: []</code>). La première version tentait
+   <code>outputBinding.glob: $(inputs.data_root)</code> en <code>Directory</code> : cassé à l'exécution — la spec
+   CWL <strong>interdit un glob commençant par <code>/</code></strong>, or <code>data_root</code> est justement pensé pour
+   recevoir un chemin absolu <strong>externe</strong> au sandbox (c'est l'usage même de l'oracle O2). La
+   sortie a été retirée plutôt que contournée ; le succès est signalé par le code de sortie.</li>
+<li><strong><code>--sites-path</code> / <code>--settings-path</code> doivent être passés explicitement</strong> à tout run CWL :
+   le CLI défaut sur un chemin <strong>relatif au CWD</strong>, lequel est le répertoire de staging
+   temporaire de <code>cwltool</code>, pas le dépôt. L'échec est <strong>trompeur</strong>
+   (<code>Settings.__init__() missing ... arguments</code>, et non « fichier introuvable »).</li>
+</ol>
+<h3 id="correction-apportee-a-la-revue-regle-facade">⚠ Correction apportée à la revue : règle façade</h3>
+<p>Le README documentait le run local par un <code>pixi run cwltool …</code> en direct, avec une note
+l'assumant comme exception. Ce n'en est pas une : la règle du projet dit <code>pixi</code> <strong>ni dans
+la doc, ni dans les fiches, ni dans les prompts</strong>. Une recette <strong><code>just cwl-run &lt;fichier&gt;
+&lt;args&gt;</code></strong> a été ajoutée au <code>justfile</code> et le README l'utilise. Motif : le jour d'une bascule
+pixi↔uv, une occurrence dispersée dans un README est exactement ce qu'on ne retrouve pas.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p><code>update.cwl</code> (l0-06.2) · worker PID-FLOW réel (hors lot) · enregistrement server et
+<code>pid:Milestone</code> (retirés en revue v2) · <strong>le cas O2 avec ≥ 1 <code>failed</code></strong> : la fenêtre choisie
+n'en a produit aucun, la clause bornée « rejouer une fois puis échec » n'a donc pas été
+exercée — non provoquée artificiellement, mesure honnête · le comportement avec un
+<code>data_root</code> relatif (seul le cas absolu a été exercé).</p><p class="gen">Généré le 22/08/2026 01:58 — le .md fait foi.</p></article></body></html>
