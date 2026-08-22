@@ -26,6 +26,10 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 # doublon numérique "WARN"/"FATAL" — D1 : rien de maison).
 _VALID_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
+# Namespace du projet : c'est LUI qui suit `--log-level`, pas la racine (cf.
+# `configure_logging`). Dérivé du package, jamais écrit en dur ailleurs.
+_PROJECT_LOGGER = __name__.split(".")[0]
+
 
 class InvalidLogLevelError(ValueError):
     """Niveau de log demandé (option ``--log-level`` ou variable d'environnement) qui ne
@@ -57,11 +61,24 @@ def configure_logging(level: str) -> None:
     à l'autre dans le MÊME process (tests inclus) : sans ce remplacement, un handler
     d'une invocation précédente resterait accroché à un flux STDERR déjà refermé.
 
-    Ne configure QUE le logger racine : les modules de bibliothèque n'ont rien à faire
-    eux-mêmes (D3), leur niveau effectif est hérité de la racine par la hiérarchie
-    standard de `logging`."""
+    Le handler est posé sur la racine (tout ce qui sort du process est formaté pareil),
+    mais le NIVEAU demandé ne s'applique qu'au namespace du projet : les modules de
+    `tiny_wae` n'ont rien à configurer eux-mêmes (D3), ils héritent de `tiny_wae`.
+
+    Regler la racine sur le niveau demandé rendait bavardes TOUTES les dépendances :
+    mesuré, 14 loggers tiers passaient en INFO, dont `rasterio._io` et `rasterio._base`,
+    sollicités à chaque COG ouvert — sur un backfill de 1200 fenêtres, la progression que
+    cette fiche existe pour rendre lisible se retrouvait noyée. Symptôme observé en
+    production : `boto3 not available, falling back to a DummySession.`
+    (`rasterio/session.py`, en `log.info`). La racine reste donc à WARNING : une
+    dépendance ne parle qu'en cas de problème.
+
+    La racine prend le plus RESTRICTIF des deux niveaux : demander `--log-level ERROR`
+    doit aussi taire les WARNING des tierces parties, sinon l'option mentirait."""
     handler = logging.StreamHandler(stream=sys.stderr)
     handler.setFormatter(logging.Formatter(fmt=_LOG_FORMAT, datefmt=_DATE_FORMAT))
+    requested = getattr(logging, level)
     root = logging.getLogger()
     root.handlers = [handler]
-    root.setLevel(level)
+    root.setLevel(max(logging.WARNING, requested))
+    logging.getLogger(_PROJECT_LOGGER).setLevel(requested)

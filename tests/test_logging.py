@@ -14,6 +14,7 @@ réels mais d'AUCUN de leurs corpus enregistrés (seuls A01/B09 en ont un) : un 
 from __future__ import annotations
 
 import ast
+import logging
 import re
 import shutil
 import subprocess
@@ -31,6 +32,7 @@ from tiny_wae.adapters.config_io import DEFAULT_SITES_PATH
 from tiny_wae.adapters.fixture_source import FixtureSource
 from tiny_wae.adapters.stac import StacSource
 from tiny_wae.cli import exit_codes
+from tiny_wae.cli.logging_setup import configure_logging
 from tiny_wae.core.envelope import Envelope
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Site
@@ -653,3 +655,39 @@ def test_o11bis_baisse_mesuree_vs_head_a6724e0() -> None:
     assert current_count == 0
     assert baseline_count - current_count == 4
     assert baseline_count - current_count >= 2  # exigence littérale de la fiche.
+
+
+# ── Portée du niveau : le namespace du projet, pas la racine (correctif post-livraison) ──
+
+
+@pytest.mark.parametrize("niveau", ["DEBUG", "INFO"])
+def test_les_dependances_ne_deviennent_pas_bavardes(niveau: str) -> None:
+    """Régression : `configure_logging` réglait la RACINE sur le niveau demandé, ce qui
+    rendait bavardes les 14 bibliothèques tierces — `rasterio._io` et `rasterio._base` sont
+    sollicités à chaque COG ouvert, et sur 1200 fenêtres la progression se retrouvait noyée.
+    Symptôme observé en production : `boto3 not available, falling back to a DummySession.`
+    (`rasterio/session.py`, en `log.info`).
+
+    Ce qui est mesuré : au niveau le plus bavard, un logger tiers n'émet PAS en INFO alors
+    que celui du projet, lui, émet bien."""
+    configure_logging(niveau)
+    assert not logging.getLogger("rasterio").isEnabledFor(logging.INFO)
+    assert not logging.getLogger("rasterio._io").isEnabledFor(logging.INFO)
+    assert logging.getLogger("tiny_wae.adapters.backfill").isEnabledFor(logging.INFO)
+
+
+def test_un_niveau_restrictif_tait_aussi_les_dependances() -> None:
+    """La racine prend le plus RESTRICTIF des deux niveaux : demander `ERROR` doit aussi
+    taire les WARNING des tierces parties, sinon l'option mentirait sur ce qu'elle fait."""
+    configure_logging("ERROR")
+    assert not logging.getLogger("rasterio").isEnabledFor(logging.WARNING)
+    assert not logging.getLogger("tiny_wae.adapters.backfill").isEnabledFor(logging.WARNING)
+    assert logging.getLogger("tiny_wae.adapters.backfill").isEnabledFor(logging.ERROR)
+
+
+def test_une_dependance_parle_encore_en_cas_de_probleme() -> None:
+    """Contre-épreuve du test précédent : on tait le bavardage, PAS les alertes. Au niveau
+    par défaut, un WARNING de dépendance doit toujours atteindre l'opérateur — sans quoi on
+    aurait remplacé du bruit par de l'aveuglement."""
+    configure_logging("INFO")
+    assert logging.getLogger("rasterio").isEnabledFor(logging.WARNING)
