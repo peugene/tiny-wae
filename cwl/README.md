@@ -1,7 +1,7 @@
 # cwl/ — emballage CWL des CLI tiny-wae
 
-Fiche `l0-06.1` (chapeau `l0-06`). Périmètre **fermé** : 3 `CommandLineTool`
-(`search.cwl`, `ingest.cwl` — `update.cwl` viendra en `l0-06.2`) + 1 `Workflow`
+Fiches `l0-06.1` + `l0-06.2` (chapeau `l0-06`). Périmètre **fermé** : 3
+`CommandLineTool` (`search.cwl`, `ingest.cwl`, `update.cwl`) + 1 `Workflow`
 (`workflow.cwl`, `search → ingest`). CWL v1.2.
 
 **⛔ Hors périmètre, décision de chapeau** : pas d'enregistrement server PID-FLOW réel,
@@ -44,6 +44,18 @@ invalide) · `3` INCONCLUSIVE (amont injoignable / aucun item n'a abouti).
   item : les items ratés seront retentés au run suivant). `USAGE` (2) et
   `INCONCLUSIVE` (3, aucun item n'a abouti) restent des échecs CWL.
 
+- **`update.cwl`** : `successCodes: [0, 1]`, même raisonnement que `ingest.cwl` mais
+  avec un cas de plus. `update` renvoie `FAILURE` (1) aussi bien pour un échec
+  métier classique (≥ 1 site en échec avec au moins un succès) que pour un **site
+  vierge** (aucun manifeste connu, cf. `cli/update.py` — le CLI pointe alors vers
+  `backfill`, hors périmètre d'`update`). Les deux cas restent un résultat légitime
+  d'un run quotidien sur un parc en évolution (site ajouté à `sites.yaml` sans
+  backfill préalable), pas un incident d'exécution — le forcer en erreur CWL
+  casserait le run planifié sur un parc par ailleurs sain. `USAGE` (2) et
+  `INCONCLUSIVE` (3, tous les échecs sont d'origine réseau et aucun site n'a
+  abouti) restent des échecs CWL : un run qui ne fait QUE des erreurs réseau doit
+  remonter en échec, c'est le CLI du cron, celui que personne ne regarde tourner.
+
 ## `TINY_WAE_DATA_ROOT` (levier de l'oracle O2)
 
 `ingest` n'a **aucune option `--data-root`** : la racine de stockage vient de
@@ -80,7 +92,7 @@ casse, ce n'est pas juste une omission de confort.
 just cwl
 ```
 
-Valide les 3 fichiers **un par un** (`cwltool --validate <fichier>`) — passer
+Valide les 4 fichiers **un par un** (`cwltool --validate <fichier>`) — passer
 plusieurs chemins d'un coup à `--validate` fait interpréter les arguments suivants
 comme un job order, pas comme des tools à valider séparément. Intégré dans
 `just check`.
@@ -122,3 +134,37 @@ TINY_WAE_DATA_ROOT=./data-cli-test just run ingest --acquisitions /tmp/acq.json
 
 et comparer les ensembles `(item_id, statut)` des deux `data_root` (manifestes
 `run.json`, `adapters/manifests.py`).
+
+## Run local d'`update.cwl` (oracle O2 de `l0-06.2`, hors gate, réseau)
+
+⚠ **`update` ne peut rien ingérer sur un `data_root` totalement vierge** : sans
+aucun manifeste connu, le site est déclaré « vierge » (`NoManifests` → exit 1,
+pointant vers `backfill`) — ce n'est pas un bug, c'est la même logique que
+`cli/update.py`. L'oracle « idempotence d'un run à l'autre » exige donc un
+**amorçage préalable** par `ingest` avant le premier run `update.cwl` :
+
+```
+TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just run ingest \
+    --site A01 --from <J-20> --to <J-1> \
+    --sites-path config/sites.yaml --settings-path config/settings.yaml
+
+just cwl-run cwl/update.cwl \
+    --sites A01 --data_root /tmp/cwl-update-data \
+    --sites_path config/sites.yaml --settings_path config/settings.yaml
+# 1er run : rattrape la fenêtre [J-1, maintenant] laissée ouverte par l'amorçage —
+# ingested/assets_read potentiellement > 0, c'est attendu.
+
+just cwl-run cwl/update.cwl \
+    --sites A01 --data_root /tmp/cwl-update-data \
+    --sites_path config/sites.yaml --settings_path config/settings.yaml
+# 2e run, quelques minutes après : c'est CE run que l'oracle mesure. Sur un parc
+# stable, il doit rendre ingested == 0 et assets_read == 0 (idempotence, cf.
+# STDERR "status=up_to_date").
+```
+
+Deux formulations plus courtes ont été essayées et rejetées (cf. `l0-06.2`) : lancer
+`update.cwl` sur le `data_root` déjà peuplé de `l0-06.1` (fenêtre déjà close → il
+retrouve du neuf, pas un test d'idempotence propre) et lancer `update.cwl` sur un
+`data_root` vierge sans amorçage (`NoManifests` dès le 1er run — rien à mesurer).
+L'amorçage par `ingest` est donc une étape obligatoire du protocole, pas une
+option.
