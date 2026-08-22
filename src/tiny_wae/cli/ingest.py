@@ -106,7 +106,7 @@ def _report_counters(site_id: str, run: Run) -> None:
     )
     if run.tile_suspect:
         typer.echo(
-            f"⚠ site={site_id} : > {TILE_SUSPECT_RATIO:.0%} des items de la tuile de référence "
+            f"site={site_id} : > {TILE_SUSPECT_RATIO:.0%} des items de la tuile de référence "
             "sont rejected_nodata (dénominateur found_tile) — tuile suspecte, à corriger "
             "en config (édition de sites.yaml + `just survey-tiles`), PAS d'auto-bascule",
             err=True,

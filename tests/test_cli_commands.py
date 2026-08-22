@@ -61,21 +61,27 @@ def test_sites_validate_missing_file_o3() -> None:
 
 
 def test_sites_list_nominal() -> None:
-    """`sites-list` texte : les 25 sites livrés apparaissent, un par ligne."""
+    """`sites-list` texte : les 25 sites livrés apparaissent, un par ligne.
+
+    D10 (obs-01) : sur `result.stdout`, pas `result.output` — ce test vérifie le canal de
+    DONNÉES, `result.output` (qui inclut STDERR sous click 8.4.2) l'exposerait au premier
+    log émis en amont (ex. la ligne d'ouverture de `backfill`, hors-sujet ici)."""
     result = runner.invoke(app, ["sites-list", "--path", str(SITES_PATH)])
     assert result.exit_code == exit_codes.OK
-    lines = [line for line in result.output.splitlines() if line.strip()]
+    lines = [line for line in result.stdout.splitlines() if line.strip()]
     assert len(lines) == 25
-    assert "A01" in result.output
+    assert "A01" in result.stdout
 
 
 def test_sites_list_json() -> None:
-    """`sites-list --json` : sortie JSON valide, liste de 25 objets avec la clé `id`."""
+    """`sites-list --json` : sortie JSON valide, liste de 25 objets avec la clé `id`.
+
+    D10 (obs-01) : `result.stdout`, pas `result.output` (même raison que ci-dessus)."""
     import json
 
     result = runner.invoke(app, ["sites-list", "--path", str(SITES_PATH), "--json"])
     assert result.exit_code == exit_codes.OK
-    payload = json.loads(result.output)
+    payload = json.loads(result.stdout)
     assert isinstance(payload, list)
     assert len(payload) == 25
     assert {entry["id"] for entry in payload} >= {"A01", "C08"}

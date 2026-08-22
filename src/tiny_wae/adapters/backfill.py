@@ -25,13 +25,27 @@ site continue), et ne touche jamais les autres sites — chaque ``Future`` du po
 site, indépendant des autres. ``assets_read`` ne remonte JAMAIS par un état partagé entre
 threads : chaque fenêtre rend son propre ``IngestOutcome`` par valeur de retour (décision de
 l0-03.3, motivée précisément par ce pool), agrégé ensuite dans le thread appelant.
+
+⭐ Progression et ETA (obs-01, D6/D7/D9/D11/D12) : ce module loggue directement via son
+logger de module (``logging.getLogger(__name__)``, D3/D7 — c'est de l'I/O, la couche
+``adapters/`` y a droit) — une ligne d'ouverture puis une ligne PAR FENÊTRE TERMINÉE
+(succès ou échec, D6). ``_process_site`` tournant dans N threads, ``n`` (le numérateur
+``n/total``) est distribué par ``_Progress.record_window``, sous verrou : c'est ce qui
+garantit qu'il forme une permutation de ``1..total`` sans doublon ni trou malgré la
+concurrence (oracle O2), `logging` sérialisant ensuite l'écriture elle-même. L'ETA
+(``_eta_seconds``/``_format_eta``, D12) est une extrapolation linéaire PURE, testée par
+appel direct — son incertitude (D11) est portée par un ``?`` suffixé sous deux conditions :
+échantillon < 5 % du total, OU phase de queue (moins de ``workers`` sites encore actifs,
+c.-à-d. n'ayant pas encore produit TOUTES leurs fenêtres).
 """
 
 from __future__ import annotations
 
 import functools
+import logging
 import signal
 import threading
+import time
 from collections.abc import Callable, Mapping
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -43,6 +57,12 @@ from tiny_wae.adapters.stac import StacSource, StacUnreachable
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Site
 from tiny_wae.core.windows import Window
+
+logger = logging.getLogger(__name__)
+
+# Seuil D11 (condition « échantillon trop court ») : moins de 5 % du total de fenêtres
+# soumises. Nommé ici (jamais recopié en littéral) — c'est ce que O8/O9 exercent.
+_ETA_MIN_SAMPLE_RATIO = 0.05
 
 
 def _is_network_error(exc: BaseException) -> bool:
@@ -119,12 +139,135 @@ def build_tasks(sites: list[Site], windows: list[Window]) -> dict[str, list[Wind
     return {site.id: list(windows) for site in sites}
 
 
+def _eta_seconds(done: int, total: int, elapsed_s: float) -> float | None:
+    """Extrapolation linéaire (D12, fonction PURE) : ``restant = (total − done) ×
+    elapsed_s / done``. Rend ``None`` avant la première fenêtre terminée (``done <= 0`` —
+    aucune division par zéro), ``0.0`` sur la dernière (``done >= total`` — plus rien à
+    attendre), sinon la valeur exacte de la formule. Jamais de négatif : ``done`` et
+    ``total`` sont des compteurs, ``total >= done`` par construction du run."""
+    if done <= 0:
+        return None
+    if done >= total:
+        return 0.0
+    return (total - done) * elapsed_s / done
+
+
+def _eta_uncertain(*, done: int, total: int, sites_active: int, workers: int) -> bool:
+    """Vrai si l'ETA doit porter le suffixe ``?`` (D11) — une SEULE des deux conditions
+    suffit : l'échantillon est trop court (``done`` < 5 % de ``total``), OU le run est en
+    phase de queue (``sites_active``, le nombre de sites n'ayant PAS ENCORE produit
+    TOUTES leurs fenêtres, est inférieur au nombre de ``workers`` — le parallélisme
+    s'effondre mécaniquement, cf. ancrage de la fiche)."""
+    sample_too_small = done < total * _ETA_MIN_SAMPLE_RATIO
+    queue_phase = sites_active < workers
+    return sample_too_small or queue_phase
+
+
+def _format_duration(seconds: float) -> str:
+    """Formate une durée en ``<H>h<MM>`` au-delà d'une heure, sinon ``<M>min<SS>`` —
+    format FIGÉ de la fiche (ex. ``2h11``)."""
+    total_seconds = round(seconds)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours > 0:
+        return f"{hours}h{minutes:02d}"
+    return f"{minutes}min{secs:02d}"
+
+
+def _format_eta(eta_seconds: float | None, *, done: int, total: int, uncertain: bool) -> str:
+    """Rend le champ ETA d'une ligne de progression (D11/D12, fonction PURE) : ``—`` avant
+    la première fenêtre terminée ET sur la dernière ligne (``done >= total`` : il n'y a
+    plus rien à attendre, un ``0min00`` littéral serait du bruit) ; sinon une durée
+    formatée, suffixée de ``?`` ssi ``uncertain``."""
+    if eta_seconds is None or done >= total:
+        return "—"
+    suffix = "?" if uncertain else ""
+    return f"{_format_duration(eta_seconds)}{suffix}"
+
+
+def _format_counters(counters: Mapping[str, int]) -> str:
+    """Rend les compteurs NON NULS d'un run, triés par clé (fiche : « une ligne à 12
+    compteurs à zéro est illisible »). ``aucun item`` si TOUS les compteurs sont nuls
+    (correction post-revue : une fenêtre sans acquisition est un cas RÉEL et fréquent — un
+    site sans item sur un mois — la laisser sans charge utile la rendrait indistinguable
+    d'un défaut d'affichage sur un run de 1200 lignes, et terminerait la ligne par un
+    espace)."""
+    rendered = " ".join(f"{key}={value}" for key, value in sorted(counters.items()) if value != 0)
+    return rendered if rendered else "aucun item"
+
+
+@dataclass
+class _Progress:
+    """État de progression PARTAGÉ entre tous les threads du pool (un par run) : verrou
+    unique protégeant ``done``/``sites_done`` — c'est ce qui garantit que ``n`` (le
+    numérateur distribué par ``record_window``) forme une permutation de ``1..total``
+    malgré la concurrence réelle entre sites (oracle O2), et que la paire
+    ``(done, sites_active)`` lue pour une ligne donnée est une vue cohérente (jamais
+    calculée hors verrou)."""
+
+    total: int
+    workers: int
+    sites_total: int
+    start: float = field(default_factory=time.monotonic)
+    lock: threading.Lock = field(default_factory=threading.Lock)
+    done: int = 0
+    sites_done: int = 0
+
+    def record_window(self, *, site_finished: bool) -> tuple[int, float, int]:
+        """Enregistre UNE fenêtre terminée (succès ou échec) ; incrémente aussi le
+        compteur de sites terminés si ``site_finished`` (c'est la dernière fenêtre
+        planifiée de son site). Rend ``(n, elapsed_s, sites_active)``, calculé DANS le
+        verrou pour éviter toute vue incohérente entre threads."""
+        with self.lock:
+            self.done += 1
+            if site_finished:
+                self.sites_done += 1
+            n = self.done
+            elapsed = time.monotonic() - self.start
+            sites_active = self.sites_total - self.sites_done
+        return n, elapsed, sites_active
+
+
 def _request_stop(stop_event: threading.Event, _signum: int, _frame: object) -> None:
     """Gestionnaire de signal — fonction PURE : ne fait QUE positionner ``stop_event``,
     aucun I/O, aucun accès au pool. Testable directement (appel de fonction, PAS un vrai
     signal — décision d'ancrage n°5 : le déclenchement du signal n'est pas portable
     linux-64/win-64, seul le comportement d'arrêt l'est)."""
     stop_event.set()
+
+
+def _log_progress_line(
+    *,
+    level: int,
+    n: int,
+    total: int,
+    elapsed_s: float,
+    sites_active: int,
+    workers: int,
+    site_id: str,
+    window: Window,
+    payload: str,
+) -> None:
+    """Compose et émet UNE ligne de progression (D6/D7), colonnes fixes à gauche
+    (``n/total``, ``%``, ``ETA``) puis charge utile variable à droite (fiche : « Format de
+    ligne (figé) »). ``payload`` porte soit les compteurs non nuls, soit ``ÉCHEC : ...``
+    (à charge de l'appelant, D6)."""
+    pct = (n / total * 100) if total > 0 else 0.0
+    eta_seconds = _eta_seconds(n, total, elapsed_s)
+    uncertain = _eta_uncertain(done=n, total=total, sites_active=sites_active, workers=workers)
+    eta = _format_eta(eta_seconds, done=n, total=total, uncertain=uncertain)
+    bounds = f"{window.start:%Y-%m-%d}→{window.end:%Y-%m-%d}"
+    logger.log(
+        level,
+        "backfill  %d/%d (%5.1f%%) ETA %s  %s  %s  %s",
+        n,
+        total,
+        pct,
+        eta,
+        site_id,
+        bounds,
+        payload,
+    )
 
 
 def _process_site(
@@ -136,6 +279,7 @@ def _process_site(
     data_root: Path,
     force: bool,
     stop_event: threading.Event,
+    progress: _Progress,
 ) -> SiteResult:
     """Exécute TOUTES les fenêtres d'UN site, séquentiellement (jamais en concurrence
     entre elles — cf. docstring du module : c'est ce qui élimine la collision de
@@ -143,12 +287,21 @@ def _process_site(
     d'ancrage n°2). Une fenêtre en échec devient une ``TaskFailure`` et n'interrompt PAS
     les fenêtres suivantes du même site — seul ``stop_event`` (positionné avant le début
     d'une fenêtre) arrête la boucle plus tôt, sans jamais interrompre une fenêtre déjà
-    engagée (« attente des items en cours », décision d'ancrage n°5)."""
+    engagée (« attente des items en cours », décision d'ancrage n°5).
+
+    Une ligne de progression est loguée pour CHAQUE fenêtre TERMINÉE (D6), succès (INFO)
+    ou échec (WARNING) — jamais pour une fenêtre annulée par ``stop_event`` avant d'avoir
+    démarré. ``site_finished`` (dernier index de ``windows``) alimente ``progress`` pour
+    la condition « phase de queue » de l'ETA (D11) ; un site interrompu en cours de route
+    par ``stop_event`` n'atteint jamais cet index, ce qui est le comportement voulu (son
+    dernier statut connu reste « actif »)."""
     outcomes: list[IngestOutcome] = []
     failures: list[TaskFailure] = []
-    for window in windows:
+    last_index = len(windows) - 1
+    for index, window in enumerate(windows):
         if stop_event.is_set():
             break
+        site_finished = index == last_index
         try:
             outcome = ingest_from_source(
                 site=site,
@@ -162,8 +315,32 @@ def _process_site(
             failures.append(
                 TaskFailure(window=window, error=str(exc), is_network=_is_network_error(exc))
             )
+            n, elapsed_s, sites_active = progress.record_window(site_finished=site_finished)
+            _log_progress_line(
+                level=logging.WARNING,
+                n=n,
+                total=progress.total,
+                elapsed_s=elapsed_s,
+                sites_active=sites_active,
+                workers=progress.workers,
+                site_id=site.id,
+                window=window,
+                payload=f"ÉCHEC : {exc}",
+            )
             continue
         outcomes.append(outcome)
+        n, elapsed_s, sites_active = progress.record_window(site_finished=site_finished)
+        _log_progress_line(
+            level=logging.INFO,
+            n=n,
+            total=progress.total,
+            elapsed_s=elapsed_s,
+            sites_active=sites_active,
+            workers=progress.workers,
+            site_id=site.id,
+            window=window,
+            payload=_format_counters(outcome.run.counters),
+        )
     return SiteResult(site_id=site.id, outcomes=outcomes, failures=failures)
 
 
@@ -222,6 +399,19 @@ def run_backfill(
         }
         interrupted = False
 
+        # Total EXACT des fenêtres réellement soumises au pool (pas ``len(windows) *
+        # len(sites)`` : les corpus A01/B09 des tests O2/O2bis diffèrent par site) —
+        # c'est ce total, annoncé sur la ligne d'ouverture, que O2 confronte à la
+        # permutation `1..total` effectivement observée.
+        total = sum(len(windows_by_site[site.id]) for site in sites_with_windows)
+        progress = _Progress(total=total, workers=workers, sites_total=len(sites_with_windows))
+        logger.info(
+            "backfill  ouverture : %d site(s), %d fenêtre(s) au total, workers=%d",
+            len(sites_with_windows),
+            total,
+            workers,
+        )
+
         with ThreadPoolExecutor(max_workers=workers) as executor:
             futures = {
                 executor.submit(
@@ -233,6 +423,7 @@ def run_backfill(
                     data_root=data_root,
                     force=force,
                     stop_event=effective_stop_event,
+                    progress=progress,
                 ): site
                 for site in sites_with_windows
             }
