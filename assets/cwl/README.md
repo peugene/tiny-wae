@@ -1,20 +1,70 @@
-# cwl/ — emballage CWL des CLI tiny-wae
+# assets/cwl/ — emballage CWL des CLI tiny-wae, au format PID-FLOW
 
 Fiches `l0-06.1` + `l0-06.2` (chapeau `l0-06`). Périmètre **fermé** : 3
-`CommandLineTool` (`search.cwl`, `ingest.cwl`, `update.cwl`) + 1 `Workflow`
-(`workflow.cwl`, `search → ingest`). CWL v1.2.
+`CommandLineTool` (`search`, `ingest`, `update`) + 1 `Workflow` (`tiny-wae`,
+`search → ingest`). CWL v1.2.
 
 **⛔ Hors périmètre, décision de chapeau** : pas d'enregistrement server PID-FLOW réel,
 pas de `pid:Milestone` (scope creep pointé en revue v2 — le consommateur, l'IHM
 PID-FLOW, est hors lot ; à réintroduire dans une fiche d'enregistrement future).
 Ici, **validation locale `cwltool` uniquement**.
 
-## Écart assumé vs cwl-assets
+## Structure — symétrique du `cwl-store` PID-FLOW
 
-Les tools cwl-assets classiques embarquent des scripts rsyncés à côté du `.cwl`.
-Ici, `tiny_wae` est un **package Python installé** dans l'environnement (pixi) : le
-`baseCommand` appelle directement `python -m tiny_wae <cmd>`, sans script à
-déployer. C'est un écart délibéré, pas un oubli.
+```
+assets/cwl/
+├── workflows/tiny-wae/1.0/workflow.cwl     → cwl-store/workflows/
+└── tools/<nom>/1.0/tool.cwl                → cwl-store/tools/
+    ├── search/1.0/tool.cwl
+    ├── ingest/1.0/tool.cwl
+    └── update/1.0/tool.cwl
+```
+
+Reprise de la convention du dépôt `cwl-assets` (elle-même alignée sur l'ADR-0010 /
+EVO-42 de PID-FLOW). Trois règles en découlent, toutes vérifiées par `tests/test_cwl.py` :
+
+- **Le nom de l'artefact est le nom du RÉPERTOIRE**, pas celui du fichier — les fichiers
+  s'appellent tous `tool.cwl` ou `workflow.cwl`. C'est ce nom qui identifie la brique
+  côté cwl-store, avec sa version : `(nom, version)` est unique, il n'y a pas de `latest`.
+- **La classe doit correspondre au répertoire** : `class: Workflow` sous `workflows/`,
+  `class: CommandLineTool` sous `tools/`. Une discordance est **rejetée au scan** par
+  PID-FLOW (log ERROR + skip) — silencieusement, du point de vue de qui a poussé.
+- **Les 3 tools sont PARTAGÉS** (`tools/<nom>/<version>/`), pas embarqués dans le
+  workflow (`workflows/<nom>/<version>/tools/`). Le workflow les référence en relatif :
+  `run: ../../../tools/search/1.0/tool.cwl`. C'est le bon choix ici parce qu'`update`
+  ne participe à aucun workflow et que les lots suivants recomposeront les mêmes briques ;
+  la règle cwl-assets est « interne tant qu'un seul workflow s'en sert, partagé dès 2 ».
+
+**Version unique : `1.0`** pour les 4 artefacts. Rien ici n'a encore été enregistré côté
+server, donc rien n'est figé — le jour où ça le sera, une modification de contrat imposera
+un bump (pas d'écrasement possible à `(nom, version)` constant).
+
+## Écart assumé vs cwl-assets : pas de script rsyncé
+
+Le cas standard cwl-assets est un script Python déployé par `rsync` sous
+`WORKER_PYTHON_SCRIPTS_ROOT`, appelé par `baseCommand: [<sous-rep>/<script>.py]` — le
+worker réécrit ce chemin relatif en
+`${WORKER_PYTHON_COMMAND} ${WORKER_PYTHON_SCRIPTS_ROOT}/<sous-rep>/<script>.py`.
+
+Ici, `tiny_wae` est un **package Python installé** dans l'environnement : le `baseCommand`
+appelle directement `python -m tiny_wae <cmd>`, sans script à déployer. C'est un écart
+délibéré, pas un oubli — mais il a une **conséquence de déploiement** : le worker n'a rien
+à rsyncer, en revanche **`tiny_wae` doit être installé dans le Python du worker**, sinon la
+tâche échoue à l'exécution (`No module named tiny_wae`). Les deux modèles exigent un
+déploiement, simplement pas le même.
+
+Le hint de capability, lui, reste celui de la convention :
+
+```yaml
+hints:
+  - class: SoftwareRequirement
+    packages:
+      - package: python
+```
+
+⚠ **Ce hint n'est pas décoratif** : un worker sans `python` dans ses `WORKER_CAPABILITIES`
+**ne prend pas** la tâche. Elle reste en attente — pas en erreur. Si rien ne démarre, c'est
+la première chose à regarder.
 
 ## Pourquoi `python` en dur dans le `baseCommand` (et pas `just`)
 
@@ -32,28 +82,43 @@ développeur qui a le dépôt cloné.
 ## ⛔ Exigences CWL non supportées par PID-FLOW
 
 **PID-FLOW ne supporte aujourd'hui ni `InlineJavascriptRequirement` ni
-`EnvVarRequirement`.** Aucun des 4 fichiers ne les déclare, et il ne faut pas les y
-remettre : un tool qui les exige ne tournerait pas chez le consommateur visé, alors même
+`EnvVarRequirement`, et n'évalue AUCUNE expression CWL.** Aucun des 4 fichiers ne les
+déclare ni n'en contient, et il ne faut pas les y remettre : un tool qui les exige ne
+tournerait pas chez le consommateur visé, alors même
 que `cwltool --validate` (`just cwl`) reste **vert** en local — l'exécuteur de
 développement est plus permissif que celui de production. C'est l'angle mort que couvre
 `tests/test_cwl.py` (`test_aucun_cwl_ne_declare_d_exigence_non_supportee_par_pid_flow`),
 qui balaie les 4 fichiers sous les deux formes CWL (clé de map, entrée `{class: …}` de
 liste) et jusque dans les steps de workflow.
 
-### `InlineJavascriptRequirement` — inutile de toute façon
+### Aucune expression CWL, même une simple référence de paramètre
 
-Les 3 tools n'utilisent que des **références de paramètre** (`$(inputs.json_out)`),
-c'est-à-dire le sous-ensemble restreint que la spec CWL rend **toujours disponible**, sans
-exigence à déclarer. Vérifié dans le moteur (`cwl_utils/expression.py`, `evaluator()`) :
-une expression qui matche la grammaire des références de paramètre est résolue
-directement, le drapeau `fullJS` (= `InlineJavascriptRequirement`) n'est consulté que dans
-la branche de repli. Mesuré : avec l'exigence déclarée et un `node` délibérément saboté
-(`exit 127`), le run reste vert — le moteur JS n'est jamais sollicité.
+`cwltool` résout parfaitement une **référence de paramètre** — le sous-ensemble restreint
+que la spec CWL rend toujours disponible, sans exigence à déclarer. Vérifié dans le moteur
+(`cwl_utils/expression.py`, `evaluator()`) : elle est résolue directement, le drapeau
+`fullJS` (= `InlineJavascriptRequirement`) n'est consulté que dans la branche de repli.
+Mesuré : avec l'exigence déclarée et un `node` délibérément saboté (`exit 127`), le run
+reste vert — le moteur JS n'est jamais sollicité.
 
-L'exigence **désarme** en plus un garde-fou. Sans elle, une `$(...)` mal formée est refusée
-avec un message explicite (« *Syntax error in parameter reference … could be due to using
-Javascript code without specifying InlineJavascriptRequirement* ») ; avec elle, la même
-expression part au moteur JS et s'évalue silencieusement. C'est précisément ce message qui
+**Mais PID-FLOW, lui, ne les évalue pas** : le dépôt `cwl-assets` porte le constat noir sur
+blanc (tool `AppendToFile`, TOOL-6 — un glob `$(inputs.input_file.basename)` « était une
+expression et ne matchait rien », remplacé par un nom littéral), et aucun de ses 40 tools
+n'utilise d'expression ailleurs que dans les tools legacy Docker. Le mode de défaillance
+est le pire possible : la sortie n'est **pas capturée**, et **rien n'échoue**.
+
+D'où la règle ici : **aucun `$(...)`, nulle part** (garde-fou :
+`test_aucune_expression_cwl_dans_les_fichiers`, qui scanne le texte brut des 4 fichiers).
+La seule conséquence concrète est dans le tool `search` : son `outputBinding.glob` est le
+littéral `"acquisitions.json"`, tenu synchronisé avec le défaut de l'input `json_out` par
+`test_search_glob_litteral_colle_au_default` — un lien qu'une expression aurait porté
+gratuitement, et qu'il faut donc tester.
+
+### `InlineJavascriptRequirement` — il désarme en plus un garde-fou
+
+Sans lui, une expression mal formée est refusée avec un message explicite
+(« *Syntax error in parameter reference … could be due to using Javascript code without
+specifying InlineJavascriptRequirement* ») ; avec lui, la même expression part au moteur
+JS et s'évalue silencieusement. C'est précisément ce message qui
 doit sonner le jour où quelqu'un écrit du vrai JavaScript ici — parce que ce jour-là, le
 tool cesse d'être exécutable par PID-FLOW.
 
@@ -72,7 +137,9 @@ réintroduire l'input `data_root`, il n'aurait plus par quel moyen atteindre le 
 n'expose au process qu'un environnement minimal. La recette `just cwl-run` passe donc
 `--preserve-environment TINY_WAE_DATA_ROOT`, ce qui reproduit le comportement du worker.
 Mesuré : sans l'option la variable arrive absente, avec elle elle arrive intacte, et son
-absence pure et simple ne casse rien (repli sur `settings.data_root`).
+absence pure et simple ne casse rien (repli sur `settings.data_root`). C'est exactement ce
+que fait `bin/run-local.sh` dans `cwl-assets` pour `SPATIO_ROOT` — même contrainte, même
+réponse.
 
 ## Codes de sortie et `successCodes`
 
@@ -80,16 +147,16 @@ Les CLI `search`/`ingest` partagent la même convention (`cli/exit_codes.py`) :
 `0` OK · `1` FAILURE (échec métier, ≥ 1 item en échec) · `2` USAGE (config/usage
 invalide) · `3` INCONCLUSIVE (amont injoignable / aucun item n'a abouti).
 
-- **`search.cwl`** : `successCodes: [0]` uniquement. Un endpoint STAC injoignable
+- **`search`** : `successCodes: [0]` uniquement. Un endpoint STAC injoignable
   (INCONCLUSIVE) ou une config invalide (USAGE) doivent arrêter le workflow — il n'y
   a rien à ingérer si la recherche a échoué.
-- **`ingest.cwl`** : `successCodes: [0, 1]`. Un `FAILURE` (≥ 1 item en échec, mais au
+- **`ingest`** : `successCodes: [0, 1]`. Un `FAILURE` (≥ 1 item en échec, mais au
   moins un succès) est un **résultat métier légitime** — le forcer en erreur CWL
   ferait échouer le workflow sur des runs par ailleurs sains (idempotence au grain
   item : les items ratés seront retentés au run suivant). `USAGE` (2) et
   `INCONCLUSIVE` (3, aucun item n'a abouti) restent des échecs CWL.
 
-- **`update.cwl`** : `successCodes: [0, 1]`, même raisonnement que `ingest.cwl` mais
+- **`update`** : `successCodes: [0, 1]`, même raisonnement que `ingest` mais
   avec un cas de plus. `update` renvoie `FAILURE` (1) aussi bien pour un échec
   métier classique (≥ 1 site en échec avec au moins un succès) que pour un **site
   vierge** (aucun manifeste connu, cf. `cli/update.py` — le CLI pointe alors vers
@@ -107,7 +174,7 @@ La racine de stockage se pilote par `TINY_WAE_DATA_ROOT` (cf. section précéden
 ce qui permet de pointer deux racines vierges et distinctes lors d'une comparaison run CWL
 / run CLI direct (oracle O2).
 
-⚠ **`ingest.cwl` n'a AUCUNE sortie CWL déclarée** (`outputs: []`). Essayé puis retiré,
+⚠ **`ingest` n'a AUCUNE sortie CWL déclarée** (`outputs: []`). Essayé puis retiré,
 mesuré à l'exécution (oracle O2) : la spec CWL interdit un `outputBinding.glob`
 commençant par `/`, or `TINY_WAE_DATA_ROOT` est justement pensée pour recevoir un chemin
 **absolu**, hors du répertoire de travail du tool — c'est même le cas d'usage de
@@ -138,18 +205,24 @@ plusieurs chemins d'un coup à `--validate` fait interpréter les arguments suiv
 comme un job order, pas comme des tools à valider séparément. Intégré dans
 `just check`.
 
-Ce que `cwltool --validate` **ne couvre pas** : il ignore tout des CLI réels du
-projet — si une option est renommée dans `cli/search.py` ou `cli/ingest.py` sans
-toucher au `.cwl` correspondant, la validation reste verte et le workflow casse
-silencieusement à l'exécution. C'est pourquoi `tests/test_cwl.py` confronte chaque
-`inputBinding.prefix` déclaré ici aux options réellement exposées par le CLI, via
-introspection `click`/`typer` (`typer.main.get_command`, pas un parsing de
-`--help`) — le seul test de cette fiche qui échouerait sur du code faux.
+Ce que `cwltool --validate` **ne couvre pas** — deux angles morts, tous deux comblés par
+`tests/test_cwl.py` :
+
+1. **Il ignore tout des CLI réels du projet.** Si une option est renommée dans
+   `cli/search.py` ou `cli/ingest.py` sans toucher au tool correspondant, la validation
+   reste verte et le workflow casse silencieusement à l'exécution. Le test confronte donc
+   chaque `inputBinding.prefix` aux options réellement exposées par le CLI, via
+   introspection `click`/`typer` (`typer.main.get_command`, pas un parsing de `--help`).
+2. **Il est plus permissif que PID-FLOW.** Structure de dépôt, classe cohérente avec le
+   répertoire, `label` = nom d'artefact, capability `python`, exigences interdites,
+   absence d'expression, référence de tool partagé : `cwltool` accepte tout ça sans
+   broncher, PID-FLOW non. Les tests `..._pid_flow` (et voisins) codifient ces règles —
+   c'est la seule barrière avant le register.
 
 ## Run local (hors gate, réseau)
 
 ```
-TINY_WAE_DATA_ROOT=/tmp/cwl-run-data just cwl-run cwl/workflow.cwl \
+TINY_WAE_DATA_ROOT=/tmp/cwl-run-data just cwl-run assets/cwl/workflows/tiny-wae/1.0/workflow.cwl \
     --site A01 --from_date 2026-01-01 --to_date 2026-01-10 \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 ```
@@ -175,26 +248,26 @@ TINY_WAE_DATA_ROOT=./data-cli-test just run ingest --acquisitions /tmp/acq.json
 et comparer les ensembles `(item_id, statut)` des deux racines (manifestes
 `run.json`, `adapters/manifests.py`).
 
-## Run local d'`update.cwl` (oracle O2 de `l0-06.2`, hors gate, réseau)
+## Run local du tool `update` (oracle O2 de `l0-06.2`, hors gate, réseau)
 
 ⚠ **`update` ne peut rien ingérer sur une racine totalement vierge** : sans
 aucun manifeste connu, le site est déclaré « vierge » (`NoManifests` → exit 1,
 pointant vers `backfill`) — ce n'est pas un bug, c'est la même logique que
 `cli/update.py`. L'oracle « idempotence d'un run à l'autre » exige donc un
-**amorçage préalable** par `ingest` avant le premier run `update.cwl` :
+**amorçage préalable** par `ingest` avant le premier run du tool `update` :
 
 ```
 TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just run ingest \
     --site A01 --from <J-20> --to <J-1> \
     --sites-path config/sites.yaml --settings-path config/settings.yaml
 
-TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run cwl/update.cwl \
+TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run assets/cwl/tools/update/1.0/tool.cwl \
     --sites A01 \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 # 1er run : rattrape la fenêtre [J-1, maintenant] laissée ouverte par l'amorçage —
 # ingested/assets_read potentiellement > 0, c'est attendu.
 
-TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run cwl/update.cwl \
+TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run assets/cwl/tools/update/1.0/tool.cwl \
     --sites A01 \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 # 2e run, quelques minutes après : c'est CE run que l'oracle mesure. Sur un parc
@@ -203,8 +276,8 @@ TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run cwl/update.cwl \
 ```
 
 Deux formulations plus courtes ont été essayées et rejetées (cf. `l0-06.2`) : lancer
-`update.cwl` sur la racine déjà peuplée de `l0-06.1` (fenêtre déjà close → il
-retrouve du neuf, pas un test d'idempotence propre) et lancer `update.cwl` sur une
+le tool `update` sur la racine déjà peuplée de `l0-06.1` (fenêtre déjà close → il
+retrouve du neuf, pas un test d'idempotence propre) et le lancer sur une
 racine vierge sans amorçage (`NoManifests` dès le 1er run — rien à mesurer).
 L'amorçage par `ingest` est donc une étape obligatoire du protocole, pas une
 option.

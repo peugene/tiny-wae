@@ -1,14 +1,28 @@
 #!/usr/bin/env cwl-runner
 cwlVersion: v1.2
 class: CommandLineTool
-label: "tiny-wae update — run quotidien, fenêtre depuis le dernier manifeste connu"
+
+label: "update"
 doc: |
-  Emballe `python -m tiny_wae update` (cf. cwl/README.md pour l'écart assumé vs
-  cwl-assets : `tiny_wae` est un package installé, pas un script rsyncé).
+  Run quotidien tiny-wae : fenêtre depuis le dernier manifeste connu.
+
+  Emballe `python -m tiny_wae update` (cf. assets/cwl/README.md pour l'écart assumé
+  vs cwl-assets : `tiny_wae` est un package Python installé, pas un script rsyncé
+  sous WORKER_PYTHON_SCRIPTS_ROOT).
   Pour chaque site du parc (ou le sous-ensemble filtré par `sites`), calcule la
   fenêtre depuis le dernier manifeste connu (marge `incremental_margin_days`) et
   appelle `ingest` dessus. C'est le tool destiné à un ordonnancement quotidien
   (cron/PID-FLOW, hors lot — cf. chapeau l0-06).
+
+  La racine de stockage vient de TINY_WAE_DATA_ROOT, posée dans l'environnement du
+  worker (aucun input CWL — cf. assets/cwl/README.md).
+
+# Dépendance Python → capability "python" exigée du worker PID-FLOW : un worker sans
+# `python` dans WORKER_CAPABILITIES ne prendra pas la tâche.
+hints:
+  - class: SoftwareRequirement
+    packages:
+      - package: python
 
 baseCommand: [python, -m, tiny_wae, update]
 
@@ -26,34 +40,37 @@ successCodes: [0, 1]
 inputs:
   sites:
     type: string?
+    label: "Sites à traiter"
+    doc: "Ids CSV à traiter, ou `all` (défaut CLI) pour tout le parc."
     inputBinding:
       prefix: --sites
-    doc: "Ids CSV à traiter, ou `all` (défaut CLI) pour tout le parc."
   now:
     type: string?
-    inputBinding:
-      prefix: --now
+    label: "Horodatage injecté"
     doc: |
       Horodatage injecté (YYYY-MM-DD[THH:MM:SS]) — sans option, horloge système.
       Laisser vide pour un run réel planifié ; à fixer pour un run reproductible
       (c'est ce que fait l'oracle O2 pour comparer deux runs successifs).
+    inputBinding:
+      prefix: --now
   sites_path:
     type: File?
+    label: "Fichier sites.yaml"
+    doc: "Chemin vers sites.yaml (défaut CLI : config/sites.yaml)."
     inputBinding:
       prefix: --sites-path
-    doc: "Chemin vers sites.yaml (défaut CLI : config/sites.yaml)."
   settings_path:
     type: File?
+    label: "Fichier settings.yaml"
+    doc: "Chemin vers settings.yaml (défaut CLI : config/settings.yaml)."
     inputBinding:
       prefix: --settings-path
-    doc: "Chemin vers settings.yaml (défaut CLI : config/settings.yaml)."
 
-# Pas de sortie CWL déclarée, même raison que ingest.cwl (cf. cwl/README.md) :
+# Pas de sortie CWL déclarée, même raison que le tool `ingest` (cf. assets/cwl/README.md) :
 # `update` délègue l'ingestion effective à `ingest`, qui écrit hors du répertoire de
 # travail du tool (racine posée par TINY_WAE_DATA_ROOT dans l'environnement du worker,
-# potentiellement un chemin absolu
-# externe au sandbox CWL — un outputBinding.glob absolu est interdit par la spec CWL).
-# Le succès du run se lit au code de sortie (successCodes ci-dessus) et au résumé
-# STDERR ; ce qui a été effectivement écrit se vérifie sur disque (manifestes
-# `run.json`, cf. adapters/manifests.py), pas via une sortie CWL.
+# potentiellement un chemin absolu externe au sandbox CWL — un outputBinding.glob absolu
+# est interdit par la spec CWL). Le succès du run se lit au code de sortie (successCodes
+# ci-dessus) et au résumé STDERR ; ce qui a été effectivement écrit se vérifie sur disque
+# (manifestes `run.json`, cf. adapters/manifests.py), pas via une sortie CWL.
 outputs: []

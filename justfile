@@ -76,17 +76,17 @@ md2html src dest title="Doc" banner="":
 # validation statique des tools/workflow CWL (cwltool --validate, un fichier à la fois :
 # passer plusieurs chemins à --validate fait interpréter les suivants comme job order).
 cwl:
-    pixi run cwltool --validate cwl/search.cwl
-    pixi run cwltool --validate cwl/ingest.cwl
-    pixi run cwltool --validate cwl/workflow.cwl
-    pixi run cwltool --validate cwl/update.cwl
+    pixi run cwltool --validate assets/cwl/tools/search/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/tools/ingest/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/tools/update/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/workflows/tiny-wae/1.0/workflow.cwl
 
 # exécution RÉELLE d'un tool/workflow CWL (hors gate — fait du réseau)
-# ex. TINY_WAE_DATA_ROOT=/tmp/cwl-data just cwl-run cwl/workflow.cwl --site A01 --from_date …
+# ex. TINY_WAE_DATA_ROOT=/tmp/cwl-data just cwl-run assets/cwl/workflows/tiny-wae/1.0/workflow.cwl …
 # --preserve-environment : cwltool n'expose au job qu'un environnement minimal, une variable
 # posée dans le shell appelant ne l'atteint PAS sans ça (mesuré). C'est ce qui simule en local
 # le worker PID-FLOW, où TINY_WAE_DATA_ROOT est posée par l'exécuteur — les .cwl ne la portent
-# plus (EnvVarRequirement non supporté par PID-FLOW, cf. cwl/README.md).
+# plus (EnvVarRequirement non supporté par PID-FLOW, cf. assets/cwl/README.md).
 cwl-run file *args:
     pixi run cwltool --preserve-environment TINY_WAE_DATA_ROOT --outdir /tmp/cwl-run-out {{file}} {{args}}
 
