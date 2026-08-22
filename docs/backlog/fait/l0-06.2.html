@@ -63,6 +63,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
 </ul>
 </li>
+<li><a href="#post-scriptum-du-2026-08-22-perimetre-depasse-par-un-refactor-ulterieur">📌 Post-scriptum du 2026-08-22 — périmètre dépassé par un refactor ultérieur</a></li>
 </ul>
 </li>
 </ul>
@@ -202,4 +203,18 @@ périmètre.</p>
 <h3 id="non-teste-explicite">Non testé (explicite)</h3>
 <p>Exécution planifiée réelle en cron / PID-FLOW (hors lot, chapeau l0-06) · <code>--sites</code> avec une
 liste CSV multi-sites sur le tool CWL réel (seul <code>A01</code> a été exercé) · le cas
-<code>INCONCLUSIVE=3</code> (tous les échecs d'origine réseau), non déclenché pendant les runs d'O2.</p><div class="prevnext"><a href="l0-06.1.html">← [l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>
+<code>INCONCLUSIVE=3</code> (tous les échecs d'origine réseau), non déclenché pendant les runs d'O2.</p>
+<hr />
+<h2 id="post-scriptum-du-2026-08-22-perimetre-depasse-par-un-refactor-ulterieur">📌 Post-scriptum du 2026-08-22 — périmètre dépassé par un refactor ultérieur</h2>
+<p>Ce qui est décrit ci-dessus <strong>a bien été livré tel quel</strong>, mais a été refondu depuis, hors
+du cycle de fiches, sous une contrainte externe (compatibilité PID-FLOW). Deux éléments du
+périmètre ne sont donc plus exacts :</p>
+<ul>
+<li>les chemins <code>cwl/*.cwl</code> — l'arborescence est désormais
+  <code>assets/cwl/{workflows,tools}/&lt;nom&gt;/1.0/</code> ;</li>
+<li>le <code>baseCommand: [python, -m, tiny_wae, …]</code> — les tools appellent désormais le point
+  d'entrée console, <code>baseCommand: [tiny-wae, &lt;sous-commande&gt;]</code>.</li>
+</ul>
+<p>Le détail, les motifs et les garde-fous ajoutés sont dans la fiche <strong><code>l0-R1</code></strong>. L'oracle O2
+de cette fiche y a été <strong>rejoué depuis la nouvelle arborescence</strong> et reste au vert.</p>
+<p><em>Ajout daté — le corps de la fiche ci-dessus n'a pas été réécrit.</em></p><div class="prevnext"><a href="l0-06.1.html">← [l0-06.1] search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</a><span></span></div><p class="gen">Généré le 22/08/2026 10:36 — le .md fait foi.</p></article></body></html>

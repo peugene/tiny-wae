@@ -64,6 +64,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
 </ul>
 </li>
+<li><a href="#post-scriptum-du-2026-08-22-perimetre-depasse-par-un-refactor-ulterieur">📌 Post-scriptum du 2026-08-22 — périmètre dépassé par un refactor ultérieur</a></li>
 </ul>
 </li>
 </ul>
@@ -249,4 +250,18 @@ pixi↔uv, une occurrence dispersée dans un README est exactement ce qu'on ne r
 <code>pid:Milestone</code> (retirés en revue v2) · <strong>le cas O2 avec ≥ 1 <code>failed</code></strong> : la fenêtre choisie
 n'en a produit aucun, la clause bornée « rejouer une fois puis échec » n'a donc pas été
 exercée — non provoquée artificiellement, mesure honnête · le comportement avec un
-<code>data_root</code> relatif (seul le cas absolu a été exercé).</p><div class="prevnext"><span></span><a href="l0-06.2.html">[l0-06.2] update.cwl — le tool du run quotidien →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>
+<code>data_root</code> relatif (seul le cas absolu a été exercé).</p>
+<hr />
+<h2 id="post-scriptum-du-2026-08-22-perimetre-depasse-par-un-refactor-ulterieur">📌 Post-scriptum du 2026-08-22 — périmètre dépassé par un refactor ultérieur</h2>
+<p>Ce qui est décrit ci-dessus <strong>a bien été livré tel quel</strong>, mais a été refondu depuis, hors
+du cycle de fiches, sous une contrainte externe (compatibilité PID-FLOW). Deux éléments du
+périmètre ne sont donc plus exacts :</p>
+<ul>
+<li>les chemins <code>cwl/*.cwl</code> — l'arborescence est désormais
+  <code>assets/cwl/{workflows,tools}/&lt;nom&gt;/1.0/</code> ;</li>
+<li>le <code>baseCommand: [python, -m, tiny_wae, …]</code> — les tools appellent désormais le point
+  d'entrée console, <code>baseCommand: [tiny-wae, &lt;sous-commande&gt;]</code>.</li>
+</ul>
+<p>Le détail, les motifs et les garde-fous ajoutés sont dans la fiche <strong><code>l0-R1</code></strong>. L'oracle O2
+de cette fiche y a été <strong>rejoué depuis la nouvelle arborescence</strong> et reste au vert.</p>
+<p><em>Ajout daté — le corps de la fiche ci-dessus n'a pas été réécrit.</em></p><div class="prevnext"><span></span><a href="l0-06.2.html">[l0-06.2] update.cwl — le tool du run quotidien →</a></div><p class="gen">Généré le 22/08/2026 10:36 — le .md fait foi.</p></article></body></html>

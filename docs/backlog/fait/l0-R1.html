@@ -1,0 +1,341 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-R1</b></nav><h1>[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : —<br><b>Catégorie</b> : documentaire<br><b>Phase</b> : O3</p></div></div><article><div class="note">📘 <b>Fiche documentaire</b> — ne se dispatche pas : elle enregistre un travail déjà réalisé, hors du graphe de dépendances.</div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-r1-retroactive-durcissement-de-la-livraison-pid-flow">[l0-R1] — RÉTROACTIVE : durcissement de la livraison PID-FLOW</a><ul>
+<li><a href="#pourquoi-cette-fiche-existe">Pourquoi cette fiche existe</a></li>
+<li><a href="#ce-qui-a-ete-livre-deja-en-place-sur-develop">Ce qui a été livré (déjà en place sur develop)</a><ul>
+<li><a href="#1-arborescence-cwl-devient-assetscwl">1. Arborescence : cwl/ devient assets/cwl/</a></li>
+<li><a href="#2-trois-contraintes-pid-flow-decouvertes-en-sequence">2. Trois contraintes PID-FLOW, découvertes en séquence</a></li>
+<li><a href="#3-conventions-de-contenu-cwl-assets">3. Conventions de contenu (cwl-assets)</a></li>
+<li><a href="#4-basecommand-le-point-dentree-console">4. baseCommand : le point d'entrée console</a></li>
+<li><a href="#5-le-contrat-de-la-wheel-etait-faux">5. Le contrat de la wheel était faux</a></li>
+</ul>
+</li>
+<li><a href="#ce-qui-garde-tout-ca-les-tests-pas-la-vigilance">Ce qui garde tout ça (les tests, pas la vigilance)</a></li>
+<li><a href="#verifications-effectuees-a-lepoque">Vérifications effectuées à l'époque</a></li>
+<li><a href="#reverifie-apres-le-refactor-constat-b3-de-la-post-revue-1-clos">✅ Revérifié après le refactor — constat B3 de la post-revue 1, CLOS</a></li>
+<li><a href="#reste-cote-ops-hors-code">Reste côté ops (hors code)</a></li>
+<li><a href="#a-reporter-dans-les-fiches-closes">À reporter dans les fiches closes</a></li>
+<li><a href="#definition-de-termine-remplie-le-2026-08-22">Définition de « terminé » — remplie le 2026-08-22</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>📘 <strong>Fiche documentaire, écrite APRÈS coup.</strong> Elle ne demande aucun travail : elle
+enregistre cinq commits déjà livrés, réalisés hors du cycle <code>maturation → a-faire →
+en-cours → fait</code>. Rien à dispatcher, <code>depends_on: []</code>, aucune sous-tâche.
+<strong>Constat d'origine</strong> : post-revue 1, points B1 à B3.</p>
+</blockquote>
+<h2 id="pourquoi-cette-fiche-existe">Pourquoi cette fiche existe</h2>
+<p>Entre le 22/08/2026 07:37 et 09:21, cinq commits ont modifié en profondeur les artefacts
+CWL et le contrat de packaging du projet. Ce travail est de qualité et abondamment motivé
+— <strong>dans les corps de commit</strong>. Mais le backlog, dont la règle est que « le dossier fait
+foi », n'en portait aucune trace : les fiches <code>l0-06.1</code> et <code>l0-06.2</code>, closes en <code>fait/</code>,
+décrivaient encore une arborescence <code>cwl/</code> et un <code>baseCommand: [python, -m, tiny_wae, …]</code>
+qui n'existent plus.</p>
+<p>Un lecteur du backlog dans six mois n'aurait pas su que ce refactor avait eu lieu, ni
+pourquoi le <code>glob</code> du tool <code>search</code> est un littéral plutôt qu'une expression — alors que
+c'est précisément le genre de décision qu'on re-découvre à ses dépens.</p>
+<p>⚠ <strong>Cette fiche est un précédent, pas une pratique.</strong> Écrire une fiche après le code
+inverse la règle du projet (« les décisions se prennent en amont »). Elle se justifie ici
+parce que le travail porte des décisions structurantes qui seront relues au Lot 1. Le
+réflexe correct reste : une contrainte externe arrive en cours de lot → <strong>elle produit une
+fiche avant d'être implémentée</strong>, même courte.</p>
+<h2 id="ce-qui-a-ete-livre-deja-en-place-sur-develop">Ce qui a été livré (déjà en place sur <code>develop</code>)</h2>
+<p>Cinq commits, du plus ancien au plus récent :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>Objet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>13de5f0</code></td>
+<td>Retrait de <code>InlineJavascriptRequirement</code> des 3 tools</td>
+</tr>
+<tr>
+<td><code>e355121</code></td>
+<td>Retrait de <code>EnvVarRequirement</code> et de l'input <code>data_root</code></td>
+</tr>
+<tr>
+<td><code>24b564c</code></td>
+<td>Passage à la structure et aux conventions du cwl-store PID-FLOW</td>
+</tr>
+<tr>
+<td><code>208f79b</code></td>
+<td><code>baseCommand</code> sur le point d'entrée console <code>tiny-wae</code></td>
+</tr>
+<tr>
+<td><code>24680d1</code></td>
+<td>Complétion de <code>[project.dependencies]</code> — la wheel était incomplète</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Bilan mesuré</strong> (<code>git diff --stat d837c76 24680d1</code>, comptage <code>def test_</code>) : 13 fichiers
+touchés hors <code>docs/</code>, <strong>+956 / −458 lignes</strong> · <code>tests/test_cwl.py</code> passe de <strong>10 à 16
+tests</strong> · <code>tests/test_packaging.py</code> créé (<strong>2 tests</strong>) · total du projet <strong>230 → 238</strong>
+fonctions de test (<strong>243 collectés</strong> par pytest, la paramétrisation en ajoutant 5).</p>
+<h3 id="1-arborescence-cwl-devient-assetscwl">1. Arborescence : <code>cwl/</code> devient <code>assets/cwl/</code></h3>
+<pre><code>assets/cwl/workflows/tiny-wae/1.0/workflow.cwl
+assets/cwl/tools/{search,ingest,update}/1.0/tool.cwl
+</code></pre>
+<p>Hiérarchie symétrique du cwl-store PID-FLOW (dépôt <code>cwl-assets</code>, ADR-0010 / EVO-42).
+<strong>L'identité d'un artefact est le nom de son RÉPERTOIRE</strong> — tous les fichiers s'appellent
+<code>tool.cwl</code> ou <code>workflow.cwl</code>, en version <code>1.0</code>. Les 3 tools sont des tools <strong>partagés</strong> ;
+le workflow les référence en <code>run: ../../../tools/&lt;nom&gt;/1.0/tool.cwl</code>.</p>
+<h3 id="2-trois-contraintes-pid-flow-decouvertes-en-sequence">2. Trois contraintes PID-FLOW, découvertes en séquence</h3>
+<p>Chacune a le même profil, et c'est <strong>la leçon de fond de cette fiche</strong> :
+<code>cwltool --validate</code> reste <strong>vert</strong> alors que PID-FLOW refuserait l'artefact, ou pire,
+l'exécuterait en perdant silencieusement une sortie. <strong>L'exécuteur de développement est
+plus permissif que celui de production.</strong></p>
+<ul>
+<li><strong><code>InlineJavascriptRequirement</code> non supporté.</strong> L'exigence n'apportait rien : les tools
+  n'utilisaient que des références de paramètre, sous-ensemble toujours disponible sans
+  exigence déclarée.</li>
+<li><strong><code>EnvVarRequirement</code> non supporté</strong> → l'input <code>data_root</code> disparaît avec lui (il n'aurait
+  plus par quel moyen atteindre le process). <code>TINY_WAE_DATA_ROOT</code> est posée dans
+  l'environnement du worker, hors CWL. Corollaire local mesuré : <code>cwltool</code> n'expose au job
+  qu'un environnement minimal — une variable posée dans le shell appelant <strong>n'atteignait
+  pas</strong> le job. D'où <code>--preserve-environment TINY_WAE_DATA_ROOT</code> dans <code>just cwl-run</code>, qui
+  reproduit en local le comportement du worker.</li>
+<li><strong>⛔ Plus aucune expression CWL, pas même une référence de paramètre.</strong> Le dépôt
+  <code>cwl-assets</code> porte le constat (tool <code>AppendToFile</code>, TOOL-6) : un <code>glob $(inputs.…)</code> « ne
+  matchait rien » côté PID-FLOW et <strong>la sortie était perdue SANS erreur</strong>. Le <code>glob</code> du tool
+  <code>search</code> devient le littéral <code>"acquisitions.json"</code>, tenu synchronisé avec le défaut de
+  l'input <code>json_out</code> par un test dédié — le lien que l'expression portait gratuitement.</li>
+</ul>
+<h3 id="3-conventions-de-contenu-cwl-assets">3. Conventions de contenu (cwl-assets)</h3>
+<ul>
+<li><code>label</code> = <strong>nom de l'artefact</strong> (c'est lui qui identifie la brique côté IHM) ; la phrase
+  descriptive passe en <code>doc</code>. <code>label</code> + <code>doc</code> sur chaque input, output et step.</li>
+<li><code>hints: SoftwareRequirement / package: python</code> sur chaque tool. <strong>Sans cette capability,
+  le worker ne prend pas la tâche et elle reste en attente sans erreur</strong> — un échec muet de
+  plus.</li>
+</ul>
+<h3 id="4-basecommand-le-point-dentree-console">4. <code>baseCommand</code> : le point d'entrée console</h3>
+<p><code>[project.scripts] tiny-wae = "tiny_wae.__main__:app"</code> génère un exécutable <code>tiny-wae</code> dans
+le <code>bin/</code> de l'environnement d'installation ; les 3 tools l'appellent en
+<code>baseCommand: [tiny-wae, &lt;sous-commande&gt;]</code>.</p>
+<p><strong>Pourquoi pas <code>python -m tiny_wae</code></strong> : les deux formes échappent à la réécriture du worker
+(qui ne vise que les <code>baseCommand</code> pointant un <code>.py</code> relatif), donc l'exécutable est résolu
+sur le PATH du job dans les deux cas. Mais <code>python</code> est le nom le plus surchargé du système :
+résolu sur un autre interpréteur que celui du venv, il <strong>démarre puis échoue</strong> sur
+<code>No module named tiny_wae</code> — une erreur qui parle d'un module alors que le problème est un
+interpréteur. <code>tiny-wae</code> est unique au projet : absent du PATH, il échoue franchement.</p>
+<p>Mesuré : <code>cwltool</code> transmet au job l'intégralité du PATH parent (seuls <code>HOME</code>, <code>PWD</code> et
+<code>TMPDIR</code> sont recréés), donc le <code>bin/tiny-wae</code> de l'env pixi est trouvé sans rien déclarer.</p>
+<h3 id="5-le-contrat-de-la-wheel-etait-faux">5. Le contrat de la wheel était faux</h3>
+<p><code>[project.dependencies]</code> ne déclarait que <code>typer</code>/<code>pyyaml</code>/<code>httpx</code>/<code>pystac-client</code>. Les
+natifs (<code>rasterio</code>, <code>pyproj</code>, <code>pillow</code>) ne vivaient que dans <code>[tool.pixi.dependencies]</code>,
+<code>numpy</code> nulle part (transitif de rasterio sous conda), et <code>affine</code> non plus alors qu'il est
+importé <strong>directement</strong> par <code>core/geometry.py</code> et <code>adapters/chips.py</code>.</p>
+<p>Conséquence mesurée sur un venv nu : <code>pip install</code> réussit, puis <code>tiny-wae version</code> meurt sur
+<code>ModuleNotFoundError: No module named 'numpy'</code>. <strong>Le paquet s'installe et casse à l'import —
+c'est-à-dire chez le worker PID-FLOW, au premier run.</strong> Invisible en dev, puisque pixi
+installe aussi la liste conda.</p>
+<p>Ajoutés au contrat : <code>numpy&gt;=2.0</code>, <code>rasterio&gt;=1.4</code>, <code>affine&gt;=2.4</code>, <code>pyproj&gt;=3.6</code>,
+<code>pillow&gt;=11.0</code>. Les trois natifs restent <strong>aussi</strong> dans <code>[tool.pixi.dependencies]</code> : là c'est
+le choix de la <strong>source</strong> pour l'env de dev (builds conda-forge), ici c'est le <strong>contrat de
+livraison</strong>.</p>
+<h2 id="ce-qui-garde-tout-ca-les-tests-pas-la-vigilance">Ce qui garde tout ça (les tests, pas la vigilance)</h2>
+<p>Le point commun de ces cinq commits : <strong>aucun de ces défauts n'est visible du gate
+habituel</strong>. <code>just cwl</code> reste vert avec une exigence non supportée ; <code>just check</code> reste vert
+avec une wheel incomplète. Chaque contrainte a donc reçu son garde-fou automatique, et
+chacun a été <strong>vérifié par mutation</strong> (cassé exprès → rouge, restauré → vert) :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Garde-fou</th>
+<th>Ce qu'il attrape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_aucun_cwl_ne_declare_d_exigence_non_supportee_par_pid_flow</code></td>
+<td><code>_FORBIDDEN_REQUIREMENTS</code>, sous les <strong>deux</strong> formes CWL (clé de map, entrée <code>{class: …}</code> de liste), récursivement jusque dans les steps</td>
+</tr>
+<tr>
+<td><code>test_aucun_cwl_ne_declare_d_input_data_root</code></td>
+<td>réapparition de l'input supprimé</td>
+</tr>
+<tr>
+<td><code>test_aucune_expression_cwl_dans_les_fichiers</code></td>
+<td>retour d'un <code>$(…)</code> n'importe où</td>
+</tr>
+<tr>
+<td><code>test_search_glob_litteral_colle_au_default</code></td>
+<td>dérive entre le glob littéral et le défaut de <code>json_out</code></td>
+</tr>
+<tr>
+<td><code>test_arborescence_pid_flow</code>, <code>test_class_coherente_avec_le_repertoire</code></td>
+<td><code>.cwl</code> hors convention, classe incohérente avec son répertoire</td>
+</tr>
+<tr>
+<td><code>test_label_egale_le_nom_de_l_artefact</code></td>
+<td><code>label</code> ≠ nom du répertoire</td>
+</tr>
+<tr>
+<td><code>test_chaque_tool_exige_la_capability_python</code></td>
+<td>capability retirée → tâche jamais prise par le worker</td>
+</tr>
+<tr>
+<td><code>test_workflow_reference_des_tools_partages_existants</code></td>
+<td><code>run:</code> vers une version inexistante</td>
+</tr>
+<tr>
+<td><code>test_le_console_script_est_declare_dans_le_paquet</code></td>
+<td><code>baseCommand</code> pointant dans le vide après renommage de l'entrée</td>
+</tr>
+<tr>
+<td><code>tests/test_packaging.py</code> (2 tests)</td>
+<td>tout module tiers importé par <code>src/</code> appartient à une distribution déclarée au contrat (lecture par <code>ast</code> + <code>packages_distributions()</code>, jamais une table écrite à la main) ; et tout ce que <code>[tool.pixi.dependencies]</code> déclare est aussi au contrat</td>
+</tr>
+</tbody>
+</table></div>
+<p>C'est <code>test_packaging.py</code> qui a débusqué <code>affine</code>, oublié par l'auteur du correctif.</p>
+<h2 id="verifications-effectuees-a-lepoque">Vérifications effectuées à l'époque</h2>
+<ul>
+<li><code>just cwl</code> : <strong>4/4</strong> « is valid CWL » (cwltool 3.2.20260720092025) ; <code>just check</code> vert.</li>
+<li>Runs réels du workflow <code>tiny-wae</code> sur A01 après <strong>chacun</strong> des refactors :
+  <code>found_stac=3</code>, <code>found_tile=3</code>, 3 manifestes écrits sous <code>TINY_WAE_DATA_ROOT</code>, chaînage
+  <code>search → ingest</code> intact, enveloppe capturée par le glob littéral.</li>
+<li>Wheel : en venv nu, <code>pip install</code> puis <code>tiny-wae --help</code> liste les 9 sous-commandes —
+  donc toute la chaîne d'imports des adapters passe, <strong>sans conda côté worker</strong> (wheels
+  manylinux : GDAL embarqué dans rasterio, PROJ dans pyproj).</li>
+</ul>
+<h2 id="reverifie-apres-le-refactor-constat-b3-de-la-post-revue-1-clos">✅ Revérifié après le refactor — constat B3 de la post-revue 1, CLOS</h2>
+<p>Les deux oracles ci-dessous avaient bien été exécutés en leur temps, mais <strong>sur les CWL
+d'avant</strong>. Les runs post-refactor ne prouvaient que « ça tourne » — ni l'équivalence, ni
+l'idempotence. Or le refactor a touché exactement ce qui pouvait les casser : le chemin
+d'exécution (<code>baseCommand</code>) et la récupération des sorties (le <code>glob</code>).</p>
+<p><strong>Rejoués le 2026-08-22 depuis <code>assets/cwl/</code>, réseau réel, sur des racines vierges :</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Oracle</th>
+<th>Attendu</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l0-06.1 / O2</code></td>
+<td>ensembles <code>(item_id, statut)</code> identiques CWL vs CLI direct</td>
+<td><strong>3 items de part et d'autre, ensembles identiques</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>l0-06.2 / O2</code></td>
+<td>2ᵉ run : <code>ingested == 0</code> ET <code>assets_read == 0</code></td>
+<td><code>status=up_to_date ingested=0 assets_read=0</code></td>
+<td>✅</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Détail <code>l0-06.1 / O2</code></strong> — A01, fenêtre <code>2026-01-01 → 2026-01-10</code>, deux racines vierges
+(<code>/tmp/o2-cwl</code> via <code>workflows/tiny-wae/1.0/workflow.cwl</code>, <code>/tmp/o2-cli</code> via
+<code>just run search</code> puis <code>just run ingest</code>). Les deux branches rendent <code>found_stac=3</code>,
+<code>found_tile=3</code>, et le MÊME ensemble <code>(item_id, statut)</code> lu dans les manifestes :</p>
+<pre><code>('S2C_31TGJ_20260103_0_L2A', 'ingested')
+('S2A_31TGJ_20260105_0_L2A', 'rejected_clouds')
+('S2B_31TGJ_20260108_0_L2A', 'rejected_clouds')
+</code></pre>
+<p><strong>Détail <code>l0-06.2 / O2</code></strong> — racine vierge amorcée par <code>ingest</code> sur <code>2026-08-02 → 2026-08-21</code>
+(<code>found_stac=5</code>, <code>skipped_scene_cloud=1</code>, <code>found_tile=4</code>, <code>ingested=4</code>), puis deux runs
+successifs de <code>tools/update/1.0/tool.cwl</code> :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>run</th>
+<th>résultat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1ᵉʳ (rattrapage de la fenêtre laissée ouverte)</td>
+<td><code>status=up_to_date ingested=0 assets_read=1</code></td>
+</tr>
+<tr>
+<td><strong>2ᵉ — celui que l'oracle mesure</strong></td>
+<td><code>status=up_to_date ingested=0 **assets_read=0**</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>L'<code>assets_read=1</code> du 1ᵉʳ run est attendu : la marge <code>incremental_margin_days</code> fait
+réexaminer un item à cheval sur la fenêtre d'amorçage. Le 2ᵉ run, lui, ne lit plus rien —
+c'est l'idempotence recherchée.</p>
+<h2 id="reste-cote-ops-hors-code">Reste côté ops (hors code)</h2>
+<p>Documenté dans <code>assets/cwl/README.md</code> : <strong>la wheel doit être installée dans le venv du
+worker, et le <code>bin/</code> de ce venv doit être sur le PATH des jobs.</strong> Sans quoi
+<code>baseCommand: [tiny-wae, …]</code> échoue à la résolution.</p>
+<h2 id="a-reporter-dans-les-fiches-closes">À reporter dans les fiches closes</h2>
+<p><code>l0-06.1</code> et <code>l0-06.2</code> en <code>fait/</code> restent à corriger sur deux points (post-revue 1, B2) :
+leur périmètre nomme <code>cwl/*.cwl</code> et un <code>baseCommand: [python, -m, tiny_wae, …]</code>. Un
+post-scriptum daté renvoyant vers cette fiche suffit — <strong>ne pas réécrire l'historique</strong> des
+fiches closes, ajouter.</p>
+<h2 id="definition-de-termine-remplie-le-2026-08-22">Définition de « terminé » — remplie le 2026-08-22</h2>
+<p>Purement documentaire, trois conditions, toutes tenues :</p>
+<ul>
+<li><strong>(a)</strong> les deux O2 ont été rejoués depuis <code>assets/cwl/</code> et consignés ci-dessus — ✅ tous
+  deux au vert ;</li>
+<li><strong>(b)</strong> le post-scriptum a été ajouté à <code>l0-06.1</code> et <code>l0-06.2</code> en <code>fait/</code> (ajout daté, pas
+  de réécriture de l'historique des fiches closes) — ✅ ;</li>
+<li><strong>(c)</strong> déplacement en <code>fait/</code> — ✅.</li>
+</ul>
+<p>Aucun code écrit, conformément à la nature documentaire de la fiche. Deux chiffres du bilan
+ont été corrigés à la relecture (<code>test_cwl.py</code> : 10 → 16 et non 8 → 16 ; total : 230 → 238
+et non 213 → 238), vérifiés par <code>git diff --stat d837c76 24680d1</code> et comptage <code>def test_</code>.</p>
+<p><strong>Reste ouvert, hors de cette fiche</strong> : la vérification côté ops (wheel installée dans le
+venv du worker, <code>bin/</code> de ce venv sur le PATH des jobs) — elle ne peut pas se mesurer depuis
+le dépôt.</p><div class="prevnext"><a href="l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 10:36 — le .md fait foi.</p></article></body></html>
