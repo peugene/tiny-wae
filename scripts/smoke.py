@@ -1,236 +1,326 @@
 #!/usr/bin/env python3
-"""smoke.py — le pipeline RÉEL sur un périmètre minuscule (gate `just smoke`, l0-03.4).
+"""smoke.py — le gate permanent : deux modes + garde réseau de contrat (l0-03.7).
 
-⭐ Smoke MINIMAL (ajout PO du 21/08 — le gate était creux) : exécute `ingest` de bout en
-bout via `adapters/ingestion.ingest_from_source`, sur un double EN MÉMOIRE du port
-`StacSource` + un raster synthétique écrit par CE script (aucun réseau, aucune fixture
-externe) — le smoke complet (corpus réel, 2 modes, garde de contrat) vient en l0-03.7 et
-remplacera celui-ci.
+Remplace le smoke minimal de l0-03.4 (double en mémoire) : ce module fait tourner le
+pipeline `ingest` RÉEL sur le corpus de fixtures COG enregistré (`tests/fixtures/`,
+l0-03.5) via `FixtureSource`, dans ses deux modes :
 
-Structuré en fonctions (décision d'ancrage n°2 de la fiche) pour que
-`tests/test_smoke.py` importe ce fichier par chemin
-(`importlib.util.spec_from_file_location`, `mypy` ne couvre PAS `scripts/` —
-`pyproject.toml` : `files = ["src"]`) et exerce le témoin négatif de l'oracle O7 (un
-double du port qui ne rend rien -> smoke ROUGE) sans dupliquer la logique.
+- ``--replay`` (défaut, câblé dans `just check`) : hors ligne, déterministe, RAPIDE — un
+  seul item réel (le clair gelé du site A01, cf. chapeau l0-02), lu deux fois pour la
+  répétabilité (O4), plus deux cas négatifs ciblés (O2, O3/O3bis).
+- ``--live`` (hors gate) : le MÊME chemin via `EarthSearchSource`, réseau réel, publie
+  durée + octets écrits par chip (baseline attendue par l0-04).
 
-Écrit ses sorties dans un `tempfile.TemporaryDirectory()` — JAMAIS dans `./data`.
+⭐ **Garde réseau de CONTRAT, pas de transport (décision E-b, mesurée en revue v3)** :
+`pytest-socket` (utilisé par la suite `pytest`) patche le module `socket` de la stdlib
+Python, mais rasterio lit les rasters via **GDAL/libcurl (C)** — un flux qui ne passe
+JAMAIS par le `socket` Python. Une garde qui se contenterait de `pytest-socket` laisserait
+donc ce smoke passer **VERT en téléchargeant réellement** (le faux-vert que ce module doit
+justement empêcher). C'est pourquoi `adapters/chips.py` porte sa propre garde
+(`RemoteAccessForbidden`, appliquée AVANT toute ouverture rasterio) sous
+`TINY_WAE_OFFLINE=1` — posé par ce script lui-même en mode `--replay`, jamais par
+l'appelant. `pytest-socket` reste une ceinture utile pour le seul chemin STAC
+(httpx/pystac-client), mais ne couvre pas le chemin GDAL exercé ici.
+
+Le mode `--replay` pose puis REPOSE `TINY_WAE_OFFLINE` (jamais de fuite dans le reste de
+`just check`). Toutes les sorties de ce script partent dans un `tempfile.TemporaryDirectory()`
+— jamais dans `./data`.
 """
 
 from __future__ import annotations
 
+import dataclasses
+import os
 import sys
 import tempfile
-from dataclasses import dataclass
+import time
 from datetime import datetime
 from pathlib import Path
 
-import numpy as np
-import rasterio
-
+from tiny_wae.adapters import chips as chips_module
+from tiny_wae.adapters.chips import OFFLINE_ENV_VAR, RemoteAccessForbidden
+from tiny_wae.adapters.config_io import (
+    DEFAULT_SETTINGS_PATH,
+    DEFAULT_SITES_PATH,
+    load_settings,
+    load_sites,
+)
+from tiny_wae.adapters.fixture_source import DEFAULT_COG_DIR, DEFAULT_STAC_DIR, FixtureSource
 from tiny_wae.adapters.ingestion import ingest_from_source
 from tiny_wae.adapters.manifests import read_manifest
-from tiny_wae.adapters.stac import StacSource
+from tiny_wae.adapters.stac import EarthSearchSource, StacSource
 from tiny_wae.core.acquisition import Acquisition
 from tiny_wae.core.envelope import Envelope
-from tiny_wae.core.geometry import transform_for
 from tiny_wae.core.settings import Settings
-from tiny_wae.core.sites import Grid, Site
+from tiny_wae.core.sites import Site
 from tiny_wae.core.windows import Window
 
-# Identité et grille synthétiques (aucun rapport avec un vrai site de config/sites.yaml —
-# le smoke minimal n'ouvre jamais sites.yaml/settings.yaml, il construit ses réglages).
-SITE_ID = "SMOKE"
-ITEM_ID = "S2A_SMOKE_20260101_0_L2A"
-_GRID = Grid(epsg=32631, origin_x=699960.0, origin_y=4900020.0)
+# Site + item réels du corpus l0-03.5 (site A01, tuile 31TGJ) — l'item clair gelé du
+# chapeau l0-02 (cc 0,00217 %), fenêtre resserrée à son seul jour pour rester déterministe
+# et rapide (un smoke qui interrogerait tout le corpus paierait le coût à CHAQUE fiche).
+SITE_ID = "A01"
+ITEM_ID = "S2A_31TGJ_20240801_0_L2A"
+_WINDOW = Window(start=datetime(2024, 8, 1), end=datetime(2024, 8, 2))
 
-# Valeur de pixel non nulle sur les 4 bandes 10 m -> chip_nodata_pct == 0 (largement sous
-# le seuil par défaut) ; classe SCL 4 (végétation) -> hors classes invalides {0,1} et
-# nuageuses {3,8,9,10} -> verdict "ingested".
-_BAND_VALUE = 500
-_SCL_VEGETATION = 4
+# Hashes de contenu GRAVÉS (O1) — capturés sur un run réussi de référence, cf. Résumé de
+# la fiche l0-03.7. Portent sur le contenu DÉCODÉ (tableau numpy + CRS + transform +
+# dtype — décision d'ancrage n°7 du chapeau), jamais les octets du GeoTIFF.
+EXPECTED_CONTENT_HASHES = {
+    "chip.tif": "a889f09a5f34af071ba6768014865b46a9f50f4fb1a0fdcca18702f009f1837d",
+    "chip_20m.tif": "1898963d3a40c6d3e35e752d044956d4319d5e88657805c4eea604d10d40e90d",
+    "scl.tif": "a04cf6eb87cfaa6e1e90ab9f46b70c4d18dbe31f604141e456e184a29d67d96d",
+}
 
 
 def _settings() -> Settings:
-    """Réglages du smoke — chips minuscules (20×20 / 10×10) pour rester rapide."""
-    return Settings(
-        stac_url="https://example.invalid/stac",  # jamais résolu : source en mémoire.
-        stac_collection="sentinel-2-l2a",
-        chip_px_10m=20,
-        chip_px_20m=10,
-    )
+    """Réglages RÉELS (`config/settings.yaml`) — le corpus a été clippé sur ces tailles
+    par `scripts/record_cog_fixtures.py` ; des réglages différents désaligneraient les
+    fenêtres lues avec l'emprise réellement enregistrée."""
+    return load_settings(DEFAULT_SETTINGS_PATH)
 
 
-def _site() -> Site:
-    """Site synthétique, grille déjà posée (le smoke ne dépend d'aucun `survey-tiles`)."""
-    return Site(
-        id=SITE_ID,
-        name="Smoke synthétique",
-        lat=0.0,
-        lon=0.0,
-        category="stable-watch",
-        note="site fabriqué par scripts/smoke.py — jamais dans sites.yaml",
-        reference_tile="31TCJ",
-        grid=_GRID,
-    )
+def _site(site_id: str) -> Site:
+    """Cherche `site_id` dans `config/sites.yaml` — le smoke n'invente aucun site."""
+    for site in load_sites(DEFAULT_SITES_PATH):
+        if site.id == site_id:
+            return site
+    raise AssertionError(f"site {site_id!r} absent de config/sites.yaml")
 
 
-def _write_synthetic_raster(
-    path: Path, *, settings: Settings, resolution: int, value: int, dtype: type
-) -> None:
-    """Écrit un GeoTIFF 1 bande, constant, exactement sur l'emprise du chip synthétique."""
-    size = settings.chip_px_10m if resolution == 10 else settings.chip_px_20m
-    transform = transform_for(_GRID, resolution)
-    array = np.full((size, size), value, dtype=dtype)
-    with rasterio.open(
-        path,
-        "w",
-        driver="GTiff",
-        height=size,
-        width=size,
-        count=1,
-        dtype=array.dtype,
-        crs=f"EPSG:{_GRID.epsg}",
-        transform=transform,
-    ) as dst:
-        dst.write(array, 1)
+def _set_offline(value: bool) -> str | None:
+    """Pose ou retire `TINY_WAE_OFFLINE`, rend la valeur PRÉCÉDENTE (pour restauration)."""
+    previous = os.environ.get(OFFLINE_ENV_VAR)
+    if value:
+        os.environ[OFFLINE_ENV_VAR] = "1"
+    else:
+        os.environ.pop(OFFLINE_ENV_VAR, None)
+    return previous
 
 
-def _write_synthetic_assets(raw_dir: Path, settings: Settings) -> dict[str, str]:
-    """Écrit les 11 rasters source (4 bandes 10 m + 6 bandes 20 m + SCL) sous `raw_dir` et
-    rend le mapping clé d'asset -> chemin (forme "chemin nu", acceptée par la garde réseau
-    de `adapters/chips.py` même sous `TINY_WAE_OFFLINE=1`)."""
-    raw_dir.mkdir(parents=True, exist_ok=True)
-    assets: dict[str, str] = {}
-    for key in ("blue", "green", "red", "nir"):
-        path = raw_dir / f"{key}.tif"
-        _write_synthetic_raster(
-            path, settings=settings, resolution=10, value=_BAND_VALUE, dtype=np.uint16
-        )
-        assets[key] = str(path)
-    for key in ("rededge1", "rededge2", "rededge3", "nir08", "swir16", "swir22"):
-        path = raw_dir / f"{key}.tif"
-        _write_synthetic_raster(
-            path, settings=settings, resolution=20, value=_BAND_VALUE, dtype=np.uint16
-        )
-        assets[key] = str(path)
-    path = raw_dir / "scl.tif"
-    _write_synthetic_raster(
-        path, settings=settings, resolution=20, value=_SCL_VEGETATION, dtype=np.uint8
-    )
-    assets["scl"] = str(path)
-    return assets
+def _restore_offline(previous: str | None) -> None:
+    """Repose l'environnement dans son état initial (décision d'ancrage n°5) — un
+    `os.environ` qui fuit dans le reste de `just check` serait un effet de bord invisible."""
+    if previous is None:
+        os.environ.pop(OFFLINE_ENV_VAR, None)
+    else:
+        os.environ[OFFLINE_ENV_VAR] = previous
 
 
-def _make_acquisition(assets: dict[str, str]) -> Acquisition:
-    """Item synthétique unique — un seul item S2 L2A "clair" à ingérer."""
-    return Acquisition(
-        item_id=ITEM_ID,
-        datetime="2026-01-01T10:00:00Z",
-        platform="sentinel-2a",
-        tile="31TCJ",
-        sequence="0",
-        scene_cloud_cover=0.0,
-        nodata_pixel_pct=0.0,
-        processing_baseline="99.9",
-        boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,  # type: ignore[arg-type] — _GRID.epsg toujours posé ici.
-        assets=assets,
-        radiometry=dict.fromkeys(assets),
-    )
-
-
-@dataclass(frozen=True, slots=True)
-class _InMemorySource:
-    """Double EN MÉMOIRE du port ``StacSource`` — rejoue une enveloppe déjà construite,
-    sans jamais toucher au réseau ni à `pystac-client`."""
-
-    envelope: Envelope
-
-    def search(self, site: Site, window: Window) -> Envelope:
-        """Rend l'enveloppe fabriquée par ``build_fake_source``, quels que soient
-        ``site``/``window`` (le smoke n'exerce pas le filtrage STAC lui-même — l0-02.1/2
-        le couvrent déjà)."""
-        return self.envelope
-
-
-def build_fake_source(raw_dir: Path, *, with_item: bool = True) -> StacSource:
-    """Fabrique le double en mémoire du port ``StacSource``.
-
-    ``with_item=False`` construit une enveloppe VIDE (0 item) — c'est le témoin négatif de
-    l'oracle O7 : un double du port qui ne rend rien doit faire échouer ``run_smoke``
-    (``assets_read`` reste à 0). ``with_item=True`` (défaut) écrit le raster synthétique
-    sous ``raw_dir`` et construit l'enveloppe à un seul item, prête à être ingérée.
-    """
+def check_o1_o4_ingest_ok(dest: Path, *, run_label: str) -> None:
+    """O1 + un témoin de O4 : ingestion RÉELLE (FixtureSource, corpus enregistré) d'un
+    `data_root` neuf — 3 fichiers, manifeste `ingested`, `content_hashes` == valeurs
+    gravées, `assets_read > 0`. Appelée deux fois (O4, `data_root` vierge à chaque fois)
+    par `run_replay` pour la répétabilité."""
     settings = _settings()
-    if not with_item:
-        envelope = Envelope(
-            schema_version=1,
-            site_id=SITE_ID,
-            window={"start": "2026-01-01T00:00:00", "end": "2026-01-02T00:00:00"},
-            counters={
-                "found_stac": 0,
-                "skipped_scene_cloud": 0,
-                "off_tile": 0,
-                "found_tile": 0,
-            },
-            items=[],
-        )
-        return _InMemorySource(envelope=envelope)
-
-    assets = _write_synthetic_assets(raw_dir, settings)
-    acquisition = _make_acquisition(assets)
-    envelope = Envelope(
-        schema_version=1,
-        site_id=SITE_ID,
-        window={"start": "2026-01-01T00:00:00", "end": "2026-01-02T00:00:00"},
-        counters={"found_stac": 1, "skipped_scene_cloud": 0, "off_tile": 0, "found_tile": 1},
-        items=[acquisition],
-    )
-    return _InMemorySource(envelope=envelope)
-
-
-def run_smoke(dest: Path, source: StacSource) -> None:
-    """Exécute `ingest` de bout en bout sur `source` (le pipeline réel, `data_root` sous
-    `dest`) et asserte le résultat minimal de l'oracle O7 : 3 fichiers produits, manifeste
-    conforme (`status == "ingested"`), `assets_read > 0`.
-
-    Lève ``AssertionError`` (message explicite) si l'un des trois ne tient pas — c'est ce
-    qui fait passer le smoke ROUGE, y compris pour le témoin négatif (`with_item=False`).
-    """
-    settings = _settings()
-    site = _site()
+    site = _site(SITE_ID)
+    source: StacSource = FixtureSource(settings, stac_dir=DEFAULT_STAC_DIR, cog_dir=DEFAULT_COG_DIR)
     data_root = dest / "data"
-    window = Window(start=datetime(2026, 1, 1), end=datetime(2026, 1, 2))  # ignoré par le double.
 
     outcome = ingest_from_source(
-        site=site, window=window, source=source, settings=settings, data_root=data_root
+        site=site, window=_WINDOW, source=source, settings=settings, data_root=data_root
     )
 
     assert outcome.run.assets_read > 0, (
-        f"assets_read={outcome.run.assets_read} attendu > 0 (le pipeline n'a rien lu)"
+        f"[{run_label}] assets_read={outcome.run.assets_read} attendu > 0"
     )
 
     item_dir = data_root / SITE_ID / ITEM_ID
     for filename in ("chip.tif", "chip_20m.tif", "scl.tif"):
-        assert (item_dir / filename).exists(), f"fichier manquant : {item_dir / filename}"
+        assert (item_dir / filename).exists(), (
+            f"[{run_label}] fichier manquant : {item_dir / filename}"
+        )
 
     manifest = read_manifest(data_root, SITE_ID, ITEM_ID)
-    assert manifest.status == "ingested", f"status={manifest.status!r} attendu 'ingested'"
+    assert manifest.status == "ingested", (
+        f"[{run_label}] status={manifest.status!r} attendu 'ingested'"
+    )
+    assert manifest.assets_read > 0, f"[{run_label}] manifest.assets_read attendu > 0"
+    for filename, expected_hash in EXPECTED_CONTENT_HASHES.items():
+        actual_hash = manifest.content_hashes.get(filename)
+        assert actual_hash == expected_hash, (
+            f"[{run_label}] content_hashes[{filename!r}]={actual_hash!r} "
+            f"attendu {expected_hash!r} (le contenu décodé a changé)"
+        )
+
+
+def check_o2_missing_local_fixture(dest: Path) -> None:
+    """O2 : une fixture LOCALE retirée — un asset dont le href `file://` pointe vers un
+    chemin qui n'existe pas sur disque (aucun mock : c'est un `file://` réel, absolu,
+    construit à partir du corpus enregistré, juste inexistant). Sous
+    `TINY_WAE_OFFLINE=1`, le schéma `file://` passe la garde de contrat (O3 ne s'applique
+    pas ici — décision d'ancrage n°4) : l'échec vient de l'OUVERTURE rasterio elle-même,
+    et son message nomme le chemin manquant, littéralement, dans `manifest.cause`."""
+    settings = _settings()
+    site = _site(SITE_ID)
+    source = FixtureSource(settings, stac_dir=DEFAULT_STAC_DIR, cog_dir=DEFAULT_COG_DIR)
+    envelope = source.search(site, _WINDOW)
+    assert envelope.items, "corpus A01 vide sur la fenêtre du smoke — fixture absente ?"
+    acquisition = envelope.items[0]
+
+    missing_path = (DEFAULT_COG_DIR / ITEM_ID / "scl_MISSING.tif").resolve()
+    assert not missing_path.exists(), f"garde-fou : {missing_path} ne devrait pas exister"
+    broken_assets = dict(acquisition.assets)
+    broken_assets["scl"] = missing_path.as_uri()
+    broken_acquisition = dataclasses.replace(acquisition, assets=broken_assets)
+
+    data_root = dest / "data_o2"
+    outcome = ingest_from_source(
+        site=site,
+        window=_WINDOW,
+        source=_SingleItemSource(envelope=envelope, item=broken_acquisition),
+        settings=settings,
+        data_root=data_root,
+    )
+    assert outcome.run.counters["failed"] == 1, (
+        f"O2 : counters['failed']={outcome.run.counters['failed']} attendu 1"
+    )
+    manifest = read_manifest(data_root, SITE_ID, ITEM_ID)
+    assert manifest.status == "failed", f"O2 : status={manifest.status!r} attendu 'failed'"
+    cause = manifest.cause or ""
+    assert str(missing_path) in cause, (
+        f"O2 : chemin manquant {str(missing_path)!r} absent de manifest.cause={cause!r}"
+    )
+
+
+def check_o3_o3bis_contract_guard() -> None:
+    """O3 + O3bis : la garde de CONTRAT de `adapters/chips._guard_href` (décision E-b).
+
+    Fabrique le href `https://` de l'oracle O3 SANS rien inventer ni mocker (décision
+    d'ancrage n°3) : une `FixtureSource` dont `cog_dir` est un répertoire VIDE ne trouve
+    aucun fichier local à `_localize_hrefs` — les hrefs de l'enveloppe restent ceux
+    enregistrés par `record_cog_fixtures.py`, en `https://` d'origine.
+
+    Appelle directement `chips._guard_href` (fonction interne, importée par son module,
+    PAS copiée) plutôt que d'ouvrir réellement l'asset : c'est ce qui permet de vérifier
+    O3bis (« l'ouverture est tentée normalement » sous `TINY_WAE_OFFLINE` absent) SANS
+    émettre de requête réseau réelle dans le gate — la garde ne lève rien, donc le code
+    appelant *tenterait* l'ouverture ; ce script ne la tente pas lui-même (hors gate,
+    aucun accès réseau n'est acceptable), il vérifie seulement que rien ne l'empêche.
+    """
+    settings = _settings()
+    site = _site(SITE_ID)
+    with tempfile.TemporaryDirectory() as empty_cog_dir:
+        source = FixtureSource(settings, stac_dir=DEFAULT_STAC_DIR, cog_dir=Path(empty_cog_dir))
+        envelope = source.search(site, _WINDOW)
+        assert envelope.items, "corpus A01 vide sur la fenêtre du smoke — fixture absente ?"
+        href = envelope.items[0].assets["scl"]
+        assert href.startswith("https://"), (
+            f"O3 : href={href!r} attendu https:// (cog_dir vide, rien à localiser)"
+        )
+
+    previous = _set_offline(True)
+    try:
+        try:
+            chips_module._guard_href(href)  # noqa: SLF001 — fonction interne, cf. docstring.
+        except RemoteAccessForbidden:
+            pass
+        else:
+            raise AssertionError(
+                "O3 : RemoteAccessForbidden attendue (TINY_WAE_OFFLINE=1, href https://) — "
+                "aucune exception levée"
+            )
+    finally:
+        _restore_offline(previous)
+
+    previous = _set_offline(False)
+    try:
+        try:
+            chips_module._guard_href(href)  # noqa: SLF001
+        except RemoteAccessForbidden as exc:
+            raise AssertionError(
+                "O3bis : la garde ne doit PAS bloquer quand TINY_WAE_OFFLINE est absent "
+                f"(RemoteAccessForbidden levée : {exc})"
+            ) from exc
+    finally:
+        _restore_offline(previous)
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _SingleItemSource:
+    """Double EN MÉMOIRE rejouant une enveloppe RÉELLE (déjà servie par `FixtureSource`)
+    avec un seul item substitué — utilisé par O2 pour injecter l'asset cassé sans passer
+    par un `FixtureSource` qui re-localiserait le href (cf. `check_o2_missing_local_fixture`)."""
+
+    envelope: Envelope
+    item: Acquisition
+
+    def search(self, site: Site, window: Window) -> Envelope:
+        """Rend l'enveloppe d'origine, `items` réduits au seul item substitué."""
+        return dataclasses.replace(self.envelope, items=[self.item])
+
+
+def run_replay() -> None:
+    """Mode `--replay` (défaut, câblé dans `just check`) : hors ligne, déterministe.
+
+    Pose `TINY_WAE_OFFLINE=1` pour toute la durée (décision d'ancrage n°5), l'enlève en
+    sortant même en cas d'échec. Exécute, dans l'ordre : O1 (ingestion réelle), O4 (même
+    ingestion sur un `data_root` neuf, deuxième témoin de répétabilité), O2 (fixture
+    locale manquante), O3/O3bis (garde de contrat).
+    """
+    previous = _set_offline(True)
+    try:
+        with tempfile.TemporaryDirectory() as tmp1:
+            check_o1_o4_ingest_ok(Path(tmp1), run_label="O1/O4 run 1")
+        with tempfile.TemporaryDirectory() as tmp2:
+            check_o1_o4_ingest_ok(Path(tmp2), run_label="O1/O4 run 2")
+        with tempfile.TemporaryDirectory() as tmp3:
+            check_o2_missing_local_fixture(Path(tmp3))
+    finally:
+        _restore_offline(previous)
+
+    # O3/O3bis gère elle-même la variable d'environnement (bascule ON puis OFF).
+    check_o3_o3bis_contract_guard()
+
+
+def run_live() -> None:
+    """Mode `--live` (hors gate, O5) : MÊME chemin via `EarthSearchSource`, réseau réel.
+
+    Publie durée + octets écrits par chip sur STDOUT — baseline attendue par l0-04. Si le
+    réseau est indisponible, l'exception remonte : ce script ne prétend jamais avoir
+    mesuré ce qu'il n'a pas mesuré (O5 doit être déclaré NON MESURÉ par l'appelant, pas
+    inventé)."""
+    settings = _settings()
+    site = _site(SITE_ID)
+    source: StacSource = EarthSearchSource(settings)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        data_root = Path(tmp) / "data"
+        start = time.monotonic()
+        outcome = ingest_from_source(
+            site=site, window=_WINDOW, source=source, settings=settings, data_root=data_root
+        )
+        duration_s = time.monotonic() - start
+
+        manifest = read_manifest(data_root, SITE_ID, ITEM_ID)
+        assert manifest.status == "ingested", (
+            f"--live : status={manifest.status!r} attendu 'ingested'"
+        )
+        bytes_per_chip = manifest.bytes_written / len(manifest.files) if manifest.files else 0.0
+
+        print(
+            f"smoke --live : vert — durée={duration_s:.2f}s bytes_written={manifest.bytes_written} "
+            f"({bytes_per_chip:.0f} octets/chip en moyenne, {len(manifest.files)} fichiers) "
+            f"run_id={outcome.run.run_id}"
+        )
 
 
 def main() -> None:
-    """Point d'entrée `just smoke` : source à un item, dans un répertoire jetable."""
-    with tempfile.TemporaryDirectory() as tmp:
-        dest = Path(tmp)
-        source = build_fake_source(dest / "raw")
-        try:
-            run_smoke(dest, source)
-        except AssertionError as exc:
-            print(f"smoke: ROUGE — {exc}", file=sys.stderr)
-            sys.exit(1)
-    print(
-        "smoke: vert — ingest bout en bout (double en mémoire, 1 item, 3 fichiers, assets_read > 0)"
-    )
+    """Point d'entrée `just smoke` (`--replay`, défaut) et `--live` (hors gate, O5)."""
+    live = "--live" in sys.argv[1:]
+    try:
+        if live:
+            run_live()
+        else:
+            run_replay()
+    except AssertionError as exc:
+        print(f"smoke: ROUGE — {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    if not live:
+        print(
+            "smoke: vert — replay hors ligne (O1/O4 ingestion réelle, O2 fixture manquante, "
+            "O3/O3bis garde de contrat)"
+        )
     sys.exit(0)
 
 
