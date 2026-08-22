@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>out-01</b></nav><h1>[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</h1><p>En cours · effort M · outillage · phase O3 · depends_on : <a href="../fait/l0-06.2.html"><code>l0-06.2</code></a></p></div></div><article><h1 id="out-01-mypy-sur-tests">[out-01] — mypy sur <code>tests/</code></h1>
+<blockquote>
+<p><strong>Fiche différée</strong>, rédigée pendant le run N5 (22/08/2026) au lieu d'interrompre le run.
+Elle capture un trou d'oracle constaté en clôturant l0-03.5, pas une idée d'amélioration.</p>
+</blockquote>
+<h2 id="le-probleme-constate">Le problème constaté</h2>
+<p>L'oracle O1 de <strong>l0-03.5</strong> demandait de vérifier que <code>FixtureSource</code> est <strong>substituable</strong> à
+<code>EarthSearchSource</code> derrière le port <code>StacSource</code>. La décision d'ancrage retenue s'appuyait
+sur mypy : <code>StacSource</code> est un <code>typing.Protocol</code> <strong>non</strong> <code>runtime_checkable</code>, donc sa
+conformité se vérifie <strong>statiquement</strong>, c'est même toute sa raison d'être.</p>
+<p>Or <code>pyproject.toml</code> porte <code>[tool.mypy] files = ["src"]</code> : <strong><code>tests/</code> n'est pas typé</strong>. Le
+test écrit pour O1 (<code>def _consume(source: StacSource) -&gt; Envelope</code> appelée avec les deux
+implémentations) est donc du <strong>texte non vérifié</strong> — il documente l'intention sans rien
+garantir. Une <code>FixtureSource</code> dont la signature de <code>search</code> dériverait passerait le gate.</p>
+<p>Le même angle mort couvre tous les tests du dépôt : ~<strong>160 tests écrits par des agents</strong>,
+dont aucun n'est confronté au typage.</p>
+<h2 id="mesure-22082026-develop-run-n5">Mesure (22/08/2026, <code>develop</code> @ run N5)</h2>
+<p><code>mypy tests</code> → <strong>24 erreurs dans 7 fichiers</strong> sur 19 fichiers analysés. Échantillon :</p>
+<ul>
+<li><code>tests/test_cli_search.py:177</code> — <code>"object" has no attribute "stdout"</code> (le <code>Result</code> de
+  <code>CliRunner</code> est annoté <code>object</code> par le test lui-même) ;</li>
+<li><code>tests/test_cli_ingest.py:123</code> — <code>Need type annotation for "array"</code> ;</li>
+<li><code>tests/test_cli_ingest.py:213</code>, <code>tests/test_chips.py:294</code> — <code>Returning Any from function
+  declared to return …</code> (numpy/rasterio rendent <code>Any</code>).</li>
+</ul>
+<p>Aucune de ces 24 erreurs ne révèle un bug : ce sont des annotations manquantes et des
+retours <code>Any</code> d'API géospatiales mal typées. Le travail est <strong>mécanique mais réel</strong>.</p>
+<h2 id="ce-quil-faudra-trancher">Ce qu'il faudra trancher</h2>
+<ol>
+<li><strong><code>files = ["src", "tests"]</code></strong> d'un coup, ou <code>tests/</code> en mode moins strict (les libs
+   géospatiales rendent <code>Any</code> en permanence — cf. <code>ignore_missing_imports = true</code> déjà posé
+   pour la même raison) ?</li>
+<li>Faut-il un <code>disallow_any_expr</code> relâché sur <code>tests/</code> seulement, pour ne pas transformer
+   chaque <code>array.mean()</code> en erreur ?</li>
+<li>Le gate s'allonge : <code>just types</code> passerait de 26 à ~45 fichiers.</li>
+</ol>
+<h2 id="pourquoi-ca-vaut-le-coup">Pourquoi ça vaut le coup</h2>
+<p>Sur un dépôt dont la quasi-totalité du code est écrite par des agents, le typage est le
+<strong>filet n°1</strong> (c'est déjà le motif écrit dans <code>CLAUDE.md</code> pour <code>src/</code>). Le laisser s'arrêter
+à la frontière des tests revient à ne pas vérifier précisément le code qui <strong>atteste</strong> que
+le reste est correct — et les Protocols du projet (<code>StacSource</code>, et ceux du Lot 1 à venir)
+n'ont <strong>aucun</strong> autre mécanisme de vérification.</p>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n8">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N8)</h2>
+<p>Vérifié sur <code>develop</code> après la clôture complète du lot 0 côté agents. <strong>Cette fiche part
+SEULE</strong> : elle touche <code>pyproject.toml</code> et potentiellement tous les fichiers de <code>tests/</code>,
+aucune parallélisation n'est possible. C'est la raison de son <code>depends_on: [l0-06.2]</code>.</p>
+<h3 id="mesure-fraiche-refaite-apres-le-merge-de-l0-042">Mesure fraîche (refaite après le merge de l0-04.2)</h3>
+<p><code>mypy tests</code> → <strong>30 erreurs dans 11 fichiers</strong>, sur 26 analysés. Le compte est monté de 27 à
+30 avec les tests de l0-04.2, comme prévu.</p>
+<p><strong>Par code d'erreur</strong> : <code>attr-defined</code> <strong>13</strong> · <code>type-arg</code> 5 · <code>no-any-return</code> 5 ·
+<code>unused-ignore</code> 4 · <code>var-annotated</code> 2 · <code>misc</code> 1.</p>
+<p><strong>Par fichier</strong> : <code>test_cli_search.py</code> <strong>14</strong> · <code>test_report.py</code> 3 · <code>test_manifests.py</code> 3 ·
+<code>test_config.py</code> 2 · <code>test_cli_ingest.py</code> 2 · puis 1 chacun dans <code>test_stac.py</code>,
+<code>test_smoke.py</code>, <code>test_ingestion.py</code>, <code>test_contact_sheet.py</code>, <code>test_cli_backfill.py</code>,
+<code>test_chips.py</code>.</p>
+<p>⭐ <strong>Les 13 <code>attr-defined</code> viennent d'UN SEUL endroit</strong> : <code>tests/test_cli_search.py</code> annote
+son helper <code>_invoke(...) -&gt; object</code>, puis lit <code>result.exit_code</code> / <code>result.stdout</code> /
+<code>result.stderr</code> dessus. Corriger cette annotation en <code>click.testing.Result</code> en règle <strong>la
+moitié du lot d'un coup</strong>. Commence par là : le reste paraîtra beaucoup plus petit.</p>
+<h3 id="lexistant">L'existant</h3>
+<ul>
+<li><code>pyproject.toml</code> → <code>[tool.mypy] strict = true · files = ["src"] · ignore_missing_imports = true</code>.
+  ⚠ <code>ignore_missing_imports</code> a été posé pour <code>src/</code> avec un motif explicite : « pragmatique
+  sur l'écosystème (libs géospatiales mal typées) ». Le même motif vaut pour <code>tests/</code>, qui
+  manipule numpy et rasterio directement — c'est de là que viennent les <code>no-any-return</code> et
+  les <code>type-arg</code>.</li>
+<li>Le gate est <code>lint &amp;&amp; types &amp;&amp; test &amp;&amp; smoke &amp;&amp; cwl</code> — <strong>235 tests</strong> verts, <code>just types</code>
+  couvre aujourd'hui <strong>34 fichiers</strong> de <code>src/</code>.</li>
+<li><code>just test -k &lt;motif&gt;</code> cible un test sans lancer la suite (utile ici : la suite prend ~90 s).</li>
+<li>Les 4 <code>unused-ignore</code> sont des <code># type: ignore</code> devenus faux avec le temps — ⭐ c'est en
+  soi un argument pour la fiche : un ignore posé à l'aveugle <strong>pourrit sans que rien ne le
+  signale</strong>, tant que <code>tests/</code> n'est pas analysé.</li>
+</ul>
+<h3 id="decisions-dancrage-prises-ici-ne-pas-rouvrir">Décisions d'ancrage (prises ici — ne pas rouvrir)</h3>
+<ol>
+<li><strong><code>files = ["src", "tests"]</code> d'un seul bloc</strong>, en gardant <code>strict = true</code>. ⛔ Pas de régime
+   dégradé pour <code>tests/</code> : les 30 erreurs mesurées sont <strong>mécaniques</strong> (annotations
+   manquantes, retours <code>Any</code> de libs), aucune ne demande d'assouplir <code>strict</code>. Si une
+   catégorie s'avérait réellement irréductible, la traiter par une <strong>exclusion nommée et
+   justifiée</strong>, jamais par un abaissement global.</li>
+<li>⛔ <strong>Aucun <code># type: ignore</code> posé en masse</strong> pour faire passer le gate — c'est exactement ce
+   que la fiche existe pour éviter, et les 4 <code>unused-ignore</code> déjà présents montrent où ça
+   mène. Un <code>ignore</code> n'est acceptable que <strong>nommé</strong> (<code># type: ignore[code]</code>) et accompagné
+   d'un commentaire disant pourquoi le typage ne peut pas exprimer la chose.</li>
+<li>⛔ <strong>Ne modifie AUCUN comportement de test.</strong> Cette fiche annote, elle ne corrige pas de
+   logique. Si une annotation révèle un vrai bug dans un test, <strong>arrête-toi et signale-le</strong>
+   dans ton compte-rendu au lieu de le réparer au passage — un test dont le comportement
+   change dans une fiche de typage est un test qu'on ne relit plus.</li>
+<li>⭐ <strong>La VALEUR de la fiche est la conformité aux Protocols, pas le ménage d'annotations.</strong>
+   Le motif d'origine : l'oracle O1 de l0-03.5 vérifiait que <code>FixtureSource</code> est substituable
+   à <code>EarthSearchSource</code> derrière le <code>Protocol</code> <code>StacSource</code> — via une fonction annotée dans
+   <code>tests/</code>, donc <strong>jamais vérifiée</strong>. Une fois <code>tests/</code> sous mypy, <strong>prouve-le par mutation</strong> :
+   casse temporairement la signature de <code>FixtureSource.search</code> (renomme un paramètre, change
+   un type de retour), vérifie que <strong><code>just types</code> devient ROUGE</strong>, restaure, et <strong>publie la
+   sortie d'erreur obtenue</strong> dans ton compte-rendu. Sans cette démonstration, la fiche n'aura
+   fait que du ménage.</li>
+<li><strong>Mesure et publie la durée de <code>just types</code> avant et après</strong> : le gate passe de 34 à
+   ~60 fichiers analysés, et il est lancé à chaque itération de chaque agent.</li>
+<li>Une <strong>découverte de l0-04.2 à connaître</strong> : un <code>Protocol</code> structurel destiné à recevoir des
+   dataclasses <code>frozen=True</code> du projet doit déclarer ses membres en <strong><code>@property</code></strong>, pas en
+   annotations planes (une annotation plane exige un attribut réassignable — mypy dit
+   « expected settable variable, got read-only attribute »). Si tu croises ce message, c'est
+   la cause.</li>
+</ol>
+<h2 id="quand-la-faire-motif-du-depends_on">Quand la faire (motif du <code>depends_on</code>)</h2>
+<p>Après <strong>l0-06.2</strong>, la dernière fiche dispatchable du lot 0. La faire plus tôt obligerait à
+retyper les tests que les fiches restantes (l0-03.6, l0-03.7, l0-04.1, l0-04.2, l0-05.2,
+l0-06.2) vont ajouter — le même travail, deux fois. Rien dans out-01 ne bloque ces fiches.</p>
+<h2 id="non-couvert-par-cette-fiche">Non couvert par cette fiche</h2>
+<p>Le choix d'un <code>runtime_checkable</code> sur <code>StacSource</code> (rejeté à l'ancrage de l0-03.5 : ce
+serait rendre la production dépendante d'un besoin de test).</p><p class="gen">Généré le 22/08/2026 03:49 — le .md fait foi.</p></article></body></html>
