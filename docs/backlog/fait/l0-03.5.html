@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../maturation/lot-0-ingestion/l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-corpus-de-fixtures-et-fixturesource">[l0-03.5] — Corpus de fixtures et FixtureSource</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.5</b></nav><h1>[l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.4.html"><code>l0-03.4</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li>→ <a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="../maturation/lot-0-ingestion/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../maturation/lot-0-ingestion/l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><h1 id="l0-035-corpus-de-fixtures-et-fixturesource">[l0-03.5] — Corpus de fixtures et FixtureSource</h1>
 <blockquote>
 <p>Scission de l'ex-l0-03.5 (PO, 21/08 — elle cumulait un script d'enregistrement réseau
 <strong>jetable</strong> et le <strong>gate permanent</strong>, deux natures et deux rythmes de vie différents,
@@ -198,4 +198,92 @@ substitution <code>run_smoke(dest, source)</code> ✅ · <code>_guard_href</code
 (l0-03.7/O5).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 01:15 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>77db6c7</code>, mergé en <code>f31cb2b</code>) : <code>scripts/record_cog_fixtures.py</code>,
+<code>src/tiny_wae/adapters/fixture_source.py</code>, <code>tests/test_fixture_source.py</code>, <strong>154 GeoTIFF</strong>
+sous <code>tests/fixtures/cog/</code> et 2 enveloppes STAC (<code>cog_a01.json</code>, <code>cog_b09.json</code>).
+<strong>146 → 154 tests</strong> (+8, tous hors ligne). <code>just check</code> vert. Durée réelle de
+l'enregistrement réseau : <strong>~9 minutes</strong> (154 lectures fenêtrées GDAL, ~34 s/item).</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>substituabilité au port <code>StacSource</code></td>
+<td><code>_consume(source: StacSource) -&gt; Envelope</code> exécutée avec <code>FixtureSource</code> (rend bien une <code>Envelope</code> d'<code>Acquisition</code>) et référencée avec <code>EarthSearchSource</code></td>
+<td>✅ <strong>partiel</strong> — voir ci-dessous</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>≥ 14 items, 2 sites, items gelés présents, taille publiée</td>
+<td><strong>14 items</strong> (A01 : 10 · B09 : 4), les 3 items gelés + <code>sequence=1</code> vérifiés <strong>par id</strong> ; taille <strong>29,43 MiB</strong> (30 862 092 octets exacts)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>tous les hrefs en <code>file://</code></td>
+<td><strong>154 hrefs vérifiés</strong> (14 items × 11 clés) — le corpus <strong>entier</strong>, pas un échantillon</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>rejeu réseau → corpus identique</td>
+<td><strong>non automatisé</strong> (exigerait de relancer le script réseau). Cohérent par construction : adressage par id et fenêtres absolues, jamais <code>now()</code>. Deux lancements successifs ont retrouvé les mêmes 10 items A01</td>
+<td>⚠ non mesuré</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert (mypy strict 26 fichiers, 154 tests)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Composition du corpus</strong> — A01 (tuile 31TGJ, 10 items) : <code>S2A_31TGJ_20240801_0_L2A</code> (gelé,
+clair) · <code>S2B_31TGJ_20230315_0_L2A</code> (gelé, nuageux) · <code>S2C_31TGJ_20260513_0_L2A</code> (gelé,
+schéma S2C) · <code>S2A_31TGJ_20260813_1_L2A</code> (<code>sequence=1</code>) · et les 6 items de la fenêtre
+sept. 2022 (conforme à la mesure de l0-04.1). B09 (tuile 31TDJ, mono-tuile, 4 items) :
+<code>S2A_31TDJ_20230830_0_L2A</code>, <code>S2B_31TDJ_20230828_0_L2A</code>, <code>S2B_31TDJ_20230825_0_L2A</code>,
+<code>S2A_31TDJ_20230823_0_L2A</code>.</p>
+<p><strong>Impact sur le dépôt</strong> : <code>.git</code> passe de <strong>3,1 MiB à 34 MiB</strong>. <code>just test</code> passe de ~17 s
+à ~38 s. Assumé : c'est le prix du déterminisme hors ligne de tout l'aval.</p>
+<h3 id="le-repli-128128-ne-sapplique-pas-mesure-pas-juge">Le repli 128×128 ne s'applique PAS — mesuré, pas jugé</h3>
+<p>La décision d'ancrage n°6 le déclenchait au-delà de <strong>30 MiB</strong>. <code>du -sh</code> affichait « 30M »,
+ce qui est ambigu ; la mesure en octets tranche : <strong>30 862 092 &lt; 31 457 280</strong> (30 MiB).
+Le corpus reste à 512×512, cohérent avec les <code>chip_px_*</code> par défaut — et les tests aval
+n'auront pas à passer des <code>Settings</code> réduits.</p>
+<h3 id="deux-ecarts-releves-par-lagent-tous-deux-reels">⚠ Deux écarts relevés par l'agent, tous deux réels</h3>
+<ol>
+<li><strong>La fiche annonce « les 4 items gelés » en O2</strong>, alors que le chapeau l0-02 — la source
+   normative — n'en énumère que <strong>3</strong> (clair / nuageux / S2C). Le 4ᵉ est l'item <code>sequence=1</code>,
+   qui n'est pas « gelé » au même titre. Traité comme 3 + 1, les 4 sont présents et testés.</li>
+<li>⭐ <strong>Le volet statique de l'oracle O1 n'est PAS gaté</strong> : ma décision d'ancrage n°4
+   supposait que <code>mypy</code> vérifierait la conformité au <code>Protocol</code> depuis le test. Or
+   <code>pyproject.toml</code> porte <code>files = ["src"]</code> — <strong><code>tests/</code> n'est pas sous mypy</strong>. Seul
+   <code>fixture_source.py</code> lui-même est couvert. La substituabilité est donc vérifiée à
+   l'exécution, pas statiquement. → <strong>fiche différée <code>l0-XX-mypy-tests</code> créée en maturation.</strong></li>
+</ol>
+<h3 id="decouverte-de-terrain-a-propager-ecrite-au-chapeau-l0-02">⭐ Découverte de terrain à propager (écrite au chapeau l0-02)</h3>
+<p><code>pystac_client.search(limit=N)</code> ne fixe <strong>qu'une taille de PAGE</strong>, pas un plafond de
+résultats : une fenêtre B09 de 3 mois a d'abord ramené <strong>38 items</strong> au lieu de 4. Le
+plafond s'obtient par <strong><code>max_items=N</code></strong>, paramètre distinct. Sans effet sur
+<code>EarthSearchSource</code> aujourd'hui (elle n'en passe aucun), mais c'est un piège direct pour
+l0-04.1, qui boucle sur des fenêtres mensuelles × 25 sites.</p>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong>Fenêtre B09</strong> : juin–septembre 2023 avec <code>max_items=4</code> (la fiche ne fixait que « ≥ 3 »).</li>
+<li><strong>Refactor <code>_clip_asset</code></strong> : passe le <code>transform</code>/<code>crs</code> calculés depuis la grille du
+   <strong>site</strong> plutôt que de reconstruire un <code>Grid</code> depuis <code>src.crs.to_epsg()</code> — aligné sur
+   <code>chips.write_chips</code>.</li>
+</ol>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>O4 (rejeu bit-identique) · le volet statique de O1 · le smoke complet et sa garde
+<code>TINY_WAE_OFFLINE</code> (l0-03.7) · la consommation réelle du corpus par <code>ingest_from_source</code>
+(exercée par l0-03.7).</p><p class="gen">Généré le 22/08/2026 01:58 — le .md fait foi.</p></article></body></html>
