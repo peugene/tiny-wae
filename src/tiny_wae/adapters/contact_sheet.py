@@ -172,6 +172,23 @@ def _to_ascii(text: str) -> str:
     return decomposed.encode("ascii", "ignore").decode("ascii")
 
 
+def _draw_label(
+    draw: ImageDraw.ImageDraw, label_lines: Sequence[str], x0: int, label_y0: int
+) -> None:
+    """Écrit les lignes de libellé d'une cellule — point UNIQUE de rendu du texte.
+
+    Factorisé après un incident de merge (run N7) : les modes ``--latest`` et
+    ``--first-last`` portaient chacun leur copie de ces quatre lignes, et l'une des deux a
+    survécu à un remplacement de la fonction de police en appelant une fonction disparue.
+    Une duplication qui porte une correction subtile (choix de police + translittération)
+    se re-casse : mieux vaut supprimer la classe de bug que la surveiller par un test.
+    """
+    font, accents_ok = _load_font()
+    for i, line in enumerate(label_lines):
+        text = line if accents_ok else _to_ascii(line)
+        draw.text((x0 + 4, label_y0 + 2 + i * 12), text, fill=_LABEL_FG_COLOR, font=font)
+
+
 def _paste_cell(
     sheet: Image.Image, draw: ImageDraw.ImageDraw, cell: SheetCell, *, box: tuple[int, int]
 ) -> None:
@@ -186,10 +203,7 @@ def _paste_cell(
 
     label_y0 = y0 + CELL_PX
     draw.rectangle([x0, label_y0, x0 + CELL_PX, label_y0 + LABEL_HEIGHT_PX], fill=_LABEL_BG_COLOR)
-    font, accents_ok = _load_font()
-    for i, line in enumerate(cell.label_lines):
-        text = line if accents_ok else _to_ascii(line)
-        draw.text((x0 + 4, label_y0 + 2 + i * 12), text, fill=_LABEL_FG_COLOR, font=font)
+    _draw_label(draw, cell.label_lines, x0, label_y0)
 
 
 def build_contact_sheet(
@@ -291,10 +305,7 @@ def _paste_first_last_cell(
     draw.rectangle(
         [x0, label_y0, x0 + label_width, label_y0 + LABEL_HEIGHT_PX], fill=_LABEL_BG_COLOR
     )
-    font, accents_ok = _load_font()
-    for i, line in enumerate(cell.label_lines):
-        text = line if accents_ok else _to_ascii(line)
-        draw.text((x0 + 4, label_y0 + 2 + i * 12), text, fill=_LABEL_FG_COLOR, font=font)
+    _draw_label(draw, cell.label_lines, x0, label_y0)
 
 
 def build_first_last_contact_sheet(
