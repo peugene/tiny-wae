@@ -12,7 +12,7 @@ Projet Python piloté par IA — scaffoldé le 2026-08-21 avec le kit `_tools_py
 cp .env.example .env
 just install       # environnement pixi (lockfile)
 just db            # PostgreSQL + pgvector (inutile avant le Lot 1)
-just check         # lint + types + tests + smoke — le gate
+just check         # lint + types + tests + smoke + cwl — le gate (et la CI, à l'identique)
 ```
 
 ## Organisation
@@ -22,6 +22,29 @@ just check         # lint + types + tests + smoke — le gate
 - `docs/backlog/` — pilotage par fiches (statut = dossier) ; `just dashboard` pour la vue
 - `justfile` — **la** façade de commandes (`just` pour la liste)
 - `.claude/commands/` — `/new-fiche`, `/dashboard`, `/md2html`, `/run`, `/review`
+
+## Run quotidien (`update`)
+
+`update` interroge, pour chaque site, la fenêtre depuis son dernier manifeste connu
+(marge `incremental_margin_days`, 3 jours par défaut) et ingère ce qui est nouveau —
+rejouable à l'infini (idempotence héritée d'`ingest`). Commande cron type (une fois par
+jour, horloge système — pas de `--now` en production, réservé aux tests déterministes) :
+
+```bash
+just run update --sites all
+```
+
+Codes de sortie : `0` aucun échec · `1` au moins un échec (ou un site vierge, pointant
+`backfill`) avec au moins un succès ailleurs · `3` amont injoignable sur TOUS les sites
+(panne réseau, distincte d'un bug — c'est le CLI que personne ne regarde tourner).
+
+⚠ **Rattrapage mensuel, non automatisé** : les retraitements tardifs (`sequence >= 1`)
+échappent structurellement à la fenêtre incrémentale. `update` le rappelle sur STDERR
+chaque 1er du mois (selon la date injectée) ; le geste reste manuel :
+
+```bash
+just run backfill --site <id> --months 2
+```
 
 ## Conventions
 

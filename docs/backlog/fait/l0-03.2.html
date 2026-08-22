@@ -1,0 +1,274 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.2</b></nav><h1>[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/l0-07.html"><code>l0-07</code></a> write_manifest refuse un statut illégitime <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../a-faire/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-032-le-contrat-du-lot-manifestes-et-journal-de-run">[l0-03.2] — Le contrat du lot : manifestes et journal de run</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>LE module-interface du lot : tout ce qui lit ou écrit un manifeste ou un journal passe par
+lui (l0-04, l0-05, l0-06 n'accèdent JAMAIS aux JSON directement).</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/adapters/manifests.py</code> :</li>
+<li><strong>Schéma manifeste</strong> (<code>schema_version: 1</code>) : <code>site_id</code>, <code>item_id</code>, <code>datetime</code>, <code>tile</code>,
+    <code>sequence</code>, <code>platform</code>, <code>status</code> (<code>ingested | rejected_clouds | rejected_invalid |
+    **rejected_nodata** | failed</code> + <code>cause</code> pour failed), <code>invalid_pct</code>, <code>cloud_pct</code>,
+    ⭐ <strong><code>chip_nodata_pct</code></strong> (fraction nodata mesurée SUR LE CHIP — arbitrage n°3),
+    <code>scl_class_counts</code> (les 12 classes), <code>processing_baseline</code>, <code>boa_offset_applied</code>,
+    ⭐ <strong><code>radiometry</code></strong> (dict clé d'asset → <code>{scale, offset}</code> ou <code>null</code> — arbitrage n°1 :
+    la valeur est PAR ASSET, jamais deux scalaires d'item),
+    <strong><code>grid_hash</code></strong> (signature d'idempotence — <strong>chaîne canonique et champs exacts définis
+    par le chapeau l0-03</strong> : epsg, origines <strong>entières</strong>, tailles de chip, ordres de
+    bandes), ⭐ <strong><code>assets_read</code></strong> (critère d'idempotence, décision E-d),
+    <strong><code>content_hashes</code></strong> (par fichier : <code>sha256(array.tobytes())</code> + CRS + transform +
+    dtype — <strong>pas</strong> les octets du GeoTIFF), <code>bytes_downloaded</code> (STAC seul — donnée de
+    rapport, jamais critère de gate), <strong><code>bytes_written</code></strong> (octets réellement écrits sur
+    disque, somme des fichiers produits — la seule grandeur de volume qui soit exacte),
+    <code>duration_s</code>, <code>files: []</code>, <code>versions</code>.</li>
+<li><strong>Schéma run.json</strong> (<code>&lt;data_root&gt;/{site_id}/runs/{run_id}.json</code>) : <code>site_id</code>,
+    <code>run_id</code>, <code>window</code>, <code>counters: {found_stac, skipped_scene_cloud, off_tile, found_tile,
+    ingested, rejected_clouds, rejected_invalid, rejected_nodata, skipped, failed}</code>,
+    <strong><code>assets_read</code></strong>
+    (somme des items du run — critère d'idempotence, E-d), <code>bytes_downloaded</code> (STAC seul),
+    ⭐ <strong><code>tile_suspect: bool</code></strong> (levé par la règle de repli tuile de l0-03.4/O5ter),
+    <code>duration_s</code>. Les <strong>4 premiers</strong> compteurs viennent de l'enveloppe de l0-02 (le CLI
+    les recopie) ; les <strong>6 statuts</strong> sont produits par l'ingestion.
+    <strong>Deux invariants de conservation vérifiés à l'écriture</strong> (exception typée sinon,
+    décision E-a) :
+    <code>found_stac == skipped_scene_cloud + off_tile + found_tile</code> et
+    <code>found_tile == somme des 6 statuts</code> (l'énumération normative est celle du chapeau
+    l0-02 : <code>ingested | rejected_clouds | rejected_invalid | rejected_nodata | failed |
+    skipped</code> — ne pas la recopier ailleurs, y renvoyer).
+    ⚠ <strong><code>skipped</code> est un compteur de RUN, pas un statut de manifeste</strong> : un item déjà
+    ingéré au <code>grid_hash</code> courant n'est pas retraité, donc <strong>aucun manifeste n'est
+    réécrit</strong> (celui qui existe reste tel quel). D'où <strong>6 compteurs</strong> dans <code>run.json</code>
+    mais <strong>5 valeurs</strong> possibles pour <code>status</code> au manifeste — l'écart est voulu.</li>
+<li><strong>API</strong> : <code>write_manifest</code> (<strong>atomique : tmp + rename, écrit EN DERNIER</strong> après les
+    fichiers), <code>read_manifest</code>, <code>list_for_site</code>, <code>last_datetime(site)</code>,
+    ⭐ <strong><code>item_ids_for_site(site) -&gt; set[str]</code></strong> (arbitrage n°2), <code>write_run</code>, <code>read_run</code>,
+    <code>list_runs(site)</code>, <code>aggregate_counters(site)</code>.</li>
+<li>⭐ <strong>Arbitrage n°2 (21/08) — la complétude se contrôle par ENSEMBLES, pas par sommes.</strong>
+    <code>aggregate_counters</code> <strong>somme</strong> les compteurs de runs et <strong>ne prétend PAS dédupliquer</strong>
+    (impossible : <code>run.json</code> ne porte que des scalaires). En régime permanent — update
+    quotidien avec marge 3 j — les runs se recouvrent, donc <strong>les compteurs agrégés
+    sur-comptent</strong>, et c'est écrit tel quel dans la docstring : ils servent au <strong>volume</strong>,
+    jamais à la complétude. Le contrôle de complétude (l0-04.2 / l0-04.H) utilise
+    <code>item_ids_for_site</code> — un <strong>ensemble d'<code>item_id</code></strong>, exact par construction, qui nomme
+    les items manquants au lieu d'annoncer un écart de nombres.</li>
+<li>Tests sur fixtures : corpus de manifestes synthétiques (réutilisé par l0-04.2 et l0-05) —
+  livré dans <code>tests/fixtures/manifests/</code> avec comptes CONNUS documentés.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li><code>core.sites.Grid</code> : <code>epsg</code>/<code>origin_x</code>/<code>origin_y</code> sont <strong>à <code>None</code> par défaut</strong> (les grilles sont
+  posées par l0-01.3, hors de cette vague). <code>grid_hash</code> doit donc <strong>lever une erreur typée</strong> sur une
+  grille vide plutôt que hacher la chaîne <code>"None|None|None|…"</code> — un tel hash serait stable et
+  passerait les tests tout en étant faux.</li>
+<li><code>core.settings.Settings</code> porte <code>chip_px_10m = 512</code>, <code>chip_px_20m = 256</code> et <code>data_root = "./data"</code>.
+  <code>data/</code> est gitignoré : <strong>les tests écrivent dans <code>tmp_path</code></strong>, jamais dans <code>data/</code>.</li>
+<li>⚠ <strong><code>BAND_ORDER_10M</code> et <code>BAND_ORDER_20M</code> N'EXISTENT NULLE PART</strong> dans le code, alors que la
+  formule canonique du <code>grid_hash</code> (chapeau l0-03) les référence et que O3bis teste leur effet
+  (3 → 6 bandes doit changer le hash). C'est le trou que cette fiche doit combler.</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li><strong>Cette fiche crée <code>src/tiny_wae/core/bands.py</code></strong> (module neuf, pur) portant
+   <code>BAND_ORDER_10M = ("blue", "green", "red", "nir")</code> et
+   <code>BAND_ORDER_20M = ("rededge1", "rededge2", "rededge3", "nir08", "swir16", "swir22")</code> —
+   valeurs du chapeau l0-03 (D-b : 6 bandes à 20 m).
+   ⚠ <strong>Surtout pas dans <code>core/geometry.py</code></strong> : ce fichier appartient à l0-03.1, dispatchée EN
+   PARALLÈLE — y écrire produirait un conflit de merge. Un module dédié laisse aussi l0-03.3
+   (<code>adapters/chips.py</code>) lire les ordres de bandes sans dépendre de <code>manifests.py</code>.</li>
+<li><strong><code>grid_hash(grid, settings) -&gt; str</code> vit dans <code>adapters/manifests.py</code></strong> — le module-interface du
+   lot, d'où l0-03.4 l'importera pour l'idempotence. Chaîne canonique <strong>exactement</strong> celle du
+   chapeau l0-03, origines normalisées par <code>int()</code> (O3bis : <code>699960</code> et <code>699960.0</code> → même hash).</li>
+<li>Les 12 classes SCL (0…11) sont toutes portées par <code>scl_class_counts</code>. L'énumération normative des
+   statuts est celle du <strong>chapeau l0-02</strong> — y renvoyer, ne pas la redéfinir ici.</li>
+</ol>
+<p><strong>Zone d'écriture EXCLUSIVE de cette fiche</strong> — 3 agents travaillent en parallèle sur N1 :
+<code>src/tiny_wae/core/bands.py</code>, <code>src/tiny_wae/adapters/manifests.py</code>, <code>tests/test_manifests.py</code>,
+<code>tests/fixtures/manifests/</code>.
+⛔ Ne toucher NI <code>core/geometry.py|scl.py|windows.py</code> (l0-03.1, en parallèle), NI <code>cli/</code> ou
+<code>__main__.py</code> (l0-01.2, en parallèle), NI <code>core/sites.py</code>, <code>core/settings.py</code>,
+<code>adapters/config_io.py</code>, <code>pyproject.toml</code>, <code>justfile</code>, <code>config/</code>.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Module + 2 schémas + API complète + corpus fixtures ; round-trip testé.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Round-trip manifeste et run.json</td>
+<td>identité champ à champ (test)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Corpus fixtures : <code>aggregate_counters</code></td>
+<td>comptes exacts documentés dans la fixture : <code>found_stac=15, skipped_scene_cloud=1, off_tile=2, found_tile=12</code> puis les <strong>6 statuts</strong> <code>ingested=6, rejected_clouds=3, rejected_invalid=1, rejected_nodata=1, failed=1, skipped=0</code> — <strong>les deux invariants bouclent</strong> (15 = 1+2+12 ; 12 = 6+3+1+1+1+0)</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>Conservation violée (fixture mutée : <code>off_tile=3</code>)</td>
+<td><code>write_run</code>/<code>aggregate_counters</code> lèvent l'exception typée (l'invariant sait rendre rouge)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Interruption simulée (fichier tmp orphelin)</td>
+<td><code>read_manifest</code> ne voit rien ; pas de manifeste fantôme</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td><strong>Sérialisation du <code>grid_hash</code></strong> : grille avec origines <code>699960</code> (int) puis <code>699960.0</code> (float, relecture YAML)</td>
+<td><strong>même hash</strong> ; et un changement de <code>BAND_ORDER_20M</code> (3 → 6 bandes) donne un hash <strong>différent</strong> — les deux sens testés</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>last_datetime</code> sur corpus</td>
+<td>la bonne date, statuts rejetés inclus</td>
+</tr>
+<tr>
+<td>O4bis</td>
+<td><strong><code>item_ids_for_site</code></strong> sur un corpus à runs RECOUVRANTS (2 runs partageant 3 items)</td>
+<td>l'ensemble a la <strong>bonne cardinalité</strong> (union, sans doublon) alors que <code>aggregate_counters</code> sur-compte de 3 — le test <strong>prouve</strong> que les deux grandeurs diffèrent et que seul l'ensemble est exact (arbitrage n°2)</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : volumes réels (l0-04.H).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>d046c78</code>) : le module-interface du lot,
+ses deux schémas versionnés et son corpus de fixtures.</p>
+<p>Livré : <code>core/bands.py</code>, <code>adapters/manifests.py</code>, <strong>18 tests</strong>, et un corpus de fixtures de
+<strong>19 manifestes + 3 run.json</strong> sur deux sites (<code>C07</code> pour la conservation, <code>OVERLAP</code> pour
+l'arbitrage n°2).</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Round-trip manifeste et run.json : objet relu strictement <code>==</code> à l'original</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td><code>aggregate_counters(C07)</code> = found_stac <strong>15</strong>, skipped_scene_cloud <strong>1</strong>, off_tile <strong>2</strong>, found_tile <strong>12</strong>, puis ingested <strong>6</strong>, rejected_clouds <strong>3</strong>, rejected_invalid <strong>1</strong>, rejected_nodata <strong>1</strong>, failed <strong>1</strong>, skipped <strong>0</strong> — les deux invariants bouclent (15 = 1+2+12 ; 12 = 6+3+1+1+1+0)</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>✅</td>
+<td><code>off_tile</code> porté à 3 → <code>ConservationError</code>, <strong>et rien n'est écrit</strong> (<code>list_runs</code> vide après). Vérifié sur les deux chemins : <code>write_run</code> et <code>aggregate_counters</code></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>Tmp orphelin <code>.manifest.json.&lt;pid&gt;.tmp</code> sans <code>manifest.json</code> → <code>read_manifest</code> lève, <code>list_for_site</code> rend <code>[]</code> : aucun manifeste fantôme</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>✅</td>
+<td><code>699960</code> (int) et <code>699960.0</code> (float) → <strong>même hash</strong> ; 3 vs 6 bandes à 20 m → <strong>hash différent</strong>. Les deux sens testés. Grille vide → <code>EmptyGridError</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>last_datetime(C07)</code> = <code>2026-01-25T10:15:00Z</code>, date du manifeste <code>failed</code> (statuts rejetés inclus) ; site vide → <code>None</code></td>
+</tr>
+<tr>
+<td>O4bis</td>
+<td>✅</td>
+<td>Corpus <code>OVERLAP</code> (2 runs partageant 3 items) : <code>item_ids_for_site</code> = <strong>7</strong> ids exacts, alors que <code>aggregate_counters['ingested']</code> = <strong>10</strong> — l'écart de <strong>3</strong> est asserté dans le test. La preuve que seul l'ensemble est exact</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Décisions prises en cours de fiche</strong> : <code>grid_hash</code> prend les ordres de bandes en <strong>paramètres à
+défaut</strong> (teste le passage 3 → 6 bandes sans monkeypatcher <code>core.bands</code>) ; <code>MANIFEST_STATUSES</code>
+(5 valeurs) et <code>RUN_STATUSES</code> (6) déclarés en renvoyant au chapeau l0-02, sans le redéfinir ;
+<code>item_ids_for_site</code> lit les <strong>manifestes</strong> sur disque, jamais les <code>run.json</code> — c'est ce qui le
+rend exact face aux runs recouvrants ; tmp nommé <code>.{fichier}.{pid}.tmp</code>, jamais capté par les
+globs de listing.</p>
+<p><strong>Vérifié par l'orchestrateur après merge</strong> : la chaîne canonique du <code>grid_hash</code> est
+<strong>exactement</strong> celle du chapeau l0-03 (<code>epsg|int(origin_x)|int(origin_y)|chip_px_10m|chip_px_20m|
+bandes_10m|bandes_20m</code>) ; <code>EmptyGridError</code> bien levée sur grille non posée — la décision
+d'ancrage est appliquée, pas contournée ; aucun fichier hors zone touché.</p><div class="prevnext"><a href="l0-03.1.html">← [l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</a><a href="l0-03.3.html">[l0-03.3] Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif →</a></div><p class="gen">Généré le 22/08/2026 11:08 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,45 @@
+# config/settings.yaml — tiny-wae
+# Réglages applicatifs du pipeline. Surchargeables un par un via variables d'environnement
+# préfixées TINY_WAE_ (ex. TINY_WAE_CLOUD_PCT_MAX=40) — voir .env.example.
+
+# Endpoint STAC (earth-search) et collection Sentinel-2 niveau 2A.
+stac_url: "https://earth-search.aws.element84.com/v1"
+stac_collection: "sentinel-2-l2a"
+
+# Clés d'assets source (earth-search) — la clé logique tiny-wae EST la clé earth-search.
+# Libellés B0x documentaires (pas utilisés dans le code) :
+#   blue=B02, green=B03, red=B04, nir=B08, rededge1=B05, rededge2=B06, rededge3=B07,
+#   nir08=B8A, swir16=B11, swir22=B12, scl=SCL (scene classification)
+asset_keys:
+  - blue
+  - green
+  - red
+  - nir
+  - rededge1
+  - rededge2
+  - rededge3
+  - nir08
+  - swir16
+  - swir22
+  - scl
+
+# Filtres qualité.
+cloud_pct_max: 30
+scene_cloud_max: 95
+invalid_pct_max: 1
+# Seuil de la garde nodata au niveau chip (arbitrage n°3 du lot) : rejette un chip dont
+# la part de pixels nodata dépasse ce pourcentage.
+chip_nodata_pct_max: 1
+
+# Chemins et fenêtres.
+data_root: "./data"
+incremental_margin_days: 3
+
+# Réseau.
+http_retries: 3
+http_backoff_s: 2
+backfill_workers: 6
+
+# Taille des chips (pixels), par résolution native des bandes.
+chip_px_10m: 512
+chip_px_20m: 256

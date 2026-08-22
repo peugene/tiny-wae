@@ -1,0 +1,3 @@
+# Fixture de test l0-01.2 (O3, volet ConfigError) : racine YAML sans clé 'sites'.
+not_sites:
+  - id: X01

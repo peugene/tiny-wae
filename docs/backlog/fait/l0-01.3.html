@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.3</b></nav><h1>[l0-01.3] Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-013-tuiles-de-reference-et-grilles">[l0-01.3] — Tuiles de référence et grilles</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-dafc58e">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base dafc58e)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>Remplir <code>reference_tile</code> et <code>grid</code> pour les 25 sites. ⚠ Fiche à <strong>réseau réel</strong> (25
+requêtes /aggregate) — exécutée par l'agent, résultats = DONNÉES commises dans
+<code>sites.yaml</code>.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>scripts/survey_tiles.py</code> (rejouable, hors package) — ⭐ <strong>CLI avec l'option
+  <code>--sites A01,C07</code> (défaut : tous)</strong>, indispensable à la re-passe ciblée que la fiche
+  humaine l0-03.H prescrit après correction de coordonnées. <strong>Recette dédiée
+  <code>just survey-tiles [sites]</code></strong> dans le justfile (règle façade : jamais <code>python …</code> à la
+  main — sinon l'environnement pixi n'est pas actif et <code>pyproj</code>/<code>httpx</code> manquent).</li>
+<li>Pour chaque site : bbox du chip (5,12 km centré) →
+  <code>GET {stac_url}/aggregate?collections={collection}&amp;bbox=…&amp;datetime=&lt;48 mois&gt;&amp;aggregations=grid_code_frequency</code>
+  pour lister les tuiles candidates. Multi-tuiles = cas FRÉQUENT (mesuré : A03, A04, C07
+  sur 7 sondés).</li>
+<li>⭐ <strong>Source de l'emprise d'une tuile (le point que la v3 disait manquant)</strong> : <code>/aggregate</code>
+  ne rend que des codes MGRS. Pour chaque tuile candidate, faire <strong>un <code>/search?limit=1</code>
+  filtré sur ce <code>grid:code</code></strong> et lire <code>proj:transform</code> + <code>proj:shape</code> de l'asset <code>blue</code>
+  → origine (ULX/ULY) et emprise (109 800 m de côté à 10 m). ~2 requêtes par site.
+  <em>(Les origines suivent la règle « coin MGRS 100 km calé sur le réseau 60 m » — vérifié
+  sur 4 tuiles — mais on la LIT plutôt que de la recalculer : une mesure vaut mieux
+  qu'une dérivation.)</em></li>
+<li><strong>Règle D-c (décision Philippe 21/08)</strong> : <code>reference_tile</code> = tuile offrant la <strong>marge
+  géométrique maximale</strong> entre le chip et le bord de l'emprise nominale de la tuile
+  (calcul en UTM) ; en cas d'égalité, la plus fournie en items. Exemple attendu : C07 →
+  52TEL (marge 4 160 m), PAS 52TDL (500 m).</li>
+<li><code>grid</code> : <code>epsg</code> = zone UTM de la tuile de référence (326xx/327xx depuis le code MGRS) ;
+  <code>origin_x/origin_y</code> = coin haut-gauche du chip 512×512@10 m centré sur (lat, lon),
+  arrondi au multiple de 20 m inférieur. Formule écrite en docstring.</li>
+<li>Dépendances déclarées : <code>pyproj</code> (conversion lat/lon→UTM), <code>httpx</code> (requêtes).</li>
+<li>Le script écrit un rapport (<code>scripts/survey_tiles_report.json</code> : par site, buckets
+  bruts, tuile choisie, marge calculée) — trace de la donnée, versionnée.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-dafc58e">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base dafc58e)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li>⛔ <strong><code>core/geometry.chip_bounds(grid, settings)</code> n'est PAS réutilisable ici</strong> : il lève
+  <code>GridNotComputedError</code> quand <code>grid.epsg/origin_x/origin_y</code> sont à <code>None</code> — c'est-à-dire
+  exactement l'état des 25 sites que cette fiche doit remplir. Le calcul « (lat, lon) → bbox du
+  chip en UTM » est une <strong>fonction distincte</strong>, à écrire ici.</li>
+<li>⛔ <strong><code>adapters/config_io.py</code> est en LECTURE SEULE</strong> : il n'a aucune fonction d'écriture
+  (<code>load_settings</code>, <code>load_sites</code>, helpers privés). Rien à réutiliser pour écrire.</li>
+<li>⚠⚠ <strong><code>config/sites.yaml</code> contient 11 lignes de commentaires</strong>, dont un avertissement
+  <strong>critique</strong> : les coordonnées négatives du document source utilisent le signe moins Unicode
+  U+2212, recopiées ici en ASCII strict pour que YAML les parse en <code>float</code>. <strong>Un
+  <code>yaml.safe_dump</code> effacerait cet avertissement</strong> — et le prochain qui éditera le fichier
+  pourrait réintroduire le bug (7 sites concernés, détecté lors du run N0).</li>
+<li><code>cli/exit_codes.py</code> (l0-01.2) fournit <code>OK/FAILURE/USAGE/INCONCLUSIVE</code> = 0/1/2/3 — O3 les
+  importe, ne pas les redéfinir.</li>
+<li><code>pyproj</code> <strong>3.7.2</strong>, <code>httpx</code> <strong>0.28.1</strong> installés (mesuré) — rien à ajouter au <code>pyproject.toml</code>.</li>
+<li><code>pytest</code> tourne avec <code>addopts = "-q --disable-socket"</code> (mesuré dans <code>pyproject.toml</code>) :
+  <strong>aucun test ne peut faire de réseau</strong>, ce qui est cohérent avec O4 (« le test réseau réel
+  n'est PAS dans le gate »). Le relevé réel se lance à la main, hors <code>just check</code>.</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li><strong>Le module pur est <code>src/tiny_wae/core/tiles.py</code></strong> (la fiche dit « fonctions PURES dans
+   <code>core/</code> » sans nommer le fichier) : conversion (lat, lon) → bbox UTM du chip, EPSG depuis le
+   code MGRS, marge géométrique chip↔bord de tuile, arrondi de l'origine au multiple de 20 m
+   inférieur. C'est ce module que testent O2 et O2bis, <strong>sans réseau</strong>.</li>
+<li><strong><code>sites.yaml</code> s'édite en préservant intégralement ses commentaires</strong> : édition textuelle
+   ciblée des champs <code>reference_tile:</code> et du bloc <code>grid:</code> de chaque site — <strong>pas</strong> de
+   <code>yaml.safe_dump</code> du document entier (voir ci-dessus). Interdit d'ajouter une fonction
+   d'écriture à <code>adapters/config_io.py</code> : hors périmètre de la fiche, et module de l0-01.1.</li>
+<li><strong>Écriture atomique et sous condition</strong> : le fichier n'est réécrit qu'après une relecture
+   réussie (<code>load_sites</code> + <code>validate_sites</code> sur le contenu produit), via tmp + rename. Toute
+   erreur — réseau injoignable compris — laisse <code>sites.yaml</code> <strong>strictement inchangé</strong> (O3).</li>
+<li><strong>Cette fiche est la SEULE de la vague à toucher le <code>justfile</code></strong> : y ajouter <code>survey-tiles</code>
+   et <strong>ne pas supprimer ni modifier la recette générique <code>script</code></strong> qui vient d'y être posée
+   (elle sert à une autre fiche dispatchée en parallèle).</li>
+</ol>
+<p><strong>Zone d'écriture EXCLUSIVE</strong> — 3 agents travaillent en parallèle sur N2 :
+<code>scripts/survey_tiles.py</code>, <code>scripts/survey_tiles_report.json</code>, <code>src/tiny_wae/core/tiles.py</code>,
+<code>tests/test_tiles.py</code>, <code>config/sites.yaml</code>, et l'ajout de la recette <code>survey-tiles</code> au <code>justfile</code>.
+⛔ Ne toucher NI <code>core/acquisition.py|envelope.py</code>, NI <code>adapters/stac.py</code> (l0-02.1, en
+parallèle), NI <code>core/windows.py</code> (l0-05.1, en parallèle), NI <code>pyproject.toml</code>, <code>pixi.lock</code>,
+<code>config/settings.yaml</code>, <code>adapters/config_io.py</code>, <code>core/geometry.py</code>.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>sites.yaml</code> complété pour les 25 sites, rapport commité.</li>
+<li>[ ] Logique de choix (marge géométrique, arrondi 20 m, epsg depuis MGRS) en fonctions
+      PURES dans <code>core/</code> testées à sec sur cas connus (C07 : 52TEL ; A01 : 31TGJ
+      mono-tuile).</li>
+<li>[ ] <code>just survey-tiles</code> en place ; <code>--sites</code> fonctionnel (re-passe ciblée).</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>sites-validate</code> après remplissage</td>
+<td>exit 0 ; 25/25 avec <code>reference_tile</code> non vide, <code>grid.epsg</code> == zone déduite du code MGRS, origines multiples de 20</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Cas C07, <strong>test PUR</strong> sur des entrées littérales : bbox du chip + emprises des deux tuiles (52TDL ULX 399960, 52TEL ULX 499980, côté 109 800 m)</td>
+<td>choix = <strong>52TEL</strong> (marges calculées ≈ 495 m vs 4 155 m). ⚠ L'oracle porte sur des <strong>géométries</strong>, pas sur les comptes d'items — un décompte ne contient aucune marge (défaut de la v3 corrigé)</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>Départage : deux tuiles de marges égales, comptes 319 vs 317</td>
+<td>choix = la plus fournie (règle secondaire, testée séparément)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Réseau injoignable</td>
+<td>exit 3 (<code>INCONCLUSIVE</code>), sites.yaml non modifié</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert (le test réseau réel n'est PAS dans le gate)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : évolution future du catalogue (le script est rejouable) ; couverture
+réelle des chips (l0-03).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé) : relevé réseau réel des 25 tuiles de référence,
+calcul des grilles, et remplissage de <code>config/sites.yaml</code>.</p>
+<p>Livré : <code>core/tiles.py</code> (logique pure), <code>scripts/survey_tiles.py</code>, <code>scripts/survey_tiles_report.json</code>
+(trace de la donnée), recette <code>just survey-tiles</code>, <strong>13 tests</strong>. <code>config/sites.yaml</code> rempli.
+Total du projet après merge : <strong>82 tests</strong>, mypy strict sur 18 modules.</p>
+<p><strong>Réseau réel</strong> : ~52 requêtes vers earth-search (25 sites × <code>/aggregate</code> + <code>/search</code>, plus les
+candidates supplémentaires des sites multi-tuiles), toutes en 200.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td><code>just run sites-validate</code> → exit <strong>0</strong>, « 25 site(s) valide(s) ». <strong>25/25</strong> avec <code>reference_tile</code> non vide ; <code>grid.epsg</code> cohérent avec la zone MGRS (326xx au nord, <strong>327xx pour B06/B07/B08 en hémisphère sud</strong>) ; <strong>50 origines, 0 non multiple de 20 m</strong> (revérifié indépendamment par l'orchestrateur)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>C07, test <strong>pur</strong> sur entrées littérales : marge 52TDL ≈ 500,4 m vs 52TEL ≈ 4 159,6 m → <strong>52TEL retenue</strong>. ⭐ La règle D-c l'emporte bien sur le décompte d'items, qui aurait donné 52TDL (319 items contre 317) — c'est exactement le défaut de la v3 que D-c corrige</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>✅</td>
+<td>Marges égales (1 000 m), comptes 317 vs 319 → la plus fournie est choisie</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><code>TINY_WAE_STAC_URL</code> injoignable → exit <strong>3</strong> ; <code>md5sum</code> de <code>sites.yaml</code> <strong>identique</strong> avant/après (<code>fc674f8d…</code>), diff vide</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>just check</code> vert, aucun test réseau (<code>--disable-socket</code> actif)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Résultats de référence</strong> : <strong>C07</strong> (Punggye-ri) → <code>52TEL</code>, epsg 32652, origine 504120/4572400 —
+2 candidates mesurées. <strong>A01</strong> (ITER) → <code>31TGJ</code>, epsg 32631, origine 721080/4845740, mono-tuile.</p>
+<p>⭐ <strong>Le piège de l'ancrage a été évité</strong> : <code>config/sites.yaml</code> conserve ses <strong>11 lignes de
+commentaires</strong>, avertissement U+2212 compris (compté avant/après par l'orchestrateur : 11 = 11).
+L'édition est textuelle ligne à ligne, jamais un <code>yaml.safe_dump</code> du document. Écriture en deux
+temps : relecture-validation complète (<code>load_sites</code> + <code>validate_sites</code>) sur un fichier temporaire
+<strong>avant</strong> le <code>Path.replace</code> atomique.</p>
+<p><strong>Décisions prises en cours de fiche</strong> : EPSG dérivé du code MGRS par fonction pure testée à sec,
+plutôt que lu depuis <code>proj:epsg</code> (les deux coïncident — vérifié sur 52TDL/52TEL) ; bbox du relevé
+construite dans la zone UTM « naturelle » du point, la tuile de référence étant encore inconnue à
+ce stade.</p>
+<p>⚠ <strong>Découverte de terrain</strong> : earth-search <strong>rejette</strong> une plage <code>datetime</code> au format date seule
+(<code>YYYY-MM-DD/YYYY-MM-DD</code> → 400) et exige le RFC3339 complet avec heure. Corrigé dès
+l'implémentation — à savoir pour toute fiche aval qui interroge <code>/search</code> ou <code>/aggregate</code>.</p>
+<p>⭐ <strong>Contrat de format tranché ici</strong> : <code>reference_tile</code> est stocké en <strong>code MGRS nu</strong> (<code>52TEL</code>),
+pas en <code>grid:code</code> préfixé (<code>MGRS-52TEL</code>). Conséquence directe pour l0-02.1, dont le filtre tuile
+doit normaliser — voir le ré-ancrage de cette fiche.</p><div class="prevnext"><a href="l0-01.2.html">← [l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-02.2] CLI search + garde anti-socket + oracles live séparés</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-02.html"><code>▣ l0-02</code></a> › <b>l0-02.2</b></nav><h1>[l0-02.2] CLI search + garde anti-socket + oracles live séparés <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-02.html"><code>l0-02</code></a> [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-022-cli-search">[l0-02.2] — CLI search</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n3">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N3)</a><ul>
+<li><a href="#decisions-dancrage-prises-ici-ne-pas-rouvrir-ne-pas-re-deliberer">Décisions d'ancrage (prises ici — ne pas rouvrir, ne pas re-délibérer)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</a></li>
+<li><a href="#verrou-pose">Verrou posé</a></li>
+<li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>Exposer la recherche en CLI, avec la discipline logs/données et la garde anti-réseau des
+tests.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/cli/search.py</code> (auto-découvert, cf. l0-01.2) :
+  <code>search --site A01 --from … --to … [--json out.json]</code> — table lisible sur STDERR,
+  <strong>enveloppe JSON sur STDOUT ou fichier</strong> (rien d'autre sur STDOUT). Codes de sortie de
+  <code>exit_codes.py</code> ; endpoint injoignable → <code>INCONCLUSIVE=3</code> (jamais confondu avec un bug).</li>
+<li>Garde anti-réseau des tests : <code>pytest-socket</code> + <code>--disable-socket</code> par défaut dans la
+  config pytest — ⚠ <strong>la dépendance et la configuration sont posées par l0-01.1</strong> (avec
+  toutes les autres, cf. geste PO « dépendances pré-posées ») ; cette fiche ne fait que
+  les utiliser. ⚠ <strong>Portée réelle (décision E-b) : le chemin STAC
+  UNIQUEMENT</strong> (<code>httpx</code>/<code>pystac-client</code>, qui passent par le <code>socket</code> Python). Elle <strong>ne
+  couvre PAS</strong> les lectures rasterio/GDAL (C/libcurl) — celles-ci sont gardées par le
+  contrat <code>TINY_WAE_OFFLINE</code> dans <code>chips.py</code> (l0-03.3). Écrire cette limite en commentaire
+  de la config pytest, pour que personne ne croie qu'un seul dispositif suffit. Les
+  oracles LIVE ci-dessous sont hors gate, lancés à la main avant livraison.</li>
+<li>Test de capture : STDOUT parse comme JSON seul ; les logs sont sur STDERR.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n3">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N3)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>55ab4ec</code> (l0-02.1 mergée) — <strong>faits, pas suppositions</strong> :</p>
+<ul>
+<li><strong>Le port et l'enveloppe EXISTENT déjà</strong> : <code>adapters/stac.py</code> expose <code>StacSource</code>
+  (Protocol : <code>search(site: Site, window: Window) -&gt; Envelope</code>), <code>EarthSearchSource(settings)</code>,
+  <code>build_envelope(...)</code> (pure) et <code>parse_item(...)</code>. <code>core/envelope.Envelope</code> vérifie les
+  invariants de conservation <strong>à la construction</strong> — le CLI n'a rien à revalider, il
+  sérialise via <code>envelope.to_dict()</code>.</li>
+<li><strong>Auto-découverte</strong> : déposer <code>cli/search.py</code> exposant <code>def register(app: typer.Typer) -&gt; None</code>
+  suffit (<code>cli/discovery.py</code> l'importe). ⛔ <strong>Ne PAS toucher <code>__main__.py</code></strong> — figé depuis
+  l0-01.2. Modèle à copier littéralement : <code>cli/sites_list.py</code> (options typer + <code># noqa: B008</code>,
+  <code>typer.Exit(code=...)</code>, erreurs sur STDERR).</li>
+<li><strong>Codes de sortie</strong> : <code>cli/exit_codes.py</code> porte <code>OK=0 · FAILURE=1 · USAGE=2 · INCONCLUSIVE=3</code>.</li>
+<li><strong><code>pytest-socket</code> est DÉJÀ posé et actif</strong> : <code>pyproject.toml</code> →
+  <code>[tool.pytest.ini_options] addopts = "-q --disable-socket"</code>. Cette fiche n'ajoute que le
+  <strong>commentaire de portée</strong> (chemin STAC uniquement ; les lectures rasterio/GDAL sont gardées
+  par le contrat <code>TINY_WAE_OFFLINE</code> de l0-03.3, en cours en parallèle).</li>
+<li><strong>Fixtures STAC disponibles</strong> : <code>tests/fixtures/stac/*.json</code>, racine <code>{"items": [...]}</code> —
+  <code>bi_tile.json</code> (<strong>12 items</strong>, moitié <code>MGRS-52TDL</code> / moitié <code>MGRS-52TEL</code>), <code>empty.json</code> (0),
+  <code>s2b_cloudy.json</code>, <code>s2c_new_schema.json</code>, <code>sequence_1.json</code>. <code>tests/test_stac.py</code> mesure
+  déjà sur <code>bi_tile</code> avec <code>reference_tile="52TEL"</code> : <code>found_stac == 12</code>, <code>off_tile == 6</code>.
+  ⭐ <strong>Relever les 4 compteurs et les écrire en littéral dans le test du CLI</strong> — un oracle qui
+  les recalcule depuis la fixture ne discrimine rien.</li>
+<li><strong>Versions mesurées</strong> : pystac-client <strong>0.9.0</strong> (<code>pystac_client.exceptions</code> n'expose que
+  <code>APIError</code> et <code>ParametersError</code>) · rasterio 1.5.1 · numpy 2.5.2. ⛔ Aucune montée de version.</li>
+</ul>
+<h3 id="decisions-dancrage-prises-ici-ne-pas-rouvrir-ne-pas-re-deliberer">Décisions d'ancrage (prises ici — ne pas rouvrir, ne pas re-délibérer)</h3>
+<ol>
+<li><strong>Point de couture pour l'injection de fixtures (décision D-a du chapeau).</strong>
+   <code>cli/search.py</code> expose <code>def build_source(settings: Settings) -&gt; StacSource</code> qui retourne
+   <code>EarthSearchSource(settings)</code> ; les tests monkeypatchent
+   <strong><code>tiny_wae.cli.search.build_source</code></strong>. ⛔ <strong>Ne PAS créer de <code>FixtureSource</code> dans <code>src/</code></strong> :
+   le double de test vit dans <code>tests/</code>. La vraie <code>FixtureSource</code> est le périmètre de l0-03.5 —
+   en poser une ici produirait deux classes homonymes.</li>
+<li><strong><code>INCONCLUSIVE=3</code> a besoin d'une exception typée, qui N'EXISTE PAS encore.</strong>
+   <code>EarthSearchSource.search</code> n'enveloppe aujourd'hui aucune erreur de transport (<code>Client.open</code>
+   et l'itération des items remontent brut). Ajouter dans <code>adapters/stac.py</code> :
+   <code>class StacUnreachable(Exception)</code> — ⚠ <strong>héritant d'<code>Exception</code>, PAS de <code>StacSourceError</code></strong>
+   (qui est un <code>ValueError</code> de parsing → <code>FAILURE</code> : sémantique opposée, un héritage ici
+   ferait remonter un endpoint mort en « échec métier »). <code>search</code> attrape
+   <code>(pystac_client.exceptions.APIError, OSError)</code> et relève
+   <code>StacUnreachable(f"{settings.stac_url} injoignable : {exc}")</code>.
+   ⚠ <strong>Ne PAS attraper <code>RuntimeError</code></strong> : <code>pytest_socket.SocketBlockedError</code> en dérive
+   (vérifié : MRO = <code>SocketBlockedError → RuntimeError</code>), l'attraper transformerait toute
+   fuite réseau d'un test en un exit 3 vert-sur-du-faux.
+   <strong>Mapping du CLI</strong> : <code>StacUnreachable → 3</code> · <code>StacSourceError → 1</code> · <code>ConfigError</code> /
+   <code>SiteValidationError</code> / site inconnu / dates malformées → <code>2</code>.</li>
+<li><strong>Discipline des flux (à tester, pas seulement à écrire)</strong> : enveloppe JSON sur STDOUT
+   (<code>json.dumps(envelope.to_dict())</code>) <strong>ou</strong> dans le fichier <code>--json &lt;path&gt;</code> ; dans ce
+   dernier cas <strong>STDOUT reste vide</strong>. La table lisible et toute erreur partent sur STDERR.
+   Rien d'autre ne s'écrit jamais sur STDOUT.</li>
+<li><strong>Fenêtre</strong> : <code>--from</code> / <code>--to</code> en <code>YYYY-MM-DD</code>, convertis en <code>datetime</code> naïfs et passés
+   à <code>core.windows.Window(start=…, end=…)</code> (type déjà figé). <code>EarthSearchSource</code> transmet
+   déjà des <code>datetime</code> à pystac-client — earth-search <strong>rejette une plage date seule</strong> (400,
+   mesuré en l0-01.3) : ne pas repasser à des chaînes.</li>
+<li><strong>O4 (live, hors gate)</strong> : lancer à la main <code>just run search --site A01 --from 2022-09-01
+   --to 2022-10-01</code>, relever le nombre d'items et le reporter dans le résumé de réalisation.
+   Ce n'est PAS un test pytest (le gate reste hors ligne) — si le réseau est indisponible au
+   moment du run, le noter comme <strong>non mesuré</strong> plutôt que d'inventer un chiffre.</li>
+</ol>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] CLI branché, fixtures vertes sous <code>--disable-socket</code>, capture STDOUT/STDERR testée.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1 [fixtures]</td>
+<td><code>search</code> sur la fixture bi-tuile C07 (l0-02.1)</td>
+<td>compteurs EXACTS et <strong>gelés dans le test</strong> : <code>found_stac</code>, <code>skipped_scene_cloud</code>, <code>off_tile</code>, <code>found_tile</code> (valeurs relevées à l'enregistrement de la fixture et écrites dans le test, pas recalculées depuis elle) ; conservation vérifiée ; STDOUT = JSON parsable seul</td>
+</tr>
+<tr>
+<td>O2 [fixtures]</td>
+<td>Fenêtre vide</td>
+<td><code>items == []</code>, exit 0</td>
+</tr>
+<tr>
+<td>O3 [fixtures]</td>
+<td>Réseau coupé simulé</td>
+<td>exit <strong>3</strong> ; STDERR contient l'URL de l'endpoint ET le mot <code>injoignable</code> (assertion littérale)</td>
+</tr>
+<tr>
+<td>O4 [live, hors gate]</td>
+<td>A01, sept. 2022 réel</td>
+<td>≥ 3 items (dérivation : revisite 4,2 j → ~6 attendus ; mesuré en revue : 6) ; l'item gelé <code>S2A_31TGJ_20240801_0_L2A</code> trouvé sur sa fenêtre avec cc &lt; 2 %</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : quotas earth-search en charge (l0-04.H le mesurera).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Livré</strong> (commit <code>1f80bdd</code>, mergé en <code>b955517</code>) : <code>cli/search.py</code> (nouveau, 112 l.),
+<code>adapters/stac.py</code> (+<code>StacUnreachable</code>, enrobage du transport), <code>tests/test_cli_search.py</code>
+(nouveau), <code>tests/test_stac.py</code> (+3 tests), <code>pyproject.toml</code> (commentaire de portée).
+<strong>105 → 114 tests</strong> (+9). <code>just check</code> vert sur <code>develop</code> après merge : ruff OK, mypy strict
+<strong>22 fichiers</strong>, <strong>114 passed</strong> en 13,9 s, smoke placeholder.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1 [fixtures]</td>
+<td>compteurs EXACTS gelés, conservation, STDOUT = JSON seul</td>
+<td><code>found_stac=12 · skipped_scene_cloud=2 · off_tile=6 · found_tile=4</code> écrits <strong>en littéral</strong> dans le test (12 = 2+6+4 ✓) ; STDOUT parsé par <code>json.loads</code> seul, table sur STDERR</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2 [fixtures]</td>
+<td>fenêtre vide → <code>items == []</code>, exit 0</td>
+<td><code>items == []</code>, <code>found_stac == 0</code>, exit 0</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3 [fixtures]</td>
+<td>réseau coupé → exit 3, STDERR porte l'URL ET « injoignable »</td>
+<td>exit <strong>3</strong> ; assertion littérale sur l'URL et sur le mot</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4 [live, hors gate]</td>
+<td>A01 sept. 2022 : ≥ 3 items ; item gelé trouvé avec cc &lt; 2 %</td>
+<td><strong>6 items</strong> mesurés (attendu ~6 en revue) ; <strong>complété par l'orchestrateur</strong> le 22/08 sur la fenêtre propre de l'item gelé : <code>search --site A01 --from 2024-08-01 --to 2024-08-02</code> → <code>found_stac=1</code>, <code>S2A_31TGJ_20240801_0_L2A</code>, tuile 31TGJ, <strong>cc = 0,00217 %</strong> (&lt; 2 %)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert (cf. ci-dessus)</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong><code>--sites-path</code> / <code>--settings-path</code> ajoutées</strong> au-delà des options de la fiche : rend le
+   CLI testable sans dépendre des chemins par défaut, et servira au chaînage CWL (l0-06.1).</li>
+<li><strong>Site inconnu et date malformée → <code>USAGE=2</code></strong>, regroupés avec <code>ConfigError</code> /
+   <code>SiteValidationError</code> — conforme au mapping de l'ancrage.</li>
+<li>Le double de test <code>_FixtureSource</code> vit bien dans <code>tests/</code>, pas dans <code>src/</code> : le nom
+   <code>FixtureSource</code> reste <strong>libre</strong> pour l0-03.5.</li>
+</ol>
+<h3 id="verrou-pose">Verrou posé</h3>
+<p><code>test_stac_unreachable_ne_derive_pas_de_stac_source_error</code> fige la décision n°2 de
+l'ancrage : un futur refactor qui ferait hériter <code>StacUnreachable</code> de <code>StacSourceError</code>
+rendrait le test rouge — sans lui, un endpoint mort remonterait en « échec métier » (exit 1)
+et le diagnostic serait faux sans qu'aucun test ne bronche.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Quotas earth-search en charge (l0-04.H) · bascule CDSE et Sentinel-1 (hors lot) ·
+absence combinée de <code>sites.yaml</code>/<code>settings.yaml</code> avec <code>--json</code> (le chargement est le même
+que <code>sites-list</code>/<code>sites-validate</code>, déjà couvert, mais pas re-testé pour <code>search</code>).</p><div class="prevnext"><a href="l0-02.1.html">← [l0-02.1] Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</a><span></span></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-05.1] Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-05.html"><code>▣ l0-05</code></a> › <b>l0-05.1</b></nav><h1>[l0-05.1] Bornes de la fenêtre update — logique pure sur l&#x27;API manifests <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-05.html"><code>l0-05</code></a> [CHAPEAU] Incrémental quotidien — update <span class="pill" style="background:#69b076">Fait</span><ul><li>→ <a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-051-bornes-update">[l0-05.1] — Bornes update</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-e1df087">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base e1df087)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>Calculer la fenêtre du run incrémental d'un site, à sec.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<p>⭐ <strong>Décision TRANCHÉE (PO, 21/08 — la v3 laissait le choix à l'agent, ce qui violait
+« toutes les décisions tranchées »)</strong> : <strong>pas de nouveau module</strong>. La fonction vit dans
+<strong><code>core/windows.py</code></strong>, livré par l0-03.1 ; cette fiche l'<strong>étend</strong>, elle ne duplique rien.
+<code>core/update_bounds.py</code> <strong>n'existe pas</strong>.</p>
+<ul>
+<li><code>src/tiny_wae/core/windows.py</code> (extension) : <code>update_window_for_site(last_datetime,
+  margin_days, now) -&gt; Window | NoManifests</code> — borne basse = <code>last_datetime − margin</code>,
+  borne haute = <code>now</code> (paramètre, horloge injectable) ; site sans manifeste → valeur
+  typée <code>NoManifests</code> (le CLI en fera un exit 1 pointant vers backfill). La primitive
+  générique <code>update_window(last, margin, now)</code> de l0-03.1 est <strong>réutilisée telle quelle</strong> ;
+  cette fonction n'ajoute que la lecture du <code>last_datetime</code> via l'API manifests et le cas
+  <code>NoManifests</code>.</li>
+<li>Tests à sec sur manifestes fixtures (corpus l0-03.2) : dernier jour, marge, site vierge,
+  statuts rejetés comptés dans <code>last_datetime</code>.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-e1df087">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base e1df087)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li><code>core/windows.py</code> (l0-03.1, mergé) expose <strong>exactement</strong> :
+  <code>Window</code> (frozen, slots, fenêtre demi-ouverte <code>[start, end[</code>), <code>backfill_windows(months, now)</code>
+  et <strong><code>update_window(last_datetime: datetime, margin_days: int, now: datetime) -&gt; Window</code></strong>.
+  Sa docstring dit explicitement que la signature est figée et consommée par l0-05.1 — la
+  réutiliser <strong>telle quelle</strong>, ne pas la modifier.</li>
+<li>⚠⚠ <strong><code>adapters/manifests.last_datetime(data_root, site_id)</code> retourne <code>str | None</code></strong>, pas un
+  <code>datetime</code> (mesuré : la fixture C07 rend <code>'2026-01-25T10:15:00Z'</code>). Or <code>update_window</code> attend un
+  <code>datetime</code>. <strong>La conversion est à la charge de cette fiche</strong> — c'est le vrai travail
+  d'articulation entre les deux modules. <code>datetime.fromisoformat</code> gère le suffixe <code>Z</code> en 3.12.</li>
+<li>Le corpus de fixtures de l0-03.2 est en place : <code>tests/fixtures/manifests/C07/</code> (12 manifestes,
+  dont un <code>failed</code> qui porte la date la plus récente) et <code>tests/fixtures/manifests/OVERLAP/</code>.</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li>⭐ <strong><code>core/windows.py</code> reste PUR — aucune I/O n'y entre.</strong> La fiche décrit une fonction qui
+   « lit le <code>last_datetime</code> via l'API manifests », ce qui contredirait la règle de couche
+   (<code>core/</code> ne fait ni I/O ni import d'<code>adapters/</code>). Signature retenue :
+   <strong><code>update_window_for_site(last_datetime: str | None, margin_days: int, now: datetime)
+   -&gt; Window | NoManifests</code></strong> — elle prend en entrée <strong>exactement ce que rend
+   <code>manifests.last_datetime</code></strong>, parse la chaîne, et rend <code>NoManifests</code> quand l'entrée est <code>None</code>.
+   La lecture réelle des manifestes reste chez l'appelant, c'est-à-dire le CLI de l0-05.2.</li>
+<li><strong>O1 reste satisfait sans tricher</strong> : le test <strong>lit vraiment le corpus fixtures</strong> via
+   <code>manifests.last_datetime(...)</code> puis passe la valeur à la fonction — la fenêtre est bien
+   « obtenue en lisant les manifestes », mais la fonction testée reste pure.</li>
+<li><strong><code>NoManifests</code> est une valeur typée</strong>, pas une exception ni un <code>None</code> : dataclass frozen
+   (ou sentinelle équivalente) exportée par <code>core/windows.py</code>, pour que l0-05.2 en fasse un
+   exit 1 pointant vers <code>backfill</code>.</li>
+</ol>
+<p><strong>Zone d'écriture EXCLUSIVE</strong> : <code>src/tiny_wae/core/windows.py</code> (extension) et
+<code>tests/test_windows.py</code> (extension). Tu peux <strong>lire</strong> <code>adapters/manifests.py</code> et les fixtures,
+mais pas les modifier.
+⛔ Ne toucher NI <code>justfile</code>, NI <code>config/sites.yaml</code>, NI <code>core/tiles.py</code> (l0-01.3, en cours),
+NI <code>core/acquisition.py|envelope.py</code>, NI <code>adapters/stac.py</code> (l0-02.1), NI <code>pyproject.toml</code>,
+<code>pixi.lock</code>, <code>adapters/manifests.py</code>, <code>core/geometry.py</code>, <code>core/scl.py</code>.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Fonction + tests, docstring avec la dérivation de la marge (latence mesurée ~3-5 h,
+      marge 3 j, recouvrement absorbé par l'idempotence).</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Site de fixture dont le dernier manifeste est au 2026-08-15, <code>margin=3</code>, <code>now=2026-08-21</code></td>
+<td>fenêtre [2026-08-12 → 2026-08-21] exacte, <strong>obtenue en lisant les manifestes</strong> (le cas purement arithmétique est déjà couvert par l0-03.1/O3 — pas de doublon d'oracle)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Site sans manifeste</td>
+<td><code>NoManifests</code> (pas d'exception, pas de fenêtre par défaut)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>last_datetime</code> prend en compte un manifeste <code>rejected_clouds</code> plus récent qu'un <code>ingested</code></td>
+<td>oui (test)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>l0-05.1</code>) : extension de
+<code>core/windows.py</code> — <code>update_window_for_site</code> et la valeur typée <code>NoManifests</code>.</p>
+<p>Livré : <code>core/windows.py</code> et <code>tests/test_windows.py</code> <strong>étendus</strong> (aucun fichier créé, conforme à
+la décision PO « pas de nouveau module »). <code>test_windows.py</code> passe de 5 à <strong>10 tests</strong> ; total du
+projet : <strong>69</strong>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Le test <strong>lit vraiment</strong> le corpus : <code>manifests.last_datetime(fixtures, "C07")</code> → <code>'2026-01-25T10:15:00Z'</code>, puis <code>update_window_for_site(last, margin_days=3, now=2026-01-28)</code> → <code>Window(2026-01-22T10:15, 2026-01-28)</code>. Assertion exacte</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>Site inconnu → <code>last_datetime</code> rend <code>None</code> → <code>NoManifests()</code> : ni exception, ni fenêtre par défaut</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><strong>Complété par l'orchestrateur</strong> — voir ci-dessous</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>just check</code> vert : ruff, mypy strict 17 modules, 69 tests</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Signature retenue</strong> (décision d'ancrage, appliquée sans être rouverte) :
+<code>update_window_for_site(last_datetime: str | None, margin_days: int, now: datetime) -&gt; Window | NoManifests</code>.
+Elle prend <strong>exactement ce que rend <code>adapters.manifests.last_datetime</code></strong> (un <code>str | None</code>, mesuré),
+parse la chaîne, et laisse la lecture des manifestes à l'appelant.</p>
+<p>⭐ <strong>Pureté de <code>core/</code> vérifiée par l'orchestrateur</strong> : <code>core/windows.py</code> n'importe que
+<code>dataclasses</code> et <code>datetime</code> — <strong>aucun import d'<code>adapters/</code></strong>. La règle de couche que la formulation
+d'origine de la fiche aurait fait violer est tenue.</p>
+<p>⚠ <strong>O3 : le test livré par l'agent était indirect.</strong> Il assertait la date du manifeste <code>failed</code>
+(2026-01-25), qui domine tout le corpus : cela prouve que <code>last_datetime</code> ne filtre pas sur
+<code>ingested</code>, mais n'isole pas le cas que demande la fiche (« un <code>rejected_clouds</code> plus récent qu'un
+<code>ingested</code> »). <strong>Test ajouté par l'orchestrateur</strong> : corpus réduit dans <code>tmp_path</code> aux 6 <code>ingested</code>
+(01→06) et aux 3 <code>rejected_clouds</code> (07→09) — <code>last_datetime</code> rend alors <code>2026-01-09T10:15:00Z</code>
+(CLD03) et non <code>2026-01-06</code> (ING06). La preuve est maintenant directe.</p>
+<p><strong>Autre décision de l'agent, retenue</strong> : le suffixe <code>Z</code> est retiré avant <code>fromisoformat</code> pour
+produire un <code>datetime</code> <strong>naïf</strong>, cohérent avec ceux déjà utilisés partout dans <code>windows.py</code>
+(mélanger naïf et aware aurait cassé les comparaisons en aval).</p><div class="prevnext"><span></span><a href="l0-05.2.html">[l0-05.2] CLI update — run quotidien, oracles binarisés →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

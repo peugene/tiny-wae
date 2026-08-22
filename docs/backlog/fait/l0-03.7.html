@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.7] Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.7</b></nav><h1>[l0-03.7] Smoke complet (replay/live) + garde réseau de contrat — le gate permanent <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../a-faire/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-037-le-gate-smoke-deux-modes-garde-de-contrat">[l0-03.7] — Le gate : smoke deux modes + garde de contrat</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n6">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N6)</a><ul>
+<li><a href="#socle-commun-livre-fige-a-consommer-tel-quel">Socle commun (livré, figé — à consommer tel quel)</a></li>
+<li><a href="#decisions-dancrage-propres-a-l0-037-prises-ici-ne-pas-rouvrir">Décisions d'ancrage propres à l0-03.7 (prises ici — ne pas rouvrir)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#baseline-live-pour-l0-04-extrapolation-a-porter-a-l0-04h">⭐ Baseline live pour l0-04 (extrapolation à porter à l0-04.H)</a></li>
+<li><a href="#correction-apportee-a-la-revue-loracle-o3-ne-mordait-pas">⚠ Correction apportée à la revue : l'oracle O3 ne mordait pas</a></li>
+<li><a href="#non-teste-explicite">Non testé (explicite)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Seconde moitié de la scission de l'ex-l0-03.5 (PO, 21/08). <strong>Ici : le gate permanent</strong> —
+le corpus qu'il consomme est livré par l0-03.5. Met en œuvre <strong>E-b</strong> (garde de contrat)
+et remplace le smoke minimal posé par l0-03.4.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Rendre <code>just check</code> déterministe, hors ligne et <strong>capable de rougir</strong> ; livrer le chemin
+live et ses mesures.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>scripts/smoke.py</code> réécrit (il remplace le smoke minimal de l0-03.4) :</li>
+<li><strong><code>--replay</code> (défaut, câblé dans <code>just check</code>)</strong> : <code>ingest</code> complet via
+    <code>FixtureSource</code> sur l'item clair gelé ; assertions — 3 fichiers, manifeste conforme,
+    <code>content_hashes</code> == valeurs gravées, <code>assets_read &gt; 0</code>.</li>
+<li><strong><code>--live</code></strong> (hors gate) : même chemin via <code>EarthSearchSource</code>, <code>data_root</code>
+    temporaire ; publie les <strong>mesures</strong> (durée et octets écrits par chip — baseline
+    attendue par l0-04).</li>
+<li>⭐ <strong>Garde réseau de CONTRAT — décision E-b.</strong> Le mode <code>--replay</code> pose
+  <code>TINY_WAE_OFFLINE=1</code> ; sous cette variable, <code>adapters/chips.py</code> (l0-03.3) refuse tout
+  href non-<code>file://</code> → <code>RemoteAccessForbidden</code>, levée <strong>avant ouverture</strong>.
+  ⚠ Motif <strong>mesuré</strong> en revue v3 : <code>pytest-socket</code> patche le <code>socket</code> Python, mais
+  rasterio lit via <strong>GDAL/libcurl (C)</strong> — une garde de transport laisserait le smoke
+  passer <strong>VERT en téléchargeant</strong> (faux-vert, le vrai danger). <code>pytest-socket</code> reste en
+  ceinture pour le seul chemin STAC ; <strong>écrire cette limite</strong> dans le docstring du smoke.</li>
+<li><code>justfile</code> : <code>just smoke</code> = <code>--replay</code> (forme inchangée).</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n6">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N6)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>2e8322d</code>. Les 4 fiches de ce run partent <strong>en parallèle</strong> : leurs
+fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.</p>
+<h3 id="socle-commun-livre-fige-a-consommer-tel-quel">Socle commun (livré, figé — à consommer tel quel)</h3>
+<ul>
+<li><strong><code>adapters/fixture_source.FixtureSource(settings, stac_dir=…, cog_dir=…)</code></strong> implémente le
+  port <code>StacSource</code>. ⭐ <strong>Elle FILTRE sur la fenêtre</strong> (<code>[start, end[</code>) depuis le commit
+  <code>2e8322d</code> — corrigé juste avant ce dispatch : elle rendait auparavant tout le corpus quelle
+  que soit la fenêtre, ce qui rendait plusieurs oracles de ce run infaisables.</li>
+<li><strong>Corpus réel disponible</strong> (<code>tests/fixtures/cog/</code>, 14 items, 29,4 MiB) :</li>
+<li><strong>A01</strong> (tuile 31TGJ, EPSG 32631) — <strong>10 items</strong> : 6 en <strong>septembre 2022</strong> (01, 06, 11,
+    16, 21, 26) · 3 gelés (2023-03-15 nuageux cc 88 · 2024-08-01 clair cc 0,002 · 2026-05-13
+    S2C) · 1 <code>sequence=1</code> (2026-08-13).</li>
+<li><strong>B09</strong> (tuile 31TDJ, EPSG 32631, mono-tuile) — <strong>4 items</strong>, tous en <strong>août 2023</strong> (23,
+    25, 28, 30). ⚠ <strong>Couverture nuageuse de scène : 0,5 % · 86,5 % · 84,6 % · 63,8 %</strong> — un
+    seul item clair. Tous passent le filtre de scène (<code>scene_cloud_max=95</code>) mais <strong>plusieurs
+    partiront en <code>rejected_clouds</code></strong> au verdict SCL (<code>cloud_pct_max=30</code>). Un oracle qui
+    attendrait 4 <code>ingested</code> sur B09 serait faux : <strong>mesure, ne suppose pas</strong>.</li>
+<li>⚠ Les fenêtres des deux sites <strong>ne se recouvrent pas</strong> (sept. 2022 vs août 2023) : un test
+    multi-sites sur une fenêtre unique aura forcément un site vide. Construis tes fenêtres par
+    site, ou appelle l'orchestrateur directement au lieu de passer par <code>--months</code>.</li>
+<li><strong><code>adapters/ingestion.py</code></strong> (l0-03.4) — l'orchestration d'ingestion existe déjà,
+  ⛔ <strong>ne la réécris pas</strong> :
+  <code>python
+  class IngestOutcome: run: Run · all_failures_network: bool
+  ingest_from_envelope(*, envelope, grid, settings, data_root, force=False) -&gt; IngestOutcome
+  ingest_from_source(*, site, window, source, settings, data_root, force=False) -&gt; IngestOutcome</code>
+  Elle porte déjà le retry (réservé aux erreurs réseau), la garde nodata, l'idempotence
+  <code>grid_hash</code> et l'écriture du <code>run.json</code>.</li>
+<li><strong><code>core/windows.py</code></strong> : <code>backfill_windows(months, now) -&gt; list[Window]</code> ·
+  <code>update_window(last_datetime: datetime, margin_days, now) -&gt; Window</code> ·
+  <code>update_window_for_site(last_datetime: str | None, margin_days, now) -&gt; Window | NoManifests</code>.
+  Horloge <strong>toujours injectée</strong>, jamais <code>datetime.now()</code> dans <code>core/</code>.</li>
+<li><strong><code>adapters/manifests.py</code></strong> : <code>write_manifest</code> · <code>read_manifest</code> · <code>list_for_site</code> ·
+  <code>item_ids_for_site</code> · <code>last_datetime(data_root, site_id) -&gt; str | None</code> · <code>write_run</code> ·
+  <code>read_run</code> · <code>list_runs</code> · <code>aggregate_counters</code> · <code>grid_hash</code>. Chemins figés
+  <code>&lt;data_root&gt;/{site_id}/{item_id}/manifest.json</code> et <code>&lt;data_root&gt;/{site_id}/runs/{run_id}.json</code>.</li>
+<li><strong><code>cli/exit_codes.py</code></strong> : <code>OK=0 · FAILURE=1 · USAGE=2 · INCONCLUSIVE=3</code>.</li>
+<li><strong>Auto-découverte</strong> : un module de <code>cli/</code> exposant <code>register(app: typer.Typer) -&gt; None</code>.
+  ⛔ <code>__main__.py</code> est <strong>figé</strong> depuis l0-01.2. Modèles à copier : <code>cli/search.py</code> et
+  <code>cli/ingest.py</code> (wiring pur : parse, charge, appelle, mappe les codes de sortie).</li>
+<li>⭐ <strong>Règle de couche appliquée depuis l0-03.4, à respecter ici</strong> : <code>cli/</code> ne porte <strong>aucune
+  logique</strong>. Toute orchestration (boucles, pools, rendu, agrégation) vit dans <code>adapters/</code>.
+  C'est ce qui rend le code appelable par le smoke et les tests sans sous-processus.</li>
+<li><strong>Découverte de terrain (chapeau l0-02)</strong> : <code>pystac_client.search(limit=N)</code> ne fixe qu'une
+  <strong>taille de page</strong>, pas un plafond de résultats — le plafond, c'est <strong><code>max_items=N</code></strong>.</li>
+<li><strong>Versions</strong> : rasterio 1.5.1 · Pillow <strong>12.2.0</strong> · numpy 2.5.2 · pystac-client 0.9.0 ·
+  cwltool 3.2.20260720092025. ⛔ Aucune montée, <code>pyproject.toml</code> <strong>non touché</strong>.</li>
+<li><strong>Le gate</strong> est aujourd'hui <code>lint &amp;&amp; types &amp;&amp; test &amp;&amp; smoke &amp;&amp; cwl</code>, <strong>164 tests</strong> verts.</li>
+</ul>
+<h3 id="decisions-dancrage-propres-a-l0-037-prises-ici-ne-pas-rouvrir">Décisions d'ancrage propres à l0-03.7 (prises ici — ne pas rouvrir)</h3>
+<ol>
+<li><strong><code>scripts/smoke.py</code> existe déjà</strong> (posé par l0-03.4) et expose
+   <code>build_fake_source(raw_dir, *, with_item=True) -&gt; StacSource</code> et
+   <code>run_smoke(dest: Path, source: StacSource) -&gt; None</code>. ⭐ <strong>Garde cette forme</strong> :
+   <code>run_smoke</code> prend déjà la source en paramètre, c'est exactement le point de substitution
+   dont tu as besoin pour passer une <code>FixtureSource</code> à la place du double en mémoire. Tu
+   remplaces le contenu, pas l'architecture.</li>
+<li><strong><code>just smoke</code> reste <code>--replay</code></strong> (forme inchangée dans le <code>justfile</code> — n'y touche que si
+   c'est indispensable, et dis-le). <code>--live</code> est <strong>hors gate</strong>.</li>
+<li>⭐ <strong>Comment fabriquer la fixture « href <code>https://</code> » de l'oracle O3, sans rien inventer</strong> :
+   les enveloppes enregistrées (<code>tests/fixtures/stac/cog_a01.json</code>) contiennent les hrefs
+   <strong>d'origine, en <code>https://</code></strong> — c'est <code>FixtureSource._localize_hrefs</code> qui les réécrit en
+   <code>file://</code> <strong>quand le fichier local existe</strong>. Il suffit donc de construire une
+   <code>FixtureSource(settings, cog_dir=&lt;répertoire vide&gt;)</code> : les hrefs restent en <code>https://</code>, et
+   la garde de <code>chips.py</code> doit lever <code>RemoteAccessForbidden</code> sous <code>TINY_WAE_OFFLINE=1</code>.
+   Aucune fixture à fabriquer à la main, aucun mock.</li>
+<li><strong>O2 (fixture retirée)</strong> : même principe — un <code>cog_dir</code> où il manque UN fichier précis.
+   L'assertion porte sur le <strong>chemin du fichier manquant nommé dans STDERR</strong> (assertion
+   littérale, pas un <code>in</code> sur un mot vague).</li>
+<li><strong><code>TINY_WAE_OFFLINE=1</code> est posé par le mode <code>--replay</code> lui-même</strong>, pas par l'appelant :
+   c'est ce qui rend la garde effective dans <code>just check</code> sans dépendre de l'environnement.
+   ⚠ Repose l'environnement dans son état initial en sortant (un <code>os.environ</code> modifié qui
+   fuit dans le reste de <code>just check</code> serait un effet de bord invisible).</li>
+<li><strong>Écris la limite de <code>pytest-socket</code> dans le docstring du module</strong> (exigence de la
+   « définition de terminé ») : il patche le <code>socket</code> <strong>Python</strong>, mais rasterio lit via
+   <strong>GDAL/libcurl (C)</strong> — une garde de transport laisserait le smoke passer VERT en
+   téléchargeant. C'est le motif entier de la garde de contrat.</li>
+<li><strong>O5 (<code>--live</code>, hors gate)</strong> : publie <strong>durée</strong> et <strong>octets écrits par chip</strong> — ce sont les
+   valeurs de référence attendues par l0-04. Si le réseau est indisponible, déclare O5 <strong>non
+   mesuré</strong> ; ⛔ ne l'invente pas.</li>
+</ol>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Smoke 2 modes ; garde de contrat opérationnelle ; <code>just check</code> vert hors ligne.</li>
+<li>[ ] Limite de <code>pytest-socket</code> (ne couvre pas GDAL) écrite dans le docstring.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just smoke</code> (replay), machine hors ligne</td>
+<td>vert ; <code>content_hashes</code> == valeurs gravées ; <code>assets_read &gt; 0</code></td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Cas négatif : une fixture retirée</td>
+<td>ROUGE, STDERR nomme <strong>le chemin du fichier manquant</strong> (assertion littérale)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><strong>Garde de contrat</strong> : fixture dont un href est <code>https://</code>, sous <code>TINY_WAE_OFFLINE=1</code></td>
+<td>ROUGE, exit ≠ 0, cause <strong><code>RemoteAccessForbidden</code></strong> nommée ; <strong>aucune requête émise</strong> (l'exception précède l'ouverture)</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>Même fixture, <code>TINY_WAE_OFFLINE</code> absent</td>
+<td>l'ouverture est tentée normalement (la garde n'est pas un blocage permanent)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><strong>Répétabilité</strong> : <code>just smoke</code> deux fois, <code>data_root</code> vierge à chaque fois</td>
+<td><code>content_hashes</code> identiques ; <code>assets_read &gt; 0</code> aux deux</td>
+</tr>
+<tr>
+<td>O5 [live, hors gate]</td>
+<td><code>smoke --live</code> avant livraison</td>
+<td>vert ; <strong>durée et octets écrits par chip publiés</strong> dans le Résumé (baseline pour l0-04)</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : le volume réellement <strong>transféré</strong> (non instrumentable — décision E-d) ;
+la couverture d'autres sites que ceux du corpus (l0-03.5).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Livré</strong> (commit <code>4cbcac0</code>, mergé en <code>e3f2b81</code>, renforcé par <code>d9a7c2e</code>) : <code>scripts/smoke.py</code>
+réécrit (462 l.), <code>tests/test_smoke.py</code> en miroir. <code>justfile</code> <strong>non touché</strong> — <code>just smoke</code>
+reste <code>--replay</code>. Rien dans <code>src/</code>. <strong>Le gate exécute désormais le smoke complet.</strong></p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>replay hors ligne, <code>content_hashes</code> == gravés, <code>assets_read &gt; 0</code></td>
+<td>ingestion réelle via <code>FixtureSource</code> de l'item clair gelé <code>S2A_31TGJ_20240801_0_L2A</code> : 3 fichiers, <code>status="ingested"</code>, hashes <code>chip.tif=a889f09a… · chip_20m.tif=1898963d… · scl.tif=a04cf6eb…</code>, <strong><code>assets_read=11</code></strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>fixture retirée → ROUGE, STDERR nomme le chemin</td>
+<td>href <code>file://</code> vers un chemin réellement absent (aucun mock) → <code>status="failed"</code>, chemin exact <strong>littéral</strong> dans <code>manifest.cause</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>href <code>https://</code> sous <code>TINY_WAE_OFFLINE=1</code> → <code>RemoteAccessForbidden</code>, aucune requête</td>
+<td>⭐ <strong>renforcé à la revue</strong> : passe par <code>ingest_from_source</code> COMPLET (voir ci-dessous) → <code>failed</code>, cause littérale <code>TINY_WAE_OFFLINE=1 : href 'https://sentinel-cogs.s3…/SCL.tif' refusé</code>, <code>files == []</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>même href sans la variable → la garde ne bloque pas</td>
+<td>vérifié par appel direct à la garde (seul cas justifié : le contraire exigerait une requête réseau dans le gate)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>2 runs, <code>data_root</code> vierge → hashes identiques</td>
+<td>deux <code>data_root</code> distincts, <code>content_hashes</code> identiques, <code>assets_read &gt; 0</code> aux deux</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5 [live, hors gate]</td>
+<td>durée et octets par chip publiés</td>
+<td>⭐ <strong>mesuré par l'orchestrateur</strong> (l'agent n'avait pas de réseau sortant dans son worktree) : <strong>36,33 s</strong> · <strong>2 956 586 octets écrits</strong>, soit <strong>≈ 985 Ko/chip</strong> sur 3 fichiers</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Durée du smoke replay</strong> — celle que paie chaque <code>just check</code> du projet : <strong>23 s réelles</strong>,
+dont ~21 s d'activation d'environnement ; temps CPU propre ≈ 1,7 s. Pas de dégradation.</p>
+<h3 id="baseline-live-pour-l0-04-extrapolation-a-porter-a-l0-04h">⭐ Baseline live pour l0-04 (extrapolation à porter à l0-04.H)</h3>
+<p>À 36,3 s et 2,96 Mo par item : une campagne 25 sites × 48 mois à ~6 items/mois représente
+~7 200 items, soit <strong>~72 h en séquentiel (~12 h à 6 workers)</strong> et <strong>~21 Go</strong>. Chiffres à
+confronter à la réalité en campagne — beaucoup d'items sortiront avant lecture complète
+(filtre de scène, verdict SCL).</p>
+<h3 id="correction-apportee-a-la-revue-loracle-o3-ne-mordait-pas">⚠ Correction apportée à la revue : l'oracle O3 ne mordait pas</h3>
+<p>L'agent vérifiait O3 <strong>et</strong> O3bis en appelant directement <code>chips._guard_href</code>, en le
+signalant honnêtement et en demandant une revue. Le motif (ne pas faire de réseau dans le
+gate) vaut pour O3bis, <strong>pas pour O3</strong> : ce que l'oracle protège n'est pas que la garde
+<em>sache</em> lever, c'est que le pipeline la <strong>déclenche</strong>. Un test qui l'appelle isolément
+resterait vert si l'appel disparaissait de <code>read_scl</code> — exactement le faux-vert que cette
+fiche existe pour empêcher. O3 passe donc par <code>ingest_from_source</code>, <strong>sans aucun réseau</strong> :
+la garde lève avant toute ouverture, c'est précisément son contrat.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Volume réellement transféré en <code>--live</code> (non instrumentable — décision E-d) · aucun site
+autre qu'A01 (B09 couvert par l0-03.5) · O3bis dans le pipeline complet (exigerait une
+requête réseau réelle dans le gate).</p><div class="prevnext"><a href="l0-03.5.html">← [l0-03.5] Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</a><a href="l0-03.6.html">[l0-03.6] contact-sheet --latest — la planche précoce de centrage (artefact) →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

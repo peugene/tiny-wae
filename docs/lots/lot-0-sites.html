@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lot 0 — Sites &amp; ingestion Sentinel-2 (v3)</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -28,11 +28,58 @@ table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
 th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
-@media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><h1>Lot 0 — Sites &amp; ingestion Sentinel-2 (v3)</h1><p>Généré le 21/08/2026 depuis lot-0-sites.md — le .md fait foi.</p></div></div><article><h1 id="fiche-lot-0-sites-de-surveillance-ingestion-sentinel-2">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</h1>
-<p><strong>Projet</strong> : tiny-wae — POC Earth Intelligence perso
-<strong>Statut</strong> : validé — GO Philippe (liste des 25 sites arbitrée) ; <strong>v3 du 21/08/2026</strong> : aligné sur les trois revues adversariales et les GO Philippe <strong>G1-G10</strong> puis <strong>D-a/D-b/D-c</strong> et <strong>E-a/E-b/E-c/E-d</strong>. C08 = Bouconne.
-<strong>Date</strong> : 20/08/2026 — transférée le 21/08/2026 depuis un dossier de travail hors dépôt ; <strong>la source est désormais ce fichier</strong>. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-0-ingestion/</code> (roadmap v3 figée + revues v1/v2/v3)</p>
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+
+.wrap{max-width:1000px;margin:0 auto;padding:26px 16px 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:18px 20px;
+box-shadow:0 1px 3px rgba(20,40,60,.06);display:flex;flex-direction:column;
+transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 6px 18px rgba(20,40,60,.12);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:1.08em;line-height:1.35}
+.card h2 a{color:#1d4d66;text-decoration:none}.card h2 a:hover{color:#2c6e91}
+.card .excerpt{color:#5c6b76;font-size:.9em;flex:1;margin:10px 0 14px}
+.card .foot{display:flex;justify-content:space-between;font-size:.82em;color:#5c6b76}
+.counters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}
+.counter{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:10px 18px;
+min-width:110px}
+.counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
+.roadmap{margin-top:38px}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog</a> › <a href="index.html">📚 Lots</a> › <b>lot-0-sites</b></nav><h1>Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2 <span class="badge" style="background:#15803d">Validé</span></h1><p><b>Projet</b> : tiny-wae — POC Earth Intelligence perso<br><b>Statut</b> : validé — GO Philippe (liste des 25 sites arbitrée) ; <b>v3 du 21/08/2026</b> : aligné sur les trois revues adversariales et les GO Philippe <b>G1-G10</b> puis <b>D-a/D-b/D-c</b> et <b>E-a/E-b/E-c/E-d</b>. C08 = Bouconne.<br><b>Date</b> : 20/08/2026 — transférée le 21/08/2026 depuis un dossier de travail hors dépôt ; <b>la source est désormais ce fichier</b>. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-0-ingestion/</code> (roadmap v3 figée + revues v1/v2/v3)</p></div></div><article><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#fiche-lot-0-sites-de-surveillance-ingestion-sentinel-2">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a><ul>
+<li><a href="#1-objet-du-lot">1. Objet du lot</a></li>
+<li><a href="#2-parametres-techniques-v3-post-revues-go-philippe-2108">2. Paramètres techniques (v3 — post-revues, GO Philippe 21/08)</a></li>
+<li><a href="#3-liste-des-sites-25">3. Liste des sites (25)</a><ul>
+<li><a href="#categorie-a-nucleaire-en-construction-8-verite-terrain-riche-chronologies-publiques">Catégorie A — Nucléaire en construction (8) — vérité terrain riche, chronologies publiques</a></li>
+<li><a href="#categorie-b-megachantiers-mondiaux-9-signatures-enormes-ideal-detection-de-changement">Catégorie B — Mégachantiers mondiaux (9) — signatures énormes, idéal détection de changement</a></li>
+<li><a href="#categorie-c-sites-stables-veille-type-osint-8-mesure-des-faux-positifs-thematique-surveillance">Catégorie C — Sites stables &amp; veille type OSINT (8) — mesure des faux positifs + thématique surveillance</a></li>
+</ul>
+</li>
+<li><a href="#4-livrables-du-lot">4. Livrables du lot</a></li>
+<li><a href="#5-oracle-de-recette-v3-decision-e-a-criteres-mecaniques-uniquement">5. Oracle de recette (v3 — décision E-a : critères MÉCANIQUES uniquement)</a></li>
+<li><a href="#6-risques-identifies">6. Risques identifiés</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <hr />
 <h2 id="1-objet-du-lot">1. Objet du lot</h2>
 <p>Mettre en place la plomberie données : sélection de 25 sites, récupération automatisée des
@@ -40,7 +87,7 @@ vignettes (chips) Sentinel-2 L2A sur <strong>48 mois glissants</strong>, masquag
 puis ingestion incrémentale quotidienne. Aucune IA dans ce lot — uniquement de l'ingestion
 fiable et mesurée.</p>
 <h2 id="2-parametres-techniques-v3-post-revues-go-philippe-2108">2. Paramètres techniques (v3 — post-revues, GO Philippe 21/08)</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Paramètre</th>
@@ -90,13 +137,13 @@ fiable et mesurée.</p>
 <td>Le layout par date collisionne (tuiles multiples même jour, retraitements <code>s2:sequence</code>) — prouvé en revue</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>⚠️ <strong>Coordonnées ci-dessous : de mémoire, précision estimée ±1–2 km.</strong> La validation visuelle
 de centrage de chaque chip fait partie de l'oracle (§5). Certains mégachantiers dépassent la
 taille d'un chip : un segment représentatif est désigné.</p>
 <h2 id="3-liste-des-sites-25">3. Liste des sites (25)</h2>
 <h3 id="categorie-a-nucleaire-en-construction-8-verite-terrain-riche-chronologies-publiques">Catégorie A — Nucléaire en construction (8) — vérité terrain riche, chronologies publiques</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>ID</th>
@@ -164,9 +211,9 @@ taille d'un chip : un segment représentatif est désigné.</p>
 <td>Achevé 2023-24 : transition chantier → stable</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="categorie-b-megachantiers-mondiaux-9-signatures-enormes-ideal-detection-de-changement">Catégorie B — Mégachantiers mondiaux (9) — signatures énormes, idéal détection de changement</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>ID</th>
@@ -241,9 +288,9 @@ taille d'un chip : un segment représentatif est désigné.</p>
 <td>Chantier linéaire — <strong>contrôle local visitable</strong></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="categorie-c-sites-stables-veille-type-osint-8-mesure-des-faux-positifs-thematique-surveillance">Catégorie C — Sites stables &amp; veille type OSINT (8) — mesure des faux positifs + thématique surveillance</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>ID</th>
@@ -311,7 +358,7 @@ taille d'un chip : un segment représentatif est désigné.</p>
 <td>Contrôle négatif pur — <strong>décision Philippe, GO du 21/08/2026</strong>. Massif ~2 000 ha à l'ouest de Toulouse, vérifiable sur place. Forêt gérée : coupes d'entretien possibles = « faux positifs explicables », notés</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Équilibre</strong> : 12 sites « changement attendu », 8 « stables » (dont 4 contrôles négatifs stricts),
 5 intermédiaires. Les stables sont aussi importants que les actifs : c'est eux qui mesurent le
 taux de faux positifs du futur Lot 2.</p>
@@ -326,7 +373,7 @@ taux de faux positifs du futur Lot 2.</p>
 </ol>
 <h2 id="5-oracle-de-recette-v3-decision-e-a-criteres-mecaniques-uniquement">5. Oracle de recette (v3 — décision E-a : critères MÉCANIQUES uniquement)</h2>
 <p><strong>Les 4 critères ci-dessous sont prononcés par l'outil</strong> (<code>report</code>), pas par un humain :</p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -337,18 +384,18 @@ taux de faux positifs du futur Lot 2.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><strong>Conservation</strong> (identité comptable, par site et sur l'agrégat) : <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile = ingested + rejected_clouds + rejected_invalid + failed + skipped</code></td>
+<td><strong>Conservation</strong> (identité comptable, par site et sur l'agrégat) : <code>found_stac = skipped_scene_cloud + off_tile + found_tile</code> ET <code>found_tile = somme des 6 statuts</code> (<code>ingested | rejected_clouds | rejected_invalid | rejected_nodata | failed | skipped</code> — énumération normative du chapeau l0-02)</td>
 <td>boucle exactement — 25/25 sites. C'est ce critère qui attrape la <strong>perte silencieuse</strong> que les oracles v1/v2 laissaient passer</td>
 </tr>
 <tr>
 <td>O2</td>
-<td><strong>Complétude vs source</strong> : <code>found_stac</code> == compte d'une requête <code>/aggregate</code> aux <strong>mêmes bbox et fenêtre</strong>, sans filtre tuile (<code>report --check-completeness</code>)</td>
-<td>écart <strong>0</strong>, tout écart listé item par item. ⚠ Le comparant est <code>found_stac</code>, jamais <code>found_tile</code> (sinon écart ~50 % sur les sites multi-tuiles)</td>
+<td><strong>Complétude vs source</strong> : <strong>comparaison d'ENSEMBLES d'<code>item_id</code></strong> — manifestes du site vs ids d'un <code>/search</code> paginé reproduisant les <strong>trois</strong> filtres du pipeline (bbox + fenêtre + <code>grid:code</code> + <code>eo:cloud_cover &lt; 95 %</code>) via <code>report --check-completeness</code></td>
+<td>écart <strong>0</strong>, ids manquants nommés. ⚠ Ni somme de compteurs (sur-comptage par recouvrement), ni filtre incomplet (l'oubli du pré-filtre scène rendrait l'écart = <code>skipped_scene_cloud</code>)</td>
 </tr>
 <tr>
 <td>O3</td>
-<td><strong>Intégrité</strong> : 3 fichiers (chip 10 m, chip 20 m à 6 bandes, SCL) lisibles, CRS/transform identiques à la grille du site au bit près, nodata &lt; 1 %</td>
-<td>100 % des items <code>ingested</code></td>
+<td><strong>Intégrité</strong> — colonne <code>integrite: OK/ROUGE</code> de <code>report</code>, calculée <strong>depuis les manifestes</strong> (pas de relecture des rasters) : les 3 fichiers listés, <code>content_hashes</code> complets, <code>grid_hash</code> == grille <strong>courante</strong> du site, <strong><code>chip_nodata_pct</code> &lt; 1 %</strong> (garde nodata du GO G8, instrumentée : seuil en settings, champ au manifeste, statut <code>rejected_nodata</code>)</td>
+<td>100 % des items <code>ingested</code> ; items fautifs nommés</td>
 </tr>
 <tr>
 <td>O4</td>
@@ -356,7 +403,7 @@ taux de faux positifs du futur Lot 2.</p>
 <td>par site</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Idempotence</strong> (vérifiée dans le harnais, pas en recette — décision E-d) : run double →
 1er run <code>assets_read &gt; 0</code>, 2e run <code>assets_read == 0</code> et <code>content_hashes</code> (hash du tableau
 <strong>décodé</strong>) inchangés. <code>bytes_downloaded</code> n'est PAS un critère : il ne couvre que le
@@ -383,4 +430,4 @@ transféré</strong> : hors instrument (relevé système ou déclaré non mesur�
 <li>The Line : ralentissements de chantier documentés en 2025 — signature possiblement plus faible qu'espéré.</li>
 <li>~~Sites récents = peu d'acquisitions~~ — <strong>corrigé en revue (21/08)</strong> : faux. Sizewell est le site le MIEUX fourni du parc (1383 items/48 mois) ; S2 image depuis 2015, chantier ou pas. Ce qui manque en début de fenêtre d'un site récent, c'est le <em>signal de changement</em>, pas l'imagerie.</li>
 <li>Retraitements tardifs (<code>s2:sequence ≥ 1</code>, phénomène massif mesuré) : échappent à la fenêtre incrémentale — rattrapage mensuel documenté, non automatisé au POC.</li>
-</ul></article></body></html>
+</ul><div class="prevnext"><span></span><span></span></div><p class="gen">Généré le 22/08/2026 09:35 depuis lot-0-sites.md — le .md fait foi.</p></article></body></html>

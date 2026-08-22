@@ -8,11 +8,36 @@ name = "tiny_wae"
 version = "0.1.0"
 description = "tiny-wae"
 requires-python = ">=3.12"
-# Dépendances RUNTIME au format standard. Les paquets nécessitant des natifs conda-forge
-# (gdal, etc.) se déclarent plutôt dans [tool.pixi.dependencies] ci-dessous.
+# Dépendances RUNTIME au format standard — la liste doit être COMPLÈTE : c'est elle, et
+# elle seule, que voit un `pip install` de la wheel hors de notre atelier (venv du worker
+# PID-FLOW, cf. assets/cwl/README.md). Une dépendance omise ici n'empêche PAS
+# l'installation, elle la fait échouer à l'IMPORT, au premier appel réel.
 dependencies = [
     "typer>=0.15",
+    "pyyaml>=6.0",
+    "httpx>=0.27",
+    "pystac-client>=0.8",
+    # Natifs. Déclarés ici pour le paquet ET dans [tool.pixi.dependencies] ci-dessous pour
+    # notre env de dev : pixi les prend alors de conda-forge (builds natifs cohérents),
+    # tandis qu'un `pip install` hors pixi tire les wheels manylinux de PyPI — elles
+    # embarquent GDAL (rasterio) et PROJ (pyproj), donc aucun conda requis côté worker.
+    "numpy>=2.0",
+    "rasterio>=1.4",
+    # Importé DIRECTEMENT (core/geometry.py, adapters/chips.py) : jusqu'ici il n'arrivait
+    # qu'en transitif de rasterio — une dépendance qu'on ne contrôle pas et qui peut
+    # disparaître à une montée de version. Débusqué par tests/test_packaging.py.
+    "affine>=2.4",
+    "pyproj>=3.6",
+    "pillow>=11.0",
 ]
+
+# Point d'entrée console : `pip`/`pixi` génère un exécutable `tiny-wae` dans le `bin/` de
+# l'environnement d'installation. C'est LUI que les `baseCommand` CWL appellent — pas
+# `python -m tiny_wae`. Motif : `python` est le nom le plus surchargé du système et se
+# résout silencieusement sur un interpréteur qui n'a pas le paquet ; `tiny-wae` est unique
+# au projet et échoue franchement s'il est absent du PATH. Détail : assets/cwl/README.md.
+[project.scripts]
+tiny-wae = "tiny_wae.__main__:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -29,8 +54,14 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "win-64"]
 
 [tool.pixi.dependencies]
-# Paquets tirés de CONDA-FORGE (privilégier ici tout ce qui embarque du natif).
+# Paquets tirés de CONDA-FORGE (privilégier ici tout ce qui embarque du natif). Les trois
+# natifs sont AUSSI dans [project.dependencies] : ici c'est le choix de la source pour
+# notre env de dev, là-bas c'est le contrat du paquet livré. Les deux listes doivent rester
+# cohérentes — garde-fou : tests/test_packaging.py.
 python = "3.12.*"
+pyproj = "*"
+rasterio = "*"
+pillow = "*"
 
 [tool.pixi.pypi-dependencies]
 # Le projet lui-même, éditable — expose les CLIs et le package.
@@ -42,6 +73,11 @@ ruff = "*"
 mypy = "*"
 pytest = "*"
 markdown = "*"          # backlog-kit (dashboard + md2html)
+pytest-socket = "*"     # garde réseau des tests (--disable-socket)
+
+[tool.pixi.feature.dev.pypi-dependencies]
+# cwltool : pas de build conda-forge compatible python 3.12 disponible — PyPI.
+cwltool = "*"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }
@@ -58,9 +94,14 @@ select = ["E", "F", "I", "B", "UP", "C4"]
 [tool.mypy]
 # Strict sur NOTRE code, pragmatique sur l'écosystème (libs géospatiales mal typées).
 strict = true
-files = ["src"]
+files = ["src", "tests"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+# ⚠ Portée réelle de la garde --disable-socket (décision E-b, fiche l0-02.2) : le chemin
+# STAC UNIQUEMENT (httpx/pystac-client, qui passent par le module `socket` de Python).
+# Elle NE COUVRE PAS les lectures rasterio/GDAL (C/libcurl, hors socket Python) — celles-ci
+# sont gardées par le contrat TINY_WAE_OFFLINE dans adapters/chips.py (l0-03.3). Un seul
+# dispositif ne suffit donc pas à garantir l'absence totale de réseau dans les tests.
+addopts = "-q --disable-socket"

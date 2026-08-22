@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.1</b></nav><h1>[l0-03.1] Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact) <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../a-faire/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-031-core-geometrie-pur-zero-io">[l0-03.1] — Core géométrie (pur, zéro I/O)</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>Toute la logique pure de l'ingestion, testable à sec en millisecondes. Aucun réseau, aucun
+fichier.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/core/geometry.py</code> :</li>
+<li>⭐ <code>chip_bounds(grid, settings) -&gt; (minx, miny, maxx, maxy)</code> — l'emprise du chip dans
+    le CRS du site, dérivée de <code>grid</code> (epsg, origin_x/y) et des <strong>tailles lues dans les
+    settings</strong> (<code>chip_px_10m</code>, <code>chip_px_20m</code> — jamais 512/256 en dur). C'est cette
+    fonction qui est <strong>pure</strong> ; la fenêtre rasterio se dérive ensuite du transform de la
+    source (<code>rasterio.windows.from_bounds</code>) dans l0-03.3 — un <code>col_off</code> dépend de
+    l'origine du fichier lu, il ne peut pas être calculé ici.</li>
+<li><code>transform_for(grid, resolution)</code> : le transform affine attendu des sorties.</li>
+<li>⚠ <strong>Prémisse à écrire en commentaire ET à tester</strong> : les origines de tuiles S2 sont
+    des multiples de 60 m (vérifié : 699960/4900020, 499980/4600020, 399960/5700000),
+    donc l'arrondi de l'origine du chip au multiple de 20 m inférieur suffit à rendre la
+    fenêtre 20 m entière. Si cette prémisse tombe, l'alignement ×2 n'est plus garanti.</li>
+<li><code>src/tiny_wae/core/scl.py</code> : <code>verdict(scl_class_counts, settings) -&gt; Verdict</code> —
+  <code>invalid_pct</code> = classes {0,1} ; <code>cloud_pct</code> = {3,8,9,10} ; classes 2 et 11 comptées dans
+  le résultat (non décisionnelles — décision différée documentée) ; retourne
+  <code>ingested | rejected_invalid | rejected_clouds</code> + les deux pourcentages.</li>
+<li><code>src/tiny_wae/core/windows.py</code> : <code>backfill_windows(months, now)</code> et
+  <code>update_window(last_datetime, margin_days, now)</code> — <strong><code>now</code> en paramètre</strong> (horloge
+  injectable, D-a). Ce module est LE fournisseur des fenêtres pour l0-04 et l0-05.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-verifie-le-21082026-base-061db8f">⚠ Ancrage dans le code réel (vérifié le 21/08/2026, base 061db8f)</h2>
+<p><strong>Vérifié dans le code, pas supposé :</strong></p>
+<ul>
+<li><code>core.sites.Grid</code> (frozen, slots) porte exactement <code>epsg: int | None</code>, <code>origin_x: float | None</code>,
+  <code>origin_y: float | None</code>. ⚠ <strong>Les trois valent <code>None</code> aujourd'hui</strong> : les grilles sont posées par
+  l0-01.3 (relevé réseau), qui n'est PAS dans cette vague. Le cas « grille vide » sera donc
+  rencontré, il ne peut pas être ignoré.</li>
+<li><code>core.settings.Settings</code> (frozen, slots) porte bien <code>chip_px_10m = 512</code>, <code>chip_px_20m = 256</code>
+  (valeurs réelles de <code>config/settings.yaml</code>), ainsi que <code>cloud_pct_max = 30</code> et
+  <code>invalid_pct_max = 1</code> dont <code>verdict()</code> a besoin. Les lire sur l'instance, jamais en dur.</li>
+<li><code>affine</code> <strong>3.0.0</strong> et <code>rasterio</code> 1.5.1 sont installés (mesuré dans l'environnement).</li>
+</ul>
+<p><strong>Décisions prises à l'ancrage :</strong></p>
+<ol>
+<li><strong><code>chip_bounds</code> lève une erreur typée sur une grille non calculée</strong> (epsg/origin à <code>None</code>)
+   plutôt que de propager un <code>TypeError</code> d'arithmétique — voir ci-dessus, c'est l'état par défaut
+   du parc.</li>
+<li><strong><code>transform_for</code> retourne un <code>affine.Affine</code></strong> : c'est le type que rasterio consomme
+   nativement en l0-03.3. ⛔ <strong>Ne pas importer <code>rasterio</code> dans <code>core/</code></strong> (couche pure) — <code>affine</code>
+   est une bibliothèque de maths sans I/O, elle ne viole pas la règle de couche.</li>
+<li><strong><code>backfill_windows(months, now)</code> retourne une LISTE de fenêtres mensuelles</strong>, la plus ancienne
+   d'abord. Vérifié auprès du consommateur : l0-04.1 écrit « un <code>run.json</code> par (site, <strong>fenêtre</strong>) »
+   et passe <code>--months N</code>. Rendre une fenêtre unique casserait ce contrat aval.</li>
+<li><strong><code>core/windows.py</code> expose un type <code>Window</code></strong> et la primitive <code>update_window(last, margin, now)</code> :
+   l0-05.1 les nomme explicitement (<code>-&gt; Window | NoManifests</code>) et <strong>réutilise <code>update_window</code> telle
+   quelle</strong>. La signature figée ici est consommée en aval — ne pas la changer plus tard.</li>
+<li>Ordre du verdict, imposé par le chapeau l0-03 : <code>invalid_pct</code> (classes {0,1}) d'abord, puis
+   <code>cloud_pct</code> (classes {3,8,9,10}), seuils <strong>stricts</strong> (<code>&gt;</code>). Contrôlé contre O2 : 29 % de {3,8}
+   → <code>ingested</code> (29 ≤ 30) et 40 % de classe 8 → <code>rejected_clouds</code> (40 &gt; 30). Cohérent.</li>
+<li>Valeurs de statut <strong>en anglais</strong> (<code>ingested</code>, <code>rejected_invalid</code>, <code>rejected_clouds</code>) —
+   convention CLAUDE.md : identifiants ET valeurs en anglais.</li>
+</ol>
+<p><strong>Zone d'écriture EXCLUSIVE de cette fiche</strong> — 3 agents travaillent en parallèle sur N1 :
+<code>src/tiny_wae/core/geometry.py</code>, <code>core/scl.py</code>, <code>core/windows.py</code> et leurs tests
+(<code>tests/test_geometry.py</code>, <code>tests/test_scl.py</code>, <code>tests/test_windows.py</code>).
+⛔ <strong>Ne pas créer <code>core/bands.py</code></strong> — il appartient à l0-03.2, dispatchée EN MÊME TEMPS.
+⛔ Ne toucher NI <code>core/sites.py</code>, NI <code>core/settings.py</code>, NI <code>adapters/</code>, NI <code>cli/</code>,
+NI <code>__main__.py</code>, NI <code>pyproject.toml</code>, <code>justfile</code>, <code>config/</code>.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Les 3 modules, docstrings courtes (rôle/entrées/sorties), tests à sec.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><strong>Grille SYNTHÉTIQUE</strong> littérale dans le test (epsg 32631, origine multiple de 60 m) + tailles lues des settings</td>
+<td><code>chip_bounds</code> == valeurs attendues au mètre près ; emprise 10 m et 20 m <strong>identiques</strong> ; alignement ×2 exact. ⚠ Volontairement <strong>découplé de <code>sites.yaml</code></strong> : ce module est pur, il n'a pas à attendre le relevé réseau de l0-01.3 (desserrage PO du 21/08 — la fiche remonte de N3 à N1)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Comptes SCL fabriqués : 100 % classe 0 · 40 % classe 8 · 29 % classes {3,8} · 50 % classe 11</td>
+<td><code>rejected_invalid</code> · <code>rejected_clouds</code> · <code>ingested</code> · <code>ingested</code> (classe 11 non décisionnelle) avec compteurs exacts</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>update_window(now=2026-08-21, last=2026-08-15, margin=3)</code></td>
+<td>fenêtre [2026-08-12 → 2026-08-21] (test déterministe)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : lecture de vrais pixels (l0-03.3).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Fait</strong> (agent Sonnet medium, worktree isolé, merge <code>b8fa3da</code>) : les trois modules purs de
+<code>core/</code>, testables à sec.</p>
+<p>Livré : <code>core/geometry.py</code>, <code>core/scl.py</code>, <code>core/windows.py</code>, <strong>20 tests</strong> (8 + 7 + 5).</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>Grille synthétique (EPSG 32631, origine 699960/4900020) : <code>chip_bounds</code> = (699960.0, 4894900.0, 705080.0, 4900020.0) au mètre près ; emprises 10 m et 20 m <strong>identiques</strong> (5120 m) ; alignement ×2 exact (bornes multiples de 20 m, span/10 = 512, span/20 = 256)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>100 % classe 0 → <code>rejected_invalid</code> · 40 % classe 8 → <code>rejected_clouds</code> · 29 % de {3,8} → <code>ingested</code> (29 ≤ 30) · 50 % classe 11 → <code>ingested</code> (non décisionnelle). +2 tests sur l'ordre et la stricte inégalité</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><code>update_window(now=2026-08-21, last=2026-08-15, margin=3)</code> → <code>Window(2026-08-12, 2026-08-21)</code>, horloge injectée, aucun <code>datetime.now()</code> dans le code</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Décisions prises en cours de fiche</strong> :
+1. <strong><code>chip_bounds(grid, settings)</code> sans paramètre <code>resolution</code></strong> — l'emprise est unique par
+   construction (<code>chip_px_10m × 10 == chip_px_20m × 20</code>), ce qui est précisément ce qu'exige O1
+   (« emprises identiques »). <code>transform_for(grid, resolution)</code> garde bien son paramètre.
+2. <code>InconsistentChipSizesError</code> ajoutée (non demandée) : lève si <code>chip_px_10m × 10 ≠ chip_px_20m × 20</code>,
+   plutôt que de rendre silencieusement deux emprises désynchronisées.
+3. <code>backfill_windows</code> découpe par <strong>mois calendaires</strong>, la dernière fenêtre bornée par <code>now</code> (pas
+   de fenêtre dans le futur).</p>
+<p><strong>Vérifié par l'orchestrateur après merge</strong> : <code>core/geometry.py</code> importe <code>affine.Affine</code> et
+<strong>n'importe pas <code>rasterio</code></strong> — la couche pure est respectée ; <code>core/bands.py</code> non créé ici (il
+appartenait à l0-03.2, dispatchée en parallèle) ; aucun fichier hors zone touché.</p><div class="prevnext"><span></span><a href="l0-03.2.html">[l0-03.2] adapters/manifests.py — schéma complet versionné, run.json + API, atomicité →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

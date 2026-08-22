@@ -1,0 +1,290 @@
+# config/sites.yaml — tiny-wae
+# Les 25 sites de veille (docs/lots/lot-0-sites.md §3). Statut = source unique de vérité.
+# reference_tile / grid : posés vides ici, remplis par l0-01.3 (relevé réseau + calcul).
+#
+# ⚠ Coordonnées négatives : le document source (lot-0-sites.md) utilise par endroits le
+# signe moins Unicode U+2212 (−) au lieu du moins ASCII (-). Elles sont ICI recopiées en
+# ASCII strict pour que YAML les parse comme des nombres (float), jamais comme des chaînes.
+# Sites concernés : A02, A04, A08, B06, B07, B08, C04.
+
+sites:
+  # ── Catégorie A — Nucléaire en construction (8) ──────────────────────────────
+  - id: A01
+    name: "ITER (Cadarache)"
+    lat: 43.708
+    lon: 5.776
+    category: nuclear-construction
+    note: "Assemblage, bâtiments annexes, parkings"
+    reference_tile: 31TGJ
+    grid:
+      epsg: 32631
+      origin_x: 721080
+      origin_y: 4845740
+  - id: A02
+    name: "Hinkley Point C"
+    lat: 51.208
+    lon: -3.130
+    category: nuclear-construction
+    note: "Chantier EPR massif — cas défavorable nuages"
+    reference_tile: 30UVB
+    grid:
+      epsg: 32630
+      origin_x: 488340
+      origin_y: 5675520
+  - id: A03
+    name: "Sizewell C"
+    lat: 52.215
+    lon: 1.620
+    category: nuclear-construction
+    note: "Terrassements en démarrage"
+    reference_tile: 31UDT
+    grid:
+      epsg: 32631
+      origin_x: 403140
+      origin_y: 5788400
+  - id: A04
+    name: "Flamanville"
+    lat: 49.536
+    lon: -1.882
+    category: nuclear-construction
+    note: "Post-chantier : activité décroissante"
+    reference_tile: 30UWV
+    grid:
+      epsg: 32630
+      origin_x: 578320
+      origin_y: 5490200
+  - id: A05
+    name: "Akkuyu"
+    lat: 36.144
+    lon: 33.541
+    category: nuclear-construction
+    note: "4 réacteurs en construction, très actif"
+    reference_tile: 36SWF
+    grid:
+      epsg: 32636
+      origin_x: 546100
+      origin_y: 4002600
+  - id: A06
+    name: "El Dabaa"
+    lat: 31.043
+    lon: 28.494
+    category: nuclear-construction
+    note: "Chantier actif, ciel clair quasi permanent"
+    reference_tile: 35RPQ
+    grid:
+      epsg: 32635
+      origin_x: 640000
+      origin_y: 3437880
+  - id: A07
+    name: "Zhangzhou"
+    lat: 23.816
+    lon: 117.578
+    category: nuclear-construction
+    note: "Réacteurs Hualong One en série"
+    reference_tile: 50QNM
+    grid:
+      epsg: 32650
+      origin_x: 556300
+      origin_y: 2636520
+  - id: A08
+    name: "Vogtle 3-4"
+    lat: 33.143
+    lon: -81.762
+    category: nuclear-construction
+    note: "Achevé 2023-24 : transition chantier → stable"
+    reference_tile: 17SMS
+    grid:
+      epsg: 32617
+      origin_x: 426360
+      origin_y: 3669940
+
+  # ── Catégorie B — Mégachantiers mondiaux (9) ─────────────────────────────────
+  - id: B01
+    name: "NEOM \"The Line\" (segment Hidden Marina)"
+    lat: 28.09
+    lon: 35.23
+    category: megaproject
+    note: "Terrassement massif, désert = ciel clair"
+    reference_tile: 36RYS
+    grid:
+      epsg: 32636
+      origin_x: 716540
+      origin_y: 3111740
+  - id: B02
+    name: "Aéroport King Salman (Riyad)"
+    lat: 24.96
+    lon: 46.70
+    category: megaproject
+    note: "Pistes et terminaux en construction"
+    reference_tile: 38RPN
+    grid:
+      epsg: 32638
+      origin_x: 669040
+      origin_y: 2764140
+  - id: B03
+    name: "Nouvelle capitale administrative"
+    lat: 30.03
+    lon: 31.73
+    category: megaproject
+    note: "Urbanisation massive"
+    reference_tile: 36RUU
+    grid:
+      epsg: 32636
+      origin_x: 374980
+      origin_y: 3325340
+  - id: B04
+    name: "Barrage GERD"
+    lat: 11.215
+    lon: 35.093
+    category: megaproject
+    note: "Niveau du réservoir (saisonnier + remplissage)"
+    reference_tile: 36PYT
+    grid:
+      epsg: 32636
+      origin_x: 725960
+      origin_y: 1243120
+  - id: B05
+    name: "Parc solaire M. bin Rashid (Dubaï)"
+    lat: 24.76
+    lon: 55.36
+    category: megaproject
+    note: "Extension par phases datées"
+    reference_tile: 40RCN
+    grid:
+      epsg: 32640
+      origin_x: 331600
+      origin_y: 2741920
+  - id: B06
+    name: "Mine d'Escondida"
+    lat: -24.27
+    lon: -69.07
+    category: megaproject
+    note: "Extension fosse/terrils, désert d'Atacama"
+    reference_tile: 19KDP
+    grid:
+      epsg: 32719
+      origin_x: 490320
+      origin_y: 7318420
+  - id: B07
+    name: "Salar d'Atacama (bassins lithium)"
+    lat: -23.50
+    lon: -68.30
+    category: megaproject
+    note: "Évolution des bassins d'évaporation"
+    reference_tile: 19KEQ
+    grid:
+      epsg: 32719
+      origin_x: 568900
+      origin_y: 7403500
+  - id: B08
+    name: "Port de Chancay"
+    lat: -11.57
+    lon: -77.27
+    category: megaproject
+    note: "Mise en service 2024, extension"
+    reference_tile: 18LTN
+    grid:
+      epsg: 32718
+      origin_x: 249880
+      origin_y: 8722560
+  - id: B09
+    name: "Autoroute A69 Toulouse-Castres (section)"
+    lat: 43.60
+    lon: 2.00
+    category: megaproject
+    note: "Chantier linéaire — contrôle local visitable"
+    reference_tile: 31TDJ
+    grid:
+      epsg: 32631
+      origin_x: 416720
+      origin_y: 4830480
+
+  # ── Catégorie C — Sites stables & veille type OSINT (8) ──────────────────────
+  - id: C01
+    name: "Centrale de Golfech"
+    lat: 44.11
+    lon: 0.85
+    category: stable-watch
+    note: "Contrôle négatif nucléaire, proche Toulouse"
+    reference_tile: 31TCJ
+    grid:
+      epsg: 32631
+      origin_x: 325380
+      origin_y: 4888880
+  - id: C02
+    name: "Airbus Toulouse-Blagnac"
+    lat: 43.63
+    lon: 1.36
+    category: stable-watch
+    note: "Contrôle négatif industriel, vérifiable de visu"
+    reference_tile: 31TCJ
+    grid:
+      epsg: 32631
+      origin_x: 365120
+      origin_y: 4834640
+  - id: C03
+    name: "Port de Fos-sur-Mer"
+    lat: 43.42
+    lon: 4.85
+    category: stable-watch
+    note: "Industriel stable, trafic variable"
+    reference_tile: 31TFJ
+    grid:
+      epsg: 32631
+      origin_x: 647200
+      origin_y: 4811660
+  - id: C04
+    name: "Raffinerie de Lacq"
+    lat: 43.42
+    lon: -0.62
+    category: stable-watch
+    note: "Industriel stable"
+    reference_tile: 30TXP
+    grid:
+      epsg: 32630
+      origin_x: 690100
+      origin_y: 4812760
+  - id: C05
+    name: "Natanz"
+    lat: 33.72
+    lon: 51.73
+    category: stable-watch
+    note: "Veille OSINT documentée, changements épisodiques"
+    reference_tile: 39SWT
+    grid:
+      epsg: 32639
+      origin_x: 565060
+      origin_y: 3733900
+  - id: C06
+    name: "Base aérienne d'Engels"
+    lat: 51.48
+    lon: 46.21
+    category: stable-watch
+    note: "Veille OSINT documentée"
+    reference_tile: 38UNC
+    grid:
+      epsg: 32638
+      origin_x: 581460
+      origin_y: 5706440
+  - id: C07
+    name: "Punggye-ri"
+    lat: 41.28
+    lon: 129.08
+    category: stable-watch
+    note: "Site quasi statique, OSINT — multi-tuiles avéré (52TDL/52TEL), tuile de référence à épingler"
+    reference_tile: 52TEL
+    grid:
+      epsg: 32652
+      origin_x: 504120
+      origin_y: 4572400
+  - id: C08
+    name: "Forêt de Bouconne"
+    lat: 43.628
+    lon: 1.217
+    category: stable-watch
+    note: "Contrôle négatif pur — décision Philippe, GO du 21/08/2026. Massif ~2000 ha à l'ouest de Toulouse, forêt gérée (coupes d'entretien = faux positifs explicables)"
+    reference_tile: 31TCJ
+    grid:
+      epsg: 32631
+      origin_x: 353580
+      origin_y: 4834660

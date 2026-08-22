@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-01.html"><code>▣ l0-01</code></a> › <b>l0-01.1</b></nav><h1>[l0-01.1] Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-01.html"><code>l0-01</code></a> [CHAPEAU] Socle configuration — sites, settings, CLI <span class="pill" style="background:#69b076">Fait</span><ul><li>→ <a href="l0-01.1.html"><code>l0-01.1</code></a> Settings et sites.yaml — modèles typés, validation pure, env <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.2.html"><code>l0-01.2</code></a> Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-01.3.html"><code>l0-01.3</code></a> Relevé des tuiles de référence (règle D-c, marge géométrique) + calcul des grilles <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-011-settings-et-sites">[l0-01.1] — Settings et sites</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre-fichiers-nommes">Périmètre (fichiers nommés)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-orchestrateur-21082026-avant-dispatch">⚠ Ancrage dans le code réel (orchestrateur, 21/08/2026 — avant dispatch)</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<h2 id="objectif">Objectif</h2>
+<p>Poser les deux fichiers de config et leurs modèles typés. Aucun CLI, aucun réseau.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>config/sites.yaml</code> : les 25 sites de <strong><code>docs/lots/lot-0-sites.md</code> §3</strong> (source unique —
+  l'annexe A de <code>_roadmap.md</code> n'est qu'un renvoi) — champs <code>id</code>, <code>name</code>,
+  <code>lat</code>, <code>lon</code>, <code>category</code> (<code>nuclear-construction|megaproject|stable-watch</code>), <code>note</code> ;
+  champs <code>reference_tile</code> et <code>grid</code> (<code>epsg</code>, <code>origin_x</code>, <code>origin_y</code>) <strong>présents mais
+  vides</strong> (remplis par l0-01.3). C08 = Bouconne (43.628, 1.217).</li>
+<li><code>config/settings.yaml</code> + surcharges env (une variable par clé, préfixe <code>TINY_WAE_</code>) :
+  <code>stac_url</code>, <code>stac_collection</code> (<code>sentinel-2-l2a</code>), <code>asset_keys</code> (<strong>les 11 clés</strong> d'assets
+  source = 10 bandes + le masque : <code>blue, green, red, nir, rededge1, rededge2, rededge3,
+  nir08, swir16, swir22, scl</code> — la clé logique tiny-wae EST la clé earth-search ; les
+  libellés <code>B0x</code> sont documentaires en commentaire), <code>cloud_pct_max</code> (30), <code>scene_cloud_max</code> (95),
+  <code>invalid_pct_max</code> (1), ⭐ <strong><code>chip_nodata_pct_max</code> (1)</strong> — arbitrage n°3 : le seuil de la
+  <strong>garde nodata du GO G8</strong>, jusque-là sans instrument (alors que <code>lot-0-sites.md</code> O3
+  l'exige : « nodata &lt; 1 % sur 100 % des items ingested ») —,
+  <code>data_root</code> (défaut <code>./data</code>), <code>incremental_margin_days</code> (3),
+  <code>http_retries</code> (3), <code>http_backoff_s</code> (2), <code>backfill_workers</code> (6), <code>chip_px_10m</code> (512),
+  <code>chip_px_20m</code> (256).</li>
+<li><code>src/tiny_wae/core/sites.py</code>, <code>core/settings.py</code> : dataclasses frozen + validation pure
+  (bornes lat/lon, ids uniques, catégories, origine multiple de 20 quand renseignée).</li>
+<li><code>src/tiny_wae/adapters/config_io.py</code> : YAML+env → objets typés. Parse aux frontières.</li>
+<li><code>.env.example</code> : TOUTES les variables de surcharge listées, <strong>dont
+  <code>TINY_WAE_OFFLINE</code></strong> (garde réseau de contrat, décision E-b — posée par
+  <code>smoke --replay</code>, consommée par <code>adapters/chips.py</code> en l0-03.3). <code>.gitignore</code> : + <code>data/</code>.</li>
+<li>⭐ <strong>TOUTES les dépendances du lot sont posées ICI, en une fois</strong> (geste PO issu de la
+  revue v3 : <code>pyproject.toml</code> était une zone partagée par 7 fiches, dont 4 parallélisables
+  — source de conflits de merge et de régénérations de lockfile concurrentes) :
+  <code>pyyaml</code> · <code>pyproj</code> · <code>httpx</code> · <code>pystac-client</code> · <code>rasterio</code> · <code>Pillow</code> · <code>cwltool</code> ·
+  <code>pytest-socket</code> (+ <code>--disable-socket</code> dans la config pytest). Les fiches aval <strong>ne
+  touchent plus jamais</strong> au <code>pyproject.toml</code> ; elles se contentent d'importer.</li>
+<li>⚠ <strong>Lockfile</strong> : <code>pixi.lock</code> est <strong>versionné</strong> mais <strong>jamais mergé</strong> — en cas de conflit,
+  le régénérer sur la branche cible (<code>just install</code>) plutôt que de résoudre à la main.
+  Consigne rappelée dans chaque fiche qui suit.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-orchestrateur-21082026-avant-dispatch">⚠ Ancrage dans le code réel (orchestrateur, 21/08/2026 — avant dispatch)</h2>
+<p>Vérifié sur le dépôt à l'état <code>f2ff73f</code>, pas supposé.</p>
+<p><strong>État constaté</strong>
+- <code>config/</code> <strong>n'existe pas</strong> — à créer. <code>src/tiny_wae/{core,adapters,cli}/__init__.py</code> existent
+  et sont <strong>vides</strong> : aucun module à modifier, tout est en création.
+- <code>.env.example</code> ne contient <strong>qu'une</strong> variable (<code>DATABASE_URL</code>) — les variables <code>TINY_WAE_*</code>
+  sont à ajouter, pas à modifier.
+- <code>data/</code> <strong>n'est pas</strong> dans <code>.gitignore</code> (vérifié) — l'ajout demandé est bien nécessaire.
+- <code>[tool.pytest.ini_options]</code> existe avec <code>addopts = "-q"</code> — c'est là que <code>--disable-socket</code>
+  se pose, en complétant la valeur existante.</p>
+<p><strong>⛔ Piège mesuré — signe moins Unicode dans les coordonnées</strong>
+7 des 25 sites (<strong>A02, A04, A08, B06, B07, B08, C04</strong>) portent leur coordonnée négative avec
+le caractère <strong>U+2212 « − »</strong>, PAS le moins ASCII <code>-</code> (vérifié caractère par caractère sur le
+document source). Recopiées telles quelles, ces valeurs sont des <strong>chaînes YAML</strong>, pas des
+nombres : le chargement échoue ou, pire, produit des <code>lat</code>/<code>lon</code> en <code>str</code> que l'oracle O1 ne
+verrait pas (il ne teste que les ids). <strong>Convertir en <code>-</code> ASCII à la saisie</strong>, et la
+validation de <code>core/sites.py</code> doit <strong>typer lat/lon en <code>float</code></strong> pour que le cas soit
+impossible à ré-introduire.</p>
+<p><strong>Décision tranchée (§4.1 de /run) — où poser les 8 dépendances</strong>
+La fiche les liste sans nommer la section ; le <code>pyproject.toml</code> en offre trois et porte la
+règle en commentaire (« les paquets nécessitant des natifs conda-forge se déclarent plutôt
+dans <code>[tool.pixi.dependencies]</code> »). Répartition retenue :
+- <code>[project].dependencies</code> (PEP 621, purs — préserve la réversibilité pixi↔uv) : <code>pyyaml</code>,
+  <code>httpx</code>, <code>pystac-client</code>
+- <code>[tool.pixi.dependencies]</code> (natifs) : <code>pyproj</code>, <code>rasterio</code>, <code>pillow</code>
+- <code>[tool.pixi.feature.dev.dependencies]</code> (outillage, pas runtime) : <code>pytest-socket</code>, <code>cwltool</code></p>
+<p><strong>Confirmé</strong>
+- Les 25 sites sont bien en <code>docs/lots/lot-0-sites.md</code> §3, en <strong>8/9/8</strong> — conforme à O1.
+- Les trois sections du document mappent les valeurs exigées par la fiche : Catégorie A
+  « Nucléaire en construction » → <code>nuclear-construction</code> · B « Mégachantiers mondiaux » →
+  <code>megaproject</code> · C « Sites stables &amp; veille OSINT » → <code>stable-watch</code>.
+- Aucun <code>smoke</code> à toucher : le gate reste le placeholder de scaffold pour cette fiche.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Les 2 YAML livrés, les modèles typés, le chargeur.</li>
+<li>[ ] Tests unitaires : nominal + les <strong>5 mutations d'erreur listées en O2</strong> + priorité
+      env &gt; YAML.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Chargement config livrée</td>
+<td>ids exactement {A01..A08, B01..B09, C01..C08}, répartition 8/9/8 (test à liste littérale)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><strong>5 mutations</strong> : id dupliqué · lat=95 · catégorie inconnue · origine=13 (non multiple de 20) · <code>asset_keys</code> amputée d'une clé</td>
+<td>erreur nommant site et champ à chaque fois</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>TINY_WAE_CLOUD_PCT_MAX=40</code> posé</td>
+<td>la valeur env gagne (test)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : contenu de <code>reference_tile</code>/<code>grid</code> (l0-01.3) ; exactitude des coordonnées
+(l0-03.H).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Fait le 21/08/2026</strong> — run autonome, agent Sonnet effort medium en worktree isolé.</p>
+<p><strong>Livré</strong> : <code>config/sites.yaml</code> (25 sites) · <code>config/settings.yaml</code> · <code>core/sites.py</code>
+(<code>Site</code>, <code>Grid</code>, validation pure) · <code>core/settings.py</code> (<code>Settings</code>) ·
+<code>adapters/config_io.py</code> (YAML + surcharges env) · <code>.env.example</code> (variables <code>TINY_WAE_*</code>
+dont <code>TINY_WAE_OFFLINE</code>) · <code>.gitignore</code> (+ <code>data/</code>) · <code>pyproject.toml</code> (8 dépendances) ·
+<code>tests/test_config.py</code> · <code>pixi.lock</code> régénéré.</p>
+<p><strong>Verdict d'oracle (chiffré, mesuré par l'orchestrateur — pas sur déclaration de l'agent)</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅ VERT</td>
+<td>25 ids exactement <code>{A01..A08, B01..B09, C01..C08}</code> ; répartition mesurée <code>nuclear-construction: 8, megaproject: 9, stable-watch: 8</code> ; <strong>les 50 <code>lat</code>/<code>lon</code> chargent en <code>float</code></strong> (piège U+2212 neutralisé — vérifié indépendamment sur les 7 sites concernés) ; C08 = Forêt de Bouconne 43.628, 1.217</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅ VERT</td>
+<td>5 mutations couvertes (id dupliqué · <code>lat=95</code> · catégorie inconnue · <code>origin_x=13</code> · <code>lon=200</code>), chaque message nommant le site ET le champ</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅ VERT</td>
+<td><code>TINY_WAE_CLOUD_PCT_MAX=40</code> l'emporte sur le YAML (30) ; idem <code>TINY_WAE_CHIP_NODATA_PCT_MAX=5</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅ VERT</td>
+<td><code>just check</code> sur <code>develop</code> <strong>après merge</strong> : ruff OK (119 fichiers) · mypy strict OK (8 modules) · <strong>15 tests passés</strong> · smoke = placeholder de scaffold (hors périmètre, non touché)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé</strong> : <code>reference_tile</code>/<code>grid</code> restent vides (remplis par l0-01.3) · exactitude
+géographique des coordonnées (fiche humaine l0-03.H) · surcharge env de <code>asset_keys</code>
+(format CSV codé mais hors oracle).</p>
+<p><strong>Décisions prises en cours de run</strong> (règle d'autonomie §4.1)
+1. <strong>Répartition des 8 dépendances</strong> entre les trois sections du <code>pyproject.toml</code> — la fiche
+   ne la nommait pas (cf. Ancrage). Appliquée telle qu'ancrée.
+2. <strong><code>cwltool</code> en <code>pypi-dependencies</code> du feature <code>dev</code></strong>, et non en <code>dependencies</code> : aucun
+   build conda-forge compatible Python 3.12 (mesuré par l'agent). Seul le canal change, la
+   répartition logique demandée est respectée.</p>
+<p><strong>Écart de process rencontré</strong> : le premier worktree était basé sur <code>origin/main</code> (périmé de
+14 commits), l'agent a donc lu une version de la fiche <strong>antérieure à l'arbitrage n°3</strong> et
+livré sans <code>chip_nodata_pct_max</code>. Détecté à la relecture du code, corrigé par un second
+dispatch (commit <code>fe82978</code>). Cause et correctif consignés au débrief du run.</p>
+<p><strong>Commits</strong> : <code>731630e</code> (implémentation) · <code>fe82978</code> (correctif <code>chip_nodata_pct_max</code> +
+comptage des clés) · merges <code>1f24335</code> et le merge du correctif.</p><div class="prevnext"><span></span><a href="l0-01.2.html">[l0-01.2] Socle CLI — auto-découverte des commandes, codes de sortie figés, sites-validate/list →</a></div><p class="gen">Généré le 22/08/2026 09:35 — le .md fait foi.</p></article></body></html>

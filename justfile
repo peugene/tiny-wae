@@ -35,17 +35,31 @@ lint:
 fmt:
     pixi run ruff format . && pixi run ruff check --fix .
 
-# types (mypy strict sur src/ — le filet n°1 pour du code écrit par agents)
+# types (mypy strict — le filet n°1 pour du code écrit par agents)
+# ⚠ AUCUN chemin ici : un chemin en ligne de commande PRIME sur `files=` de pyproject.toml.
+# C'est ce qui a fait que le gate n'analysait que src/ alors que la config demandait déjà
+# src/ ET tests/ (constat de out-01) — le périmètre se règle dans pyproject.toml, ici on
+# se contente de lancer mypy.
 types:
-    pixi run mypy src
+    pixi run mypy
 
-# tests (pytest)
-test:
-    pixi run pytest
+# tests (pytest) — accepte des arguments pytest (ex. just test -k concurrent -x)
+test *args:
+    pixi run pytest {{args}}
 
 # exécute un CLI du projet (ex. just run ingest --help)
 run *args:
     pixi run python -m tiny_wae {{args}}
+
+# exécute un script de scripts/ dans l'environnement du projet
+# (ex. just script record_stac_fixtures --sites C07) — évite tout `python …` à la main.
+script name *args:
+    pixi run python scripts/{{name}}.py {{args}}
+
+# relevé RÉSEAU des tuiles de référence + calcul des grilles (l0-01.3, écrit sites.yaml)
+# (ex. just survey-tiles -- --sites A01,C07 — re-passe ciblée après correction de coordonnées)
+survey-tiles *args:
+    pixi run python scripts/survey_tiles.py {{args}}
 
 # smoke : le pipeline réel sur un périmètre minuscule (à câbler dès le Lot 0)
 smoke:
@@ -55,10 +69,31 @@ smoke:
 dashboard:
     pixi run python scripts/backlog.py dashboard --project "tiny-wae"
 
+# feuille de route : index des lots + une page par lot (états, sommaire, navigation)
+lots:
+    pixi run python scripts/backlog.py lots --project "tiny-wae"
+
 # md → html : just md2html _roadmap.md roadmap.html "Titre"
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"
 
-# ⭐ lint + types + tests + smoke = définition de « fini ». À lancer AVANT de dire « fini ».
+# validation statique des tools/workflow CWL (cwltool --validate, un fichier à la fois :
+# passer plusieurs chemins à --validate fait interpréter les suivants comme job order).
+cwl:
+    pixi run cwltool --validate assets/cwl/tools/search/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/tools/ingest/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/tools/update/1.0/tool.cwl
+    pixi run cwltool --validate assets/cwl/workflows/tiny-wae/1.0/workflow.cwl
+
+# exécution RÉELLE d'un tool/workflow CWL (hors gate — fait du réseau)
+# ex. TINY_WAE_DATA_ROOT=/tmp/cwl-data just cwl-run assets/cwl/workflows/tiny-wae/1.0/workflow.cwl …
+# --preserve-environment : cwltool n'expose au job qu'un environnement minimal, une variable
+# posée dans le shell appelant ne l'atteint PAS sans ça (mesuré). C'est ce qui simule en local
+# le worker PID-FLOW, où TINY_WAE_DATA_ROOT est posée par l'exécuteur — les .cwl ne la portent
+# plus (EnvVarRequirement non supporté par PID-FLOW, cf. assets/cwl/README.md).
+cwl-run file *args:
+    pixi run cwltool --preserve-environment TINY_WAE_DATA_ROOT --outdir /tmp/cwl-run-out {{file}} {{args}}
+
+# ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:
-    just lint && just types && just test && just smoke
+    just lint && just types && just test && just smoke && just cwl

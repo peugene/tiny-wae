@@ -1,69 +1,125 @@
 ---
 description: Run autonome producteur/consommateur sur les fiches a-faire/
 ---
-Tu es l'**agent principal** (orchestrateur). Lance un **run autonome producteur/consommateur**
-sur les fiches prêtes (`docs/backlog/a-faire/`), selon `docs/backlog/_methode-backlog.md`.
+Tu es l'**agent principal** (orchestrateur, typiquement Opus xHigh). Lance un **run autonome
+producteur/consommateur** sur les fiches prêtes (`docs/backlog/a-faire/`), selon
+`docs/backlog/_methode-backlog.md`.
 
 ## 0. Pré-requis
-Les fiches `a-faire/` sont **rédigées pour être exécutées par un agent (effort medium)** sans
-question ni décision (critères « Prêt à faire », **oracle figé** compris). Si une fiche ne
-l'est pas → la mûrir d'abord, pas la lancer.
+Les fiches `a-faire/` sont **rédigées pour être exécutées par un agent Sonnet (effort medium)** sans
+question ni décision (critères « Prêt à faire », **oracle figé** compris). Si une fiche ne l'est pas
+→ la mûrir d'abord, pas la lancer.
+⭐ **Les fiches sont en `a-faire/`, COMMITÉES ET POUSSÉES avant le lancement** — leur mise en
+`a-faire/` est un geste préalable de Philippe, hors `/run`. Le worktree d'un agent se base sur
+`origin/<branche-de-chantier>` : une fiche non commitée — ou commitée mais non poussée — est lue
+**périmée** par l'agent (mesuré au run N0 : code livré amputé d'un champ).
 
-⛔ **Ne JAMAIS dispatcher** : une fiche `categorie: humain` (bandeau « NE PAS DISPATCHER » —
-elle est réalisée par l'humain ; ses dépendants restent bloqués, c'est voulu) ni une fiche
-`categorie: chapeau` (elle ne porte que le contexte de ses `subtasks:`). Un chapeau passe
-en `fait/` quand toutes ses sous-tâches y sont.
+⛔ **Ne JAMAIS dispatcher** : une fiche `categorie: humain` (bandeau « NE PAS DISPATCHER » — elle est
+réalisée par l'humain ; ses dépendants restent bloqués, c'est voulu) ni une fiche
+`categorie: chapeau` (elle ne porte que le contexte de ses `subtasks:`). Un chapeau passe en `fait/`
+quand toutes ses sous-tâches y sont.
 
 ## 1. Cadrage (AVANT de lancer)
-- Lis les fiches `a-faire/` et calcule leur **ordre topologique** (via `depends_on`)
-  ⭐ **sur les seules fiches DISPATCHABLES** (ni `chapeau`, ni `humain`) : un chapeau a
-  `depends_on: []` et n'ordonne rien ; une fiche humaine bloque volontairement ses
-  dépendants. Un `depends_on` est **satisfait quand la fiche visée est en `fait/`**.
-- ⭐ **Fournis le CHAPEAU dans le prompt de l'agent** quand la fiche a un `parent:` : il
-  porte le contexte et les décisions actées que la sous-tâche ne répète pas.
-- Lance `just dashboard` avant de commencer : il **contrôle le graphe** (ids inexistants,
-  cycles, parent/subtasks non appariés, fiche isolée). Toute anomalie se corrige en
-  maturation AVANT le run.
-- Repère celles **parallélisables de façon SÛRE** (zones de code **disjointes**). **Au
-  moindre doute → séquentiel.**
-- Crée la **liste de tâches** (outil Task) pour le suivi.
-- Présente le plan, **puis lance — en autonomie, sans attendre de validation.**
+- Lis les fiches `a-faire/` et calcule leur **ordre topologique** (via `depends_on`) ⭐ **sur les
+  seules fiches DISPATCHABLES** (ni `chapeau`, ni `humain`) : un chapeau a `depends_on: []` et
+  n'ordonne rien ; une fiche humaine bloque volontairement ses dépendants. Un `depends_on` est
+  **satisfait quand la fiche visée est en `fait/`**.
+- Repère celles **parallélisables de façon SÛRE** (zones de code / fichiers **disjoints**, aucun
+  couplage). **En cas de doute → séquentiel.**
+- Lance `just dashboard` : il **contrôle le graphe** (ids inexistants, cycles, `parent`/`subtasks`
+  non appariés, chapeau qui ordonne, fiche isolée) et **liste les feuilles à relire**. Toute
+  anomalie se corrige en maturation AVANT le run.
+- Crée la **liste de tâches via l'outil Task** (une tâche par fiche + une de clôture) pour le suivi.
+- ⭐ **Sonde de contrôle du worktree** (~30 s, lecture seule) : dispatcher UN agent trivial en
+  `isolation: 'worktree'` qui rapporte `pwd` et `git rev-parse --short HEAD`. Si le HEAD ne
+  correspond pas à celui de la branche de chantier → **ne pas dispatcher** : appliquer les réglages
+  de `CLAUDE.md` § « Worktrees d'agents », ou basculer sur le repli manuel qui y est décrit.
+- Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
+  sans attendre ma validation.**
 
 ## 2. Pour CHAQUE fiche
-1. ⭐ **Valider la fiche AVANT de lancer l'agent**, en t'**ancrant dans le CODE RÉEL** (lis
-   les modules/CLIs/fichiers cités) — **jamais sur des suppositions.** Grave ce que tu as
-   vérifié dans une section **« ⚠ Ancrage dans le code réel »** ajoutée **dans la fiche
-   elle-même**, commitée avant le dispatch. Fiche fausse ou périmée → corriger, ou différer.
-2. `a-faire/ → en-cours/` ; TaskUpdate → in_progress.
-3. Agent d'implémentation **en tâche de fond**, isolé en **worktree git** (`wt/<id>`) ;
-   commit sur sa branche, **sans push, sans toucher `docs/backlog/`**. Pendant l'attente :
-   ancrer la fiche **SUIVANTE — et seulement elle** (les faits dépendant de la fiche en cours
-   se notent « à reconfirmer post-merge », jamais comme acquis).
-4. ⭐ **AVANT le merge** : valider la conformité contre la fiche — diff relu, `just check`,
-   `/review` adversariale si code sensible (auth, écriture, suppression de données).
-5. **Merge** `git merge --no-ff wt/<id>` → ⭐ **REVALIDER sur la branche principale**
-   (`just check` au vert).
-6. « Résumé de réalisation » (avec le **verdict d'oracle chiffré**) → `fait/` → **UN commit
-   par fiche** → TaskUpdate → completed → `git worktree remove`.
+1. ⭐ **Valider la fiche AVANT de lancer l'agent**, en t'**ancrant dans le CODE RÉEL** du projet
+   (lis les fichiers/modules/CLIs cités) — **jamais sur des suppositions.** Si la fiche est
+   fausse, périmée ou infaisable : la **corriger**, ou la **différer** (cf. §4).
+   ⭐ **Systématique, quelle que soit la taille de la fiche** : grave ce que tu as vérifié dans une
+   section **« ⚠ Ancrage dans le code réel »** ajoutée **dans la fiche elle-même** (pas seulement
+   dans le prompt de dispatch) — commitée avant le dispatch, pas après. Ce n'est pas une formalité :
+   sur le projet d'origine, c'est cet ancrage qui a débusqué une **faille d'autorisation réelle**
+   (mutations par id enfant sans vérification de l'entité parente) avant qu'elle parte en dispatch.
+   Un ancrage qui ne vit que dans le prompt d'un agent ne laisse aucune trace pour la fiche
+   suivante ni pour une relecture a posteriori.
+2. `a-faire/ → en-cours/` ; `TaskUpdate` → in_progress.
+3. Lancer un **agent Sonnet medium en TÂCHE DE FOND** via un **dynamic workflow**, isolé par
+   `isolation: 'worktree'` — la sonde du §1 a validé la base. Conditions, coût mesuré et repli
+   manuel : `CLAUDE.md` § « Worktrees d'agents » (⛔ dont le `.pixi/` jamais partagé).
+   L'agent commence par un `just install` dans son worktree (~1 min, 696 Mo).
+   Il code et **commit sur sa branche, sans push, sans toucher `docs/backlog/`**.
+   ⭐ **UN dynamic workflow PAR AGENT — jamais un `parallel()` de N agents dans un seul
+   workflow.** Un workflow ne notifie l'orchestrateur qu'à sa **complétion** : regrouper les
+   agents fait attendre le plus lent avant de pouvoir merger le premier. Un workflow par fiche
+   = une notification par fiche = on enchaîne dès qu'un agent rend la main. (Mesuré au run N1 :
+   les 3 branches portaient déjà leur commit bien avant la notification unique.)
+   ⭐ **Si la fiche a un `parent:`, fournis-lui le CHAPEAU dans son prompt** : il porte le contexte,
+   les faits vérifiés et les décisions actées que la sous-tâche ne répète pas.
+   ⭐ **Ancrage anticipé pendant l'attente** : le temps d'attente de cet agent se met à profit pour
+   ancrer la fiche **SUIVANTE — et seulement elle**, jamais plus loin dans la file (pas de
+   pré-ancrage en rafale).
+   ⭐ **La boucle, décision Philippe du 21/08** — elle est la même dans les deux modes, seule la
+   dernière étape change : *prendre la fiche → l'ancrer dans le code réel → lancer son agent dans
+   SON dynamic workflow → passer à la fiche suivante*.
+   - **Parallèle** (fiches jugées sûres au §1, zones disjointes) : après l'ancrage de la fiche
+     suivante, **lancer son agent immédiatement**, sans attendre le précédent.
+   - **Séquentiel** (doute sur les zones) : après l'ancrage de la fiche suivante, **s'arrêter et
+     attendre** que l'agent précédent ait rendu la main — l'ancrage est fait, le dispatch attend.
+   Dans les deux cas, l'ancrage anticipé ne porte que sur la fiche **immédiatement** suivante.
+   ⭐ **Un ancrage a une date de péremption.** Une fiche mise en attente — parce qu'un couplage
+   l'a fait basculer en séquentiel, ou parce qu'un merge est passé entre-temps — se **RÉ-ANCRE
+   avant dispatch** : le code sur lequel l'ancrage a été établi n'est plus celui que l'agent
+   recevra. Marquer dans la fiche, dès l'ancrage anticipé, la liste explicite des faits **« à
+   reconfirmer post-merge »**, pour que l'oubli soit impossible. **Exception** : si cette fiche suivante dépend de la fiche en cours de
+   dispatch — explicitement (`depends_on`) ou implicitement (elle consomme un type/port/schéma que
+   la fiche en cours est en train de créer/modifier) — l'ancrage anticipé ne peut porter que sur les
+   faits **indépendants** de cette dépendance ; les faits qui en dépendent (forme exacte d'un port
+   encore en cours d'écriture, schéma de manifeste qui suppose un merge pas encore fait…) se notent
+   comme **« à reconfirmer post-merge »**, jamais comme acquis — et la fiche suivante n'est ni
+   déplacée en `en-cours/` ni dispatchée avant cette reconfirmation.
+4. ⭐ **AVANT le merge** : **valider la conformité des modifs** de l'agent contre la fiche — relire le
+   diff, `just check`, `/review` adversariale si code sensible (auth, écriture, suppression de
+   données, accès réseau).
+5. **Merge** `git merge --no-ff wt/<id>` → ⭐ **APRÈS le merge, REVALIDER sur la branche principale**
+   que tout est au vert (`just check` — les recettes `just` valident et doivent passer au vert).
+   ⚠ `pixi.lock` : versionné mais **jamais mergé** — en cas de conflit, le régénérer sur la branche
+   cible (`just install`) plutôt que de résoudre à la main.
+6. « Résumé de réalisation » — avec le **verdict d'oracle chiffré** — → `fait/` → **UN commit pour
+   cette fiche** → `TaskUpdate` → completed → nettoyage du worktree (automatique avec
+   `isolation:`, sinon `git worktree remove <chemin>` + suppression de la branche).
 
 ## 3. Clôture
-Toutes les fiches faites : **régénérer le dashboard** (`just dashboard`), branche propre,
-**débrief final** (réalisations + décisions prises en cours + fiches différées créées).
+- Quand **TOUTES** les fiches sont terminées : **régénérer le dashboard** (`/dashboard`).
+- Branche propre (tout commité). **Débrief final** : tout ce qui a été fait pendant la phase,
+  + les **décisions prises en cours de route**, + les **fiches différées** créées, + les fiches
+  restées **en attente d'une fiche humaine**.
 
 ## 4. Autonomie — la règle d'or
-**Un run ne s'interrompt PAS**, sauf gros blocage insoluble — ou fiche humaine non faite
-(alors : traiter tout ce qui est dispatchable, puis s'arrêter en le signalant au débrief,
-avec la liste des fiches en attente de l'humain). Sur blocage/question : (1)
-**trancher et documenter** dans la fiche, signalé au débrief ; ou (2) **différer** via une
-nouvelle fiche en `maturation/`, et continuer. Cette règle **prime** sur toute convention
-« demander un GO » héritée d'ailleurs.
+**Un run ne s'interrompt PAS** — sauf **GROS blocage insoluble**, ou **fiche humaine non faite**
+(alors : traiter tout ce qui est dispatchable, puis s'arrêter en le signalant au débrief). Sur un
+blocage ou une question, tu **ne me sollicites pas** : tu choisis l'une des deux voies, et tu
+continues le run. **Cette règle prime sur toute convention « proposer / demander un GO avant »
+héritée du CLAUDE.md** : un point ouvert rencontré en cours de run se tranche-et-documente (ou se
+diffère), il ne justifie jamais une interruption. Le run existe précisément pour ne pas être
+interrompu.
+1. **Prends une décision, documente-la** (dans la fiche concernée) et **signale-la au débrief final.**
+2. Si c'est **trop compliqué** pour être tranché là : **diffère** — rédige une **nouvelle fiche en
+   `maturation/`** qui capture le problème, et passe à la suite.
 
 ## 5. Hygiène de commit — garde-fous durs (non négociables)
-- **Gate = `just check` AVANT tout commit. Jamais de commit sur du rouge.**
-- **1 fiche = 1 commit logique.** Message : `feat|fix|refactor|test|chore(<domaine>):
-  <titre> (<id-fiche>)`.
-- **JAMAIS `--no-verify`. JAMAIS `amend`** d'un commit refusé → nouveau commit.
-- **Pas de `git add .` aveugle** — stager explicitement.
-- **Aucun push** — le push est une décision humaine.
-- **Borne anti-boucle** : `just check` encore rouge après ~3 corrections → **différer** la
-  fiche et continuer le run.
+- **Gate = `just check` AVANT tout commit** (lint → types → tests → smoke). **Jamais de commit sur
+  du rouge.**
+- **1 fiche = 1 commit logique**, jamais groupé. Message :
+  `feat|fix|refactor|test|chore(<domaine>): <titre> (<id-fiche>)` + corps citant l'ID de la fiche.
+- **JAMAIS `--no-verify`. JAMAIS `amend`** un commit refusé par un hook → **nouveau commit**.
+- **Pas de `git add .` aveugle** — stager explicitement les fichiers de la fiche.
+- **Aucun push** — les agents de fond commitent sur leur branche ; le merge reste local. Le **push
+  est une décision humaine**.
+- **Borne anti-boucle** : si `just check` reste rouge après ~3 tentatives de correction sur une
+  fiche, **ne pas s'acharner** → **différer** la fiche (§4.2) et continuer le run.
