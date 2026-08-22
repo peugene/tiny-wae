@@ -66,6 +66,10 @@ Deux ajouts, aucun changement de la sémantique d'arrêt existante :
   `_request_stop(stop_event, 0, None)` — trois arguments positionnels. Toute évolution de
   signature le touche. Il est importé l. 34.
 
+  Re-vérifié à `3cd90e2` au moment du dispatch : les 6 emplacements cités ci-dessus sont
+  inchangés — `_request_stop` toujours l. 122, `cli/backfill.py` l. 91,
+  `tests/test_backfill.py` l. 34 et 354.
+
 ### ⭐ Décisions actées
 
 - **D1 — Le handler reste PUR.** `_request_stop` gagne un paramètre

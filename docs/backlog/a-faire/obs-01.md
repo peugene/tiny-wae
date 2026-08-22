@@ -84,6 +84,9 @@ Deux objectifs, dans cet ordre :
   cet invariant. L'inscription a été reformulée en conséquence — le fichier peut évoluer,
   le câblage par commande reste interdit et vérifié.
 
+  Re-vérifié à `3cd90e2` au moment du dispatch : les 6 emplacements cités ci-dessus sont
+  inchangés (seul `__main__.py` a bougé, cf. la puce « verrou levé »).
+
 ### ⭐ Décisions actées
 
 - **D1 — `logging` de la stdlib, pas de dépendance nouvelle, pas de mécanisme maison.**
