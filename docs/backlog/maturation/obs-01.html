@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[obs-01] Système de logging + progression du backfill</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>obs-01</b></nav><h1>[obs-01] Système de logging + progression du backfill <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : observabilite</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="obs-02.html"><code>obs-02</code></a> Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#obs-01-systeme-de-logging-progression-du-backfill">[obs-01] — Système de logging + progression du backfill</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-a6724e0">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD a6724e0)</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+<li><a href="#format-de-ligne-fige">Format de ligne (figé)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
+⚠ <strong>Placement à confirmer par le PO</strong> : id hors de la séquence <code>l0-*</code> du chantier
+<code>lot-0-ingestion</code> (déclarée fermée à <code>l0-06</code>), sur le précédent d'<code>out-01</code> et de <code>l0-07</code>.
+Le <code>depends_on: [l0-04.1]</code> n'est pas décoratif : c'est cette fiche qui a créé le pool de
+workers et <code>_process_site</code>, seul point d'où une progression peut être émise. Elle est en
+<code>fait/</code>, la dépendance est donc satisfaite.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Un <code>backfill --sites all --months 48</code> porte <strong>1200 fenêtres</strong> (25 sites × 48 mois) et tourne
+<strong>plusieurs heures</strong>. Aujourd'hui il n'écrit <strong>rien</strong> avant d'avoir terminé : l'opérateur ne
+peut ni savoir où il en est, ni distinguer un run qui avance d'un run bloqué sur un amont
+muet. C'est le défaut qui a motivé cette fiche, constaté sur un lancement réel.</p>
+<p>Deux objectifs, dans cet ordre :</p>
+<ol>
+<li><strong>Poser un véritable système de logging dans l'application</strong> — un canal de diagnostic
+   normalisé (niveaux, horodatage, destination, niveau réglable), utilisable par n'importe
+   quel module d'<code>adapters/</code>, là où il n'existe <strong>aucun</strong> mécanisme aujourd'hui.</li>
+<li><strong>Instrumenter le backfill</strong> pour qu'un run long soit suivable en direct, avec un
+   <strong>pourcentage d'avancement indicatif</strong>.</li>
+</ol>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-a6724e0">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD <code>a6724e0</code>)</h3>
+<ul>
+<li><strong>Il n'existe aucun logging.</strong> <code>grep -rn "import logging\|logger" src/ scripts/</code> → <strong>0
+  résultat</strong>. Toute la sortie du projet passe par <strong>38 <code>typer.echo</code></strong> répartis dans 9 modules
+  de <code>cli/</code>.</li>
+<li><strong><code>adapters/</code> et <code>core/</code> n'écrivent rien sur console</strong> (mesuré : 0 <code>typer.echo</code>, 0
+  <code>print</code>). La règle de couche est tenue aujourd'hui — cette fiche ne doit pas la desserrer
+  au-delà de ce qu'elle acte explicitement ci-dessous.</li>
+<li><strong>Le backfill ne parle qu'à la fin</strong> : <code>cli/backfill.py::_report_counters</code> (l. 72-96) est
+  appelé <strong>après</strong> le retour de <code>run_backfill</code>. Aucune sortie intermédiaire n'existe.</li>
+<li><strong>Le point d'émission naturel existe déjà</strong> : <code>adapters/backfill.py::_process_site</code> boucle
+  sur les fenêtres d'un site et dispose sur place de <code>site.id</code>, de la <code>Window</code>, et de
+  l'<code>IngestOutcome</code> retourné (donc de <code>outcome.run.counters</code>) ou de l'exception capturée.</li>
+<li><strong>La concurrence est réelle</strong> : <code>_process_site</code> s'exécute dans N threads d'un
+  <code>ThreadPoolExecutor</code> (<code>workers</code>, défaut <code>settings.backfill_workers</code> = <strong>6</strong> dans
+  <code>config/settings.yaml</code>). Toute écriture console émise depuis ce point est <strong>concurrente</strong>.
+  <code>logging</code> sérialise par un verrou de handler ; un <code>print</code> ne garantit rien.</li>
+<li><strong>STDOUT est un canal de DONNÉES, pas de diagnostic</strong> : <code>cli/search.py:110</code> et
+  <code>cli/sites_list.py:48</code> y écrivent du JSON destiné à être parsé, et 4 tests de
+  <code>tests/test_cli_search.py</code> (l. 162, 177, 206, 229) assertent <code>result.stdout == ""</code>.</li>
+<li>⚠ <strong>Piège mesuré, à ne pas découvrir en cours d'implémentation</strong> : sous les versions
+  réellement installées (<strong>click 8.4.2 / typer 0.27.1</strong>), <code>result.output</code> du <code>CliRunner</code>
+  <strong>inclut STDERR</strong> (vérifié ; <code>result.stdout</code>, lui, ne l'inclut pas). Deux tests en
+  dépendent par leur forme et casseraient sur la moindre ligne de log émise pendant
+  <code>sites-list</code> : <code>tests/test_cli_commands.py:67</code> (<code>len(lines) == 25</code> sur <code>result.output</code>)
+  et <code>test_sites_list_json</code> (<code>json.loads(result.output)</code>).</li>
+<li><strong>Ailleurs, l'ajout de lignes sur STDERR est non régressif</strong> : les 29 assertions <code>.stderr</code>
+  (<code>test_cli_ingest.py</code> 12, <code>test_cli_search.py</code> 4, <code>test_cli_update.py</code> 13) et les 5
+  assertions de <code>test_cli_backfill.py</code> sont <strong>toutes</strong> des tests d'inclusion (<code>in</code>) — aucune
+  égalité stricte, aucun comptage de lignes.</li>
+<li><strong>Aucune dépendance à ajouter</strong> : <code>logging</code> est dans la stdlib, et
+  <code>tests/test_packaging.py:73</code> filtre les imports par <code>sys.stdlib_module_names</code> — un
+  <code>import logging</code> n'entre donc pas au contrat de la wheel et ne casse pas ce test.</li>
+<li>⚠ <strong><code>__main__.py</code> porte une interdiction explicite</strong> : « ⭐ Ce fichier n'est PLUS JAMAIS
+  modifié après l0-01.2 ». Elle vise l'ajout de <strong>sous-commandes</strong> (qui passent par
+  <code>cli/discovery.py</code>), mais sa lettre couvre toute modification — arbitrage ci-dessous.</li>
+</ul>
+<h3 id="decisions-actees">⭐ Décisions actées</h3>
+<ul>
+<li><strong>D1 — <code>logging</code> de la stdlib, pas de dépendance nouvelle, pas de mécanisme maison.</strong>
+  « Un véritable système de logging » = celui que tout opérateur sait déjà configurer et
+  rediriger. Un callback de progression injecté a été écarté : il ferait porter au projet un
+  verrou de sérialisation que <code>logging</code> fournit déjà.</li>
+<li><strong>D2 — STDERR exclusivement.</strong> Jamais STDOUT, qui porte des données machine (ancrage
+  ci-dessus). Aucun fichier de log, aucune rotation : la redirection est l'affaire de
+  l'opérateur (<code>2&gt; run.log</code>).</li>
+<li><strong>D3 — <code>logging.getLogger(__name__)</code> par module ; la CONFIGURATION ne vit que dans
+  <code>cli/</code>.</strong> Un module de bibliothèque n'installe jamais de handler. ⛔ <strong><code>core/</code> reste
+  vierge de tout logging</strong> (métier pur, testable à sec) — c'est vérifié par un oracle.</li>
+<li><strong>D4 — Niveau réglable, précédence : <code>--log-level</code> &gt; <code>TINY_WAE_LOG_LEVEL</code> &gt; <code>INFO</code>.</strong>
+  La variable d'environnement n'est pas un luxe : sous PID-FLOW, l'invocation est produite
+  par le moteur et la ligne de commande n'est pas modifiable — c'est le même raisonnement
+  que <code>TINY_WAE_DATA_ROOT</code>.</li>
+<li><strong>D5 — Les 38 <code>typer.echo</code> existants RESTENT.</strong> Le log est un canal <strong>additionnel</strong> de
+  progression, pas un remplacement des rapports finaux : 29 assertions de tests en
+  dépendent, et un rapport de fin destiné à l'utilisateur n'est pas un événement de
+  diagnostic. ⛔ Ne pas « uniformiser » en convertissant l'existant.</li>
+<li><strong>D6 — Granularité : une ligne par fenêtre TERMINÉE</strong>, succès ou échec — soit ~1200 lignes
+  sur un run complet. C'est le grain le plus fin disponible sans instrumenter l'ingestion
+  item par item (hors périmètre).</li>
+<li><strong>D7 — <code>adapters/backfill.py</code> loggue directement via son logger de module.</strong> C'est de
+  l'I/O, donc la couche <code>adapters/</code> y a droit ; <code>core/</code> n'y a pas droit (D3).</li>
+<li><strong>D8 — ⚠ à confirmer par le PO : <code>__main__.py</code> est modifié</strong> pour porter l'option globale
+  <code>--log-level</code> sur son <code>@app.callback()</code>, et son inscription est <strong>amendée</strong> en « aucune
+  sous-commande ne s'ajoute ici » (l'intention réelle de la règle). Si le PO refuse, le repli
+  est <code>TINY_WAE_LOG_LEVEL</code> seule, sans option de ligne de commande — le reste de la fiche est
+  inchangé.</li>
+<li><strong>D9 — Le pourcentage est en FENÊTRES, pas en temps, et il est annoncé comme indicatif.</strong>
+  Une fenêtre sans item coûte une requête STAC ; une fenêtre à 6 items coûte 6
+  téléchargements de chips. Le <code>%</code> ne prétend donc pas mesurer le temps restant.</li>
+<li><strong>D10 — Les deux tests <code>sites-list</code> passent de <code>result.output</code> à <code>result.stdout</code>.</strong> Coût
+  nul, et cela fixe leur intention réelle (ils testent une sortie de données) au lieu de les
+  laisser exposés au premier log émis en amont.</li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/cli/logging_setup.py</code> — <strong>nouveau</strong> : <code>configure_logging(level: str) -&gt; None</code>,
+  seul endroit qui installe un handler (STDERR) et un format.</li>
+<li><code>src/tiny_wae/__main__.py</code> — option globale <code>--log-level</code>, appel de <code>configure_logging</code>,
+  inscription amendée (cf. D8).</li>
+<li><code>src/tiny_wae/adapters/backfill.py</code> — logger de module ; ligne d'ouverture (nombre de
+  sites, de fenêtres, total, workers) et une ligne par fenêtre terminée dans <code>_process_site</code>.
+  Le total est déjà calculable sur place : <code>sum(len(w) for w in windows_by_site.values())</code>.</li>
+<li><code>tests/test_logging.py</code> — <strong>nouveau</strong> : les oracles ci-dessous.</li>
+<li><code>tests/test_cli_commands.py</code> — D10 (2 lignes).</li>
+</ul>
+<h3 id="format-de-ligne-fige">Format de ligne (figé)</h3>
+<pre><code>2026-08-22 16:04:12 INFO  backfill    47/1200 ( 3.9%)  A01  2022-09-01→2022-10-01  ingested=2 skipped=4
+2026-08-22 16:04:19 WARNING backfill   48/1200 ( 4.0%)  B03  2022-09-01→2022-10-01  ÉCHEC : &lt;message&gt;
+</code></pre>
+<p>Seuls les compteurs <strong>non nuls</strong> sont rendus, triés par clé — une ligne à 12 compteurs à zéro
+est illisible et masque l'information utile.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>cli/logging_setup.py</code> existe et est le <strong>seul</strong> module qui installe un handler.</li>
+<li>[ ] Le niveau suit la précédence D4 ; un niveau invalide sort en <code>exit_codes.USAGE</code>, pas en
+      trace Python.</li>
+<li>[ ] <code>adapters/backfill.py</code> émet une ligne d'ouverture puis une ligne par fenêtre terminée.</li>
+<li>[ ] Chaque ligne de progression porte : <code>n/total</code>, un pourcentage, l'id du site, les bornes
+      de la fenêtre, et soit les compteurs non nuls, soit le message d'échec.</li>
+<li>[ ] Une fenêtre en échec est loguée en <strong>WARNING</strong>, jamais en INFO.</li>
+<li>[ ] <code>grep -rn "logging" src/tiny_wae/core/</code> → <strong>0 résultat</strong>.</li>
+<li>[ ] Les 38 <code>typer.echo</code> existants sont <strong>inchangés</strong> (D5).</li>
+<li>[ ] <code>just check</code> vert au commit de la fiche.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<blockquote>
+<p>Tout se joue sur <code>FixtureSource</code> (aucun réseau), comme <code>tests/test_cli_backfill.py</code>.</p>
+</blockquote>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>backfill --sites A01,B09 --months 1 --workers 2</code>, lignes de progression sur STDERR</td>
+<td><strong>1 ligne par fenêtre traitée</strong>, chacune portant <code>n/total</code>, un <code>%</code>, l'id du site et les deux bornes de la fenêtre</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>les <code>n</code> de toutes les lignes d'un run</td>
+<td>forment exactement une <strong>permutation de <code>1..total</code></strong> — aucun doublon, aucun trou ; le <code>total</code> annoncé à l'ouverture == nombre de fenêtres soumises</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>STDOUT du même run</td>
+<td><code>result.stdout == ""</code> — le log ne touche jamais le canal de données</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>source qui lève sur un site (patron de <code>test_backfill_echec_sur_1_site_isole_lautre_o2</code>)</td>
+<td>≥ 1 ligne <strong>WARNING</strong> nommant le site, la fenêtre et le message d'erreur ; le run continue</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>--log-level WARNING</code> sur le run d'O1</td>
+<td><strong>0</strong> ligne de progression ; les lignes d'échec d'O4 subsistent</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>TINY_WAE_LOG_LEVEL=WARNING</code> sans <code>--log-level</code>, puis les deux ensemble</td>
+<td>même résultat qu'O5 ; l'option de ligne de commande <strong>gagne</strong> sur la variable</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>concurrence : run à <code>--workers 6</code> sur ≥ 50 fenêtres, chaque ligne confrontée au motif figé</td>
+<td><strong>100 %</strong> des lignes bien formées — aucune ligne entrelacée, tronquée ou fusionnée</td>
+</tr>
+<tr>
+<td>O8</td>
+<td><strong>mutation</strong> : retirer l'appel de log dans <code>_process_site</code>, relancer <code>just test -k logging</code></td>
+<td>O1 et O2 passent au <strong>ROUGE</strong>, puis au vert après restauration</td>
+</tr>
+<tr>
+<td>O9</td>
+<td><code>grep -rn "logging" src/tiny_wae/core/</code></td>
+<td><strong>0</strong> résultat</td>
+</tr>
+<tr>
+<td>O10</td>
+<td>non-régression</td>
+<td><code>just check</code> vert — <strong>250 tests</strong> au départ ; les 29 assertions <code>.stderr</code> et les 5 de <code>test_cli_backfill.py</code> <strong>inchangées</strong> ; seules les 2 lignes de D10 sont modifiées</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
+<ul>
+<li><strong>Aucun run réel.</strong> Le gate est hors réseau : la tenue du log sur les ~1200 lignes d'un
+  backfill de 48 mois sur le NAS n'est <strong>pas</strong> mesurée ici. C'est à la campagne <code>l0-04.H</code> de
+  le constater.</li>
+<li><strong>Le <code>%</code> n'est pas validé comme prédicteur de temps</strong> — il ne prétend pas l'être (D9).
+  Aucun ETA n'est produit (cf. Notes).</li>
+<li><strong>Les autres CLIs ne sont pas instrumentés.</strong> <code>ingest</code>, <code>update</code>, <code>report</code>, <code>search</code>
+  gardent leur unique rapport final : le <strong>socle</strong> est transverse, l'<strong>instrumentation</strong> ne
+  l'est pas.</li>
+<li><strong>Rien sur le comportement sous cwltool</strong> (capture de STDERR par le moteur) : à vérifier
+  lors d'un passage PID-FLOW, hors périmètre.</li>
+<li><strong>Aucune sortie structurée</strong> (JSON par ligne) : format texte uniquement.</li>
+<li><strong>Le niveau DEBUG n'a aucun contenu</strong> : aucun module n'émet en DEBUG à l'issue de cette
+  fiche.</li>
+</ul>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<ul>
+<li><strong>ETA délibérément hors périmètre.</strong> Un temps restant extrapolé linéairement est faux tant
+  que les 25 sites n'ont pas tous démarré, et devient trompeur dès qu'un site est plus lourd
+  que les autres. À instruire séparément si le <code>%</code> ne suffit pas à l'usage.</li>
+<li>Extensions possibles, non retenues ici : <code>--log-format json</code>, <code>--progress-every N</code> pour
+  raréfier les lignes, instrumentation des autres CLIs, ligne de synthèse périodique
+  (« 6 sites en cours, 3 terminés »).</li>
+<li><strong>Ce qui est déjà observable sans cette fiche</strong>, pour un run en cours : chaque fenêtre
+  traitée écrit un <code>&lt;data_root&gt;/&lt;site_id&gt;/runs/&lt;run_id&gt;.json</code>
+  (<code>adapters/manifests.py:162</code>) — les compter donne l'avancement d'un run déjà lancé.</li>
+</ul>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="../fait/l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="obs-02.html">[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate →</a></div><p class="gen">Généré le 22/08/2026 19:36 — le .md fait foi.</p></article></body></html>

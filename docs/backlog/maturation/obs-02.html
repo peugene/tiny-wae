@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#obs-02-arret-du-backfill-accuse-de-reception-et-interruption-immediate">[obs-02] — Arrêt du backfill : accusé de réception et interruption immédiate</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-a6724e0">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD a6724e0)</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
+⚠ <strong>Placement à confirmer par le PO</strong> : même arbitrage que <code>obs-01</code>, dont elle dépend.
+Le <code>depends_on: [obs-01]</code> est réel : <code>obs-01</code> fige le canal (STDERR), le format et le
+niveau de sortie. Les inverser ferait définir deux fois, différemment, où et comment
+l'application parle à l'opérateur.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Le Ctrl+C <strong>fonctionne déjà</strong> sur le backfill — mais il est <strong>muet</strong>. L'opérateur qui
+interrompt un run de plusieurs heures n'a strictement aucun retour : ni au moment où il tape,
+ni pendant l'attente des fenêtres en vol. Rien ne lui dit que sa demande a été prise en
+compte, et rien ne lui permet de forcer un arrêt s'il ne veut pas attendre.</p>
+<p>Deux ajouts, aucun changement de la sémantique d'arrêt existante :</p>
+<ol>
+<li><strong>Un accusé de réception immédiat</strong> au premier Ctrl+C, disant ce qui va se passer.</li>
+<li><strong>Une porte de sortie</strong> : un second Ctrl+C interrompt immédiatement.</li>
+</ol>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-a6724e0">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD <code>a6724e0</code>)</h3>
+<ul>
+<li><strong>L'arrêt propre existe et est correct</strong> (l0-04.1, décision d'ancrage n°5) :
+  <code>adapters/backfill.py::_request_stop</code> (l. 122) est une fonction <strong>pure</strong> qui ne fait que
+  <code>stop_event.set()</code> ; les handlers sont posés sur <code>SIGINT</code> et <code>SIGBREAK</code> (Windows) dans
+  <code>run_backfill</code> (l. 204-212) et <strong>restaurés dans un <code>finally</code></strong>. <code>_process_site</code> teste
+  <code>stop_event.is_set()</code> <strong>en tête de boucle</strong> : la fenêtre en cours va à son terme, les
+  suivantes du site sont abandonnées, et les futures non démarrées sont annulées.
+  ⛔ <strong>Cette sémantique ne change pas</strong> — elle est validée par l'oracle O3 de <code>l0-04.1</code>.</li>
+<li><strong>Ce qui manque est le retour à l'écran, pas le mécanisme.</strong> Le seul message d'interruption
+  existant est <code>cli/backfill.py:91</code> (« ⚠ backfill interrompu (SIGINT) : soumissions
+  arrêtées ») — écrit par <code>_report_counters</code>, donc <strong>après</strong> le retour de <code>run_backfill</code>,
+  c'est-à-dire une fois toutes les fenêtres en vol terminées. Sur des chips Sentinel-2, cela
+  peut représenter plusieurs minutes de silence complet.</li>
+<li><strong>Il n'existe aujourd'hui AUCUN moyen d'obtenir un arrêt immédiat</strong> : un second Ctrl+C
+  ne fait que re-positionner le même <code>Event</code> déjà positionné. La seule issue est un <code>kill</code>
+  depuis un autre terminal.</li>
+<li>⚠ <strong>Une exception ne rendrait PAS la main non plus</strong> — c'est le point technique de la
+  fiche. Le thread principal est bloqué dans <code>as_completed</code>, à l'intérieur d'un
+  <code>with ThreadPoolExecutor(...)</code> ; son <code>__exit__</code> appelle <code>shutdown(wait=True)</code> et <strong>attend
+  la fin de tous les workers</strong>. Lever <code>KeyboardInterrupt</code> depuis le handler produirait donc
+  exactement l'attente que l'utilisateur cherche à éviter.</li>
+<li><strong>Un arrêt brutal est SÛR pour les données, et c'est vérifiable</strong> :
+  <code>adapters/ingestion.py</code> écrit les chips (<code>write_chips</code>) <strong>avant</strong> le manifeste (l. 352 et
+  372), et <code>manifests._write_json_atomic</code> (l. 167) écrit un fichier temporaire puis
+  <code>replace</code>. Un process tué ne peut donc pas produire un item faussement « ingéré ». Au pire
+  il laisse des <strong>chips orphelins sans manifeste</strong> — réingérés au run suivant, jamais lus — et
+  un résidu <code>.&lt;nom&gt;.&lt;pid&gt;.&lt;tid&gt;.tmp</code> qu'aucun <code>glob</code> du projet ne voit (garantie explicite du
+  docstring de <code>_write_json_atomic</code>).</li>
+<li><strong>Un test existant est à adapter</strong> : <code>tests/test_backfill.py:354</code> appelle
+  <code>_request_stop(stop_event, 0, None)</code> — trois arguments positionnels. Toute évolution de
+  signature le touche. Il est importé l. 34.</li>
+</ul>
+<h3 id="decisions-actees">⭐ Décisions actées</h3>
+<ul>
+<li><strong>D1 — Le handler reste PUR.</strong> <code>_request_stop</code> gagne un paramètre
+  <code>on_stop_requested: Callable[[bool], None] | None</code>, appelé avec <code>already_requested</code> (vrai
+  si <code>stop_event</code> était <strong>déjà</strong> positionné). Il ne décide de rien : « que faire du second
+  Ctrl+C » est une politique, elle appartient à <code>cli/</code>, pas à <code>adapters/</code>. La fonction reste
+  testable par appel direct, comme aujourd'hui.</li>
+<li><strong>D2 — Premier Ctrl+C : message immédiat</strong>, disant les trois choses que l'opérateur a
+  besoin de savoir : la demande est prise en compte, les fenêtres en cours vont à leur terme
+  (rien de nouveau n'est lancé), et un second Ctrl+C interrompt immédiatement.</li>
+<li><strong>D3 — Second Ctrl+C : <code>os._exit(130)</code></strong>, après avoir vidé STDERR. <code>130</code> = <code>128 + SIGINT</code>,
+  la convention shell. <code>os._exit</code> et non une exception, pour la raison ancrée ci-dessus
+  (<code>shutdown(wait=True)</code> annulerait l'effet recherché).</li>
+<li><strong>D4 — L'arrêt brutal s'annonce.</strong> Le message du second Ctrl+C dit qu'il peut laisser des
+  fichiers partiels sans manifeste, réingérés au run suivant. Une surprise documentée n'en
+  est plus une ; le run suivant les corrige par idempotence (oracle O4 de <code>l0-04.1</code>).</li>
+<li><strong>D5 — ⚠ Le message du handler s'écrit par <code>os.write(2, ...)</code>, PAS par <code>logging</code>.</strong>
+  Motif : un handler de signal s'exécute dans le thread principal entre deux bytecodes ;
+  passer par <code>logging</code> prendrait un verrou de handler et expose à un <strong>interblocage</strong> si le
+  signal frappe pendant que ce même thread le détient. <code>os.write</code> sur le descripteur 2 est
+  sûr en contexte de signal, et reste sur le canal figé par <code>obs-01</code> (STDERR). C'est une
+  exception <strong>motivée</strong> à <code>obs-01</code>, pas un canal concurrent : elle est limitée aux deux
+  messages du handler.</li>
+<li><strong>D6 — Le message final existant (<code>cli/backfill.py:91</code>) est conservé</strong> : il joue un rôle
+  différent (bilan après arrêt, avec les compteurs), et un test l'atteste.</li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/adapters/backfill.py</code> — signature de <code>_request_stop</code> (D1) et câblage du
+  <code>functools.partial</code> dans <code>run_backfill</code> ; nouveau paramètre <code>on_stop_requested</code> de
+  <code>run_backfill</code>, transmis au handler.</li>
+<li><code>src/tiny_wae/cli/backfill.py</code> — la politique : les deux messages, et <code>os._exit(130)</code>.</li>
+<li><code>tests/test_backfill.py</code> — l. 354 adaptée à la nouvelle signature ; <strong>ne pas la supprimer</strong>,
+  l'oracle O3 de <code>l0-04.1</code> doit continuer de passer à l'identique.</li>
+<li><code>tests/test_cli_backfill.py</code> — les oracles ci-dessous.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Un premier Ctrl+C produit un message <strong>avant</strong> toute attente, portant les trois
+      informations de D2.</li>
+<li>[ ] Un second Ctrl+C termine le process <strong>immédiatement</strong>, code de sortie <strong>130</strong>.</li>
+<li>[ ] La sémantique d'arrêt de <code>l0-04.1</code> est <strong>inchangée</strong> : fenêtre en cours menée à terme,
+      tâches en file annulées, <code>interrupted</code> vrai, manifestes tous relisibles.</li>
+<li>[ ] <code>_request_stop</code> reste une fonction pure, testable par appel direct.</li>
+<li>[ ] Le message du second Ctrl+C mentionne les résidus possibles (D4).</li>
+<li>[ ] <code>just check</code> vert au commit de la fiche.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>_request_stop</code> appelé directement, 1re fois, avec un espion</td>
+<td>l'espion est appelé <strong>exactement une fois</strong> avec <code>already=False</code> ; <code>stop_event</code> positionné</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>2e appel direct sur le même <code>stop_event</code></td>
+<td>l'espion reçoit <code>already=True</code> ; <code>stop_event</code> toujours positionné</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><strong>rejeu à l'identique de l'oracle O3 de <code>l0-04.1</code></strong> (<code>test_backfill_sigint_arrete_soumissions_et_attend_en_cours_o3</code>)</td>
+<td>passe <strong>sans modification de son corps</strong> hors adaptation de signature : tâche en cours menée à terme, tâches en file annulées, <code>interrupted</code> vrai, <strong>100 %</strong> des manifestes relus par <code>read_manifest</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>texte du message de 1er Ctrl+C, sur <strong>STDERR</strong></td>
+<td>contient les 3 informations de D2 ; <strong>rien</strong> sur STDOUT</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><strong>sous-processus réel</strong> : <code>backfill</code> sur fixtures, <code>SIGINT</code> envoyé une fois</td>
+<td>le message d'O4 apparaît <strong>avant</strong> que le process ne se termine (mesuré sur le flux, pas a posteriori)</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>même sous-processus, <strong>second</strong> <code>SIGINT</code></td>
+<td>le process rend la main ; code de sortie <strong>130</strong></td>
+</tr>
+<tr>
+<td>O7</td>
+<td>état du <code>data_root</code> après O6</td>
+<td><strong>0</strong> manifeste illisible ; <code>list_for_site</code> ne retourne aucun résidu <code>.tmp</code></td>
+</tr>
+<tr>
+<td>O8</td>
+<td><strong>mutation</strong> : neutraliser l'appel à <code>on_stop_requested</code> dans <code>_request_stop</code></td>
+<td>O1, O2 et O4 passent au <strong>ROUGE</strong>, puis au vert après restauration</td>
+</tr>
+<tr>
+<td>O9</td>
+<td>non-régression</td>
+<td><code>just check</code> vert — <strong>250 tests</strong> au départ (+ ceux d'<code>obs-01</code>) ; <code>cli/backfill.py:91</code> toujours couvert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
+<ul>
+<li><strong>O5/O6 ne tournent pas sous Windows</strong> : l'envoi d'un vrai signal n'est pas portable
+  linux-64/win-64 — c'est déjà la décision d'ancrage n°5 de <code>l0-04.1</code>, qui teste le handler
+  par appel direct pour cette raison. Ces deux oracles sont marqués <code>skipif</code> sous
+  <code>win32</code> : <strong>le comportement Windows n'est donc vérifié que par O1-O4</strong>, et
+  <code>CTRL_BREAK_EVENT</code> n'est pas exercé du tout.</li>
+<li><strong>L'atomicité des chips n'est pas garantie et n'est pas visée.</strong> Ce qui est garanti, c'est
+  l'absence de <strong>manifeste</strong> fantôme : un chip partiel sans manifeste n'est jamais lu, et il
+  est réécrit au run suivant. O7 mesure la relisibilité des manifestes, pas l'intégrité des
+  GeoTIFF.</li>
+<li><strong>Aucune reprise n'est ajoutée.</strong> L'idempotence par <code>grid_hash</code> fait déjà office de
+  reprise ; elle est couverte par l'oracle O4 de <code>l0-04.1</code> et n'est pas rejouée ici.</li>
+<li><strong>Rien sur le comportement du signal sous cwltool / PID-FLOW</strong> : le moteur peut ne pas
+  propager <code>SIGINT</code> au job. Hors périmètre.</li>
+<li><strong>Aucun <code>SIGTERM</code></strong> : seuls <code>SIGINT</code> et <code>SIGBREAK</code> sont traités, comme aujourd'hui. Un
+  <code>kill</code> ordinaire reste brutal et non annoncé.</li>
+</ul>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>Origine : lancement réel d'un <code>backfill --sites all --months 48 --workers 6</code>, sur lequel les
+deux manques sont apparus ensemble — ne rien voir pendant le run (<code>obs-01</code>) et ne rien voir
+en l'arrêtant (cette fiche).</p>
+<p>Piste écartée : compter les Ctrl+C dans l'<code>Event</code> lui-même (un <code>Event</code> ne compte pas) ou via
+un compteur dans <code>adapters/</code>. La politique d'arrêt appartient au CLI (D1) ; l'état
+« déjà demandé » se lit sur <code>stop_event</code> avant de le positionner, sans état supplémentaire.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 19:36 — le .md fait foi.</p></article></body></html>

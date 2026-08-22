@@ -16,4 +16,6 @@
 | P3 | — | Fiches futures : décision classes SCL 2/11 (post-campagne, V3) · bascule CDSE (StacSource) · enregistrement PID-FLOW + pid:Milestone (version cible à nommer) · rescan automatisé retraitements tardifs |
 | P2 | `l0-07` | Durcissement — `write_manifest` refuse un statut illégitime (post-revue 1 : la règle « `skipped` n'est jamais écrit à un manifeste » n'était appliquée nulle part) |
 | P2 | `out-01` | Outillage — étendre mypy strict à `tests/` (24 erreurs mesurées) : la conformité aux Protocols n'est vérifiée nulle part (constat du run N5) |
+| P1 | `obs-01` | Observabilité — véritable système de logging + progression suivable du backfill (1200 fenêtres, plusieurs heures, aucune sortie avant la fin : constaté sur un run réel) |
+| P2 | `obs-02` | Exploitation — Ctrl+C du backfill : accusé de réception immédiat et second Ctrl+C qui interrompt (l'arrêt fonctionne déjà, il est muet) |
 | P3 | — | Améliorations kit à reporter (_tools_python → _tools/_tools_js) : barème S/M/L · pattern chapeau/sous-tâches dans le modèle de fiche · fiches humaines (categorie humain + règle /run « ne jamais dispatcher ») |
