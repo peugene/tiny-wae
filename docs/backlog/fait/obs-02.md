@@ -200,9 +200,53 @@ un compteur dans `adapters/`. La politique d'arrêt appartient au CLI (D1) ; l'�
 
 ## Résumé de réalisation
 
-*(à remplir avant de déplacer la fiche dans `fait/`)*
+- **Ce qui a été fait** : `_request_stop` gagne un paramètre optionnel
+  `on_stop_requested: Callable[[bool], None] | None`, appelé avec `already_requested` lu
+  AVANT de positionner `stop_event` — la fonction reste pure (D1). La politique vit dans
+  `cli/backfill.py::_on_stop_requested` : premier appel, accusé de réception (D2) ; second,
+  message d'avertissement sur les résidus (D4) puis `os._exit(130)` (D3). Les deux messages
+  passent par `os.write(2, ...)` et non par `logging` (D5), sans aucun emoji (D7).
 
-- **Ce qui a été fait** : …
-- **Verdict de l'oracle** : [chiffres obtenus, y compris défavorables]
-- **Commit(s)** : …
-- **Date** : AAAA-MM-JJ
+- **Verdict de l'oracle** :
+  - O1 : espion appelé **une** fois avec `already=False`, `stop_event` positionné.
+  - O2 : second appel -> `[False, True]`, `stop_event` toujours positionné.
+  - O3 (non-régression critique) : `test_backfill_sigint_arrete_soumissions_et_attend_en_cours_o3`
+    rejoué **corps inchangé, aucune ligne supprimée dans le fichier** (diff vérifié).
+  - O4 : le message porte les **3** informations de D2, sur STDERR seul
+    (`captured.out == ""`, mesuré avec `capfd` puisque l'écriture contourne `sys.stderr`).
+  - O5/O6/O7 : sous-processus réel, **deux SIGINT réels**, rendez-vous par FIFO POSIX (pas
+    de `sleep`) avec un site bloquant et un site normal en concurrence. Accusé de réception
+    observé process encore vivant ; second signal -> code de sortie **exactement 130** ;
+    manifestes du site normal **100 % relisibles**, zéro résidu pour l'autre.
+    `skipif` sous `win32`, comme la fiche le prescrit.
+  - **O8 (mutation)** : appel à `on_stop_requested` neutralisé -> O1, O2 **et** O4 au
+    **ROUGE** (`assert [] == [False]`, `assert 'Ctrl+C' in ''`) ; restauré -> les trois au
+    **VERT**.
+  - O9 : `just check` **vert sur `develop` après merge** — **272 tests** (266 au départ, +6).
+
+- **Vérification indépendante de l'orchestrateur** (hors tests de l'agent) : sous-processus
+  réel avec une source ralentie à 3 s par fenêtre, deux SIGINT envoyés. Observé :
+  l'accusé de réception s'affiche immédiatement au premier, puis le message d'arrêt et un
+  **code de sortie 130** au second, la fenêtre en cours étant bien interrompue. Le
+  comportement promis est donc constaté de bout en bout, pas seulement testé unitairement.
+
+- **Écart par rapport à la fiche** : la fiche prévoyait d'adapter la signature d'appel de
+  `tests/test_backfill.py` l. 396 (ex-354). **Inutile en fait** : le nouveau paramètre a une
+  valeur par défaut, l'appel existant reste valide tel quel. L'adaptation annoncée n'a pas eu
+  lieu, ce qui est mieux que prévu — le test est intact à l'octet près.
+
+- **Défauts trouvés et corrigés pendant l'écriture des tests** (diligence de l'agent, hors
+  décisions de fiche) : un `repr()` appliqué deux fois dans le gabarit du script fils, qui
+  faisait bloquer indéfiniment l'ouverture du FIFO côté parent (blocage franc, pas un test
+  instable) ; et une vraie course — sans attendre la ligne de progression du site normal
+  avant de tirer les deux signaux, `os._exit` pouvait le tuer pendant son écriture de
+  manifeste, rendant O7 non déterministe.
+
+- **Non vérifié** : propagation du signal sous cwltool / PID-FLOW (hors périmètre) ;
+  `SIGTERM` et un `kill` ordinaire restent brutaux et non annoncés ; le chemin
+  `CTRL_BREAK_EVENT` de Windows n'est pas exercé — seuls O1 à O4 couvrent Windows, la fiche
+  l'admettait déjà ; l'atomicité des chips n'est pas visée, seule l'absence de manifeste
+  fantôme est garantie.
+
+- **Commit(s)** : `be310fe` (implémentation), merge `--no-ff` sur `develop`.
+- **Date** : 2026-08-22
