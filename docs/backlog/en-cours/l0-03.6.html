@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-03.6] contact-sheet --latest — la planche précoce de centrage (artefact)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+@media print{article{border:none;padding:0}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.6</b></nav><h1>[l0-03.6] contact-sheet --latest — la planche précoce de centrage (artefact)</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.5.html"><code>l0-03.5</code></a>, <a href="../fait/l0-01.3.html"><code>l0-01.3</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../fait/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li><a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li>→ <a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li><li><a href="../maturation/lot-0-ingestion/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li></ul></div><h1 id="l0-036-planche-precoce-production-de-lartefact">[l0-03.6] — Planche précoce (production de l'artefact)</h1>
+<h2 id="objectif">Objectif</h2>
+<p>Produire la planche des 25 sites (1 chip récent RGB chacun) — l'ARTEFACT que la fiche
+humaine l0-03.H validera. Cette fiche se termine sur des critères mécaniques ; elle ne
+contient AUCUN jugement visuel.</p>
+<h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
+<ul>
+<li><code>src/tiny_wae/cli/contact_sheet.py</code> (auto-découvert) : <code>contact-sheet --latest
+  [--out &lt;png&gt;]</code> — pour chaque site, dernier chip <code>ingested</code> disponible (via manifests
+  API), rendu RGB (bandes red/green/blue du chip 10 m, étirement percentile 2-98), grille
+  5×5 d'imagettes labellisées (id + nom + date), PNG unique. Sites sans chip → case
+  grise labellisée « aucun chip ». Le mode <code>--first-last</code> viendra en l0-04.2 (même
+  module, extension prévue — exception à l'invariant add-only, actée ici).</li>
+<li>L'ingestion des 25 chips récents eux-mêmes : commande documentée dans la fiche
+  (<code>ingest --site &lt;chaque&gt; --from &lt;J-30&gt; --to &lt;J&gt;</code>), lancée en mode live par l'agent en
+  fin de fiche (≈25 acquisitions — durée à confronter aux mesures de l0-03.7/O5).
+  ⚠ <strong>C'est cette étape live qui impose <code>depends_on: l0-01.3</code></strong> : sans le relevé des
+  tuiles et le calcul des grilles, <code>sites.yaml</code> a des <code>reference_tile</code>/<code>grid</code> vides et
+  aucune ingestion réelle n'est possible. (l0-03.1 et l0-02.1 ont pu s'en découpler parce
+  que leurs oracles sont sur données synthétiques ; celui-ci ne le peut pas.)</li>
+<li>Dépendance utilisée : <code>Pillow</code> — <strong>déjà posée par l0-01.1</strong> (ne pas toucher au
+  <code>pyproject.toml</code>). <code>pixi.lock</code> : versionné, jamais mergé — régénérer au besoin.</li>
+</ul>
+<h2 id="ancrage-dans-le-code-reel-22082026-avant-dispatch-run-n6">⚠ Ancrage dans le code réel (22/08/2026, avant dispatch — run N6)</h2>
+<p>Vérifié sur <code>develop</code> @ <code>2e8322d</code>. Les 4 fiches de ce run partent <strong>en parallèle</strong> : leurs
+fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.</p>
+<h3 id="socle-commun-livre-fige-a-consommer-tel-quel">Socle commun (livré, figé — à consommer tel quel)</h3>
+<ul>
+<li><strong><code>adapters/fixture_source.FixtureSource(settings, stac_dir=…, cog_dir=…)</code></strong> implémente le
+  port <code>StacSource</code>. ⭐ <strong>Elle FILTRE sur la fenêtre</strong> (<code>[start, end[</code>) depuis le commit
+  <code>2e8322d</code> — corrigé juste avant ce dispatch : elle rendait auparavant tout le corpus quelle
+  que soit la fenêtre, ce qui rendait plusieurs oracles de ce run infaisables.</li>
+<li><strong>Corpus réel disponible</strong> (<code>tests/fixtures/cog/</code>, 14 items, 29,4 MiB) :</li>
+<li><strong>A01</strong> (tuile 31TGJ, EPSG 32631) — <strong>10 items</strong> : 6 en <strong>septembre 2022</strong> (01, 06, 11,
+    16, 21, 26) · 3 gelés (2023-03-15 nuageux cc 88 · 2024-08-01 clair cc 0,002 · 2026-05-13
+    S2C) · 1 <code>sequence=1</code> (2026-08-13).</li>
+<li><strong>B09</strong> (tuile 31TDJ, EPSG 32631, mono-tuile) — <strong>4 items</strong>, tous en <strong>août 2023</strong> (23,
+    25, 28, 30). ⚠ <strong>Couverture nuageuse de scène : 0,5 % · 86,5 % · 84,6 % · 63,8 %</strong> — un
+    seul item clair. Tous passent le filtre de scène (<code>scene_cloud_max=95</code>) mais <strong>plusieurs
+    partiront en <code>rejected_clouds</code></strong> au verdict SCL (<code>cloud_pct_max=30</code>). Un oracle qui
+    attendrait 4 <code>ingested</code> sur B09 serait faux : <strong>mesure, ne suppose pas</strong>.</li>
+<li>⚠ Les fenêtres des deux sites <strong>ne se recouvrent pas</strong> (sept. 2022 vs août 2023) : un test
+    multi-sites sur une fenêtre unique aura forcément un site vide. Construis tes fenêtres par
+    site, ou appelle l'orchestrateur directement au lieu de passer par <code>--months</code>.</li>
+<li><strong><code>adapters/ingestion.py</code></strong> (l0-03.4) — l'orchestration d'ingestion existe déjà,
+  ⛔ <strong>ne la réécris pas</strong> :
+  <code>python
+  class IngestOutcome: run: Run · all_failures_network: bool
+  ingest_from_envelope(*, envelope, grid, settings, data_root, force=False) -&gt; IngestOutcome
+  ingest_from_source(*, site, window, source, settings, data_root, force=False) -&gt; IngestOutcome</code>
+  Elle porte déjà le retry (réservé aux erreurs réseau), la garde nodata, l'idempotence
+  <code>grid_hash</code> et l'écriture du <code>run.json</code>.</li>
+<li><strong><code>core/windows.py</code></strong> : <code>backfill_windows(months, now) -&gt; list[Window]</code> ·
+  <code>update_window(last_datetime: datetime, margin_days, now) -&gt; Window</code> ·
+  <code>update_window_for_site(last_datetime: str | None, margin_days, now) -&gt; Window | NoManifests</code>.
+  Horloge <strong>toujours injectée</strong>, jamais <code>datetime.now()</code> dans <code>core/</code>.</li>
+<li><strong><code>adapters/manifests.py</code></strong> : <code>write_manifest</code> · <code>read_manifest</code> · <code>list_for_site</code> ·
+  <code>item_ids_for_site</code> · <code>last_datetime(data_root, site_id) -&gt; str | None</code> · <code>write_run</code> ·
+  <code>read_run</code> · <code>list_runs</code> · <code>aggregate_counters</code> · <code>grid_hash</code>. Chemins figés
+  <code>&lt;data_root&gt;/{site_id}/{item_id}/manifest.json</code> et <code>&lt;data_root&gt;/{site_id}/runs/{run_id}.json</code>.</li>
+<li><strong><code>cli/exit_codes.py</code></strong> : <code>OK=0 · FAILURE=1 · USAGE=2 · INCONCLUSIVE=3</code>.</li>
+<li><strong>Auto-découverte</strong> : un module de <code>cli/</code> exposant <code>register(app: typer.Typer) -&gt; None</code>.
+  ⛔ <code>__main__.py</code> est <strong>figé</strong> depuis l0-01.2. Modèles à copier : <code>cli/search.py</code> et
+  <code>cli/ingest.py</code> (wiring pur : parse, charge, appelle, mappe les codes de sortie).</li>
+<li>⭐ <strong>Règle de couche appliquée depuis l0-03.4, à respecter ici</strong> : <code>cli/</code> ne porte <strong>aucune
+  logique</strong>. Toute orchestration (boucles, pools, rendu, agrégation) vit dans <code>adapters/</code>.
+  C'est ce qui rend le code appelable par le smoke et les tests sans sous-processus.</li>
+<li><strong>Découverte de terrain (chapeau l0-02)</strong> : <code>pystac_client.search(limit=N)</code> ne fixe qu'une
+  <strong>taille de page</strong>, pas un plafond de résultats — le plafond, c'est <strong><code>max_items=N</code></strong>.</li>
+<li><strong>Versions</strong> : rasterio 1.5.1 · Pillow <strong>12.2.0</strong> · numpy 2.5.2 · pystac-client 0.9.0 ·
+  cwltool 3.2.20260720092025. ⛔ Aucune montée, <code>pyproject.toml</code> <strong>non touché</strong>.</li>
+<li><strong>Le gate</strong> est aujourd'hui <code>lint &amp;&amp; types &amp;&amp; test &amp;&amp; smoke &amp;&amp; cwl</code>, <strong>164 tests</strong> verts.</li>
+</ul>
+<h3 id="decisions-dancrage-propres-a-l0-036-prises-ici-ne-pas-rouvrir">Décisions d'ancrage propres à l0-03.6 (prises ici — ne pas rouvrir)</h3>
+<ol>
+<li>⛔ <strong>L'oracle O1 cite « le corpus l0-03.2 » — c'est INEXPLOITABLE tel quel.</strong> Les fixtures
+   de manifestes (<code>tests/fixtures/manifests/</code>) portent des <code>content_hashes</code> factices
+   (<code>aaaa…</code>) et <strong>aucun chip réel n'existe sur disque</strong>. Or l'oracle O2 exige une imagette au
+   contenu mesurable. <strong>Construis ton <code>data_root</code> de test en INGÉRANT</strong> : appelle
+   <code>ingest_from_source(site=…, window=…, source=FixtureSource(...), settings=…, data_root=tmp_path)</code>
+   sur A01 (fenêtre sept. 2022) et B09 (fenêtre août 2023) — tu obtiens de vrais <code>chip.tif</code>
+   au contenu réel, et c'est le seul chemin qui rend O2 discriminant.</li>
+<li><strong>Couches</strong> : le rendu et la composition vivent dans <strong><code>src/tiny_wae/adapters/contact_sheet.py</code></strong>
+   (I/O : lecture des chips, écriture du PNG) ; <strong><code>src/tiny_wae/cli/contact_sheet.py</code></strong> n'est
+   que le wiring typer. La fiche ne nomme que le CLI, mais la règle de couche prime — et
+   l0-04.2 étendra ce module (<code>--first-last</code>) : une fonction de rendu paramétrée se prolonge,
+   un CLI monolithique se réécrit.</li>
+<li><strong>Rendu</strong> : composition RGB depuis le <code>chip.tif</code> 10 m. ⚠ L'ordre gravé est
+   <code>BAND_ORDER_10M = ("blue", "green", "red", "nir")</code>, donc blue=0, green=1, red=2 : un
+   rendu RGB lit les bandes <strong>dans l'ordre 2, 1, 0</strong>. Inverser donne une image bleutée
+   plausible mais fausse — assure-toi qu'un test la distinguerait. Étirement <strong>percentile 2–98</strong> par
+   bande, grille <strong>5×5</strong> d'imagettes labellisées (id + nom + date). Sites sans chip
+   <code>ingested</code> → case <strong>grise</strong> labellisée « aucun chip ». PNG unique.</li>
+<li><strong>O3 (live) : BORNÉ À 3 SITES</strong>, pas 25. La preuve à apporter est que le chemin live
+   fonctionne, pas de produire la planche définitive : celle-ci sera régénérée par
+   l'orchestrateur sur <code>develop</code> après merge, où elle <strong>survivra</strong> à la destruction de ton
+   worktree (<code>data_root</code> est gitignoré et jetable). Ingère 3 sites sur une fenêtre de
+   <strong>5 jours</strong> (<code>--from J-5 --to J</code>) — la revisite S2A/S2B/S2C donne ~1 item par site — et
+   publie durée et nombre de cases remplies. ⛔ <strong>N'ingère pas 25 sites</strong> : ~85 min de réseau
+   pour un artefact jeté.</li>
+<li><strong>Ne versionne AUCUN PNG.</strong> La planche va dans <code>data_root</code> (gitignoré).</li>
+</ol>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] CLI + rendu ; planche réelle des 25 sites produite et déposée dans <code>data_root</code>.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Planche sur data_root fixtures (corpus l0-03.2)</td>
+<td>PNG produit, dimensions attendues, N imagettes + cases grises == comptage du corpus (test automatisé)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Chip fixture au contenu connu</td>
+<td>l'imagette n'est ni uniforme ni saturée : <strong>écart-type des valeurs &gt; 5</strong> (sur 0-255) <strong>et</strong> au moins <strong>5 % des pixels</strong> hors des bornes [1, 254] exclues — seuils littéraux dans le test</td>
+</tr>
+<tr>
+<td>O3 [live, hors gate]</td>
+<td>Planche réelle 25 sites</td>
+<td>produite, 25 cases remplies ou grises expliquées</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non testé</strong> : la QUALITÉ du centrage — c'est le rôle de l0-03.H (humain).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 02:13 — le .md fait foi.</p></article></body></html>
