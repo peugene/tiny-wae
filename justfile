@@ -35,9 +35,13 @@ lint:
 fmt:
     pixi run ruff format . && pixi run ruff check --fix .
 
-# types (mypy strict sur src/ — le filet n°1 pour du code écrit par agents)
+# types (mypy strict — le filet n°1 pour du code écrit par agents)
+# ⚠ AUCUN chemin ici : un chemin en ligne de commande PRIME sur `files=` de pyproject.toml.
+# C'est ce qui a fait que le gate n'analysait que src/ alors que la config demandait déjà
+# src/ ET tests/ (constat de out-01) — le périmètre se règle dans pyproject.toml, ici on
+# se contente de lancer mypy.
 types:
-    pixi run mypy src
+    pixi run mypy
 
 # tests (pytest) — accepte des arguments pytest (ex. just test -k concurrent -x)
 test *args:

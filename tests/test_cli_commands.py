@@ -13,7 +13,11 @@ from typer.testing import CliRunner
 
 from tiny_wae import __version__
 from tiny_wae.__main__ import app
-from tiny_wae.cli import exit_codes
+
+# Import ré-exporté explicitement : sous `--no-implicit-reexport` (mypy strict), un
+# `from tiny_wae.cli import exit_codes` seul est refusé, le package ne ré-exportant pas son
+# sous-module. Erreur devenue visible quand le gate a cessé de n'analyser que `src/` (out-01).
+from tiny_wae.cli import exit_codes as exit_codes  # noqa: PLC0414
 
 runner = CliRunner()
 
