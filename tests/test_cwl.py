@@ -27,6 +27,11 @@ import yaml
 from tiny_wae.__main__ import app
 
 CWL_DIR = Path(__file__).resolve().parent.parent / "cwl"
+_ALL_CWL = ("search.cwl", "ingest.cwl", "update.cwl", "workflow.cwl")
+
+# Exigences CWL que PID-FLOW ne supporte pas aujourd'hui (cf. cwl/README.md). La liste
+# est ici, pas dans les .cwl : un fichier ne peut pas documenter ce qu'il ne contient pas.
+_FORBIDDEN_REQUIREMENTS = ("InlineJavascriptRequirement", "EnvVarRequirement")
 
 # Commande click racine (group) exposant les sous-commandes typer du projet.
 _click_root = typer.main.get_command(app)
@@ -53,8 +58,8 @@ def _load_cwl(name: str) -> dict[str, Any]:
 
 def _declared_prefixes(cwl_doc: dict[str, Any]) -> dict[str, str]:
     """Extrait {nom d'input CWL: prefix déclaré} pour tous les inputs qui portent un
-    `inputBinding.prefix` (les autres, ex. `data_root` d'ingest.cwl, ne passent par
-    aucune option CLI — normal, ne rien exiger dessus)."""
+    `inputBinding.prefix` — un input qui n'en porte pas ne passe par aucune option CLI
+    et n'a donc rien à confronter."""
     inputs = cwl_doc["inputs"]
     declared: dict[str, str] = {}
     for name, spec in inputs.items():
@@ -130,24 +135,17 @@ def test_update_cwl_prefixes_match_real_cli_options() -> None:
         )
 
 
-def test_ingest_cwl_declares_data_root_env_var_requirement() -> None:
-    """L'oracle O2 repose sur TINY_WAE_DATA_ROOT posé via EnvVarRequirement (ingest n'a
-    aucune option --data-root — cf. cwl/README.md)."""
-    doc = _load_cwl("ingest.cwl")
-    requirements = doc.get("requirements", {})
-    env_req = requirements.get("EnvVarRequirement")
-    assert env_req is not None, "ingest.cwl doit déclarer un EnvVarRequirement"
-    assert "TINY_WAE_DATA_ROOT" in env_req.get("envDef", {})
-
-
-def test_update_cwl_declares_data_root_env_var_requirement() -> None:
-    """Même levier que ingest.cwl pour update.cwl : `update` n'a aucune option
-    --data-root, la racine de stockage passe par TINY_WAE_DATA_ROOT."""
-    doc = _load_cwl("update.cwl")
-    requirements = doc.get("requirements", {})
-    env_req = requirements.get("EnvVarRequirement")
-    assert env_req is not None, "update.cwl doit déclarer un EnvVarRequirement"
-    assert "TINY_WAE_DATA_ROOT" in env_req.get("envDef", {})
+def test_aucun_cwl_ne_declare_d_input_data_root() -> None:
+    """`data_root` n'est plus un input CWL : la racine de stockage vient de
+    TINY_WAE_DATA_ROOT, posée dans l'environnement du worker (cf. cwl/README.md).
+    Le ré-exposer en input impliquerait de la reposer via EnvVarRequirement, que
+    PID-FLOW ne supporte pas."""
+    for name in _ALL_CWL:
+        inputs = _load_cwl(name).get("inputs", {})
+        assert "data_root" not in inputs, (
+            f"{name} déclare un input `data_root` — la racine vient de "
+            "TINY_WAE_DATA_ROOT posée par le worker (cf. cwl/README.md)"
+        )
 
 
 def test_workflow_cwl_chains_search_output_into_ingest_input() -> None:
@@ -175,33 +173,36 @@ def test_workflow_cwl_output_sources_point_to_declared_steps() -> None:
         )
 
 
-def _mentions_inline_javascript(node: Any) -> bool:
-    """Vrai si `node` déclare `InlineJavascriptRequirement`, sous l'une OU l'autre des
-    deux formes admises par CWL : clé d'une map de `requirements`/`hints`, ou entrée
-    `{class: InlineJavascriptRequirement}` d'une liste. Récursif : un
-    `requirements` niché dans un step de workflow compte aussi."""
+def _declares_requirement(node: Any, requirement_class: str) -> bool:
+    """Vrai si `node` déclare `requirement_class`, sous l'une OU l'autre des deux formes
+    admises par CWL : clé d'une map de `requirements`/`hints`, ou entrée
+    `{class: <requirement_class>}` d'une liste. Récursif : un `requirements` niché dans
+    un step de workflow compte aussi."""
     if isinstance(node, dict):
-        if "InlineJavascriptRequirement" in node:
+        if requirement_class in node:
             return True
-        if node.get("class") == "InlineJavascriptRequirement":
+        if node.get("class") == requirement_class:
             return True
-        return any(_mentions_inline_javascript(value) for value in node.values())
+        return any(_declares_requirement(value, requirement_class) for value in node.values())
     if isinstance(node, list):
-        return any(_mentions_inline_javascript(item) for item in node)
+        return any(_declares_requirement(item, requirement_class) for item in node)
     return False
 
 
-def test_aucun_cwl_ne_declare_inline_javascript_requirement() -> None:
-    """⛔ `InlineJavascriptRequirement` n'est pas supporté par PID-FLOW aujourd'hui.
+def test_aucun_cwl_ne_declare_d_exigence_non_supportee_par_pid_flow() -> None:
+    """⛔ Ni `InlineJavascriptRequirement` ni `EnvVarRequirement` — PID-FLOW ne les
+    supporte pas aujourd'hui.
 
-    `cwltool --validate` (`just cwl`) reste VERT si on le rajoute — l'exécuteur de
-    développement est plus permissif que celui de production : c'est exactement l'angle
-    mort que ce test comble. Nos `$(inputs.x)` sont des références de paramètre, le
-    sous-ensemble toujours disponible sans exigence déclarée (cf. cwl/README.md), donc
-    rien ne justifie de le réintroduire.
+    `cwltool --validate` (`just cwl`) reste VERT si on les rajoute : l'exécuteur de
+    développement est plus permissif que celui de production, et c'est exactement
+    l'angle mort que ce test comble. Aucune des deux ne nous manque — nos `$(inputs.x)`
+    sont des références de paramètre (toujours disponibles sans exigence déclarée) et
+    `TINY_WAE_DATA_ROOT` est posée dans l'environnement du worker (cf. cwl/README.md).
     """
-    for name in ("search.cwl", "ingest.cwl", "update.cwl", "workflow.cwl"):
-        assert not _mentions_inline_javascript(_load_cwl(name)), (
-            f"{name} déclare InlineJavascriptRequirement — non supporté par PID-FLOW, "
-            "et inutile pour des références de paramètre (cf. cwl/README.md)"
-        )
+    for name in _ALL_CWL:
+        doc = _load_cwl(name)
+        for requirement_class in _FORBIDDEN_REQUIREMENTS:
+            assert not _declares_requirement(doc, requirement_class), (
+                f"{name} déclare {requirement_class} — non supporté par PID-FLOW "
+                "(cf. cwl/README.md)"
+            )

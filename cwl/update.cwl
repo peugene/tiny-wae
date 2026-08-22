@@ -23,22 +23,7 @@ baseCommand: [python, -m, tiny_wae, update]
 # QUE des erreurs réseau doit remonter en échec, pas se fondre dans le succès silencieux.
 successCodes: [0, 1]
 
-# ⛔ PAS d'`InlineJavascriptRequirement` ici — non supporté par PID-FLOW aujourd'hui, et
-# inutile : `$(inputs.x)` est une référence de paramètre, toujours disponible sans lui.
-# Cf. cwl/README.md. Ne pas le (ré)ajouter par réflexe.
-requirements:
-  EnvVarRequirement:
-    envDef:
-      # `update` n'a aucune option --data-root (comme `ingest`) : la racine de stockage
-      # vient de settings.data_root, surchargeable par TINY_WAE_DATA_ROOT (mécanisme
-      # TINY_WAE_* d'adapters/config_io.py). Même levier que ingest.cwl pour l'oracle O2.
-      TINY_WAE_DATA_ROOT: $(inputs.data_root)
-
 inputs:
-  data_root:
-    type: string
-    default: "./data"
-    doc: "Surcharge TINY_WAE_DATA_ROOT — racine de stockage des chips ingérées."
   sites:
     type: string?
     inputBinding:
@@ -65,7 +50,8 @@ inputs:
 
 # Pas de sortie CWL déclarée, même raison que ingest.cwl (cf. cwl/README.md) :
 # `update` délègue l'ingestion effective à `ingest`, qui écrit hors du répertoire de
-# travail du tool (racine pilotée par `data_root`, potentiellement un chemin absolu
+# travail du tool (racine posée par TINY_WAE_DATA_ROOT dans l'environnement du worker,
+# potentiellement un chemin absolu
 # externe au sandbox CWL — un outputBinding.glob absolu est interdit par la spec CWL).
 # Le succès du run se lit au code de sortie (successCodes ci-dessus) et au résumé
 # STDERR ; ce qui a été effectivement écrit se vérifie sur disque (manifestes

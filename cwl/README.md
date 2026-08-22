@@ -29,29 +29,50 @@ domaine d'application qui s'arrête à la frontière du dépôt. Ne pas « corri
 fichiers pour y mettre `just` — ça ne s'exécuterait nulle part en dehors du
 développeur qui a le dépôt cloné.
 
-## ⛔ Pas d'`InlineJavascriptRequirement` (contrainte PID-FLOW)
+## ⛔ Exigences CWL non supportées par PID-FLOW
 
-**`InlineJavascriptRequirement` n'est pas supporté par PID-FLOW aujourd'hui.** Aucun des
-4 fichiers ne le déclare, et il ne faut pas l'y remettre : un tool qui l'exige ne
-tournerait pas chez le consommateur visé, alors même que `cwltool --validate` reste vert
-en local — l'exécuteur de développement est plus permissif que l'exécuteur de production.
+**PID-FLOW ne supporte aujourd'hui ni `InlineJavascriptRequirement` ni
+`EnvVarRequirement`.** Aucun des 4 fichiers ne les déclare, et il ne faut pas les y
+remettre : un tool qui les exige ne tournerait pas chez le consommateur visé, alors même
+que `cwltool --validate` (`just cwl`) reste **vert** en local — l'exécuteur de
+développement est plus permissif que celui de production. C'est l'angle mort que couvre
+`tests/test_cwl.py` (`test_aucun_cwl_ne_declare_d_exigence_non_supportee_par_pid_flow`),
+qui balaie les 4 fichiers sous les deux formes CWL (clé de map, entrée `{class: …}` de
+liste) et jusque dans les steps de workflow.
 
-Il n'apportait de toute façon rien. Les 3 tools n'utilisent que des **références de
-paramètre** (`$(inputs.data_root)`, `$(inputs.json_out)`), c'est-à-dire le sous-ensemble
-restreint que la spec CWL rend **toujours disponible**, sans exigence à déclarer. Vérifié
-dans le moteur (`cwl_utils/expression.py`, `evaluator()`) : une expression qui matche la
-grammaire des références de paramètre est résolue directement, le drapeau `fullJS`
-(= `InlineJavascriptRequirement`) n'est consulté que dans la branche de repli. Mesuré :
-avec l'exigence déclarée et un `node` délibérément saboté (`exit 127`), le run reste vert
-— le moteur JS n'est jamais sollicité.
+### `InlineJavascriptRequirement` — inutile de toute façon
 
-Ce que l'exigence coûtait, en plus de fermer la porte de PID-FLOW : elle **désarme un
-garde-fou**. Sans elle, une `$(...)` mal formée est refusée avec un message explicite
-(« *Syntax error in parameter reference … could be due to using Javascript code without
-specifying InlineJavascriptRequirement* ») ; avec elle, la même expression part au moteur
-JS et s'évalue silencieusement. C'est précisément ce message qui doit sonner le jour où
-quelqu'un écrit du vrai JavaScript ici — parce que ce jour-là, le tool cesse d'être
-exécutable par PID-FLOW.
+Les 3 tools n'utilisent que des **références de paramètre** (`$(inputs.json_out)`),
+c'est-à-dire le sous-ensemble restreint que la spec CWL rend **toujours disponible**, sans
+exigence à déclarer. Vérifié dans le moteur (`cwl_utils/expression.py`, `evaluator()`) :
+une expression qui matche la grammaire des références de paramètre est résolue
+directement, le drapeau `fullJS` (= `InlineJavascriptRequirement`) n'est consulté que dans
+la branche de repli. Mesuré : avec l'exigence déclarée et un `node` délibérément saboté
+(`exit 127`), le run reste vert — le moteur JS n'est jamais sollicité.
+
+L'exigence **désarme** en plus un garde-fou. Sans elle, une `$(...)` mal formée est refusée
+avec un message explicite (« *Syntax error in parameter reference … could be due to using
+Javascript code without specifying InlineJavascriptRequirement* ») ; avec elle, la même
+expression part au moteur JS et s'évalue silencieusement. C'est précisément ce message qui
+doit sonner le jour où quelqu'un écrit du vrai JavaScript ici — parce que ce jour-là, le
+tool cesse d'être exécutable par PID-FLOW.
+
+### `EnvVarRequirement` — la variable vient du worker
+
+`ingest`/`update` n'ont **aucune option `--data-root`** : la racine de stockage vient de
+`settings.data_root` (`config/settings.yaml`), surchargeable par la variable
+d'environnement `TINY_WAE_DATA_ROOT` (mécanisme `TINY_WAE_*` d'`adapters/config_io.py`).
+Les tools posaient cette variable eux-mêmes, via un `EnvVarRequirement` alimenté par un
+input `data_root` ; **les deux ont été retirés** — `TINY_WAE_DATA_ROOT` est désormais
+**posée dans l'environnement du worker** PID-FLOW, hors CWL. Corollaire : ne pas
+réintroduire l'input `data_root`, il n'aurait plus par quel moyen atteindre le process
+(garde-fou : `test_aucun_cwl_ne_declare_d_input_data_root`).
+
+⚠ **En local, une variable posée dans le shell appelant n'atteint PAS le job** : `cwltool`
+n'expose au process qu'un environnement minimal. La recette `just cwl-run` passe donc
+`--preserve-environment TINY_WAE_DATA_ROOT`, ce qui reproduit le comportement du worker.
+Mesuré : sans l'option la variable arrive absente, avec elle elle arrive intacte, et son
+absence pure et simple ne casse rien (repli sur `settings.data_root`).
 
 ## Codes de sortie et `successCodes`
 
@@ -80,19 +101,15 @@ invalide) · `3` INCONCLUSIVE (amont injoignable / aucun item n'a abouti).
   abouti) restent des échecs CWL : un run qui ne fait QUE des erreurs réseau doit
   remonter en échec, c'est le CLI du cron, celui que personne ne regarde tourner.
 
-## `TINY_WAE_DATA_ROOT` (levier de l'oracle O2)
+## Racine de stockage et sorties
 
-`ingest` n'a **aucune option `--data-root`** : la racine de stockage vient de
-`settings.data_root` (`config/settings.yaml`), surchargeable par la variable
-d'environnement `TINY_WAE_DATA_ROOT` (mécanisme `TINY_WAE_*` de
-`adapters/config_io.py`). `ingest.cwl` déclare un `EnvVarRequirement` qui pose cette
-variable à partir de l'input `data_root` (défaut `./data`, comme le YAML) — c'est ce
-qui permet de pointer deux racines de stockage vierges et distinctes lors d'une
-comparaison run CWL / run CLI direct.
+La racine de stockage se pilote par `TINY_WAE_DATA_ROOT` (cf. section précédente) — c'est
+ce qui permet de pointer deux racines vierges et distinctes lors d'une comparaison run CWL
+/ run CLI direct (oracle O2).
 
 ⚠ **`ingest.cwl` n'a AUCUNE sortie CWL déclarée** (`outputs: []`). Essayé puis retiré,
 mesuré à l'exécution (oracle O2) : la spec CWL interdit un `outputBinding.glob`
-commençant par `/`, or `data_root` est justement pensé pour recevoir un chemin
+commençant par `/`, or `TINY_WAE_DATA_ROOT` est justement pensée pour recevoir un chemin
 **absolu**, hors du répertoire de travail du tool — c'est même le cas d'usage de
 l'oracle O2 (deux racines vierges arbitraires). Capturer la racine comme sortie
 `Directory` casserait donc précisément l'usage pour lequel elle existe. Le succès de
@@ -132,9 +149,8 @@ introspection `click`/`typer` (`typer.main.get_command`, pas un parsing de
 ## Run local (hors gate, réseau)
 
 ```
-just cwl-run cwl/workflow.cwl \
+TINY_WAE_DATA_ROOT=/tmp/cwl-run-data just cwl-run cwl/workflow.cwl \
     --site A01 --from_date 2026-01-01 --to_date 2026-01-10 \
-    --data_root /tmp/cwl-run-data \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 ```
 
@@ -156,12 +172,12 @@ just run search --site A01 --from 2026-01-01 --to 2026-01-10 --json /tmp/acq.jso
 TINY_WAE_DATA_ROOT=./data-cli-test just run ingest --acquisitions /tmp/acq.json
 ```
 
-et comparer les ensembles `(item_id, statut)` des deux `data_root` (manifestes
+et comparer les ensembles `(item_id, statut)` des deux racines (manifestes
 `run.json`, `adapters/manifests.py`).
 
 ## Run local d'`update.cwl` (oracle O2 de `l0-06.2`, hors gate, réseau)
 
-⚠ **`update` ne peut rien ingérer sur un `data_root` totalement vierge** : sans
+⚠ **`update` ne peut rien ingérer sur une racine totalement vierge** : sans
 aucun manifeste connu, le site est déclaré « vierge » (`NoManifests` → exit 1,
 pointant vers `backfill`) — ce n'est pas un bug, c'est la même logique que
 `cli/update.py`. L'oracle « idempotence d'un run à l'autre » exige donc un
@@ -172,14 +188,14 @@ TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just run ingest \
     --site A01 --from <J-20> --to <J-1> \
     --sites-path config/sites.yaml --settings-path config/settings.yaml
 
-just cwl-run cwl/update.cwl \
-    --sites A01 --data_root /tmp/cwl-update-data \
+TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run cwl/update.cwl \
+    --sites A01 \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 # 1er run : rattrape la fenêtre [J-1, maintenant] laissée ouverte par l'amorçage —
 # ingested/assets_read potentiellement > 0, c'est attendu.
 
-just cwl-run cwl/update.cwl \
-    --sites A01 --data_root /tmp/cwl-update-data \
+TINY_WAE_DATA_ROOT=/tmp/cwl-update-data just cwl-run cwl/update.cwl \
+    --sites A01 \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
 # 2e run, quelques minutes après : c'est CE run que l'oracle mesure. Sur un parc
 # stable, il doit rendre ingested == 0 et assets_read == 0 (idempotence, cf.
@@ -187,8 +203,8 @@ just cwl-run cwl/update.cwl \
 ```
 
 Deux formulations plus courtes ont été essayées et rejetées (cf. `l0-06.2`) : lancer
-`update.cwl` sur le `data_root` déjà peuplé de `l0-06.1` (fenêtre déjà close → il
-retrouve du neuf, pas un test d'idempotence propre) et lancer `update.cwl` sur un
-`data_root` vierge sans amorçage (`NoManifests` dès le 1er run — rien à mesurer).
+`update.cwl` sur la racine déjà peuplée de `l0-06.1` (fenêtre déjà close → il
+retrouve du neuf, pas un test d'idempotence propre) et lancer `update.cwl` sur une
+racine vierge sans amorçage (`NoManifests` dès le 1er run — rien à mesurer).
 L'amorçage par `ingest` est donc une étape obligatoire du protocole, pas une
 option.

@@ -82,9 +82,13 @@ cwl:
     pixi run cwltool --validate cwl/update.cwl
 
 # exécution RÉELLE d'un tool/workflow CWL (hors gate — fait du réseau)
-# ex. just cwl-run cwl/workflow.cwl --site A01 --from_date 2026-01-01 --to_date 2026-01-10 …
+# ex. TINY_WAE_DATA_ROOT=/tmp/cwl-data just cwl-run cwl/workflow.cwl --site A01 --from_date …
+# --preserve-environment : cwltool n'expose au job qu'un environnement minimal, une variable
+# posée dans le shell appelant ne l'atteint PAS sans ça (mesuré). C'est ce qui simule en local
+# le worker PID-FLOW, où TINY_WAE_DATA_ROOT est posée par l'exécuteur — les .cwl ne la portent
+# plus (EnvVarRequirement non supporté par PID-FLOW, cf. cwl/README.md).
 cwl-run file *args:
-    pixi run cwltool --outdir /tmp/cwl-run-out {{file}} {{args}}
+    pixi run cwltool --preserve-environment TINY_WAE_DATA_ROOT --outdir /tmp/cwl-run-out {{file}} {{args}}
 
 # ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:

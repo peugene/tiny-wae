@@ -18,22 +18,7 @@ baseCommand: [python, -m, tiny_wae, ingest]
 # réseau uniquement) restent des échecs CWL. Détail : cwl/README.md.
 successCodes: [0, 1]
 
-# ⛔ PAS d'`InlineJavascriptRequirement` ici — non supporté par PID-FLOW aujourd'hui, et
-# inutile : `$(inputs.x)` est une référence de paramètre, toujours disponible sans lui.
-# Cf. cwl/README.md. Ne pas le (ré)ajouter par réflexe.
-requirements:
-  EnvVarRequirement:
-    envDef:
-      # Surcharge de settings.data_root (mécanisme TINY_WAE_* d'adapters/config_io.py) —
-      # c'est le levier utilisé par l'oracle O2 pour pointer deux data_root vierges
-      # distincts entre le run CWL et le run CLI direct.
-      TINY_WAE_DATA_ROOT: $(inputs.data_root)
-
 inputs:
-  data_root:
-    type: string
-    default: "./data"
-    doc: "Surcharge TINY_WAE_DATA_ROOT — racine de stockage des chips ingérées."
   acquisitions:
     type: File?
     inputBinding:
@@ -72,7 +57,8 @@ inputs:
     doc: "Chemin vers settings.yaml (défaut CLI : config/settings.yaml)."
 
 # Pas de sortie capturée : `ingest` écrit ses chips/manifestes en dehors du répertoire de
-# travail du tool (racine pilotée par `data_root`, potentiellement un chemin absolu externe
+# travail du tool (racine posée par TINY_WAE_DATA_ROOT dans l'environnement du worker,
+# potentiellement un chemin absolu externe
 # au sandbox CWL — cf. cwl/README.md). Un `outputBinding.glob` ne peut PAS pointer un chemin
 # absolu (interdit par la spec CWL) : tenté puis retiré, cf. note dans le README. Le succès
 # de l'ingestion est signalé par le code de sortie (`successCodes` ci-dessus), pas par une

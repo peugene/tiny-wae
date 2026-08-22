@@ -19,10 +19,6 @@ inputs:
   to_date:
     type: string
     doc: "Fin de fenêtre, YYYY-MM-DD."
-  data_root:
-    type: string
-    default: "./data"
-    doc: "Surcharge TINY_WAE_DATA_ROOT — racine de stockage des chips ingérées."
   sites_path:
     type: File?
     doc: "Chemin vers sites.yaml (défaut CLI : config/sites.yaml)."
@@ -36,8 +32,9 @@ outputs:
     outputSource: search_step/acquisitions
     doc: "Enveloppe JSON des items STAC trouvés (sortie intermédiaire, exposée pour audit)."
   # Pas de sortie pour ingest_step : `ingest` écrit en dehors du sandbox CWL (racine
-  # pilotée par `data_root`, potentiellement un chemin absolu — cf. cwl/ingest.cwl et
-  # cwl/README.md). Le succès du step est signalé par son code de sortie.
+  # posée par TINY_WAE_DATA_ROOT dans l'environnement du worker, potentiellement un
+  # chemin absolu — cf. cwl/ingest.cwl et cwl/README.md). Le succès du step est signalé
+  # par son code de sortie.
 
 steps:
   search_step:
@@ -54,7 +51,6 @@ steps:
     run: ingest.cwl
     in:
       acquisitions: search_step/acquisitions
-      data_root: data_root
       sites_path: sites_path
       settings_path: settings_path
     out: []
