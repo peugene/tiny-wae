@@ -187,8 +187,13 @@ def _format_eta(eta_seconds: float | None, *, done: int, total: int, uncertain: 
 
 def _format_counters(counters: Mapping[str, int]) -> str:
     """Rend les compteurs NON NULS d'un run, triés par clé (fiche : « une ligne à 12
-    compteurs à zéro est illisible »). Chaîne vide si tous les compteurs sont nuls."""
-    return " ".join(f"{key}={value}" for key, value in sorted(counters.items()) if value != 0)
+    compteurs à zéro est illisible »). ``aucun item`` si TOUS les compteurs sont nuls
+    (correction post-revue : une fenêtre sans acquisition est un cas RÉEL et fréquent — un
+    site sans item sur un mois — la laisser sans charge utile la rendrait indistinguable
+    d'un défaut d'affichage sur un run de 1200 lignes, et terminerait la ligne par un
+    espace)."""
+    rendered = " ".join(f"{key}={value}" for key, value in sorted(counters.items()) if value != 0)
+    return rendered if rendered else "aucun item"
 
 
 @dataclass

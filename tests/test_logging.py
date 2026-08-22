@@ -43,7 +43,7 @@ _NOW_SEPT_2022 = "2022-09-30"
 # Motif figé (fiche, « Format de ligne (figé) ») d'une ligne de PROGRESSION (pas la ligne
 # d'ouverture, qui ne porte pas de `n/total`) : horodatage, niveau, `n/total (pct%) ETA
 # ...`, id du site, bornes de fenêtre `start→end`, charge utile variable (compteurs non
-# nuls, ou `ÉCHEC : ...`, éventuellement vide).
+# nuls, `ÉCHEC : ...`, ou `aucun item` — jamais vide, correction post-revue du 2026-08-22).
 _PROGRESS_LINE_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (?P<level>INFO|WARNING)\s+"
     r"backfill  (?P<n>\d+)/(?P<total>\d+) \(\s*\d+\.\d%\) "
@@ -259,6 +259,65 @@ def test_o4_echec_logue_en_warning_le_run_continue(
 
     assert len(info_matches) == 1  # A01 : le run continue malgré l'échec de B09.
     assert info_matches[0].group("site") == "A01"
+
+
+# ── Correction post-revue (2026-08-22) : fenêtre sans item, aucune ligne en espace ──
+
+
+def test_fenetre_sans_item_marqueur_explicite_et_aucune_ligne_ne_finit_par_un_espace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Une fenêtre dont TOUS les compteurs sont nuls (site sans acquisition sur la
+    période — cas RÉEL et fréquent, pas un défaut) rend le marqueur explicite `aucun
+    item` à la place d'une charge utile vide, et AUCUNE ligne de log ne se termine par un
+    espace, quel que soit le cas (compteurs, `aucun item`, ou `ÉCHEC : ...`).
+
+    B09 (corpus réel en août 2023) n'a AUCUN item dans la fenêtre de septembre 2022
+    utilisée ici pour A01 : sa ligne de progression a donc les 10 compteurs à zéro par
+    construction, sans double ni source truquée."""
+    data_root = tmp_path / "data"
+    settings_path = _write_settings(tmp_path, data_root=data_root)
+    settings = Settings(
+        stac_url="https://earth-search.aws.element84.com/v1",
+        stac_collection="sentinel-2-l2a",
+        data_root=str(data_root),
+    )
+    _patch_source(monkeypatch, FixtureSource(settings=settings))
+
+    result = runner.invoke(
+        app,
+        [
+            "backfill",
+            "--sites",
+            "A01,B09",
+            "--months",
+            "1",
+            "--now",
+            _NOW_SEPT_2022,
+            "--sites-path",
+            str(DEFAULT_SITES_PATH),
+            "--settings-path",
+            str(settings_path),
+        ],
+    )
+
+    assert result.exit_code == exit_codes.OK, result.stderr
+    matches = _progress_lines(result.stderr)
+    assert len(matches) == 2  # A01 (found_stac=6) + B09 (0 item, hors fenêtre du corpus).
+
+    b09_match = next(m for m in matches if m.group("site") == "B09")
+    assert b09_match.group("payload") == "aucun item"
+    a01_match = next(m for m in matches if m.group("site") == "A01")
+    assert a01_match.group("payload") != "aucun item"  # A01 a bien des compteurs non nuls.
+
+    log_lines = [
+        line
+        for line in result.stderr.splitlines()
+        if re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} ", line)
+    ]
+    assert len(log_lines) >= 3  # ligne d'ouverture + 2 lignes de progression, au moins.
+    for line in log_lines:
+        assert line == line.rstrip()  # aucune ligne de log ne finit par un espace.
 
 
 # ── O5 : --log-level WARNING supprime la progression, garde les échecs ─────────────
