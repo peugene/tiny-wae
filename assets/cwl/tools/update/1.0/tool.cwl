@@ -6,9 +6,10 @@ label: "update"
 doc: |
   Run quotidien tiny-wae : fenêtre depuis le dernier manifeste connu.
 
-  Emballe `python -m tiny_wae update` (cf. assets/cwl/README.md pour l'écart assumé
-  vs cwl-assets : `tiny_wae` est un package Python installé, pas un script rsyncé
-  sous WORKER_PYTHON_SCRIPTS_ROOT).
+  Emballe la sous-commande `update` de l'exécutable `tiny-wae` (cf. assets/cwl/README.md
+  pour l'écart assumé vs cwl-assets : `tiny_wae` est un package Python installé qui
+  expose un point d'entrée console, pas un script rsyncé sous
+  WORKER_PYTHON_SCRIPTS_ROOT).
   Pour chaque site du parc (ou le sous-ensemble filtré par `sites`), calcule la
   fenêtre depuis le dernier manifeste connu (marge `incremental_margin_days`) et
   appelle `ingest` dessus. C'est le tool destiné à un ordonnancement quotidien
@@ -24,7 +25,10 @@ hints:
     packages:
       - package: python
 
-baseCommand: [python, -m, tiny_wae, update]
+# `tiny-wae` = point d'entrée console généré à l'installation du paquet, résolu sur le
+# PATH du job. PAS `python -m tiny_wae` : `python` est le nom le plus surchargé du système
+# et se résout silencieusement sur un interpréteur sans le paquet. Détail : README.
+baseCommand: [tiny-wae, update]
 
 # OK=0 (aucun échec) et FAILURE=1 (>=1 échec avec au moins un succès, OU au moins un
 # site vierge sans aucun manifeste connu — cf. cli/update.py) sont tous deux acceptés :

@@ -17,6 +17,14 @@ dependencies = [
     "pystac-client>=0.8",
 ]
 
+# Point d'entrée console : `pip`/`pixi` génère un exécutable `tiny-wae` dans le `bin/` de
+# l'environnement d'installation. C'est LUI que les `baseCommand` CWL appellent — pas
+# `python -m tiny_wae`. Motif : `python` est le nom le plus surchargé du système et se
+# résout silencieusement sur un interpréteur qui n'a pas le paquet ; `tiny-wae` est unique
+# au projet et échoue franchement s'il est absent du PATH. Détail : assets/cwl/README.md.
+[project.scripts]
+tiny-wae = "tiny_wae.__main__:app"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

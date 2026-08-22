@@ -46,12 +46,39 @@ Le cas standard cwl-assets est un script Python déployé par `rsync` sous
 worker réécrit ce chemin relatif en
 `${WORKER_PYTHON_COMMAND} ${WORKER_PYTHON_SCRIPTS_ROOT}/<sous-rep>/<script>.py`.
 
-Ici, `tiny_wae` est un **package Python installé** dans l'environnement : le `baseCommand`
-appelle directement `python -m tiny_wae <cmd>`, sans script à déployer. C'est un écart
-délibéré, pas un oubli — mais il a une **conséquence de déploiement** : le worker n'a rien
-à rsyncer, en revanche **`tiny_wae` doit être installé dans le Python du worker**, sinon la
-tâche échoue à l'exécution (`No module named tiny_wae`). Les deux modèles exigent un
-déploiement, simplement pas le même.
+Ici, `tiny_wae` est un **package Python installé** qui expose un **point d'entrée
+console** (`[project.scripts]` du `pyproject.toml`) : `pip` génère un exécutable
+`tiny-wae` dans le `bin/` de l'environnement d'installation, et c'est lui qu'appellent les
+`baseCommand` — `baseCommand: [tiny-wae, search]`. Rien à rsyncer.
+
+C'est un écart délibéré, pas un oubli — mais il déplace la contrainte de déploiement au
+lieu de la supprimer : le worker n'a aucun script à recevoir, en revanche **la wheel
+`tiny_wae` doit être installée dans le venv du worker**, et **le `bin/` de ce venv doit
+être sur le PATH des jobs**. Les deux modèles exigent un déploiement, simplement pas le
+même.
+
+### Pourquoi `tiny-wae` et pas `python -m tiny_wae`
+
+Les deux formes échappent à la réécriture du worker (elle ne s'applique qu'aux
+`baseCommand` pointant un `.py` relatif) : dans les deux cas l'exécutable est résolu sur
+le **PATH du job**. Mais la ressemblance s'arrête là.
+
+`python` est le nom le plus surchargé du système. S'il se résout sur un autre interpréteur
+que celui du venv, l'appel **réussit à démarrer** et échoue plus loin sur un
+`No module named tiny_wae` — une erreur qui parle d'un module alors que le problème est un
+interpréteur. `tiny-wae` est unique au projet : absent du PATH, il échoue immédiatement et
+sans ambiguïté. À fragilité égale, on préfère l'échec franc à l'échec trompeur.
+
+Mesuré : `cwltool` transmet au job **l'intégralité du PATH parent** (seuls `HOME`, `PWD` et
+`TMPDIR` sont recréés). En local, `bin/tiny-wae` de l'environnement pixi est donc trouvé
+sans rien déclarer — exactement comme `ruff` l'est. C'est ce qui permet à `just cwl-run` de
+rester une seule ligne, sans le `pack` + réécriture `jq` que `bin/run-local.sh` doit faire
+dans `cwl-assets` pour ses `baseCommand` relatifs.
+
+⚠ **La contrepartie est côté ops** : il faut que le job du worker voie ce `bin/`. Si le
+worker ne garantit que `WORKER_PYTHON_COMMAND` sans activer le venv, il faudra basculer sur
+la convention native (wrappers `.py` sous `WORKER_PYTHON_SCRIPTS_ROOT`) — et porter aussi
+l'équivalent de `bin/run-local.sh` pour que l'exécution locale survive.
 
 Le hint de capability, lui, reste celui de la convention :
 
@@ -66,18 +93,17 @@ hints:
 **ne prend pas** la tâche. Elle reste en attente — pas en erreur. Si rien ne démarre, c'est
 la première chose à regarder.
 
-## Pourquoi `python` en dur dans le `baseCommand` (et pas `just`)
+### Pourquoi pas `just` dans le `baseCommand`
 
 La règle façade du projet (« `pixi` ne s'écrit jamais hors du `justfile` ») s'applique
 aux recettes, à la doc et aux prompts d'agents — bref, à tout ce qui s'exécute
 **dans ce dépôt, par une main ou un agent qui a `just` sous la main**. Un fichier
 `.cwl` est destiné à un **exécuteur externe** (typiquement un worker PID-FLOW) qui ne
 connaît ni ce dépôt, ni `just`, ni `pixi` — seulement l'environnement dans lequel le
-`baseCommand` s'exécute. `python -m tiny_wae <cmd>` est donc le seul appel qui a un
-sens depuis l'extérieur ; ce n'est pas une entorse à la règle façade, c'est son
-domaine d'application qui s'arrête à la frontière du dépôt. Ne pas « corriger » ces
-fichiers pour y mettre `just` — ça ne s'exécuterait nulle part en dehors du
-développeur qui a le dépôt cloné.
+`baseCommand` s'exécute. `tiny-wae <cmd>` est donc le seul appel qui a un sens depuis
+l'extérieur ; ce n'est pas une entorse à la règle façade, c'est son domaine d'application
+qui s'arrête à la frontière du dépôt. Ne pas « corriger » ces fichiers pour y mettre
+`just` — ça ne s'exécuterait nulle part en dehors du développeur qui a le dépôt cloné.
 
 ## ⛔ Exigences CWL non supportées par PID-FLOW
 

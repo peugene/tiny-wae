@@ -19,6 +19,7 @@ assets/cwl/README.md), que rien d'autre ne vérifie ici.
 
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,10 @@ CWL_ROOT = Path(__file__).resolve().parent.parent / "assets" / "cwl"
 
 # Version unique de tous les artefacts (répertoire `<nom>/<version>/`).
 CWL_VERSION = "1.0"
+
+# Exécutable appelé par les `baseCommand` — le point d'entrée console que le paquet
+# génère à l'installation (`[project.scripts]` du pyproject.toml).
+CONSOLE_SCRIPT = "tiny-wae"
 
 # {nom d'artefact PID-FLOW: chemin du .cwl}. Le nom est celui du RÉPERTOIRE, c'est-à-dire
 # l'identité de l'artefact côté cwl-store — pas le nom de fichier, qui vaut toujours
@@ -252,10 +257,32 @@ def test_aucun_cwl_ne_declare_d_input_data_root() -> None:
 
 
 def test_base_commands() -> None:
-    """Chaque tool appelle bien `python -m tiny_wae <sous-commande>`, où la sous-commande
-    est le NOM de l'artefact (décision d'ancrage n°1 de l0-06.1)."""
+    """Chaque tool appelle `tiny-wae <sous-commande>`, où la sous-commande est le NOM de
+    l'artefact.
+
+    ⛔ Pas `python -m tiny_wae` : `python` est le nom le plus surchargé du système, il se
+    résout sur le PATH du job et peut tomber SILENCIEUSEMENT sur un interpréteur qui n'a
+    pas le paquet. `tiny-wae` est un nom unique au projet — absent du PATH, il échoue
+    franchement (cf. assets/cwl/README.md)."""
     for name in _TOOLS:
-        assert _load_cwl(name)["baseCommand"] == ["python", "-m", "tiny_wae", name]
+        assert _load_cwl(name)["baseCommand"] == [CONSOLE_SCRIPT, name]
+
+
+def test_le_console_script_est_declare_dans_le_paquet() -> None:
+    """L'exécutable appelé par les `baseCommand` est bien celui que le paquet PRODUIT.
+
+    Sans ce test, renommer (ou supprimer) l'entrée `[project.scripts]` laisserait les 3
+    tools pointer un exécutable qui n'existe plus — invisible pour `cwltool --validate`
+    comme pour la confrontation des prefixes, et fatal au premier run sur le worker."""
+    pyproject = tomllib.loads(
+        (Path(__file__).resolve().parent.parent / "pyproject.toml").read_text(encoding="utf-8")
+    )
+    scripts = pyproject["project"]["scripts"]
+    assert CONSOLE_SCRIPT in scripts, (
+        f"pyproject.toml ne déclare plus le console script {CONSOLE_SCRIPT!r} — les "
+        "baseCommand des tools pointent dans le vide"
+    )
+    assert scripts[CONSOLE_SCRIPT] == "tiny_wae.__main__:app"
 
 
 def test_prefixes_match_real_cli_options() -> None:

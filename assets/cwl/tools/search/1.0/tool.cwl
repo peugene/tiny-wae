@@ -6,9 +6,10 @@ label: "search"
 doc: |
   Recherche STAC d'un site tiny-wae sur une fenêtre temporelle.
 
-  Emballe `python -m tiny_wae search` (cf. assets/cwl/README.md pour l'écart assumé
-  vs cwl-assets : `tiny_wae` est un package Python installé, pas un script rsyncé
-  sous WORKER_PYTHON_SCRIPTS_ROOT).
+  Emballe la sous-commande `search` de l'exécutable `tiny-wae` (cf. assets/cwl/README.md
+  pour l'écart assumé vs cwl-assets : `tiny_wae` est un package Python installé qui
+  expose un point d'entrée console, pas un script rsyncé sous
+  WORKER_PYTHON_SCRIPTS_ROOT).
   Écrit l'enveloppe JSON dans un FICHIER (`--json`) plutôt que sur STDOUT — c'est le
   point de chaînage vers le tool `ingest` (cf. workflows/tiny-wae/1.0/workflow.cwl).
 
@@ -19,7 +20,10 @@ hints:
     packages:
       - package: python
 
-baseCommand: [python, -m, tiny_wae, search]
+# `tiny-wae` = point d'entrée console généré à l'installation du paquet, résolu sur le
+# PATH du job. PAS `python -m tiny_wae` : `python` est le nom le plus surchargé du système
+# et se résout silencieusement sur un interpréteur sans le paquet. Détail : README.
+baseCommand: [tiny-wae, search]
 
 # Seul le succès plein (OK=0) est accepté ici : un endpoint injoignable (INCONCLUSIVE=3),
 # une config invalide (USAGE=2) ou un échec métier (FAILURE=1) doivent arrêter le workflow —

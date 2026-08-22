@@ -6,9 +6,10 @@ label: "ingest"
 doc: |
   Ingestion des chips d'un site tiny-wae.
 
-  Emballe `python -m tiny_wae ingest` (cf. assets/cwl/README.md pour l'écart assumé
-  vs cwl-assets : `tiny_wae` est un package Python installé, pas un script rsyncé
-  sous WORKER_PYTHON_SCRIPTS_ROOT).
+  Emballe la sous-commande `ingest` de l'exécutable `tiny-wae` (cf. assets/cwl/README.md
+  pour l'écart assumé vs cwl-assets : `tiny_wae` est un package Python installé qui
+  expose un point d'entrée console, pas un script rsyncé sous
+  WORKER_PYTHON_SCRIPTS_ROOT).
   Prend en entrée soit `acquisitions` (enveloppe JSON produite par le tool `search` —
   c'est le chaînage du workflow), soit le triplet `site`/`from_date`/`to_date` en
   recherche directe (les deux formes sont mutuellement exclusives côté CLI).
@@ -23,7 +24,10 @@ hints:
     packages:
       - package: python
 
-baseCommand: [python, -m, tiny_wae, ingest]
+# `tiny-wae` = point d'entrée console généré à l'installation du paquet, résolu sur le
+# PATH du job. PAS `python -m tiny_wae` : `python` est le nom le plus surchargé du système
+# et se résout silencieusement sur un interpréteur sans le paquet. Détail : README.
+baseCommand: [tiny-wae, ingest]
 
 # OK=0 et FAILURE=1 (>=1 item en échec mais au moins un succès) sont tous deux acceptés :
 # un échec partiel est un résultat métier légitime, pas un incident d'exécution — le
