@@ -3845,7 +3845,7 @@ packages:
 - pypi: ./
   name: tiny-wae
   version: 0.1.0
-  sha256: 8719cd232b2a4b504eb47da74c487506681b51ba28b8662f0520abd39f08c91d
+  sha256: de252cdec814636ad7bb4cd180aad96bedd8359b6079e0fb08ca094b1a8aa405
   requires_dist:
   - typer>=0.15
   - pyyaml>=6.0
