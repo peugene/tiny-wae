@@ -59,7 +59,6 @@ qui rend le gestionnaire d'environnement remplaçable à coût quasi nul.
 - **Toujours commenter les fonctions non triviales** (docstring courte : rôle, entrées,
   sorties) — le relecteur n'est pas forcément l'auteur.
 - **Secrets** en variables d'environnement (`.env`, jamais commité), jamais dans le code.
-- **Pas de montée de version** de lib/runtime sans accord explicite.
 
 ## Backlog (pilotage par fiches)
 - Méthode : `docs/backlog/_methode-backlog.md`. **Statut = dossier** :
