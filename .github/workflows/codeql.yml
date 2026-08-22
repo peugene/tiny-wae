@@ -32,10 +32,13 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v5
-      - uses: github/codeql-action/init@v3
+      # v4 et pas v3 : la v3 cible Node 20 (déprécié, forcé sur Node 24 par le runner)
+      # et sera retirée en décembre 2026. Les deux avertissements du 1er run venaient
+      # de là — c'est exactement ce que Dependabot signalera désormais tout seul.
+      - uses: github/codeql-action/init@v4
         with:
           languages: python
           # `security-and-quality` plutôt que le jeu par défaut : il ajoute les requêtes de
           # qualité (code mort, comparaisons impossibles) au jeu sécurité.
           queries: security-and-quality
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
