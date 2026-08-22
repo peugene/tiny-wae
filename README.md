@@ -12,7 +12,7 @@ Projet Python piloté par IA — scaffoldé le 2026-08-21 avec le kit `_tools_py
 cp .env.example .env
 just install       # environnement pixi (lockfile)
 just db            # PostgreSQL + pgvector (inutile avant le Lot 1)
-just check         # lint + types + tests + smoke — le gate
+just check         # lint + types + tests + smoke + cwl — le gate (et la CI, à l'identique)
 ```
 
 ## Organisation
