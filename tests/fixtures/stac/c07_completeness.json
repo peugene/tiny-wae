@@ -1,0 +1,229 @@
+{
+  "items": [
+    {
+      "id": "S2A_C07_ING01",
+      "properties": {
+        "datetime": "2026-01-01T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_ING02",
+      "properties": {
+        "datetime": "2026-01-02T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_ING03",
+      "properties": {
+        "datetime": "2026-01-03T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_ING04",
+      "properties": {
+        "datetime": "2026-01-04T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_ING05",
+      "properties": {
+        "datetime": "2026-01-05T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_ING06",
+      "properties": {
+        "datetime": "2026-01-06T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_CLD01",
+      "properties": {
+        "datetime": "2026-01-07T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 40.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_CLD02",
+      "properties": {
+        "datetime": "2026-01-08T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 40.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_CLD03",
+      "properties": {
+        "datetime": "2026-01-09T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 40.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_INV01",
+      "properties": {
+        "datetime": "2026-01-10T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_NOD01",
+      "properties": {
+        "datetime": "2026-01-11T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_FAIL01",
+      "properties": {
+        "datetime": "2026-01-12T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_SCENE_CLOUD_01",
+      "properties": {
+        "datetime": "2026-01-13T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TEL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 97.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_OFFTILE_01",
+      "properties": {
+        "datetime": "2026-01-14T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TDL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_C07_OFFTILE_02",
+      "properties": {
+        "datetime": "2026-01-15T10:15:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-52TDL",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 5.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32652"
+      },
+      "assets": {}
+    }
+  ]
+}
