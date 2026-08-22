@@ -77,6 +77,15 @@ lots:
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"
 
+# hygiène des dépendances : déclarée non utilisée, utilisée non déclarée, transitive
+# utilisée directement. Angle mort de ruff ET de mypy — c'est ce défaut qui avait laissé
+# `affine` hors du contrat de la wheel.
+# `src` SEUL : `scripts/` n'est pas dans la wheel, ses dépendances (markdown…) sont des
+# dépendances de DEV déclarées côté pixi, que deptry ne lit pas — l'y inclure produirait
+# un faux positif permanent.
+deptry:
+    pixi run deptry src
+
 # validation statique des tools/workflow CWL (cwltool --validate, un fichier à la fois :
 # passer plusieurs chemins à --validate fait interpréter les suivants comme job order).
 cwl:
@@ -96,4 +105,4 @@ cwl-run file *args:
 
 # ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:
-    just lint && just types && just test && just smoke && just cwl
+    just lint && just types && just deptry && just test && just smoke && just cwl

@@ -68,9 +68,10 @@ qui rend le gestionnaire d'environnement remplaçable à coût quasi nul.
   **oracle figé** (mesures + seuils + non-testé explicite).
 
 ## Harnais d'auto-validation (autonomie)
-- **`just check`** = lint (ruff) + types (mypy) + tests (pytest) + **smoke** (le pipeline réel
-  sur un périmètre minuscule). **À lancer AVANT de dire « fini ». Jamais de commit sur du
-  rouge.** Détail : `_tools_python/harnais-agent-autovalidation-python.md`.
+- **`just check`** = lint (ruff) + types (mypy) + **deptry** (hygiène des dépendances) +
+  tests (pytest) + **smoke** (le pipeline réel sur un périmètre minuscule) + **cwl**
+  (validation des artefacts). **À lancer AVANT de dire « fini ». Jamais de commit sur du
+  rouge.** La CI lance `just check`, à l'identique — une seule définition de « fini ». Détail : `_tools_python/harnais-agent-autovalidation-python.md`.
 - **Chiffres honnêtes** : tout verdict donne le dénominateur, le cas défavorable, et ce qui
   n'a PAS été testé.
 - `just psql "<sql>"` pour asserter l'état réel en base après une mutation.

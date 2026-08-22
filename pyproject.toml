@@ -15,7 +15,6 @@ requires-python = ">=3.12"
 dependencies = [
     "typer>=0.15",
     "pyyaml>=6.0",
-    "httpx>=0.27",
     "pystac-client>=0.8",
     # Natifs. Déclarés ici pour le paquet ET dans [tool.pixi.dependencies] ci-dessous pour
     # notre env de dev : pixi les prend alors de conda-forge (builds natifs cohérents),
@@ -73,11 +72,19 @@ ruff = "*"
 mypy = "*"
 pytest = "*"
 markdown = "*"          # backlog-kit (dashboard + md2html)
+# httpx : utilisé UNIQUEMENT par scripts/survey_tiles.py (préparation des grilles), jamais
+# par src/. Il était au contrat de la wheel, qui faisait donc installer un client HTTP
+# inutile dans le venv du worker — débusqué par deptry (DEP002).
+httpx = "*"
 pytest-socket = "*"     # garde réseau des tests (--disable-socket)
 
 [tool.pixi.feature.dev.pypi-dependencies]
 # cwltool : pas de build conda-forge compatible python 3.12 disponible — PyPI.
 cwltool = "*"
+# deptry : hygiène des dépendances (déclarée non utilisée, utilisée non déclarée, et
+# surtout TRANSITIVE utilisée directement — c'est le défaut qui a laissé `affine` hors
+# du contrat du paquet). Ce que ni ruff ni mypy ne regardent.
+deptry = "*"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }
