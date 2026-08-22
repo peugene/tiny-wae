@@ -86,14 +86,21 @@ Deux ajouts, aucun changement de la sémantique d'arrêt existante :
   le chemin réel `src/tiny_wae/cli/backfill.py` : `SLF001` (accès à un membre privé) ne
   s'applique pas aux membres de module. Aucun `noqa` n'est donc nécessaire.
 
-⚠ **Faits DÉPENDANTS, à RECONFIRMER APRÈS le merge d'`obs-01`** — ne pas les tenir pour
-acquis, ils sont faux dès qu'`obs-01` est mergée :
+✅ **RECONFIRMÉ après le merge d'`obs-01`** (HEAD `90fcc92`, le 2026-08-22) — voici les
+emplacements RÉELS, ceux du haut de fiche sont périmés là où c'est indiqué :
 
-- **Tous les numéros de ligne** cités plus haut pour `adapters/backfill.py` (l. 122, 204-212)
-  et `cli/backfill.py` (l. 91) seront décalés par l'insertion du logging.
-- Le **canal et le format** des messages : `obs-01` fige le format de ligne et retire les
-  emojis des messages existants (ses D2 et D13). Le message d'arrêt doit s'y conformer, et
-  la ligne `cli/backfill.py:91` n'aura plus son `⚠`.
+- `adapters/backfill.py::_request_stop` : **l. 231** (était 122).
+- `adapters/backfill.py`, pose du handler `SIGINT` : **l. 385** (était 204-212).
+- `cli/backfill.py`, message d'interruption : **l. 91**, inchangé — et son `⚠` a bien été
+  retiré par `obs-01`. Le message est désormais
+  `"backfill interrompu (SIGINT) : soumissions arrêtées"`.
+- **Inchangés, vérifiés un par un** : `tests/test_backfill.py` l. 34 (import) et l. 354
+  (appel direct `_request_stop(stop_event, 0, None)`) ; `adapters/ingestion.py` l. 352 et
+  372 (`write_manifest`) ; `adapters/manifests.py` l. 167 (`_write_json_atomic`).
+- **Nouveau depuis `obs-01`** : `adapters/backfill.py` possède déjà
+  `logger = logging.getLogger(__name__)` (l. 61). ⛔ Cela ne change PAS la décision D5 : le
+  message du handler de signal passe par `os.write(2, ...)`, pas par ce logger.
+- **Base de non-régression** : **266** tests (et non 250) depuis `obs-01`.
 
 ### ⭐ Décisions actées
 
@@ -159,7 +166,7 @@ acquis, ils sont faux dès qu'`obs-01` est mergée :
 | O6 | même sous-processus, **second** `SIGINT` | le process rend la main ; code de sortie **130** |
 | O7 | état du `data_root` après O6 | **0** manifeste illisible ; `list_for_site` ne retourne aucun résidu `.tmp` |
 | O8 | **mutation** : neutraliser l'appel à `on_stop_requested` dans `_request_stop` | O1, O2 et O4 passent au **ROUGE**, puis au vert après restauration |
-| O9 | non-régression | `just check` vert — **250 tests** au départ (+ ceux d'`obs-01`) ; `cli/backfill.py:91` toujours couvert |
+| O9 | non-régression | `just check` vert — **266 tests** au départ ; `cli/backfill.py:91` toujours couvert |
 
 **Non testé par cette fiche** (chiffres honnêtes) :
 
