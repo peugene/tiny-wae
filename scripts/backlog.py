@@ -90,6 +90,14 @@ class Fiche:
     def is_humaine(self) -> bool:
         return self.categorie == "humain"
 
+    @property
+    def is_documentaire(self) -> bool:
+        """Fiche qui ENREGISTRE un travail déjà fait (rétroactive, décision, incident).
+
+        Elle n'ordonne rien et n'est ordonnée par rien : sa place hors du graphe est
+        normale, pas une anomalie."""
+        return self.categorie == "documentaire"
+
 
 @dataclass
 class Chantier:
@@ -395,7 +403,9 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str]
     # fiches isolées : ni dépendance, ni dépendant, ni rattachement à un chapeau
     depended_on = {d for f in fiches for d in f.depends_on if d}
     for f in fiches:
-        if f.is_chapeau:
+        # un chapeau n'ordonne rien ; une fiche documentaire enregistre du déjà-fait :
+        # ni l'un ni l'autre n'a de place dans le graphe, leur isolement est normal
+        if f.is_chapeau or f.is_documentaire:
             continue
         if not any(f.depends_on) and f.id not in depended_on and not f.parent:
             anomalies.append(f"{f.id} : fiche isolée (aucun lien dans le graphe)")
@@ -403,7 +413,12 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str]
     # terminale) ; d'autres signalent une arête oubliée — c'est au PO de trancher, donc
     # on les LISTE sans les traiter en erreur.
     leaves = sorted(
-        f.id for f in fiches if not f.is_chapeau and f.id not in depended_on and not f.subtasks
+        f.id
+        for f in fiches
+        if not f.is_chapeau
+        and not f.is_documentaire  # une fiche documentaire est une feuille par construction
+        and f.id not in depended_on
+        and not f.subtasks
     )
     if leaves:
         infos.append("feuilles (aucun dépendant) — à relire : " + ", ".join(leaves))
@@ -495,6 +510,11 @@ def render_fiche_page(f: Fiche, backlog: Path, index: dict[str, Fiche]) -> bool:
         warn = (
             '<div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : '
             "elle porte le contexte de ses sous-tâches.</div>"
+        )
+    elif f.is_documentaire:
+        warn = (
+            '<div class="note">📘 <b>Fiche documentaire</b> — ne se dispatche pas : '
+            "elle enregistre un travail déjà réalisé, hors du graphe de dépendances.</div>"
         )
 
     # ── navigation : chaque fiche liée porte son ÉTAT, ce qui répond d'un coup d'œil à

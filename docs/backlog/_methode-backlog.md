@@ -7,7 +7,7 @@
 >
 > ⚠ **Divergences du port Python à reporter dans `_tools`/`_tools_js`** (règle : le plus
 > récent fait foi) : 1) les deux scripts Node sont fusionnés en UN CLI Python
-> (`scripts/backlog.py dashboard|md2html`, dépendance unique `markdown`) ; 2) le modèle de
+> (`scripts/backlog.py dashboard|lots|md2html`, dépendance unique `markdown`) ; 2) le modèle de
 > fiche gagne une section **« Oracle / recette »** (mesures + seuils figés avant
 > implémentation, distincte de « Définition de terminé ») ; 3) **`dashboard` génère aussi
 > le `.html` de CHAQUE fiche** (ids cliquables — le backlog se parcourt entièrement en
@@ -21,7 +21,7 @@ Un projet piloté par IA a besoin d'un **backlog qui sert aussi de brief** : cha
 la fois une tâche *et* le prompt qui la fait réaliser. Le kit fournit :
 
 - une **méthode** (cycle de vie en dossiers, critères de maturité) ;
-- un **script sans magie** : `scripts/backlog.py` (dashboard HTML + md→html) ;
+- un **script sans magie** : `scripts/backlog.py` (dashboard HTML + feuille de route + md→html) ;
 - des **templates** (fiche, chantier, roadmap, revue).
 
 Principe fondateur : **le Markdown est la spec / le canal IA ; le HTML est la vue humaine,
@@ -77,7 +77,9 @@ Le filet de sécurité n'est plus le `depends_on` de groupe mais un **contrôle 
 
 - **⚠ anomalies** (à corriger) : `depends_on`/`subtasks` pointant vers un id inexistant,
   cycles, `parent`/`subtasks` non appariés, chapeau portant un `depends_on`, fiche isolée.
-- **ℹ à relire** : les **feuilles** du graphe (aucune fiche n'en dépend). Certaines sont
+- **ℹ à relire** : un **chapeau non clos** dont toutes les sous-tâches sont en `fait/`
+  (déplacer une fiche est un geste d'équipe, pas une erreur de graphe : on le rappelle,
+  on ne l'impose pas) ; et les **feuilles** du graphe (aucune fiche n'en dépend). Certaines sont
   légitimes — recette finale, dernier maillon d'outillage — d'autres révèlent une **arête
   oubliée**. Le contrôle ne peut pas trancher : il liste, le PO juge. *Cas vécu : une
   fiche produisant la configuration de tout le lot s'est retrouvée sans aucun dépendant
@@ -108,6 +110,32 @@ dans une définition de terminé, ni dans une table d'oracle : la fiche agent pr
 Les fiches aval en dépendent par `depends_on` : **le run se met en pause** tant qu'elle
 n'est pas en `fait/` — comportement voulu. Modèle : `_modele-fiche-humaine.md`.
 ⚠ La commande `/run` doit refuser de dispatcher toute fiche `categorie: humain`.
+
+### 📘 Fiches DOCUMENTAIRES — enregistrer un travail qui a échappé au cycle
+
+Il arrive qu'un travail soit livré **hors du cycle** : une contrainte externe tombe en
+cours de lot, quelqu'un l'implémente dans la foulée, et le backlog — qui « fait foi » — n'en
+porte aucune trace. Les fiches closes se mettent alors à décrire un état du code qui
+n'existe plus.
+
+La parade est une **fiche documentaire** (`categorie: documentaire`, id suffixé `.R` pour
+rétroactive, sur le modèle du `.H` des fiches humaines). Elle **n'ordonne rien et n'est
+ordonnée par rien** : `depends_on: []`, pas de parent. Le contrôle de graphe la traite en
+conséquence — elle est **exemptée** de l'anomalie « fiche isolée » et de l'info
+« feuille », qui seraient toutes deux des faux positifs par construction. Modèle :
+`_modele-fiche-documentaire.md`.
+
+⭐ **La section qui compte n'est pas la liste des changements, c'est « ce qui n'a PAS été
+revérifié ».** Un travail hors cycle a souvent modifié précisément ce qu'un oracle déjà
+validé vérifiait : le refactor reste vert partout, et l'oracle est périmé sans que rien ne
+le signale. *Cas vécu : un refactor d'artefacts d'orchestration a changé le chemin
+d'exécution et la récupération des sorties — soit exactement les deux choses que l'oracle
+d'équivalence de la fiche close mesurait ; les runs post-refactor prouvaient que « ça
+tourne », pas que l'équivalence tenait encore.*
+
+⚠ **C'est un précédent, pas une pratique** : écrire une fiche après le code inverse la
+règle « les décisions se prennent en amont ». Le réflexe correct reste de produire une
+fiche — même courte — **avant** d'implémenter la contrainte qui vient d'arriver.
 
 ### Critère « Prêt à faire » (passage `maturation/` → `a-faire/`)
 
@@ -167,8 +195,8 @@ Manifeste `_chantier.md` :
 ---
 id: lot-0
 label: Lot 0 — Ingestion
-desc: Chips Sentinel-2 sur 48 mois pour 25 sites.
-phases: O1=Plomberie STAC | O2=Historique | O3=Incrémental
+desc: Acquisition et stockage du jeu de données de référence.
+phases: O1=Plomberie | O2=Reprise d'historique | O3=Incrémental
 ---
 ```
 
@@ -186,6 +214,7 @@ lie automatiquement les `*.html` trouvés dans le dossier du chantier.
 
 ```bash
 python scripts/backlog.py dashboard --project "Mon projet" [--backlog docs/backlog]
+python scripts/backlog.py lots      --project "Mon projet" [--lots docs/lots]
 python scripts/backlog.py md2html _roadmap.md roadmap.html "Titre" ["Bandeau"]
 ```
 
@@ -197,10 +226,19 @@ de chaque fiche** — le backlog entier se parcourt en HTML, sans jamais ouvrir 
   **imbriquées sous leur chapeau** (`↳`), chapeaux marqués `▣`, fiches humaines `⛔`,
   `depends_on` cliquables.
 - **page de fiche** : **breadcrumb** (`🏠 Backlog › chantier › ▣ chapeau › fiche`),
-  bandeau d'état/effort/catégorie, `depends_on` en liens, bloc de navigation
-  (sous-tâches si chapeau · chapeau + fratrie si sous-tâche · « Débloque » = les fiches
-  qui dépendent de celle-ci), et bandeau d'avertissement pour les fiches
-  chapeau/humaines.
+  **pastille d'état** dans le titre, **bandeau détaillé** (une ligne par attribut : effort,
+  priorité, catégorie, phase, chantier), **sommaire** replié, **précédent / suivant** dans
+  l'ordre de lecture (la fratrie du chapeau, sinon les ids du chantier), bandeau
+  d'avertissement pour les fiches chapeau/humaines, et des blocs de navigation où **chaque
+  fiche liée porte son état** : « Dépend de » · « Débloque » · sous-tâches (si chapeau) ·
+  chapeau + fratrie (si sous-tâche).
+
+  ⭐ **Répartition assumée : le bandeau porte les ATTRIBUTS, la navigation porte le GRAPHE.**
+  Lister les dépendances aux deux endroits produisait deux fois la même liste à deux
+  centimètres d'écart. Le `<h1>` du corps est retiré au rendu (le bandeau porte déjà
+  « [id] titre », et le frontmatter fait foi) — mesuré sur un backlog réel : les 31 fiches
+  avaient un H1 différent de leur `titre:`, en faire une anomalie n'aurait produit que du
+  bruit.
 
 ⭐ **Écriture conditionnelle** : un `.html` n'est réécrit que si son contenu diffère
 **ailleurs que sur son horodatage de génération**. Sans ce filtre, chaque `just dashboard`
@@ -211,6 +249,31 @@ ce qui a bougé (la fiche modifiée **et** celles dont la navigation la référe
 
 **Ne rien éditer à la main** (écrasé). Régénérer après **toute** évolution du backlog.
 Via la façade : `just dashboard`.
+
+## Les lots — la couche AU-DESSUS du backlog (`just lots`)
+
+Un **lot** est une tranche de la feuille de route, tenue par l'architecte/PO dans
+`docs/lots/` : le *quoi et dans quel ordre*, quand le backlog porte le *comment*. C'est un
+objet **différent d'une fiche** — pas de dossier-état, pas de graphe de dépendances : un
+statut lisible **dans** la fiche, et un ordre de lecture.
+
+- Une fiche par lot : `lot-<N>-<slug>.md`. Le `<N>` donne l'ordre (**tri numérique** : le
+  lot 10 passe après le lot 1, pas après le 0) ; les fichiers sans numéro finissent à la fin.
+- **Statut** : soit un frontmatter (`titre` / `statut` / `date`), soit — c'est le cas
+  courant, ces fiches sont d'abord de la prose — l'en-tête `**Statut** : …` / `**Date** : …`.
+  Le texte libre est normalisé par mot-clé vers un badge coloré (Maturation · En cours ·
+  Validé · Livré · Abandonné · Obsolète) ; un statut non reconnu reste **affiché tel quel**
+  en gris plutôt que d'être perdu.
+- `README.md` n'est pas un lot : c'est la feuille de route elle-même, rendue **dans le corps
+  de l'index** — une seule page à ouvrir pour avoir la vue d'ensemble ET les cartes.
+- Produit `index.html` (compteurs par état, cartes avec badge/extrait/date) et une page par
+  lot : **breadcrumb**, badge d'état, **sommaire** replié, **précédent/suivant**.
+- **Navigation croisée** : l'index des lots pointe vers le dashboard du backlog, et le
+  dashboard pointe vers la feuille de route dès qu'elle est générée.
+
+⚠ Sans cette commande, un dossier de lots rendu fiche par fiche (`md2html`) redevient un tas
+de pages orphelines : pas d'entrée, pas d'état visible, aucune navigation. C'est exactement
+ce qui s'est produit sur un projet du kit avant l'ajout de `lots`.
 
 ## ⚠ `maturation/` est une zone PARTAGÉE
 

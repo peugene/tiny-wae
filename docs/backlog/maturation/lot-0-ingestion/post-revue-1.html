@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Post-revue 1 — Lot 0 après implémentation</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Post-revue 1 — Lot 0 après implémentation</h1><p>Revue solo (architecte/PO), 22/08/2026 — base cf2b5ca. Le .md fait foi.</p></div></div><article><h1 id="post-revue-1-lot-0-ingestion-apres-implementation">Post-revue 1 — Lot 0 Ingestion, après implémentation</h1>
+<p><strong>Date</strong> : 22/08/2026 · <strong>Revueur</strong> : architecte/PO (instance Cowork, Opus) — <strong>revue solo,
+non adversariale</strong>, à la demande de Philippe. Aucun agent délégué : tous les constats
+ci-dessous ont été établis par lecture directe du code livré.
+<strong>Objet</strong> : ce que l'équipe a réellement produit en 8 runs, confronté aux fiches et à leurs
+oracles figés.
+<strong>Base</strong> : <code>cf2b5ca</code> (branche <code>develop</code>).</p>
+<hr />
+<h2 id="ce-qui-a-ete-mesure">Ce qui a été mesuré</h2>
+<table>
+<thead>
+<tr>
+<th>Grandeur</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fiches en <code>fait/</code></td>
+<td>23 (dont 4 chapeaux) — 1 fiche humaine en <code>a-faire/</code> (<code>l0-03.H</code>)</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>34 modules, <strong>4 669 lignes</strong> sous <code>src/</code></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>27 fichiers, <strong>238 tests</strong>, <strong>6 656 lignes</strong> — ratio tests/code <strong>1,42</strong></td>
+</tr>
+<tr>
+<td>Fixtures versionnées</td>
+<td>187 fichiers, <strong>31 Mo</strong></td>
+</tr>
+<tr>
+<td>Runs d'implémentation</td>
+<td>8 (N0 → N8), plus 4 commits de refactor CWL postérieurs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict global : conformité élevée.</strong> Sur les oracles que j'ai pu confronter au code, la
+correspondance est bonne, y compris sur les critères les plus retors — ceux qui avaient
+justement été ajoutés par les revues v1/v2/v3. Les constats ci-dessous portent sur des
+<strong>écarts périphériques</strong> : le harnais de CI, la duplication de trois constantes, et une
+zone de traçabilité où le backlog ne dit plus la vérité. Aucun défaut fonctionnel trouvé.</p>
+<h3 id="oracles-verifies-au-code-conformes">Oracles vérifiés au code, conformes</h3>
+<ul>
+<li><strong>l0-01.3 / O2</strong> — le test <code>test_o2_c07_choisit_52tel_marge_geometrique</code>
+  (<code>tests/test_tiles.py:78</code>) est bien <strong>pur et littéral</strong> : origines ULX/ULY mesurées en
+  constantes du module, marges calculées, choix de tuile. Le défaut de la v3 (« un décompte
+  ne contient aucune marge ») ne s'est <strong>pas</strong> reproduit — le test le dit même dans sa
+  docstring, et O2bis prouve que le décompte ne sert qu'au départage.</li>
+<li><strong>l0-03.3 / O1bis</strong> — le hash de contenu porte sur <code>array.tobytes() + EPSG + transform +
+  dtype</code> (<code>adapters/chips.py:167-179</code>), <strong>jamais</strong> sur les octets du GeoTIFF. La dérive
+  plateforme redoutée est évitée à la racine.</li>
+<li><strong>l0-03.4 / O5ter</strong> — la règle de repli tuile, ajoutée tardivement en correction PO et
+  jamais écrite avant, est implémentée (<code>adapters/ingestion.py:429</code>, <code>cli/ingest.py:101</code>),
+  portée au <code>run.json</code> (<code>adapters/manifests.py:135</code>) et testée
+  (<code>tests/test_ingestion.py:541</code>). Elle <strong>signale</strong> sans auto-corriger, comme spécifié.</li>
+<li><strong>l0-03.2 / O3bis et O4bis</strong> — les deux pièges les plus subtils du chapeau (stabilité du
+  <code>grid_hash</code> entre <code>699960</code> et <code>699960.0</code>, et <code>item_ids_for_site</code> qui diffère de
+  <code>aggregate_counters</code> sur des runs recouvrants) ont chacun leur test dédié.</li>
+<li><strong>l0-02.2 / O3</strong> — l'assertion littérale sur l'URL <strong>et</strong> le mot « injoignable » en STDERR
+  est bien présente (<code>tests/test_cli_search.py:151-160</code>).</li>
+<li><strong>Sources uniques déjà tenues</strong> : <code>cli/exit_codes.py</code> pour les 4 codes de sortie,
+  <code>core/bands.py</code> pour l'ordre des bandes, importé par les trois adapters qui en ont besoin.</li>
+</ul>
+<h3 id="a-saluer-explicitement">À saluer explicitement</h3>
+<p>Trois pratiques dépassent ce que la méthode exigeait :</p>
+<ol>
+<li><strong>La distinction « ✅ exécuté » vs « déclaré »</strong> dans les résumés de réalisation. Les
+   oracles live hors gate portent la mention « exécuté, pas déclaré » avec les valeurs
+   relevées (l0-06.1, l0-06.2). C'est la différence entre un verdict et une affirmation.</li>
+<li><strong>La vérification par mutation.</strong> Plusieurs commits prouvent qu'un test sait rendre
+   rouge : « entrée renommée → rouge ; retour à <code>python -m tiny_wae</code> → rouge » (<code>208f79b</code>).
+   Un test qui n'a jamais échoué n'a rien prouvé — l'équipe l'a intégré.</li>
+<li><strong>Les commentaires portent le POURQUOI.</strong> Le bloc <code>[tool.pytest.ini_options]</code> du
+   <code>pyproject.toml</code> explique que <code>--disable-socket</code> ne couvre pas le chemin GDAL, et
+   renvoie à la garde de contrat qui, elle, le couvre. C'est de la connaissance capitalisée
+   à l'endroit où elle sera relue.</li>
+</ol>
+<hr />
+<h2 id="a-defauts-a-corriger">A. Défauts à corriger</h2>
+<h3 id="a1-la-definition-de-fini-existe-a-trois-endroits-et-les-trois-divergent">A1 — ⚠ La définition de « fini » existe à TROIS endroits, et les trois divergent</h3>
+<table>
+<thead>
+<tr>
+<th>Où</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>justfile:99</code></td>
+<td><code>lint &amp;&amp; types &amp;&amp; test &amp;&amp; smoke &amp;&amp; cwl</code></td>
+</tr>
+<tr>
+<td><code>.github/workflows/ci.yml</code></td>
+<td><code>lint</code>, <code>types</code>, <code>test</code> — <strong>ni <code>smoke</code>, ni <code>cwl</code></strong></td>
+</tr>
+<tr>
+<td><code>README.md:16</code></td>
+<td>« lint + types + tests + smoke » — <strong>oublie <code>cwl</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conséquence concrète</strong> : une pull request peut être <strong>verte en CI</strong> avec un smoke rouge
+ou un CWL invalide. Le seul garde-fou contre un <code>.cwl</code> cassé — <code>cwltool --validate</code> sur les
+4 artefacts — ne tourne que sur le poste de qui pense à lancer <code>just check</code>.</p>
+<p>Et rien ne s'y oppose techniquement, j'ai vérifié les deux objections possibles :</p>
+<ul>
+<li><strong>le smoke ne fait pas de réseau</strong> : <code>--replay</code> est le mode par défaut, il pose lui-même
+  <code>TINY_WAE_OFFLINE=1</code>, lit le corpus de fixtures versionné et écrit dans un
+  <code>TemporaryDirectory</code> (<code>scripts/smoke.py</code>, en-tête et §mode) ;</li>
+<li><strong><code>cwltool</code> est déjà dans l'environnement</strong> : déclaré en <code>[tool.pixi.feature.dev…]</code>
+  (<code>pyproject.toml:80</code>), donc disponible en CI sans installation supplémentaire.</li>
+</ul>
+<p><strong>Recommandation</strong> : remplacer les trois <code>- run: just &lt;étape&gt;</code> de la CI par un unique
+<strong><code>- run: just check</code></strong>. Le harnais cesse alors d'exister en double : la CI rejoue le gate
+local, elle ne le redéfinit pas. Corriger au passage la ligne du README. <em>C'est la règle
+« une énumération normative n'existe qu'à UN endroit » appliquée au gate lui-même.</em></p>
+<h3 id="a2-run_statuses-est-declare-deux-fois-a-lidentique">A2 — <code>RUN_STATUSES</code> est déclaré deux fois, à l'identique</h3>
+<p><code>adapters/manifests.py:52</code> et <code>core/report.py:23</code> portent la même énumération des 6 statuts.
+Le commentaire de <code>report.py</code> l'assume — « recopiés en ANCRAGE, jamais redéfinis
+différemment » — et la raison est légitime : <code>core/</code> ne doit pas importer <code>adapters/</code>.</p>
+<p>Mais <strong>c'est une énumération de domaine, pas d'I/O</strong> : sa place est dans <code>core/</code>. Le projet
+possède déjà le bon patron, à deux fichiers de là : <code>BAND_ORDER_10M/20M</code> vit dans
+<code>core/bands.py</code> et est importé par <code>chips.py</code>, <code>manifests.py</code> et <code>contact_sheet.py</code>. Les
+statuts n'ont pas eu droit au même traitement.</p>
+<p><strong>Recommandation</strong> : déplacer <code>RUN_STATUSES</code> et <code>MANIFEST_STATUSES</code> dans <code>core/</code> (un
+<code>core/statuses.py</code>, ou à côté du modèle de manifeste), <code>adapters/manifests.py</code> les importe.
+Le respect des couches est préservé <strong>et</strong> l'énumération n'existe plus qu'une fois. Coût
+estimé : une dizaine de lignes. C'est exactement l'incident qui a produit la règle du kit —
+il est ici en germe, pas encore réalisé.</p>
+<h3 id="a3-le-seuil-de-tuile-suspecte-est-duplique-en-dur-dans-le-message-utilisateur">A3 — Le seuil de tuile suspecte est dupliqué en dur dans le message utilisateur</h3>
+<p><code>adapters/ingestion.py:60</code> définit <code>_TILE_SUSPECT_RATIO = 0.20</code>. <code>cli/ingest.py:103</code> écrit :</p>
+<pre><code class="language-python">f&quot;⚠ site={site_id} : &gt; {int(100 * 0.20)}% des items de la tuile de référence &quot;
+</code></pre>
+<p>Régler le seuil à 0,25 ferait <strong>mentir le message</strong> sans qu'aucun test ne s'en aperçoive :
+le message dirait « &gt; 20 % » pendant que le code déclencherait à 25 %. Importer la
+constante suffit.</p>
+<h3 id="a4-meme-classe-moindre-portee-noms-de-fichiers-et-liste-de-fichiers-attendus">A4 — Même classe, moindre portée : noms de fichiers et liste de fichiers attendus</h3>
+<p><code>adapters/chips.py:40-41</code> définit <code>CHIP_10M_FILENAME</code> / <code>CHIP_20M_FILENAME</code>, mais
+<code>adapters/contact_sheet.py</code> écrit <code>"chip.tif"</code> en dur trois fois (lignes 124, 273, 274), et
+<code>core/report.py:33</code> re-liste <code>EXPECTED_FILES</code>. Renommer un artefact de sortie demanderait
+aujourd'hui de le savoir.</p>
+<hr />
+<h2 id="b-tracabilite-le-backlog-ne-dit-plus-la-verite-sur-le-cwl">B. Traçabilité : le backlog ne dit plus la vérité sur le CWL</h2>
+<h3 id="b1-quatre-commits-de-refactor-cwl-hors-du-cycle-de-fiches">B1 — ⚠ Quatre commits de refactor CWL, hors du cycle de fiches</h3>
+<p><code>e355121</code>, <code>13de5f0</code>, <code>24b564c</code>, <code>208f79b</code> : le dossier <code>cwl/</code> devient
+<code>assets/cwl/{tools,workflows}/&lt;nom&gt;/1.0/</code>, <strong>toute</strong> expression CWL est supprimée,
+<code>baseCommand</code> passe de <code>[python, -m, tiny_wae, …]</code> à <code>[tiny-wae, …]</code>, et <code>tests/test_cwl.py</code>
+est réécrit (8 → 15 tests). C'est un travail substantiel et, à la lecture des messages de
+commit, remarquablement raisonné.</p>
+<p><strong>Mais aucune fiche ne le couvre.</strong> Le dossier <code>fait/</code> — qui « fait foi » — ne l'enregistre
+pas. Un lecteur du backlog dans six mois ne saura pas que ce refactor a eu lieu, ni
+pourquoi le glob du tool <code>search</code> est un littéral (la raison, elle, n'existe que dans le
+corps du commit <code>24b564c</code> : un <code>$(inputs.…)</code> perd la sortie <strong>sans erreur</strong> côté PID-FLOW).</p>
+<h3 id="b2-les-fiches-l0-061-et-l0-062-decrivent-une-arborescence-qui-nexiste-plus">B2 — Les fiches l0-06.1 et l0-06.2 décrivent une arborescence qui n'existe plus</h3>
+<p>Elles nomment à leur périmètre <code>cwl/search.cwl</code>, <code>cwl/ingest.cwl</code>, <code>cwl/workflow.cwl</code>,
+<code>cwl/update.cwl</code>, <code>cwl/README.md</code> — <strong>aucun de ces chemins n'existe</strong> (vérifié : <code>find</code>
+ne renvoie que les quatre fichiers sous <code>assets/cwl/</code>). Elles annoncent aussi
+<code>baseCommand: [python, -m, tiny_wae, &lt;cmd&gt;]</code>, remplacé depuis. Le dernier commit touchant
+ces deux fiches (<code>284f540</code>) <strong>précède</strong> les quatre commits de refactor.</p>
+<h3 id="b3-les-oracles-live-de-l0-06-nont-pas-ete-rejoues-apres-le-refactor">B3 — Les oracles live de l0-06 n'ont pas été rejoués après le refactor</h3>
+<ul>
+<li><strong>l0-06.1 / O2</strong> : équivalence des ensembles <code>(item_id, statut)</code> entre run CWL et run CLI
+  direct sur deux <code>data_root</code> vierges.</li>
+<li><strong>l0-06.2 / O2</strong> : après amorçage, le 2ᵉ <code>cwltool update.cwl</code> rend <code>ingested == 0</code> <strong>et</strong>
+  <code>assets_read == 0</code>.</li>
+</ul>
+<p>Les deux ont été exécutés — les résumés publient les valeurs — mais <strong>sur les CWL d'avant le
+refactor</strong>. Après refactor, le commit <code>208f79b</code> rapporte un run nominal (<code>found_stac=3</code>,
+<code>found_tile=3</code>, 3 manifestes écrits) : c'est une preuve que « ça tourne », ce n'est ni
+l'équivalence, ni l'idempotence. Or le refactor a touché précisément ce qui pourrait les
+casser : le chemin d'exécution (<code>baseCommand</code>) et la récupération des sorties (le <code>glob</code>
+littéral).</p>
+<p><strong>Recommandation</strong> (par ordre de coût croissant, l'une des trois suffit) :</p>
+<ol>
+<li><strong>Minimum</strong> : rejouer les deux O2 (~30 min, réseau réel) et ajouter un post-scriptum daté
+   au résumé des deux fiches, avec les chemins <code>assets/cwl/…</code> corrigés au périmètre.</li>
+<li><strong>Mieux</strong> : ouvrir une fiche rétroactive <code>l0-06.3</code> en <code>fait/</code> — « Passage des CWL aux
+   conventions PID-FLOW » — avec son propre oracle (les 15 tests de <code>test_cwl.py</code>, plus les
+   deux O2 rejoués). Le corps des 4 commits fournit déjà 90 % du texte.</li>
+<li>Traiter le sujet dans la recette du lot (<code>l0-04.H</code>), qui rejouera de toute façon la
+   chaîne complète.</li>
+</ol>
+<h3 id="b4-mineur-un-script-renomme-sans-que-la-fiche-le-dise">B4 — Mineur : un script renommé sans que la fiche le dise</h3>
+<p><code>scripts/record_fixtures.py</code>, nommé au périmètre de l0-03.5, a été scindé en
+<code>record_cog_fixtures.py</code> et <code>record_stac_fixtures.py</code>. La scission est judicieuse ; la fiche
+n'en porte pas trace.</p>
+<hr />
+<h2 id="c-observations-de-methode">C. Observations de méthode</h2>
+<h3 id="c1-deux-chapeaux-affichent-maturation-pour-un-travail-quasi-termine">C1 — Deux chapeaux affichent « Maturation » pour un travail quasi terminé</h3>
+<p><code>l0-03</code> (<strong>7 sous-tâches sur 8</strong> en <code>fait/</code>) et <code>l0-04</code> (2 sur 3) sont toujours dans
+<code>maturation/lot-0-ingestion/</code>. Le dossier faisant foi, le tableau de bord annonce
+« Maturation » pour des chantiers presque clos. Leur place est <code>en-cours/</code>.</p>
+<p><em>Note d'outillage</em> : le générateur signale désormais mécaniquement le cas symétrique — un
+chapeau non clos dont <strong>toutes</strong> les sous-tâches sont en <code>fait/</code> apparaît en « ℹ à relire ».
+Il ne se déclenche pas encore ici, <code>l0-03.H</code> et <code>l0-04.H</code> étant ouvertes.</p>
+<h3 id="c2-un-oracle-fige-a-ete-re-gele-par-limplementation">C2 — Un oracle « figé » a été re-gelé par l'implémentation</h3>
+<p>La table d'oracle de l0-01.3 annonce des marges « ≈ <strong>495</strong> m vs 4 155 m ». Le test livré
+assert <code>pytest.approx(500.4, abs=5.0)</code> et <code>pytest.approx(4159.6, abs=5.0)</code> : la valeur de la
+fiche (495) tombe <strong>hors</strong> de la tolérance du test livré (plancher 495,4).</p>
+<p>Rien n'est caché — le résumé de réalisation publie les valeurs mesurées et l'écart est
+visible. Mais la table d'oracle, elle, n'a pas été corrigée. Sur un dispositif dont toute la
+valeur tient à ce que l'oracle soit <strong>figé avant</strong> l'implémentation, ce genre de détail
+décrédibilise s'il se répète. <strong>Recommandation</strong> : quand la mesure infirme un chiffre gelé,
+corriger la table d'oracle <strong>et</strong> dire en une ligne pourquoi — plutôt que de laisser le
+résumé et l'oracle diverger silencieusement.</p>
+<h3 id="c3-le-desequilibre-de-charge-entre-chapeaux-a-garder-pour-le-lotissement-suivant">C3 — Le déséquilibre de charge entre chapeaux, à garder pour le lotissement suivant</h3>
+<p><code>l0-03</code> a porté 8 sous-tâches et <code>l0-01</code> en a porté 3. Le calibrage « une fiche = un agent
+Sonnet medium » a bien tenu au niveau des sous-tâches, mais le chapeau <code>l0-03</code> est devenu un
+XL qui a concentré l'essentiel du risque du lot. Au Lot 1, scinder au niveau du chapeau
+autant qu'au niveau des fiches.</p>
+<hr />
+<h2 id="d-ce-que-je-nai-pas-pu-verifier">D. Ce que je n'ai PAS pu vérifier</h2>
+<p>Par honnêteté sur la portée de cette revue :</p>
+<ul>
+<li><strong>Je n'ai pas exécuté la suite complète.</strong> Mon environnement ne dispose que de Python
+  3.10, or <code>adapters/ingestion.py:112</code> utilise la syntaxe générique PEP 695 (<code>def
+  _retry_call[T](…)</code>), réservée à 3.12+. J'ai exécuté les 13 fichiers de tests
+  collectables : <strong>111 tests passés, 0 échec, en 1,56 s</strong>. Les 14 autres n'ont pas pu être
+  collectés (import transitif du module 3.12). Le projet en déclare 238 : <strong>je n'en ai donc
+  validé que 47 %</strong>, et les 53 % non exécutés couvrent précisément l'ingestion, le backfill,
+  l'update, le report et le CWL.</li>
+<li><strong>Je n'ai rejoué aucun oracle live</strong> (réseau earth-search) ni <code>just cwl</code> — <code>cwltool</code> n'est
+  pas installé chez moi. Les verdicts B3 reposent sur la lecture des messages de commit et
+  des résumés, pas sur une ré-exécution.</li>
+<li><strong>Je n'ai pas audité la justesse géodésique des 25 <code>reference_tile</code></strong> : c'est précisément
+  l'objet de la fiche humaine <code>l0-03.H</code>, en attente de Philippe.</li>
+<li><strong>Je n'ai pas évalué les performances ni les volumes réels</strong> : hors périmètre des fiches
+  livrées, mesurés par <code>l0-04.H</code>.</li>
+</ul>
+<hr />
+<h2 id="plan-daction-propose">Plan d'action proposé</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Action</th>
+<th>Constat</th>
+<th>Coût</th>
+<th>Qui</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CI = <code>just check</code> (une seule source), README corrigé</td>
+<td>A1</td>
+<td>10 min</td>
+<td>équipe</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Rejouer les deux O2 de l0-06 · post-scriptum daté aux fiches</td>
+<td>B3, B2</td>
+<td>30 min</td>
+<td>équipe</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>RUN_STATUSES</code> en <code>core/</code> · seuil importé · noms de fichiers</td>
+<td>A2, A3, A4</td>
+<td>30 min</td>
+<td>équipe</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Chapeaux <code>l0-03</code>/<code>l0-04</code> déplacés en <code>en-cours/</code></td>
+<td>C1</td>
+<td>2 min</td>
+<td>équipe</td>
+</tr>
+<tr>
+<td>5</td>
+<td>✅ <strong>Fait le 22/08</strong> — fiche rétroactive <strong><code>l0-R1</code></strong> (<code>maturation/l0-R1.md</code>)</td>
+<td>B1</td>
+<td>—</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Corriger la table d'oracle de l0-01.3</td>
+<td>C2</td>
+<td>5 min</td>
+<td>PO</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Puis</strong> : <code>l0-03.H</code> (revue de centrage), qui débloque <code>l0-04.H</code> et la recette du lot</td>
+<td>—</td>
+<td>—</td>
+<td>Philippe</td>
+</tr>
+</tbody>
+</table>
+<p>Les points 1 à 4 sont des corrections mécaniques sans arbitrage.</p>
+<p>Le point 5 demandait un arbitrage — <strong>écrire une fiche après coup est un précédent</strong>. Il a
+été tranché par Philippe le 22/08 : la fiche <code>l0-R1</code> existe, en <code>maturation/</code>, purement
+documentaire (<code>categorie: documentaire</code>, <code>depends_on: []</code>) ; l'équipe la déplacera en
+<code>fait/</code> après avoir rejoué les deux O2 de B3 et posté les post-scriptums de B2. Elle couvre
+aussi le 5ᵉ commit hors cycle découvert en la rédigeant — <code>24680d1</code>, la wheel incomplète —
+qui relève du même sujet : rendre le Lot 0 exécutable par un worker PID-FLOW. La règle,
+elle, ne change pas : <strong>la fiche précède le code.</strong></p>
+<hr />
+<h2 id="conclusion">Conclusion</h2>
+<p>Le Lot 0 est <strong>livré et solide</strong>. Sur les critères où l'échec aurait coûté le plus cher —
+géométrie des chips, idempotence, conservation des compteurs, garde réseau du chemin GDAL —
+le code fait ce que les fiches demandaient, et les tests savent rendre rouge.</p>
+<p>Le seul risque réel identifié n'est pas dans le code mais dans le <strong>harnais</strong> : le gate qui
+tourne en CI n'est pas celui que le projet appelle « fini » (A1). Tant que ce n'est pas
+corrigé, la CI donne une assurance qu'elle ne fournit pas.</p>
+<p>Le second sujet est la <strong>traçabilité du refactor CWL</strong> (B1-B3) : un travail de qualité mais
+invisible du backlog, dont les oracles n'ont pas été rejoués après avoir changé exactement
+ce qu'ils vérifiaient.</p></article></body></html>
