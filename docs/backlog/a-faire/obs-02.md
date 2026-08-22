@@ -70,6 +70,31 @@ Deux ajouts, aucun changement de la sémantique d'arrêt existante :
   inchangés — `_request_stop` toujours l. 122, `cli/backfill.py` l. 91,
   `tests/test_backfill.py` l. 34 et 354.
 
+### ⚠ Ancrage anticipé (posé pendant le dispatch d'`obs-01`, à HEAD `3cd90e2`)
+
+`obs-01` modifie **les deux mêmes fichiers** que cette fiche (`adapters/backfill.py` et
+`cli/backfill.py`). L'ancrage ci-dessus se scinde donc en deux :
+
+**Faits INDÉPENDANTS d'`obs-01`, acquis** :
+
+- La sémantique d'arrêt (test de `stop_event` en tête de boucle, annulation des futures,
+  restauration des handlers en `finally`) ne fait pas partie du périmètre d'`obs-01` : elle
+  ne bougera pas.
+- L'ordre d'écriture chips → manifeste et l'atomicité de `_write_json_atomic` ne sont pas
+  dans le périmètre d'`obs-01` : la garantie « pas de manifeste fantôme » tient.
+- **`os._exit(130)` passe le lint du projet** — vérifié en soumettant le code à `ruff` sous
+  le chemin réel `src/tiny_wae/cli/backfill.py` : `SLF001` (accès à un membre privé) ne
+  s'applique pas aux membres de module. Aucun `noqa` n'est donc nécessaire.
+
+⚠ **Faits DÉPENDANTS, à RECONFIRMER APRÈS le merge d'`obs-01`** — ne pas les tenir pour
+acquis, ils sont faux dès qu'`obs-01` est mergée :
+
+- **Tous les numéros de ligne** cités plus haut pour `adapters/backfill.py` (l. 122, 204-212)
+  et `cli/backfill.py` (l. 91) seront décalés par l'insertion du logging.
+- Le **canal et le format** des messages : `obs-01` fige le format de ligne et retire les
+  emojis des messages existants (ses D2 et D13). Le message d'arrêt doit s'y conformer, et
+  la ligne `cli/backfill.py:91` n'aura plus son `⚠`.
+
 ### ⭐ Décisions actées
 
 - **D1 — Le handler reste PUR.** `_request_stop` gagne un paramètre
