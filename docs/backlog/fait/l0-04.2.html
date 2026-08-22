@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.2</b></nav><h1>[l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</h1><p>En cours · effort M · pipeline · phase O2 · depends_on : <a href="../fait/l0-03.6.html"><code>l0-03.6</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li>→ <a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-042-report-et-planche-firstlast">[l0-04.2] — Report et planche first/last</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.2</b></nav><h1>[l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</h1><p>Fait · effort M · pipeline · phase O2 · depends_on : <a href="l0-03.6.html"><code>l0-03.6</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li>→ <a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-042-report-et-planche-firstlast">[l0-04.2] — Report et planche first/last</h1>
 <h2 id="objectif">Objectif</h2>
 <p>L'instrument de la recette — donc TESTÉ sur des comptes connus (la recette ne peut pas
 être auto-certifiée par un composant non vérifié). Livre aussi la <strong>commande de contrôle
@@ -220,4 +220,97 @@ l0-06.2</strong> : fichiers disjoints, aucun contrat partagé en cours de créat
 possible via <code>just md2html</code> à la main).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 03:05 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>d514045</code>, mergé en <code>997bec2</code>, factorisé par <code>f12a4cf</code>) : <code>core/report.py</code>
+(agrégation pure), <code>cli/report.py</code>, extension <code>--first-last</code> de <code>adapters/contact_sheet.py</code> et
+<code>cli/contact_sheet.py</code>, <code>tests/test_report.py</code>, <code>tests/test_cli_report.py</code>, 8 tests ajoutés à
+<code>tests/test_contact_sheet.py</code>, 2 fixtures <code>/search</code> (<code>overlap_completeness.json</code>,
+<code>c07_completeness.json</code>). <strong>208 → 230 tests</strong> chez l'agent, <strong>235 sur <code>develop</code></strong> après merge.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>rapport EXACT chiffre à chiffre sur le corpus C07</td>
+<td>ligne rendue : <code>\| C07 \| 15 \| 1 \| 2 \| 12 \| 6 \| 3 \| 1 \| 1 \| 1 \| 0 \| 8.3 % \| OK \| OK \|</code> — ratio <strong>6/12</strong> affiché avec son dénominateur, <code>failed_pct = 8,3 %</code> signalé au-dessus du seuil de 1 %</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>conservation cassée → ROUGE en tête</td>
+<td><code>off_tile: 2→3</code> casse l'invariant → <code>conservation: ROUGE</code> + section « en tête »</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td><code>failed → 0</code> → aucun ROUGE</td>
+<td><code>failed_pct = 0 %</code>, aucun ROUGE — le critère à seuil discrimine <strong>dans les deux sens</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2quater</td>
+<td>intégrité : nominal OK, puis 3 mutations → ROUGE nommé</td>
+<td>corpus copié en <code>tmp_path</code> et <code>grid_hash</code> réécrit à la vraie valeur (décision d'ancrage n°2) → nominal <code>integrite: OK</code> ; puis <strong>3 mutations sur 3 items distincts</strong> (fichier manquant · <code>grid_hash</code> périmé · <code>chip_nodata_pct=5 %</code>) → ROUGE avec <strong>item_id et cause</strong> à chaque fois</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2ter</td>
+<td>complétude : écart 0 malgré les 3 pièges, puis ROUGE avec l'id manquant</td>
+<td>⭐ <strong>OVERLAP prouve l'arbitrage n°2</strong> : <code>item_ids_for_site</code> rend <strong>7 ids réels</strong> là où <code>aggregate_counters</code> sur-compte à <strong>10</strong>. Fixture portant les 3 pièges (recouvrement, <code>cc ≥ 95</code>, hors-tuile) → <strong>écart 0</strong> ; item retiré → <code>missing = {"S2A_OVERLAP_004"}</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>planche <code>--first-last</code>, 2 imagettes/case, comptage exact</td>
+<td>dimensions <code>(colonnes × 2 × CELL_PX, CELL_PX + LABEL_HEIGHT_PX)</code> ; 2 imagettes (A01, B09) + 1 case grise (A03) ; <strong>premier ≠ dernier item mesuré</strong> sur A01</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="la-decouverte-technique-de-la-fiche-protocol-vs-dataclass-frozen">⭐ La découverte technique de la fiche : Protocol vs dataclass frozen</h3>
+<p>Le point dur signalé à l'ancrage — <code>core/report.py</code> doit être pur, mais typer ses entrées sur
+<code>Manifest</code> importerait <code>adapters/</code> — a été résolu par un <code>Protocol</code> structurel local
+(<code>ManifestLike</code>). Avec une <strong>précision non évidente, mesurée par repro isolée</strong> : les membres
+doivent être déclarés en <strong><code>@property</code></strong>, pas en annotations planes.</p>
+<p>Un <code>Manifest</code> (<code>frozen=True</code>) échoue le matching structurel contre un Protocol à annotations
+planes — mypy dit <em>« expected settable variable, got read-only attribute »</em> : une annotation
+plane dans un Protocol exige un attribut <strong>réassignable</strong>, ce qu'un dataclass frozen ne peut
+par construction jamais être. Le fait est documenté dans la docstring de <code>ManifestLike</code>.
+⭐ <strong>À réutiliser au Lot 1</strong> : tout Protocol destiné à recevoir des dataclasses frozen du
+projet doit être écrit en <code>@property</code>.</p>
+<h3 id="decision-prise-en-cours-de-realisation">Décision prise en cours de réalisation</h3>
+<p><strong><code>OVERLAP</code> n'est pas un site de <code>config/sites.yaml</code></strong> — fait absent de mon ancrage, qui
+empêchait un test CLI de bout en bout avec ce corpus (le CLI a besoin d'un <code>Site</code> réel pour
+la <code>reference_tile</code> et la bbox). Résolu par un découpage honnête plutôt qu'un contournement :
+la preuve des « 3 pièges dans le même corpus » est apportée au niveau <strong>core</strong> (sur les
+fonctions que le CLI réutilise telles quelles), et la preuve du <strong>wiring CLI</strong> complet sur le
+site réel C07 avec une fixture équivalente. Documenté dans les deux fichiers de test.</p>
+<h3 id="incident-de-merge-et-ce-quil-a-appris">⚠ Incident de merge, et ce qu'il a appris</h3>
+<p>J'avais modifié <code>adapters/contact_sheet.py</code> (police des libellés) <strong>pendant</strong> que cette fiche
+était en vol — entorse à ma propre règle, assumée et signalée. Le merge ligne à ligne a
+réussi, mais a produit du <strong>code cassé</strong> : le rendu de <code>--first-last</code> appelait
+<code>_default_font()</code>, la fonction supprimée entretemps. Git ne voit pas les dépendances
+sémantiques. Le gate l'a attrapé immédiatement — mais si l'agent avait <strong>dupliqué</strong> la
+fonction au lieu de l'appeler, les libellés du mode <code>--first-last</code> seraient partis en tofu
+sans qu'aucun test ne bronche. Les deux copies du rendu de libellé ont donc été
+<strong>factorisées en un point unique</strong> (<code>f12a4cf</code>) : supprimer la classe de bug plutôt que la
+surveiller.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Rendu HTML du rapport (hors périmètre — le <code>.md</code> suffit, <code>just md2html</code> existe) ·
+<code>--check-completeness</code> en conditions réseau réelles (option hors gate par construction) ·
+<code>report</code> sur les 25 sites d'un vrai <code>data_root</code> de campagne (testé sur le corpus fixtures) ·
+<code>--first-last</code> sur un site à <strong>exactement un</strong> chip ingéré : le code duplique volontairement
+l'image des deux côtés, documenté en docstring, mais le corpus fixture ne fournit pas ce cas.</p><p class="gen">Généré le 22/08/2026 03:46 — le .md fait foi.</p></article></body></html>
