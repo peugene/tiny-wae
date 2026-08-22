@@ -37,6 +37,12 @@ concurrence (oracle O2), `logging` sérialisant ensuite l'écriture elle-même. 
 appel direct — son incertitude (D11) est portée par un ``?`` suffixé sous deux conditions :
 échantillon < 5 % du total, OU phase de queue (moins de ``workers`` sites encore actifs,
 c.-à-d. n'ayant pas encore produit TOUTES leurs fenêtres).
+
+Accusé de réception et interruption immédiate (obs-02, D1) : ``_request_stop`` reste une
+fonction PURE — elle positionne ``stop_event`` et, si fourni, notifie l'appelant via
+``on_stop_requested(already_requested)``. C'est le SEUL point d'extension : ce module ne
+décide jamais de ce qu'un 2e Ctrl+C doit faire (message, sortie brutale) — cette politique
+vit dans ``cli/backfill.py``.
 """
 
 from __future__ import annotations
@@ -228,12 +234,27 @@ class _Progress:
         return n, elapsed, sites_active
 
 
-def _request_stop(stop_event: threading.Event, _signum: int, _frame: object) -> None:
-    """Gestionnaire de signal — fonction PURE : ne fait QUE positionner ``stop_event``,
-    aucun I/O, aucun accès au pool. Testable directement (appel de fonction, PAS un vrai
-    signal — décision d'ancrage n°5 : le déclenchement du signal n'est pas portable
-    linux-64/win-64, seul le comportement d'arrêt l'est)."""
+def _request_stop(
+    stop_event: threading.Event,
+    _signum: int,
+    _frame: object,
+    on_stop_requested: Callable[[bool], None] | None = None,
+) -> None:
+    """Gestionnaire de signal — fonction PURE (obs-02, D1) : ne fait QUE positionner
+    ``stop_event`` et, si fourni, appeler ``on_stop_requested(already_requested)``. Aucun
+    I/O direct, aucun accès au pool, aucune décision : « que faire du second Ctrl+C » est
+    une politique qui appartient au CLI, pas à cet adaptateur — ``on_stop_requested`` est
+    le seul point d'extension, câblé par ``run_backfill`` via ``functools.partial``.
+    ``already_requested`` est lu AVANT de positionner ``stop_event`` (donc vrai ssi un
+    appel précédent l'avait déjà fait) : aucun compteur supplémentaire n'est nécessaire,
+    l'état « déjà demandé » se lit sur l'``Event`` lui-même (piste écartée dans la fiche).
+    Testable directement (appel de fonction, PAS un vrai signal — décision d'ancrage n°5
+    de l0-04.1 : le déclenchement du signal n'est pas portable linux-64/win-64, seul le
+    comportement d'arrêt l'est)."""
+    already_requested = stop_event.is_set()
     stop_event.set()
+    if on_stop_requested is not None:
+        on_stop_requested(already_requested)
 
 
 def _log_progress_line(
@@ -355,6 +376,7 @@ def run_backfill(
     force: bool = False,
     stop_event: threading.Event | None = None,
     install_signal_handlers: bool = True,
+    on_stop_requested: Callable[[bool], None] | None = None,
 ) -> BackfillOutcome:
     """Exécute le backfill : une tâche par (site, fenêtre) de ``windows_by_site``, dans un
     pool borné à ``workers``. Un site sans entrée dans ``windows_by_site`` n'est pas traité
@@ -370,6 +392,10 @@ def run_backfill(
     ``CTRL_BREAK_EVENT`` (Windows, absent sous Linux) pour la durée du run — les anciens
     gestionnaires sont restaurés dans tous les cas (``finally``).
 
+    ``on_stop_requested`` (obs-02, D1) : transmis TEL QUEL au handler de signal via
+    ``functools.partial`` — c'est le seul canal par lequel le CLI observe un Ctrl+C (accusé
+    de réception au 1er, sortie immédiate au 2e) sans que ce module décide de rien lui-même.
+
     À l'arrêt (signal reçu, ou ``stop_event`` positionné par le test) : les tâches PAS
     ENCORE démarrées sont annulées (``Future.cancel()``), celles déjà en cours sont
     attendues jusqu'à leur terme — jamais interrompues à mi-item (l'atomicité de
@@ -380,7 +406,7 @@ def run_backfill(
     restore: list[tuple[int, Any]] = []
     if install_signal_handlers:
         handler: Callable[[int, object], None] = functools.partial(
-            _request_stop, effective_stop_event
+            _request_stop, effective_stop_event, on_stop_requested=on_stop_requested
         )
         restore.append((signal.SIGINT, signal.signal(signal.SIGINT, handler)))
         # SIGBREAK (Ctrl+Break) n'existe que sous Windows — absent de `signal` sous Linux.
