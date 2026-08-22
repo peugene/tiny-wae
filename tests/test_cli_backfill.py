@@ -266,7 +266,12 @@ backfill_workers: 2
     _patch_source(monkeypatch, FixtureSource(settings=settings))
 
     seen_workers: dict[str, int] = {}
-    real_run_backfill = backfill_module.run_backfill
+    # `run_backfill` est importé (pas ré-exporté explicitement) dans cli/backfill.py — un
+    # attribut de module réel à l'exécution (le monkeypatch qui suit le prouve), mais que
+    # `--no-implicit-reexport` (strict) refuse de considérer comme public depuis l'extérieur.
+    # Modifier cli/backfill.py (ajouter un `__all__`) est hors périmètre de cette fiche
+    # (out-01 ne touche pas src/) — ignore nommé plutôt que src/ changé au passage.
+    real_run_backfill = backfill_module.run_backfill  # type: ignore[attr-defined]
 
     def _spy_run_backfill(**kwargs: object) -> object:
         seen_workers["workers"] = kwargs["workers"]  # type: ignore[assignment]

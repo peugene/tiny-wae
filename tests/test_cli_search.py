@@ -23,7 +23,7 @@ import json
 from pathlib import Path
 
 import pytest
-from typer.testing import CliRunner
+from typer.testing import CliRunner, Result
 
 import tiny_wae.cli.search as search_module
 from tiny_wae.__main__ import app
@@ -46,7 +46,7 @@ SITE_ID = "C07"
 REFERENCE_TILE = "52TEL"
 
 
-def _load_raw_items(name: str) -> list[dict]:
+def _load_raw_items(name: str) -> list[dict[str, object]]:
     """Charge les items bruts d'une fixture enregistrée (``{"items": [...]}``)."""
     data = json.loads((FIXTURES_ROOT / name).read_text(encoding="utf-8"))
     return list(data["items"])
@@ -90,7 +90,7 @@ def _patch_source(monkeypatch: pytest.MonkeyPatch, source: StacSource) -> None:
     monkeypatch.setattr(search_module, "build_source", lambda settings: source)
 
 
-def _invoke(*extra_args: str) -> object:
+def _invoke(*extra_args: str) -> Result:
     """Invoque `search` avec les options communes (site C07, fenêtre 2024)."""
     return runner.invoke(
         app,

@@ -69,7 +69,7 @@ select = ["E", "F", "I", "B", "UP", "C4"]
 [tool.mypy]
 # Strict sur NOTRE code, pragmatique sur l'écosystème (libs géospatiales mal typées).
 strict = true
-files = ["src"]
+files = ["src", "tests"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

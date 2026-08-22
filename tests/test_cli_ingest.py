@@ -40,6 +40,9 @@ from tiny_wae.core.windows import Window
 runner = CliRunner()
 
 _GRID = Grid(epsg=32631, origin_x=699960.0, origin_y=4900020.0)
+# Même valeur que _GRID.epsg, mais non-Optional (cf. test_ingestion.py) : Grid.epsg est
+# `int | None` côté production, toujours renseigné ici.
+_GRID_EPSG: int = 32631
 _SITE_ID = "T01"
 _VEGETATION = 4
 _BAND_VALUE = 500
@@ -120,7 +123,7 @@ data_root: "{data_root.as_posix()}"
 
 def _write_raster(path: Path, *, resolution: int, size: int, value: int, dtype: type) -> None:
     transform = transform_for(_GRID, resolution)
-    array = np.full((size, size), value, dtype=dtype)
+    array: np.ndarray = np.full((size, size), value, dtype=dtype)
     with rasterio.open(
         path,
         "w",
@@ -158,7 +161,7 @@ def _make_clear_item(tmp_path: Path, item_id: str) -> Acquisition:
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=assets,
         radiometry=dict.fromkeys(assets),
     )
@@ -190,7 +193,7 @@ def _make_failing_item(item_id: str) -> Acquisition:
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=missing,
         radiometry=dict.fromkeys(missing),
     )

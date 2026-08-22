@@ -24,6 +24,7 @@ from __future__ import annotations
 import importlib.util
 import os
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 from types import ModuleType
 
@@ -46,7 +47,7 @@ smoke = _load_smoke_module()
 
 
 @pytest.fixture(autouse=True)
-def _restore_offline_env() -> None:
+def _restore_offline_env() -> Iterator[None]:
     """Garde-fou de test : quel que soit ce que le module fait, l'environnement du process
     pytest ne doit jamais garder ``TINY_WAE_OFFLINE`` en sortie d'un test (décision
     d'ancrage n°5 de la fiche : la variable ne doit jamais fuir)."""

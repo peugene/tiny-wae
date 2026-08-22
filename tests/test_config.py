@@ -60,14 +60,14 @@ def test_load_sites_lat_lon_are_float() -> None:
             assert site.lat < 0 or site.lon < 0, f"{site.id} : coordonnée négative attendue"
 
 
-def _write_sites_yaml(tmp_path: Path, sites: list[dict]) -> Path:
+def _write_sites_yaml(tmp_path: Path, sites: list[dict[str, object]]) -> Path:
     """Écrit un sites.yaml minimal (un seul site) pour tester une mutation d'erreur."""
     path = tmp_path / "sites.yaml"
     path.write_text(yaml.safe_dump({"sites": sites}), encoding="utf-8")
     return path
 
 
-def _base_site(**overrides: object) -> dict:
+def _base_site(**overrides: object) -> dict[str, object]:
     """Un site nominal valide, à faire muter par les tests d'erreur (O2)."""
     site = {
         "id": "X01",
