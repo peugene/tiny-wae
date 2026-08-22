@@ -28,17 +28,22 @@ from pathlib import Path
 import numpy as np
 import pytest
 import rasterio
+from typer.testing import CliRunner
 
+from tiny_wae.__main__ import app
 from tiny_wae.adapters.config_io import DEFAULT_SITES_PATH, load_settings, load_sites
 from tiny_wae.adapters.contact_sheet import (
     CELL_PX,
     GRID_COLUMNS,
     LABEL_HEIGHT_PX,
     build_contact_sheet,
+    build_first_last_contact_sheet,
+    earliest_ingested_manifest,
     latest_ingested_manifest,
     render_rgb,
     stretch_percentile,
     write_contact_sheet,
+    write_first_last_contact_sheet,
 )
 from tiny_wae.adapters.fixture_source import FixtureSource
 from tiny_wae.adapters.ingestion import ingest_from_source
@@ -226,3 +231,162 @@ def test_o2_stretch_percentile_constant_band_is_black_not_nan() -> None:
 
     assert result.dtype == np.uint8
     assert np.array_equal(result, np.zeros((8, 8), dtype=np.uint8))
+
+
+# ── O3 (l0-04.2) : planche --first-last — 2 imagettes/case, comptage exact ──────────────
+
+
+def test_o3_earliest_and_latest_ingested_manifest_differ_on_a01(ingested_data_root: Path) -> None:
+    """A01 (6 items ingérés en septembre 2022, cf. ancrage) : le premier et le dernier
+    manifeste ``ingested`` sont bien DEUX items distincts (sinon --first-last afficherait
+    deux fois la même image sans le dire) — preuve mesurée, pas supposée."""
+    first = earliest_ingested_manifest(ingested_data_root, "A01")
+    last = latest_ingested_manifest(ingested_data_root, "A01")
+
+    assert first is not None
+    assert last is not None
+    assert first.item_id != last.item_id
+    assert first.datetime <= last.datetime
+
+
+def test_o3_build_first_last_contact_sheet_dimensions(ingested_data_root: Path) -> None:
+    """3 sites, 3 colonnes, 2 imagettes/case -> planche de
+    (3 * 2*CELL_PX, 1 * (CELL_PX + LABEL_HEIGHT_PX)) — deux fois plus large que le mode
+    ``--latest`` à sites/colonnes égaux."""
+    sites = _sites()
+    site_list = [sites["A01"], sites["B09"], sites["A03"]]  # A03 jamais ingéré (case grise)
+
+    sheet = build_first_last_contact_sheet(site_list, ingested_data_root, columns=3)
+
+    assert sheet.size == (3 * 2 * CELL_PX, 1 * (CELL_PX + LABEL_HEIGHT_PX))
+    assert sheet.mode == "RGB"
+
+
+def test_o3_imagette_pair_and_gray_pair_counts_match_measured_corpus(
+    ingested_data_root: Path,
+) -> None:
+    """Comptage EXACT (mesuré, pas supposé) : pour chaque site, SOIT les 2 moitiés de la
+    case sont des imagettes (site ingéré), SOIT les 2 sont l'aplat gris exact (170,170,170)
+    (site jamais ingéré) — jamais un mélange, jamais une case à moitié peinte."""
+    sites = _sites()
+    site_list = [sites["A01"], sites["B09"], sites["A03"]]
+    expected_has_chip = [
+        latest_ingested_manifest(ingested_data_root, site.id) is not None for site in site_list
+    ]
+    assert expected_has_chip == [True, True, False]  # ancrage n°1, mesuré
+
+    sheet = build_first_last_contact_sheet(site_list, ingested_data_root, columns=3)
+    cell_width = 2 * CELL_PX
+    cell_height = CELL_PX + LABEL_HEIGHT_PX
+
+    imagette_pair_count = 0
+    gray_pair_count = 0
+    for index, has_chip in enumerate(expected_has_chip):
+        col, row = index % 3, index // 3
+        base_x = col * cell_width
+        base_y = row * cell_height
+        first_pixel = sheet.getpixel((base_x + CELL_PX // 2, base_y + CELL_PX // 2))
+        last_pixel = sheet.getpixel((base_x + CELL_PX + CELL_PX // 2, base_y + CELL_PX // 2))
+        first_is_gray = first_pixel == (170, 170, 170)
+        last_is_gray = last_pixel == (170, 170, 170)
+        if has_chip:
+            assert not first_is_gray and not last_is_gray, (
+                f"site index {index} : imagettes attendues"
+            )
+            imagette_pair_count += 1
+        else:
+            assert first_is_gray and last_is_gray, f"site index {index} : cases grises attendues"
+            gray_pair_count += 1
+
+    assert imagette_pair_count == 2
+    assert gray_pair_count == 1
+    assert imagette_pair_count + gray_pair_count == len(site_list)
+
+
+def test_o3_write_first_last_contact_sheet_produces_png_file(
+    ingested_data_root: Path, tmp_path: Path
+) -> None:
+    """``write_first_last_contact_sheet`` écrit un PNG lisible au chemin demandé."""
+    sites = _sites()
+    out_path = tmp_path / "artefact" / "planche_first_last.png"
+
+    result_path = write_first_last_contact_sheet(
+        [sites["A01"], sites["B09"]], ingested_data_root, out_path
+    )
+
+    assert result_path == out_path
+    assert out_path.exists()
+    with open(out_path, "rb") as fh:
+        header = fh.read(8)
+    assert header == b"\x89PNG\r\n\x1a\n"
+
+
+def test_o3_build_first_last_contact_sheet_rejects_empty_site_list(
+    ingested_data_root: Path,
+) -> None:
+    """Liste de sites vide -> ``ValueError`` explicite (même contrat que le mode --latest)."""
+    with pytest.raises(ValueError):
+        build_first_last_contact_sheet([], ingested_data_root)
+
+
+# ── O3 (wiring CLI) : `contact-sheet --first-last` / usage des deux modes ───────────────
+
+_cli_runner = CliRunner()
+_SETTINGS_PATH = Path("config/settings.yaml")
+_SITES_PATH = Path("config/sites.yaml")
+
+
+def test_cli_contact_sheet_first_last_ecrit_un_png(
+    ingested_data_root: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """``contact-sheet --first-last`` (wiring réel, via l'app typer) écrit un PNG."""
+    monkeypatch.setenv("TINY_WAE_DATA_ROOT", str(ingested_data_root))
+    out_path = tmp_path / "cli_first_last.png"
+
+    result = _cli_runner.invoke(
+        app,
+        [
+            "contact-sheet",
+            "--first-last",
+            "--out",
+            str(out_path),
+            "--sites-path",
+            str(_SITES_PATH),
+            "--settings-path",
+            str(_SETTINGS_PATH),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert out_path.exists()
+    with open(out_path, "rb") as fh:
+        header = fh.read(8)
+    assert header == b"\x89PNG\r\n\x1a\n"
+
+
+def test_cli_contact_sheet_ni_latest_ni_first_last_est_usage() -> None:
+    """Ni ``--latest`` ni ``--first-last`` -> USAGE (2), message explicite."""
+    result = _cli_runner.invoke(
+        app,
+        ["contact-sheet", "--sites-path", str(_SITES_PATH), "--settings-path", str(_SETTINGS_PATH)],
+    )
+    assert result.exit_code == 2
+    assert "--latest" in result.output
+    assert "--first-last" in result.output
+
+
+def test_cli_contact_sheet_latest_et_first_last_ensemble_est_usage() -> None:
+    """``--latest`` ET ``--first-last`` ensemble (ambigu) -> USAGE (2)."""
+    result = _cli_runner.invoke(
+        app,
+        [
+            "contact-sheet",
+            "--latest",
+            "--first-last",
+            "--sites-path",
+            str(_SITES_PATH),
+            "--settings-path",
+            str(_SETTINGS_PATH),
+        ],
+    )
+    assert result.exit_code == 2

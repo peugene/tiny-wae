@@ -1,0 +1,169 @@
+{
+  "items": [
+    {
+      "id": "S2A_OVERLAP_001",
+      "properties": {
+        "datetime": "2026-02-01T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_002",
+      "properties": {
+        "datetime": "2026-02-02T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_003",
+      "properties": {
+        "datetime": "2026-02-03T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_004",
+      "properties": {
+        "datetime": "2026-02-04T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_005",
+      "properties": {
+        "datetime": "2026-02-05T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_006",
+      "properties": {
+        "datetime": "2026-02-06T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_007",
+      "properties": {
+        "datetime": "2026-02-07T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_SCENE_CLOUD_01",
+      "properties": {
+        "datetime": "2026-02-08T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 97.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_SCENE_CLOUD_02",
+      "properties": {
+        "datetime": "2026-02-09T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCJ",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 99.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_OFFTILE_01",
+      "properties": {
+        "datetime": "2026-02-10T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCK",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    },
+    {
+      "id": "S2A_OVERLAP_OFFTILE_02",
+      "properties": {
+        "datetime": "2026-02-11T10:00:00Z",
+        "platform": "sentinel-2a",
+        "grid:code": "MGRS-31TCK",
+        "s2:sequence": "0",
+        "eo:cloud_cover": 10.0,
+        "s2:nodata_pixel_percentage": 0.0,
+        "s2:processing_baseline": "05.00",
+        "earthsearch:boa_offset_applied": true,
+        "proj:code": "EPSG:32631"
+      },
+      "assets": {}
+    }
+  ]
+}

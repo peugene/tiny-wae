@@ -88,6 +88,16 @@ def latest_ingested_manifest(data_root: Path, site_id: str) -> Manifest | None:
     return max(ingested, key=lambda m: m.datetime)
 
 
+def earliest_ingested_manifest(data_root: Path, site_id: str) -> Manifest | None:
+    """Renvoie le manifeste ``ingested`` le plus ANCIEN d'un site (tri sur ``datetime``
+    ISO 8601), ou ``None`` si le site n'a aucun chip ingéré — pendant de
+    ``latest_ingested_manifest``, pour le mode ``--first-last`` (l0-04.2)."""
+    ingested = [m for m in list_for_site(data_root, site_id) if m.status == "ingested"]
+    if not ingested:
+        return None
+    return min(ingested, key=lambda m: m.datetime)
+
+
 @dataclass(frozen=True, slots=True)
 class SheetCell:
     """Une cellule de la planche : soit une imagette rendue, soit une case grise motivée
@@ -170,6 +180,108 @@ def write_contact_sheet(
 ) -> Path:
     """Compose la planche puis l'écrit en PNG à ``out_path`` (répertoire créé si besoin)."""
     sheet = build_contact_sheet(sites, data_root, columns=columns)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(out_path, format="PNG")
+    return out_path
+
+
+# ── Mode --first-last (l0-04.2, extension actée en l0-03.6) ─────────────────────────────
+# 2 imagettes par case (premier et dernier chip ``ingested``) au lieu d'une seule — module
+# étendu, pas réécrit (les fonctions ci-dessus restent inchangées, exception assumée à
+# l'invariant add-only, cf. décision d'ancrage de la fiche l0-03.6).
+
+
+@dataclass(frozen=True, slots=True)
+class FirstLastCell:
+    """Une cellule de la planche ``--first-last`` : deux imagettes (premier/dernier chip
+    ``ingested``), chacune éventuellement ``None`` (case grise) si le site n'a aucun chip.
+    Un site avec un SEUL chip ``ingested`` porte la MÊME imagette aux deux positions
+    (premier == dernier) — documenté ici plutôt que masqué par une case grise trompeuse."""
+
+    site_id: str
+    label_lines: tuple[str, ...]
+    first_image: Image.Image | None
+    last_image: Image.Image | None
+
+
+def _build_first_last_cell(site: Site, data_root: Path) -> FirstLastCell:
+    """Construit la cellule first/last d'un site : rend les deux imagettes si au moins un
+    chip ``ingested`` existe (dupliquées si un seul), case grise des deux côtés sinon."""
+    first_manifest = earliest_ingested_manifest(data_root, site.id)
+    last_manifest = latest_ingested_manifest(data_root, site.id)
+    if first_manifest is None or last_manifest is None:
+        return FirstLastCell(
+            site_id=site.id,
+            label_lines=(f"{site.id} — {site.name}", _NO_CHIP_LABEL),
+            first_image=None,
+            last_image=None,
+        )
+    first_path = Path(data_root) / site.id / first_manifest.item_id / "chip.tif"
+    last_path = Path(data_root) / site.id / last_manifest.item_id / "chip.tif"
+    first_date = first_manifest.datetime.split("T", 1)[0]
+    last_date = last_manifest.datetime.split("T", 1)[0]
+    return FirstLastCell(
+        site_id=site.id,
+        label_lines=(f"{site.id} — {site.name}", f"{first_date} → {last_date}"),
+        first_image=render_rgb(first_path),
+        last_image=render_rgb(last_path),
+    )
+
+
+def _paste_first_last_cell(
+    sheet: Image.Image,
+    draw: ImageDraw.ImageDraw,
+    cell: FirstLastCell,
+    *,
+    box: tuple[int, int],
+) -> None:
+    """Peint une cellule first/last (2 imagettes CELL_PX côte à côte, ou 2 aplats gris) +
+    son bandeau d'étiquette, au coin haut-gauche ``box``."""
+    x0, y0 = box
+    for offset, image in enumerate((cell.first_image, cell.last_image)):
+        cell_x0 = x0 + offset * CELL_PX
+        if image is not None:
+            thumb = image.resize((CELL_PX, CELL_PX))
+            sheet.paste(thumb, (cell_x0, y0))
+        else:
+            draw.rectangle([cell_x0, y0, cell_x0 + CELL_PX, y0 + CELL_PX], fill=_GRAY_CELL_COLOR)
+
+    label_y0 = y0 + CELL_PX
+    label_width = 2 * CELL_PX
+    draw.rectangle(
+        [x0, label_y0, x0 + label_width, label_y0 + LABEL_HEIGHT_PX], fill=_LABEL_BG_COLOR
+    )
+    font = _default_font()
+    for i, line in enumerate(cell.label_lines):
+        draw.text((x0 + 4, label_y0 + 2 + i * 12), line, fill=_LABEL_FG_COLOR, font=font)
+
+
+def build_first_last_contact_sheet(
+    sites: Sequence[Site], data_root: Path, *, columns: int = GRID_COLUMNS
+) -> Image.Image:
+    """Compose la planche ``--first-last`` : une cellule par site (2 imagettes CELL_PX
+    côte à côte — premier puis dernier chip ``ingested``), même grille/étiquetage que
+    ``build_contact_sheet`` sinon."""
+    if not sites:
+        raise ValueError("build_first_last_contact_sheet : la liste de sites est vide")
+    rows = -(-len(sites) // columns)
+    cell_width = 2 * CELL_PX
+    cell_height = CELL_PX + LABEL_HEIGHT_PX
+    sheet = Image.new("RGB", (columns * cell_width, rows * cell_height), color=(0, 0, 0))
+    draw = ImageDraw.Draw(sheet)
+    for index, site in enumerate(sites):
+        cell = _build_first_last_cell(site, data_root)
+        col, row = index % columns, index // columns
+        _paste_first_last_cell(sheet, draw, cell, box=(col * cell_width, row * cell_height))
+    return sheet
+
+
+def write_first_last_contact_sheet(
+    sites: Sequence[Site], data_root: Path, out_path: Path, *, columns: int = GRID_COLUMNS
+) -> Path:
+    """Compose la planche ``--first-last`` puis l'écrit en PNG à ``out_path`` (répertoire
+    créé si besoin)."""
+    sheet = build_first_last_contact_sheet(sites, data_root, columns=columns)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(out_path, format="PNG")
     return out_path
