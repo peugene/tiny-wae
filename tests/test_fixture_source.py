@@ -33,8 +33,9 @@ from tiny_wae.core.settings import EXPECTED_ASSET_KEYS
 from tiny_wae.core.sites import Site
 from tiny_wae.core.windows import Window
 
-# Fenêtre arbitraire — FixtureSource ne (re-)filtre pas le corpus par date, elle se
-# contente de la reporter dans l'enveloppe (cf. docstring de FixtureSource.search).
+# Fenêtre LARGE, choisie pour englober tout le corpus enregistré (2022 -> 2026) : les
+# tests de contenu ci-dessous portent sur le corpus entier. FixtureSource filtre bien sur
+# la fenêtre depuis le run N6 — cf. les tests de filtrage en fin de module.
 _ANY_WINDOW = Window(start=datetime(2020, 1, 1), end=datetime(2027, 1, 1))
 
 # Les 3 items GELÉS du chapeau l0-02 (site A01) + l'item sequence=1 (cf. décision
@@ -183,3 +184,66 @@ def test_fixture_source_default_dirs_point_at_recorded_corpus() -> None:
     assert DEFAULT_COG_DIR.exists()
     assert (DEFAULT_STAC_DIR / "cog_a01.json").exists()
     assert (DEFAULT_STAC_DIR / "cog_b09.json").exists()
+
+
+# ── Filtrage temporel : le contrat que partage FixtureSource avec EarthSearchSource ──
+
+
+def test_fixture_source_filtre_sur_la_fenetre() -> None:
+    """La fenêtre discrimine réellement : le corpus A01 porte 10 items, dont 6 en sept. 2022.
+
+    Sans ce filtrage, `FixtureSource` rendrait tout le corpus quelle que soit la fenêtre —
+    même signature qu'`EarthSearchSource`, comportement différent. Les oracles de l0-04.1
+    (`found_stac == 6` sur A01 × 1 mois) et de l0-05.2 (items « nouveaux » depuis
+    `last_datetime`) reposent entièrement dessus.
+    """
+    source = FixtureSource(settings=load_settings())
+    site = _sites()["A01"]
+
+    tout = source.search(site, Window(start=datetime(2020, 1, 1), end=datetime(2027, 1, 1)))
+    assert tout.counters["found_stac"] == 10
+
+    septembre = source.search(site, Window(start=datetime(2022, 9, 1), end=datetime(2022, 10, 1)))
+    assert septembre.counters["found_stac"] == 6
+    assert {item.item_id for item in septembre.items} == {
+        "S2A_31TGJ_20220901_0_L2A",
+        "S2B_31TGJ_20220906_0_L2A",
+        "S2A_31TGJ_20220911_0_L2A",
+        "S2B_31TGJ_20220916_0_L2A",
+        "S2A_31TGJ_20220921_0_L2A",
+        "S2B_31TGJ_20220926_0_L2A",
+    }
+
+
+def test_fixture_source_fenetre_demi_ouverte() -> None:
+    """Fenêtre `[start, end[` comme `core.windows.Window` : la borne de fin EXCLUT.
+
+    L'item du 2022-09-01T10:39:03Z est inclus par une fenêtre commençant ce jour-là, et
+    exclu par une fenêtre s'y terminant. Une borne inclusive des deux côtés ferait
+    double-compter l'item pivot entre deux fenêtres mensuelles consécutives de
+    `backfill_windows` — exactement le cas de l0-04.1.
+    """
+    source = FixtureSource(settings=load_settings())
+    site = _sites()["A01"]
+
+    inclus = source.search(site, Window(start=datetime(2022, 9, 1), end=datetime(2022, 9, 2)))
+    assert [item.item_id for item in inclus.items] == ["S2A_31TGJ_20220901_0_L2A"]
+
+    exclu = source.search(site, Window(start=datetime(2022, 8, 1), end=datetime(2022, 9, 1)))
+    assert exclu.counters["found_stac"] == 0
+    assert exclu.items == []
+
+
+def test_fixture_source_fenetre_vide_rend_enveloppe_vide() -> None:
+    """Une fenêtre sans aucun item rend une enveloppe VIDE, pas une erreur — c'est le
+    comportement d'earth-search, et c'est ce dont l0-05.2 a besoin pour « rien de nouveau »."""
+    source = FixtureSource(settings=load_settings())
+    envelope = source.search(
+        _sites()["A01"], Window(start=datetime(2019, 1, 1), end=datetime(2019, 2, 1))
+    )
+    assert envelope.counters == {
+        "found_stac": 0,
+        "skipped_scene_cloud": 0,
+        "off_tile": 0,
+        "found_tile": 0,
+    }

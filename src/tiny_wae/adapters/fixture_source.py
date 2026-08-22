@@ -6,9 +6,15 @@ enregistrées (``tests/fixtures/stac/cog_<site_id>.json``, format ``{"items": [<
 brut>]}`` — décision d'ancrage n°2, IDENTIQUE à ``record_stac_fixtures.py``, JAMAIS un
 ``Envelope.to_dict()`` sérialisé), réécrit les hrefs des assets mappés vers les GeoTIFF
 locaux clippés (``tests/fixtures/cog/<item_id>/<clé>.tif``, ``file://`` absolu — oracle
-O3), puis délègue le filtrage qualité/tuile à ``adapters.stac.build_envelope`` — la MÊME
-fonction pure qu'``EarthSearchSource`` (décision d'ancrage n°3) : c'est ce qui rend la
-substituabilité au port ``StacSource`` réellement vérifiée, pas seulement déclarée.
+O3), **filtre sur la fenêtre demandée**, puis délègue le filtrage qualité/tuile à
+``adapters.stac.build_envelope`` — la MÊME fonction pure qu'``EarthSearchSource``
+(décision d'ancrage n°3) : c'est ce qui rend la substituabilité au port ``StacSource``
+réellement vérifiée, pas seulement déclarée.
+
+⭐ Le filtrage temporel (ajouté au run N6) fait partie du contrat, pas du confort :
+``EarthSearchSource`` le délègue au serveur earth-search, donc son ``found_stac`` ne
+compte que la fenêtre. Sans lui ici, les deux sources auraient la même signature et des
+comportements différents — une substituabilité vraie pour mypy, fausse à l'exécution.
 """
 
 from __future__ import annotations
@@ -16,6 +22,7 @@ from __future__ import annotations
 import copy
 import json
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -50,6 +57,26 @@ def _localize_hrefs(item: dict[str, Any], *, cog_dir: Path) -> dict[str, Any]:
     return localized
 
 
+def _item_datetime(item: dict[str, Any]) -> datetime:
+    """Parse ``properties.datetime`` d'un item STAC en ``datetime`` NAÏF (UTC).
+
+    earth-search rend un RFC3339 suffixé ``Z`` (``2022-09-01T10:39:03.240000Z``). Le
+    fuseau est retiré après parsing : les bornes de ``Window`` sont **naïves** et exprimées
+    en UTC par convention du projet — comparer un ``datetime`` aware à un naïf lève un
+    ``TypeError``. Le ``replace("Z", "+00:00")`` est une ceinture (Python 3.12 accepte
+    déjà le ``Z``), qui garde la fonction lisible sur la forme exacte attendue.
+    """
+    raw = str(item["properties"]["datetime"])
+    parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    return parsed.replace(tzinfo=None)
+
+
+def _in_window(item: dict[str, Any], window: Window) -> bool:
+    """Vrai si l'item tombe dans la fenêtre demi-ouverte ``[start, end[``."""
+    moment = _item_datetime(item)
+    return window.start <= moment < window.end
+
+
 @dataclass(frozen=True, slots=True)
 class FixtureSource:
     """Implémentation ``StacSource`` servant le corpus de fixtures COG local (l0-03.5).
@@ -80,10 +107,20 @@ class FixtureSource:
         return items
 
     def search(self, site: Site, window: Window) -> Envelope:
-        """Rend l'enveloppe construite depuis le corpus enregistré du site — ``window`` est
-        propagée telle quelle à l'enveloppe (métadonnée), le corpus n'est pas re-filtré par
-        date : c'est ``build_envelope`` (filtres cloud + tuile) qui décide du contenu,
-        exactement comme ``EarthSearchSource.search``.
+        """Rend l'enveloppe du corpus enregistré du site, **filtrée sur ``window``**.
+
+        ⭐ Le filtrage temporel est essentiel à la substituabilité RÉELLE au port :
+        ``EarthSearchSource`` passe la fenêtre à earth-search, qui filtre **côté serveur** —
+        donc son ``found_stac`` ne compte que les items de la fenêtre. Une ``FixtureSource``
+        qui rendrait tout le corpus quelle que soit la fenêtre aurait la même *signature*
+        mais pas le même *comportement* : les deux sources ne seraient interchangeables
+        qu'aux yeux du typage. (Défaut corrigé au dispatch du run N6, quand les oracles de
+        l0-04.1 et l0-05.2 — qui comptent sur des fenêtres discriminantes — l'ont révélé.)
+
+        Fenêtre **demi-ouverte** ``[start, end[``, comme ``core.windows.Window``. Le
+        filtrage précède ``build_envelope`` : ``found_stac`` compte donc bien les items
+        rendus pour la fenêtre, avant tout filtre qualité — dénominateur identique à celui
+        d'earth-search (décision E-a du chapeau l0-02).
 
         Lève ``StacSourceError`` si ``site.reference_tile`` n'est pas posée (même garde
         qu'``EarthSearchSource``).
@@ -91,7 +128,7 @@ class FixtureSource:
         if site.reference_tile is None:
             raise StacSourceError(f"site {site.id} : reference_tile non posée — recherche refusée")
 
-        raw_items = self._load_raw_items(site.id)
+        raw_items = [item for item in self._load_raw_items(site.id) if _in_window(item, window)]
         localized_items = [_localize_hrefs(item, cog_dir=self.cog_dir) for item in raw_items]
 
         return build_envelope(
