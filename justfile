@@ -61,6 +61,11 @@ script name *args:
 survey-tiles *args:
     pixi run python scripts/survey_tiles.py {{args}}
 
+# aide à la revue humaine du centrage des sites (l0-03.H) : GeoJSON des emprises + page
+# de liens vers le Copernicus Browser et OSM. Ne valide rien — outille l'œil humain.
+review-sites *args:
+    pixi run python scripts/site_review.py {{args}}
+
 # smoke : le pipeline réel sur un périmètre minuscule (à câbler dès le Lot 0)
 smoke:
     pixi run python scripts/smoke.py
