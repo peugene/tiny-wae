@@ -1,0 +1,29 @@
+# Dependabot — mises à jour de dépendances.
+#
+# ⭐ UNIQUEMENT les actions GitHub, et c'est délibéré.
+#
+# Les actions sont le seul endroit du projet où une dépendance se périme SANS qu'on s'en
+# rende compte : le commit 8c9a285 (« montée checkout v5 + setup-just v4 ») a été fait en
+# réaction à la dépréciation de Node 20, après coup. C'est exactement ce que Dependabot
+# aurait signalé le jour même, avec le motif.
+#
+# L'écosystème `pip` n'est PAS déclaré, pour deux raisons : l'environnement réel est résolu
+# par pixi (lockfile conda + PyPI) que Dependabot ne sait pas lire, et `[project.dependencies]`
+# n'exprime que des bornes BASSES (`>=`) — il n'y a rien à y monter. Une PR par semaine que
+# personne ne lit finit par être fusionnée sans regard : mieux vaut aucune PR qu'un bruit
+# de fond. Les ALERTES de sécurité, elles, s'activent dans l'onglet Security du dépôt et ne
+# passent pas par ce fichier.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Un seul PR groupé plutôt qu'une par action : le lot se relit d'un coup.
+    groups:
+      actions:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"

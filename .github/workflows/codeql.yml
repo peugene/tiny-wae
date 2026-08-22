@@ -1,0 +1,41 @@
+# CodeQL — analyse sémantique (suivi de teinte) du code Python.
+#
+# ⚠ Rendement attendu FAIBLE sur ce projet, et c'est assumé : pas de web, pas de SQL
+# dynamique, pas d'entrée utilisateur hostile. Ce qu'il peut attraper ici se limite à la
+# manipulation de chemins et à la désérialisation. On l'active quand même parce que le coût
+# est nul (dépôt public = gratuit, aucune maintenance) et que le périmètre va s'élargir :
+# le Lot 1 ouvre l'ingestion réseau et l'interrogation en langage naturel.
+#
+# ⛔ Ne PAS activer en parallèle le « default setup » de CodeQL dans les réglages GitHub :
+# les deux se marchent dessus, GitHub refuse la configuration avancée si l'autre est active.
+name: codeql
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Une passe hebdomadaire : les requêtes CodeQL évoluent, du code inchangé peut se
+    # mettre à sortir un résultat. Lundi 6 h UTC, hors des heures de travail.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # publier les résultats dans l'onglet Security
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          # `security-and-quality` plutôt que le jeu par défaut : il ajoute les requêtes de
+          # qualité (code mort, comparaisons impossibles) au jeu sécurité.
+          queries: security-and-quality
+      - uses: github/codeql-action/analyze@v3
