@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-0-ingestion</span> › <b>l0-02</b></nav><h1>[l0-02] [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search</h1><p>Maturation · effort L · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="../../fait/l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="../../fait/l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><h1 id="l0-02-chapeau-recherche-stac">[l0-02] — CHAPEAU : Recherche STAC</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-02</b></nav><h1>[l0-02] [CHAPEAU] Recherche STAC — port StacSource, contrat Acquisition, CLI search</h1><p>Fait · effort L · chapeau · phase O1 · depends_on : —</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search</li><li><a href="l0-02.2.html"><code>l0-02.2</code></a> CLI search + garde anti-socket + oracles live séparés</li></ul></div><h1 id="l0-02-chapeau-recherche-stac">[l0-02] — CHAPEAU : Recherche STAC</h1>
 <blockquote>
 <p>Fiche chapeau, non dispatchable, <code>depends_on: []</code> (E-c : un chapeau n'ordonne rien).
 <strong>Vient après l0-01</strong> — les arêtes réelles sont portées par les sous-tâches.</p>
@@ -79,6 +79,13 @@ garde anti-<code>s3://</code> ne s'applique QU'AUX assets mappés. Collection <c
   prioritaire s'il revenait) et expose toujours <code>Acquisition.proj_epsg: int</code>. <strong>Les fiches aval
   qui consomment l'EPSG (l0-03.3 et sa garde epsg) passent par le contrat <code>Acquisition</code>, jamais
   par la clé STAC brute</strong> : elles ne sont pas affectées. À ne pas re-déduire de la donnée live.</li>
+<li>⭐ <strong><code>limit</code> N'EST PAS un plafond de résultats chez pystac-client (mesuré le 22/08/2026,
+  l0-03.5)</strong> : <code>client.search(limit=N)</code> ne fixe que la <strong>taille de PAGE</strong>. Une fenêtre de
+  3 mois sur B09 a ainsi ramené <strong>38 items</strong> là où 4 étaient demandés. Le plafond s'obtient
+  par <strong><code>max_items=N</code></strong>, paramètre distinct. <code>EarthSearchSource.search</code> n'en passe aucun des
+  deux aujourd'hui (donc aucun bug actuel), mais toute fiche qui voudra borner une recherche
+  — <strong>l0-04.1 en premier, qui boucle sur des fenêtres mensuelles × 25 sites</strong> — doit utiliser
+  <code>max_items</code>. À ne pas re-déduire de la donnée live.</li>
 <li>Item ids GELÉS pour les oracles (mesurés en revue v2) : clair
   <code>S2A_31TGJ_20240801_0_L2A</code> (cc &lt; 2 %, milieu de fenêtre) ; très nuageux
   <code>S2B_31TGJ_20230315_0_L2A</code> (cc 88,3 %, cirrus 82,7) ; robustesse S2C
@@ -106,4 +113,4 @@ garde anti-<code>s3://</code> ne s'applique QU'AUX assets mappés. Collection <c
 </tr>
 </tbody>
 </table>
-<p><strong>Non testé par ce chapeau</strong> : CDSE (hors lot) ; pixels (l0-03) ; Sentinel-1 (hors lot).</p><p class="gen">Généré le 22/08/2026 00:21 — le .md fait foi.</p></article></body></html>
+<p><strong>Non testé par ce chapeau</strong> : CDSE (hors lot) ; pixels (l0-03) ; Sentinel-1 (hors lot).</p><p class="gen">Généré le 22/08/2026 01:59 — le .md fait foi.</p></article></body></html>

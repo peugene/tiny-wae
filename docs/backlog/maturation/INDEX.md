@@ -14,4 +14,5 @@
 | P2 | `l0-06` | Lot 0 — chapeau CWL local (06.1 tools+workflow · 06.2 update.cwl) |
 | P3 | — | Lot 1 : banc d'embeddings GFM (chantier à ouvrir après recette l0-04.H) |
 | P3 | — | Fiches futures : décision classes SCL 2/11 (post-campagne, V3) · bascule CDSE (StacSource) · enregistrement PID-FLOW + pid:Milestone (version cible à nommer) · rescan automatisé retraitements tardifs |
+| P2 | `out-01` | Outillage — étendre mypy strict à `tests/` (24 erreurs mesurées) : la conformité aux Protocols n'est vérifiée nulle part (constat du run N5) |
 | P3 | — | Améliorations kit à reporter (_tools_python → _tools/_tools_js) : barème S/M/L · pattern chapeau/sous-tâches dans le modèle de fiche · fiches humaines (categorie humain + règle /run « ne jamais dispatcher ») |
