@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-05.html"><code>▣ l0-05</code></a> › <b>l0-05.2</b></nav><h1>[l0-05.2] CLI update — run quotidien, oracles binarisés</h1><p>En cours · effort S · pipeline · phase O3 · depends_on : <a href="../fait/l0-05.1.html"><code>l0-05.1</code></a>, <a href="../fait/l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-05.html"><code>l0-05</code></a> [CHAPEAU] Incrémental quotidien — update<ul><li><a href="../fait/l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li><li>→ <a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-052-cli-update">[l0-05.2] — CLI update</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-05.html"><code>▣ l0-05</code></a> › <b>l0-05.2</b></nav><h1>[l0-05.2] CLI update — run quotidien, oracles binarisés</h1><p>Fait · effort S · pipeline · phase O3 · depends_on : <a href="l0-05.1.html"><code>l0-05.1</code></a>, <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-05.html"><code>l0-05</code></a> [CHAPEAU] Incrémental quotidien — update<ul><li><a href="l0-05.1.html"><code>l0-05.1</code></a> Bornes de la fenêtre update — logique pure sur l&#x27;API manifests</li><li>→ <a href="l0-05.2.html"><code>l0-05.2</code></a> CLI update — run quotidien, oracles binarisés</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><h1 id="l0-052-cli-update">[l0-05.2] — CLI update</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Le run quotidien : pour chaque site, fenêtre depuis l0-05.1, <code>ingest</code>, résumé honnête.</p>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
@@ -184,4 +184,91 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 (rattrapage documenté, assumé).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 02:13 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>66e81b7</code>, mergé en <code>b2e9d47</code>) : <code>adapters/update.py</code>, <code>cli/update.py</code>,
+<code>tests/test_update.py</code>, <code>tests/test_cli_update.py</code>, section « Run quotidien » ajoutée au
+<code>README.md</code>. <strong>+16 tests.</strong></p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>ingested == 2</code> EXACTEMENT (témoin positif)</td>
+<td>corpus réel A01 : sous-fenêtre <code>[01–17 sept.]</code> ingérée, puis <code>update</code> au 26 sept. → <strong>exactement 2</strong> items nouveaux (21 et 26)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>2 runs d'affilée</td>
+<td>1er : <code>assets_read = 22 &gt; 0</code> · 2e (même <code>now</code>) : <code>ingested = 0</code>, <code>assets_read = 0</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>trou simulé restauré à l'identique</td>
+<td>sept. 2022 complet ingéré — statuts mesurés : <code>{01: rejected_clouds, 06: rejected_clouds, 11: ingested, 16: ingested, 21: ingested, 26: ingested}</code> — manifestes 21/26 supprimés, <code>update</code> → ensemble <code>(item_id, statut)</code> <strong>restauré identique</strong>, hashes sha256 des manifestes B09 <strong>inchangés</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>site vierge → exit 1, message « backfill »</td>
+<td>statut <code>vierge</code>, <code>ingested=0</code>, message contenant <code>backfill</code>, exit <strong>1</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>1 site en échec, les autres traités</td>
+<td>échec applicatif non-réseau sur un site, A01 continue (<code>ingested == 2</code>), exit <strong>1</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5bis</td>
+<td>amont injoignable partout → exit 3</td>
+<td><code>StacUnreachable</code> sur tous les sites déjà manifestés → tous <code>failed</code>, <code>is_network_failure=True</code>, exit <strong>3</strong> — <strong>distinct</strong> de O5 (1) et de O4 (1)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="un-fait-de-mon-ancrage-etait-faux-signale-par-lagent">⚠ Un fait de mon ancrage était FAUX — signalé par l'agent</h3>
+<p>Ma décision d'ancrage n°6 affirmait « <code>README.md</code> N'EXISTE PAS à la racine (vérifié) ».
+<strong>C'était faux</strong> : il existait bien à <code>ff20603</code>. Ma vérification avait tourné dans un shell
+dont le répertoire courant n'était pas la racine du dépôt — la même erreur m'avait déjà fait
+croire à tort que <code>cwltool</code> était absent, au run N5. L'agent ne l'a pas écrasé : il a ajouté
+une section « Run quotidien (update) » au fichier existant. Bon réflexe, et signalement
+utile.</p>
+<h3 id="contrat-expose">Contrat exposé</h3>
+<pre><code class="language-python">UPDATED = &quot;updated&quot; · UP_TO_DATE = &quot;up_to_date&quot; · VIERGE = &quot;vierge&quot; · FAILED = &quot;failed&quot;
+class SiteUpdateResult: site_id · status · ingested · assets_read · is_network_failure · message
+update_site(*, site, settings, source, data_root, now, margin_days=None) -&gt; SiteUpdateResult
+update_all(*, sites, settings, source, data_root, now, margin_days=None) -&gt; list[SiteUpdateResult]
+</code></pre>
+<p>Réutilise <code>adapters.ingestion._is_network_error</code> telle quelle, sans la redéfinir.</p>
+<h3 id="decisions-prises-en-cours-de-realisation">Décisions prises en cours de réalisation</h3>
+<ol>
+<li><strong><code>EmptyGridError</code> (grille non calculée) est classée <code>failed</code> non-réseau</strong> par le <code>except</code>
+   générique, là où <code>ingest</code> en fait un exit <code>USAGE</code> dédié. Comportement raisonnable mais
+   <strong>non spécifié par la fiche</strong>, et non testé spécifiquement. ⚠ À trancher si le cas se
+   présente en campagne : un site sans grille dans un run cron mérite sans doute mieux qu'un
+   <code>failed</code> noyé dans les autres.</li>
+<li>Terminologie du résumé : <code>updated</code> (ingested &gt; 0) vs <code>up_to_date</code> (0 sans échec) —
+   choisie par l'agent, la fiche ne nommait que le format de dénombrement.</li>
+</ol>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Le cron réel (infra Philippe) · les retraitements tardifs réels : le rappel mensuel est
+affiché le 1er du mois mais son exécution (<code>backfill --months 2</code>) <strong>n'est pas automatisée</strong>,
+conformément à la décision · le cas <code>EmptyGridError</code> (cf. ci-dessus) · O5/O5bis côté CLI
+utilisent des enveloppes vides pour rester légers, la preuve « pipeline réel » venant des
+tests adapter sur corpus réel.</p><p class="gen">Généré le 22/08/2026 03:02 — le .md fait foi.</p></article></body></html>

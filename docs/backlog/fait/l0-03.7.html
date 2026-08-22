@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.7</b></nav><h1>[l0-03.7] Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</h1><p>En cours · effort M · pipeline · phase O1 · depends_on : <a href="../fait/l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="../fait/l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="../fait/l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="../fait/l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li>→ <a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><h1 id="l0-037-le-gate-smoke-deux-modes-garde-de-contrat">[l0-03.7] — Le gate : smoke deux modes + garde de contrat</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-03.html"><code>▣ l0-03</code></a> › <b>l0-03.7</b></nav><h1>[l0-03.7] Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</h1><p>Fait · effort M · pipeline · phase O1 · depends_on : <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-03.html"><code>l0-03</code></a> [CHAPEAU] Ingestion des chips — géométrie, manifestes, COG, smoke, planche<ul><li><a href="l0-03.1.html"><code>l0-03.1</code></a> Core géométrie — fenêtres 10/20 m, verdict SCL, fenêtres temporelles</li><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité</li><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif</li><li><a href="l0-03.4.html"><code>l0-03.4</code></a> CLI ingest — 2 formes d&#x27;appel, idempotence grid_hash, --force, retry, SCL-first</li><li><a href="l0-03.5.html"><code>l0-03.5</code></a> Corpus de fixtures COG locales + FixtureSource (enregistrement réseau, jetable)</li><li>→ <a href="l0-03.7.html"><code>l0-03.7</code></a> Smoke complet (replay/live) + garde réseau de contrat — le gate permanent</li><li><a href="l0-03.6.html"><code>l0-03.6</code></a> contact-sheet --latest — la planche précoce de centrage (artefact)</li><li><a href="../maturation/lot-0-ingestion/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées</li></ul></div><h1 id="l0-037-le-gate-smoke-deux-modes-garde-de-contrat">[l0-03.7] — Le gate : smoke deux modes + garde de contrat</h1>
 <blockquote>
 <p>Seconde moitié de la scission de l'ex-l0-03.5 (PO, 21/08). <strong>Ici : le gate permanent</strong> —
 le corpus qu'il consomme est livré par l0-03.5. Met en œuvre <strong>E-b</strong> (garde de contrat)
@@ -194,4 +194,80 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 la couverture d'autres sites que ceux du corpus (l0-03.5).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 02:13 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>4cbcac0</code>, mergé en <code>e3f2b81</code>, renforcé par <code>d9a7c2e</code>) : <code>scripts/smoke.py</code>
+réécrit (462 l.), <code>tests/test_smoke.py</code> en miroir. <code>justfile</code> <strong>non touché</strong> — <code>just smoke</code>
+reste <code>--replay</code>. Rien dans <code>src/</code>. <strong>Le gate exécute désormais le smoke complet.</strong></p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>replay hors ligne, <code>content_hashes</code> == gravés, <code>assets_read &gt; 0</code></td>
+<td>ingestion réelle via <code>FixtureSource</code> de l'item clair gelé <code>S2A_31TGJ_20240801_0_L2A</code> : 3 fichiers, <code>status="ingested"</code>, hashes <code>chip.tif=a889f09a… · chip_20m.tif=1898963d… · scl.tif=a04cf6eb…</code>, <strong><code>assets_read=11</code></strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>fixture retirée → ROUGE, STDERR nomme le chemin</td>
+<td>href <code>file://</code> vers un chemin réellement absent (aucun mock) → <code>status="failed"</code>, chemin exact <strong>littéral</strong> dans <code>manifest.cause</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>href <code>https://</code> sous <code>TINY_WAE_OFFLINE=1</code> → <code>RemoteAccessForbidden</code>, aucune requête</td>
+<td>⭐ <strong>renforcé à la revue</strong> : passe par <code>ingest_from_source</code> COMPLET (voir ci-dessous) → <code>failed</code>, cause littérale <code>TINY_WAE_OFFLINE=1 : href 'https://sentinel-cogs.s3…/SCL.tif' refusé</code>, <code>files == []</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3bis</td>
+<td>même href sans la variable → la garde ne bloque pas</td>
+<td>vérifié par appel direct à la garde (seul cas justifié : le contraire exigerait une requête réseau dans le gate)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>2 runs, <code>data_root</code> vierge → hashes identiques</td>
+<td>deux <code>data_root</code> distincts, <code>content_hashes</code> identiques, <code>assets_read &gt; 0</code> aux deux</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5 [live, hors gate]</td>
+<td>durée et octets par chip publiés</td>
+<td>⭐ <strong>mesuré par l'orchestrateur</strong> (l'agent n'avait pas de réseau sortant dans son worktree) : <strong>36,33 s</strong> · <strong>2 956 586 octets écrits</strong>, soit <strong>≈ 985 Ko/chip</strong> sur 3 fichiers</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Durée du smoke replay</strong> — celle que paie chaque <code>just check</code> du projet : <strong>23 s réelles</strong>,
+dont ~21 s d'activation d'environnement ; temps CPU propre ≈ 1,7 s. Pas de dégradation.</p>
+<h3 id="baseline-live-pour-l0-04-extrapolation-a-porter-a-l0-04h">⭐ Baseline live pour l0-04 (extrapolation à porter à l0-04.H)</h3>
+<p>À 36,3 s et 2,96 Mo par item : une campagne 25 sites × 48 mois à ~6 items/mois représente
+~7 200 items, soit <strong>~72 h en séquentiel (~12 h à 6 workers)</strong> et <strong>~21 Go</strong>. Chiffres à
+confronter à la réalité en campagne — beaucoup d'items sortiront avant lecture complète
+(filtre de scène, verdict SCL).</p>
+<h3 id="correction-apportee-a-la-revue-loracle-o3-ne-mordait-pas">⚠ Correction apportée à la revue : l'oracle O3 ne mordait pas</h3>
+<p>L'agent vérifiait O3 <strong>et</strong> O3bis en appelant directement <code>chips._guard_href</code>, en le
+signalant honnêtement et en demandant une revue. Le motif (ne pas faire de réseau dans le
+gate) vaut pour O3bis, <strong>pas pour O3</strong> : ce que l'oracle protège n'est pas que la garde
+<em>sache</em> lever, c'est que le pipeline la <strong>déclenche</strong>. Un test qui l'appelle isolément
+resterait vert si l'appel disparaissait de <code>read_scl</code> — exactement le faux-vert que cette
+fiche existe pour empêcher. O3 passe donc par <code>ingest_from_source</code>, <strong>sans aucun réseau</strong> :
+la garde lève avant toute ouverture, c'est précisément son contrat.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Volume réellement transféré en <code>--live</code> (non instrumentable — décision E-d) · aucun site
+autre qu'A01 (B09 couvert par l0-03.5) · O3bis dans le pipeline complet (exigerait une
+requête réseau réelle dans le gate).</p><p class="gen">Généré le 22/08/2026 03:02 — le .md fait foi.</p></article></body></html>

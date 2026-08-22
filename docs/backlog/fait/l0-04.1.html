@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.1</b></nav><h1>[l0-04.1] CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</h1><p>En cours · effort M · pipeline · phase O2 · depends_on : <a href="../fait/l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li>→ <a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../maturation/lot-0-ingestion/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-041-cli-backfill">[l0-04.1] — CLI backfill</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.1</b></nav><h1>[l0-04.1] CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</h1><p>Fait · effort M · pipeline · phase O2 · depends_on : <a href="l0-03.5.html"><code>l0-03.5</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette<ul><li>→ <a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre</li><li><a href="../maturation/lot-0-ingestion/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</li><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</li></ul></div><h1 id="l0-041-cli-backfill">[l0-04.1] — CLI backfill</h1>
 <h2 id="objectif">Objectif</h2>
 <p>Orchestrer <code>ingest</code> sur sites × fenêtres avec un pool borné. Zéro campagne réelle ici —
 tout se teste sur FixtureSource.</p>
@@ -184,4 +184,88 @@ fichiers sont disjoints et aucune ne crée un contrat que les autres consomment.
 optimal (mesuré en campagne).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 02:13 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>07232b2</code>, mergé en <code>f0c8b13</code>) : <code>adapters/backfill.py</code>, <code>cli/backfill.py</code>,
+<code>tests/test_backfill.py</code>, <code>tests/test_cli_backfill.py</code>. <strong>+16 tests.</strong></p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>compteurs gelés + déterminisme du pool</td>
+<td><code>found_stac=6 · skipped_scene_cloud=0 · off_tile=0 · found_tile=6</code> <strong>en littéral</strong> (A01 × sept. 2022) ; <code>--workers 4</code> vs <code>--workers 1</code> sur 6 fenêtres journalières → <strong>même ensemble</strong> <code>(item_id, statut)</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>1 site en échec, l'autre complet</td>
+<td><code>ValueError</code> injectée sur B09 → A01 complet (6 manifestes), <code>failed_site_ids == ["B09"]</code>, run <strong>non</strong> interrompu, exit 1</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2bis</td>
+<td>amont injoignable partout → exit 3</td>
+<td><code>StacUnreachable</code> sur A01 <strong>et</strong> B09 → <code>all_failures_network=True</code>, exit <strong>3</strong> ; test de non-régression : un échec non-réseau isolé ne déclenche jamais ce chemin</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>SIGINT → exit ≠ 0, 100 % des manifestes relisibles</td>
+<td>gestionnaire <code>_request_stop</code> appelé <strong>directement</strong> (le signal n'est pas portable — la fiche l'acte), pendant qu'une fenêtre est bloquée par un double synchronisé sur <code>threading.Event</code>, <strong>zéro sleep</strong> : fenêtre en cours menée à terme, suivantes annulées, <code>interrupted=True</code>, <strong>100 % des manifestes relus par <code>read_manifest</code></strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>run double, deux témoins</td>
+<td>1er : <code>assets_read &gt; 0</code> · 2e : <code>assets_read == 0</code>, <code>skipped == found_tile == 6</code>, <code>content_hashes</code> identiques</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code> vert hors ligne</td>
+<td>vert</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="un-bug-reel-de-concurrence-decouvert-ici-et-corrige-a-la-racine">⭐ Un bug RÉEL de concurrence, découvert ici et corrigé à la racine</h3>
+<p>Le premier jet (une tâche du pool = un couple <em>site × fenêtre</em>) a fait apparaître un
+<code>FileNotFoundError</code> reproductible sous <code>--workers 4</code>. Diagnostic de l'agent, exact :
+deux fenêtres du <strong>même site</strong> terminant dans la <strong>même seconde</strong> produisaient le même
+<code>run_id</code> (résolution seconde), donc le même chemin — et
+<code>manifests._write_json_atomic</code> nommait son fichier temporaire avec le <strong>seul PID</strong>,
+identique pour tous les threads d'un même process. Le premier <code>replace</code> faisait
+disparaître le tmp sous le second.</p>
+<p><strong>L'atomicité promise par l0-03.2 tombait dès qu'il y avait de la concurrence</strong> — et cette
+fiche est justement celle qui en introduit. L'agent, n'ayant pas le droit de toucher
+<code>ingestion.py</code>/<code>manifests.py</code>, a contourné dans son périmètre : <strong>une tâche = un site
+entier</strong>, fenêtres séquentielles à l'intérieur, concurrence entre sites seulement. Ce choix
+est <strong>conservé</strong> (il colle mieux à « un site = une unité d'isolation ») et la cause a été
+traitée par l'orchestrateur (commit <code>c193450</code>) : identifiant de thread dans le nom du tmp,
+et <code>run_id</code> à la microseconde.</p>
+<p>Les deux tests de non-régression ont été <strong>vérifiés par mutation</strong> — et la première version
+du test de concurrence a été jetée parce qu'elle restait verte sans la correction : elle
+écrivait 8 <code>run_id</code> distincts, donc 8 tmp distincts. Il fallait que les 8 threads visent la
+<strong>même cible</strong>.</p>
+<h3 id="contrat-expose">Contrat exposé</h3>
+<pre><code class="language-python">class TaskFailure:  window · error · is_network
+class SiteResult:   site_id · outcomes · failures · ok
+class BackfillOutcome: site_results · interrupted · failed_site_ids · all_ok · all_failures_network
+build_tasks(sites, windows) -&gt; dict[str, list[Window]]
+run_backfill(*, sites, windows_by_site, source, settings, data_root, workers,
+             force=False, stop_event=None, install_signal_handlers=True) -&gt; BackfillOutcome
+</code></pre>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p><strong>Aucun vrai signal OS</strong> envoyé (non portable linux-64/win-64 — la fiche l'acte) : seule la
+fonction pure d'arrêt est exercée, l'interruption réelle reste à vérifier en campagne
+(l0-04.H) · volumes réels, 25 sites × 48 mois, dimensionnement 4-8 workers (l0-04.H) ·
+<code>build_tasks</code> sur le vrai chemin earth-search (aucun réseau dans les tests) ·
+l'annulation d'un site <strong>pas encore démarré</strong> dans le pool (le code le fait, ce chemin
+précis n'a pas de test dédié) · <code>assets_read</code> non figé en littéral (seulement <code>&gt; 0</code>).</p><p class="gen">Généré le 22/08/2026 03:02 — le .md fait foi.</p></article></body></html>
