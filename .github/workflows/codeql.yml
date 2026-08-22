@@ -38,7 +38,12 @@ jobs:
       - uses: github/codeql-action/init@v4
         with:
           languages: python
-          # `security-and-quality` plutôt que le jeu par défaut : il ajoute les requêtes de
-          # qualité (code mort, comparaisons impossibles) au jeu sécurité.
-          queries: security-and-quality
+          # `security-extended` : plus de requêtes de SÉCURITÉ que le jeu par défaut, et
+          # AUCUNE requête de qualité. Le premier run a tranché — sur 15 alertes, 0 de
+          # sécurité et 14 sans valeur ici : 10 `py/ineffectual-statement` qui visent les
+          # `...` des membres de Protocol (la façon standard de les déclarer), 3 doubles
+          # formes d'import qu'un `monkeypatch.setattr` impose, 1 `except BaseException`
+          # délibéré dans un test de concurrence. Les garder, c'est entretenir un second
+          # référentiel de dette à côté de ruff et mypy, qui eux sont DANS le gate.
+          queries: security-extended
       - uses: github/codeql-action/analyze@v4
