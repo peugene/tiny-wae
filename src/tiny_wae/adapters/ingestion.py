@@ -75,12 +75,17 @@ class IngestOutcome:
 
 
 def _new_run_id() -> str:
-    """Identifiant de run : ``run-YYYYMMDDTHHMMSSZ`` (UTC, à la seconde).
+    """Identifiant de run : ``run-YYYYMMDDTHHMMSS-ffffffZ`` (UTC, à la MICROSECONDE).
 
-    Fonction interne monkeypatchée par les tests (décision d'ancrage n°3) : un format à la
-    seconde évite qu'un run double dans le même test n'écrase le premier ``run.json``.
+    Fonction interne monkeypatchée par les tests (décision d'ancrage n°3 de l0-03.4).
+
+    ⭐ La résolution à la seconde ne suffisait pas : ``adapters/backfill.py`` (l0-04.1)
+    traite plusieurs fenêtres d'un même site à la suite, et deux d'entre elles terminant
+    dans la même seconde produisaient le MÊME ``run_id`` — donc le même chemin de
+    ``run.json``, donc un journal écrasé en silence. La microseconde les sépare, et le tri
+    lexicographique des identifiants reste chronologique.
     """
-    return datetime.now(UTC).strftime("run-%Y%m%dT%H%M%SZ")
+    return datetime.now(UTC).strftime("run-%Y%m%dT%H%M%S-%fZ")
 
 
 def _sleep(seconds: float) -> None:

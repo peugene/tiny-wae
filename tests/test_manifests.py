@@ -18,11 +18,13 @@ from __future__ import annotations
 
 import json
 import shutil
+import threading
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+import tiny_wae.adapters.ingestion as ingestion_module
 from tiny_wae.adapters.manifests import (
     ConservationError,
     EmptyGridError,
@@ -313,3 +315,54 @@ def test_manifest_est_immutable() -> None:
     variant = replace(manifest, status="failed")
     assert variant.status == "failed"
     assert manifest.status == "ingested"
+
+
+# ── Concurrence : le défaut réel remonté par l0-04.1 (run N6) ────────────────────────
+
+
+def test_ecriture_atomique_concurrente_sur_la_meme_cible(tmp_path: Path) -> None:
+    """8 threads écrivant LE MÊME `run.json` en parallèle : aucune exception, fichier valide.
+
+    ⚠ La cible doit être IDENTIQUE pour que le test morde : le nom du fichier temporaire
+    dérive du nom de la cible, donc 8 run_id distincts donnent 8 tmp distincts et ne
+    collisionnent jamais. Une première version de ce test utilisait des run_id différents —
+    elle restait VERTE après avoir retiré `threading.get_ident()`, donc ne prouvait rien
+    (vérifié par mutation avant de l'écrire ainsi).
+
+    Défaut réel reproduit par l0-04.1 sous `--workers 4` : deux fenêtres du même site
+    terminant dans la même seconde produisaient le même run_id, donc la même cible, donc le
+    même tmp — la première à faire `replace` le faisait disparaître sous la seconde, qui
+    échouait en `FileNotFoundError`.
+    """
+    erreurs: list[BaseException] = []
+    depart = threading.Barrier(8)
+
+    def _ecrire() -> None:
+        depart.wait()  # maximise le recouvrement réel des écritures
+        try:
+            write_run(tmp_path, _sample_run(run_id="run-meme-cible"))
+        except BaseException as exc:  # noqa: BLE001 — collecté pour être ré-assertée
+            erreurs.append(exc)
+
+    fils = [threading.Thread(target=_ecrire) for _ in range(8)]
+    for f in fils:
+        f.start()
+    for f in fils:
+        f.join()
+
+    assert erreurs == [], f"écritures concurrentes en échec : {erreurs}"
+    # Le dernier écrivain gagne — mais le fichier final doit être COMPLET et relisible :
+    # c'est toute la promesse d'atomicité de l0-03.2, que la concurrence ne doit pas casser.
+    relu = read_run(tmp_path, "A01", "run-meme-cible")
+    assert relu.counters["found_stac"] == 3
+
+
+def test_run_id_distinct_dans_la_meme_seconde() -> None:
+    """Deux `_new_run_id()` consécutifs diffèrent, même appelés dans la même seconde.
+
+    Sans résolution sous-seconde, deux fenêtres d'un même site traitées coup sur coup par
+    `backfill` produisaient le même `run.json`, écrasé en silence — un journal perdu ne se
+    voit nulle part, c'est le pire mode de défaillance pour une donnée de traçabilité.
+    """
+    identifiants = {ingestion_module._new_run_id() for _ in range(50)}
+    assert len(identifiants) == 50, f"collisions : {50 - len(identifiants)} sur 50"

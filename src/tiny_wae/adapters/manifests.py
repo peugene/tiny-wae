@@ -30,6 +30,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -189,9 +190,16 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> Path:
     Le fichier final n'apparaît jamais partiellement écrit (interruption = tmp orphelin,
     jamais de manifeste fantôme — O3). Le nom du tmp ne matche jamais ``manifest.json`` ni
     ``<run_id>.json`` : un ``glob`` ciblé ne le voit donc jamais.
+
+    ⭐ Le nom du tmp porte le PID **ET l'identifiant de thread** : le PID seul ne
+    discrimine pas deux threads du MÊME process, et ``adapters/backfill.py`` (l0-04.1) en
+    lance un par site. Deux écritures concurrentes de la même cible se disputaient alors le
+    même tmp — la première à faire ``replace`` le faisait disparaître sous la seconde, qui
+    échouait en ``FileNotFoundError``. Défaut réel, reproduit par l0-04.1 sous
+    ``--workers 4``, corrigé ici plutôt que contourné en amont.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp_path = path.with_name(f".{path.name}.{os.getpid()}.{threading.get_ident()}.tmp")
     tmp_path.write_text(
         json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False), encoding="utf-8"
     )

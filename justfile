@@ -39,9 +39,9 @@ fmt:
 types:
     pixi run mypy src
 
-# tests (pytest)
-test:
-    pixi run pytest
+# tests (pytest) — accepte des arguments pytest (ex. just test -k concurrent -x)
+test *args:
+    pixi run pytest {{args}}
 
 # exécute un CLI du projet (ex. just run ingest --help)
 run *args:
