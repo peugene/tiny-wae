@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-07] write_manifest refuse un statut illégitime</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-07-write_manifest-refuse-un-statut-illegitime">[l0-07] — write_manifest refuse un statut illégitime</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD c67bfc1)</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+<li><a href="#decision-actee-la-garde-est-a-lecriture-pas-a-la-construction">⭐ Décision actée : la garde est à l'ÉCRITURE, pas à la construction</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
+⚠ <strong>Placement à confirmer par le PO</strong> : id <code>l0-07</code> hors de la séquence du chantier
+<code>lot-0-ingestion</code> (qui s'arrête à <code>l0-06</code>), fiche autonome sans <code>parent:</code> — sur le
+précédent d'<code>out-01</code>. Rattacher au chapeau <code>l0-03</code> rouvrirait sa taxonomie, déclarée
+fermée. Le <code>depends_on: [l0-03.2]</code> n'est pas décoratif : c'est cette fiche qui a créé
+<code>adapters/manifests.py</code> et son patron de garde (<code>write_run</code>/<code>_validate_counters</code>), que
+celle-ci prolonge. Elle est en <code>fait/</code>, la dépendance est donc satisfaite. Le contenu
+ci-dessous ne dépend pas de cet arbitrage.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p><code>Manifest.status</code> est un <code>str</code> libre : rien n'empêche aujourd'hui d'écrire un manifeste
+portant <code>"skipped"</code>, <code>"Ingested"</code> ou une faute de frappe. Or le manifeste est <strong>la source de
+vérité relue</strong> par <code>report</code>, <code>contact-sheet</code> et <code>update</code> — un statut inconnu s'y propage
+silencieusement, et ne se découvre qu'au moment où un agrégat ne tombe plus juste.</p>
+<p>Poser la garde à l'écriture, sur le patron déjà en place pour les compteurs de run.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD <code>c67bfc1</code>)</h3>
+<ul>
+<li><strong><code>Manifest.status: str</code></strong> (<code>adapters/manifests.py:80</code>) — aucune contrainte, ni au type,
+  ni à la construction, ni à l'écriture.</li>
+<li><strong>Les 5 statuts réellement écrits</strong> viennent tous d'<code>adapters/ingestion.py</code> :
+  <code>"failed"</code> (l. 234, 257, 307), <code>"rejected_nodata"</code> (l. 340), <code>"ingested"</code> (l. 360) et
+  <code>verdict_result.status</code> (l. 283), lui-même ∈ <code>{ingested, rejected_clouds,
+  rejected_invalid}</code> (<code>core/scl.py:55-59</code>). Soit <strong>exactement <code>RUN_STATUSES</code> moins
+  <code>"skipped"</code></strong> — un item déjà ingéré au <code>grid_hash</code> courant n'est pas retraité, donc jamais
+  écrit.</li>
+<li><strong><code>adapters/update.py:79,93,104</code> écrit aussi <code>status=</code>, mais sur <code>SiteUpdateResult</code>, PAS
+  sur <code>Manifest</code></strong> — vérifié, hors périmètre. Ne pas s'y tromper à la lecture d'un <code>grep</code>.</li>
+<li><strong>Le patron existe déjà</strong> : <code>write_run</code> (<code>manifests.py:274</code>) appelle <code>_validate_counters</code>
+  puis écrit, et lève <code>ConservationError</code> — sous-classe de <code>ManifestError(ValueError)</code> — <strong>sans
+  rien écrire</strong>. La garde de cette fiche doit lui être symétrique.</li>
+<li><strong><code>MANIFEST_STATUSES</code> a été supprimée</strong> au commit <code>c67bfc1</code> : elle existait dans
+  <code>adapters/manifests.py</code> depuis sa création <strong>sans aucun consommateur</strong> (vérifié sur <code>src/</code>,
+  <code>tests/</code>, <code>scripts/</code>, à HEAD comme à <code>d837c76</code>). Cette fiche la ré-introduit <strong>dérivée</strong>, et
+  cette fois avec un consommateur.</li>
+<li><strong>Impact nul sur l'existant</strong> : les manifestes de <code>tests/fixtures/</code> portent uniquement
+  <code>ingested</code> (13), <code>rejected_clouds</code> (3), <code>rejected_invalid</code> (1), <code>rejected_nodata</code> (1) et
+  <code>failed</code> (1) — aucun <code>skipped</code>, aucune variante de casse. Les tests ne construisent des
+  <code>Manifest</code> qu'avec <code>ingested</code> et <code>failed</code>. <strong>Aucune migration de données n'est requise.</strong></li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/core/statuses.py</code> — ré-introduire <code>MANIFEST_STATUSES</code>, <strong>dérivée</strong> de
+  <code>RUN_STATUSES</code>, jamais re-listée. Mettre à jour le docstring du module, qui explique
+  aujourd'hui pourquoi elle a été supprimée.</li>
+<li><code>src/tiny_wae/adapters/manifests.py</code> — <code>ManifestStatusError(ManifestError)</code> + garde dans
+  <code>write_manifest</code>.</li>
+<li><code>tests/test_manifests.py</code> — les oracles ci-dessous.</li>
+<li><code>tests/test_vocabulary.py</code> — <code>test_manifest_statuses_a_bien_disparu</code> devient faux : il
+  asserte l'absence de la constante. <strong>Le remplacer</strong>, ne pas le supprimer : il doit
+  désormais vérifier que la constante est dérivée et qu'elle a bien un consommateur.</li>
+</ul>
+<h3 id="decision-actee-la-garde-est-a-lecriture-pas-a-la-construction">⭐ Décision actée : la garde est à l'ÉCRITURE, pas à la construction</h3>
+<p>Pas de validation dans <code>Manifest.__post_init__</code>. Deux raisons : la symétrie avec <code>write_run</code>
+(c'est l'écriture qui fige une vérité sur disque, un objet en mémoire ne fige rien), et le
+fait qu'un test de chemin d'erreur doit pouvoir construire un <code>Manifest</code> invalide pour le
+présenter à la garde. Ne pas « améliorer » en durcissant le dataclass.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>MANIFEST_STATUSES: frozenset[str]</code> dans <code>core/statuses.py</code>, <strong>dérivée</strong> :
+      <code>frozenset(RUN_STATUSES) - {"skipped"}</code>. Aucune liste écrite à la main.</li>
+<li>[ ] <code>ManifestStatusError(ManifestError)</code> définie dans <code>adapters/manifests.py</code>, à côté de
+      <code>ConservationError</code>.</li>
+<li>[ ] <code>write_manifest</code> valide <code>manifest.status</code> <strong>avant</strong> toute écriture et lève sans rien
+      créer sur disque — ni le <code>manifest.json</code>, ni un <code>.tmp</code> résiduel.</li>
+<li>[ ] Le message d'erreur nomme <strong>le statut refusé</strong> et <strong>la liste des statuts admis</strong>.</li>
+<li>[ ] <code>read_manifest</code> <strong>n'est pas</strong> durci (cf. non-testé).</li>
+<li>[ ] <code>tests/test_vocabulary.py</code> mis à jour, pas supprimé.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>write_manifest</code> sur un <code>Manifest</code> à <code>status="skipped"</code></td>
+<td>lève <code>ManifestStatusError</code> <strong>et</strong> le répertoire cible reste vide : ni <code>manifest.json</code>, ni fichier <code>.tmp</code></td>
+</tr>
+<tr>
+<td>O2</td>
+<td>idem avec <code>status="Ingested"</code> (casse) puis <code>status="ingere"</code> (faute)</td>
+<td>lève dans <strong>les deux</strong> cas — la garde n'est pas une simple exclusion de <code>"skipped"</code></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>les 5 statuts légitimes, un par un</td>
+<td><strong>5/5</strong> écrivent normalement et se relisent identiques par <code>read_manifest</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>contenu du message de <code>ManifestStatusError</code></td>
+<td>contient <strong>littéralement</strong> le statut refusé, et les 5 statuts admis</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><strong>mutation</strong> : retirer l'appel à la garde dans <code>write_manifest</code>, relancer <code>just test -k manifest</code></td>
+<td>O1 passe au <strong>ROUGE</strong>, puis au vert après restauration</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>non-régression</td>
+<td><code>just check</code> vert — <strong>250 tests</strong> au départ, aucun test existant modifié hors <code>test_vocabulary.py</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
+<ul>
+<li><strong><code>read_manifest</code> reste permissif, délibérément.</strong> Durcir la lecture rendrait illisible un
+  corpus historique écrit par une version antérieure — on refuserait de relire des données
+  qu'on a nous-mêmes produites. La garde protège ce qu'on écrit, pas ce qu'on a écrit.</li>
+<li><strong>Aucun autre champ de <code>Manifest</code> n'est validé</strong> (<code>tile</code>, <code>sequence</code>, <code>platform</code>,
+  <code>schema_version</code>…) : même classe de défaut, hors périmètre, à instruire séparément si le
+  besoin se confirme.</li>
+<li><strong><code>Run.status</code>-like</strong> : les compteurs de <code>run.json</code> sont déjà couverts par
+  <code>_validate_counters</code>, rien à ajouter de ce côté.</li>
+<li><strong>Aucune migration</strong> : mesuré, aucun manifeste existant ne porte de statut hors des 5.</li>
+<li><strong>Pas de campagne réelle</strong> : la fiche ne demande aucun run réseau.</li>
+</ul>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>Origine : post-revue 1 du Lot 0, en marge du constat A2 — la correction <code>c67bfc1</code> a montré
+que <code>MANIFEST_STATUSES</code> ne servait à rien, ce qui revient à dire que <strong>la règle qu'elle
+portait n'était appliquée nulle part</strong>. Supprimer la constante était juste ; laisser la règle
+non appliquée ne l'est pas.</p>
+<p>Coût attendu : une dizaine de lignes de code, l'essentiel de l'effort étant dans les tests.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 22/08/2026 11:08 — le .md fait foi.</p></article></body></html>
