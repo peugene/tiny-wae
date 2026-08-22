@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import pystac_client.exceptions
 import pytest
@@ -39,7 +40,7 @@ from tiny_wae.core.windows import Window
 FIXTURES_ROOT = Path("tests/fixtures/stac")
 
 
-def _load_items(name: str) -> list[dict]:
+def _load_items(name: str) -> list[dict[str, Any]]:
     """Charge les items bruts (``{"items": [...]}``) d'une fixture enregistrée."""
     data = json.loads((FIXTURES_ROOT / name).read_text(encoding="utf-8"))
     return list(data["items"])

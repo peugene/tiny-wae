@@ -34,6 +34,11 @@ from tiny_wae.core.sites import Grid
 
 # Grille synthétique littérale : origine multiple de 60 m (mêmes valeurs que test_chips.py).
 _GRID = Grid(epsg=32631, origin_x=699960.0, origin_y=4900020.0)
+# Mêmes valeurs que ci-dessus, mais non-Optional : Grid.epsg/origin_x sont `| None` côté
+# production (grille pas encore calculée), alors qu'ici la grille de test est TOUJOURS
+# renseignée — évite de répéter des `assert ... is not None` à chaque usage.
+_GRID_EPSG: int = 32631
+_GRID_ORIGIN_X: float = 699960.0
 
 _SETTINGS = Settings(
     stac_url="https://example.test/stac",
@@ -62,7 +67,7 @@ def _write_raster(
 ) -> None:
     """Écrit un GeoTIFF source 1 bande, constant, exactement sur l'emprise du chip."""
     transform = transform_for(grid, resolution)
-    array = np.full((size, size), value, dtype=dtype)
+    array: np.ndarray = np.full((size, size), value, dtype=dtype)
     with rasterio.open(
         path,
         "w",
@@ -155,7 +160,7 @@ def _make_clear(tmp_path: Path, item_id: str) -> Acquisition:
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=assets,
         radiometry=dict.fromkeys(assets),
     )
@@ -214,7 +219,7 @@ def _make_nodata_with_settings(
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=assets,
         radiometry=dict.fromkeys(assets),
     )
@@ -254,7 +259,7 @@ def _make_failing(item_id: str) -> Acquisition:
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=_GRID.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=missing,
         radiometry=dict.fromkeys(missing),
     )
@@ -387,7 +392,7 @@ def test_o3_grid_hash_change_reingere_avec_nouveau_transform(tmp_path: Path) -> 
     )
     assert outcome_1.run.counters["ingested"] == 1
 
-    moved_grid = Grid(epsg=_GRID.epsg, origin_x=_GRID.origin_x + 60, origin_y=_GRID.origin_y)
+    moved_grid = Grid(epsg=_GRID_EPSG, origin_x=_GRID_ORIGIN_X + 60, origin_y=_GRID.origin_y)
     # L'item doit rester superposable à la NOUVELLE grille : réécrit avec le nouveau transform.
     assets = _write_bands(
         tmp_path, item_id + "_v2", grid=moved_grid, settings=_SETTINGS, band_value=_BAND_VALUE
@@ -405,7 +410,7 @@ def test_o3_grid_hash_change_reingere_avec_nouveau_transform(tmp_path: Path) -> 
         nodata_pixel_pct=0.0,
         processing_baseline="99.9",
         boa_offset_applied=True,
-        proj_epsg=moved_grid.epsg,
+        proj_epsg=_GRID_EPSG,
         assets=assets,
         radiometry=dict.fromkeys(assets),
     )

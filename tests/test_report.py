@@ -45,6 +45,7 @@ from tiny_wae.adapters.config_io import (
     load_sites,
 )
 from tiny_wae.adapters.manifests import (
+    Manifest,
     aggregate_counters,
     grid_hash,
     item_ids_for_site,
@@ -66,7 +67,7 @@ _FIXTURE_FAKE_GRID_HASH = "f" * 64
 _EXPECTED_FILES = ("chip.tif", "chip_20m.tif", "scl.tif")
 
 
-def _c07_manifests() -> list:
+def _c07_manifests() -> list[Manifest]:
     return list_for_site(MANIFESTS_ROOT, SITE_ID)
 
 
