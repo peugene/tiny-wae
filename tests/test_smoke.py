@@ -85,10 +85,25 @@ def test_o2_fixture_locale_manquante_nomme_le_chemin(tmp_path: Path) -> None:
         smoke._restore_offline(previous)
 
 
-def test_o3_o3bis_garde_de_contrat() -> None:
-    """O3/O3bis : passe silencieusement si la garde se comporte comme attendu dans les
-    deux régimes (`TINY_WAE_OFFLINE` posé / absent) — sinon lève `AssertionError`."""
-    smoke.check_o3_o3bis_contract_guard()
+def test_o3_garde_de_contrat_sur_le_pipeline_complet(tmp_path: Path) -> None:
+    """O3 : sous `TINY_WAE_OFFLINE=1`, un href `https://` fait échouer l'INGESTION RÉELLE.
+
+    Le contrôle passe par `ingest_from_source`, pas par un appel direct à la garde : ce que
+    l'oracle protège, c'est que le pipeline la DÉCLENCHE. Un test qui appellerait
+    `chips._guard_href` isolément resterait vert si l'appel disparaissait de `read_scl` —
+    exactement le faux-vert que cette fiche existe pour empêcher.
+    """
+    previous = smoke._set_offline(True)
+    try:
+        smoke.check_o3_contract_guard_end_to_end(tmp_path)  # ne lève rien -> le mécanisme marche
+    finally:
+        smoke._restore_offline(previous)
+
+
+def test_o3bis_garde_non_permanente() -> None:
+    """O3bis : sans `TINY_WAE_OFFLINE`, la garde ne bloque pas — seul cas où l'on appelle la
+    garde directement, vérifier « l'ouverture est tentée » exigerait un vrai réseau."""
+    smoke.check_o3bis_guard_not_permanent()
 
 
 def test_main_replay_exit_code_zero(capsys: pytest.CaptureFixture[str]) -> None:

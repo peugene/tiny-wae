@@ -182,50 +182,79 @@ def check_o2_missing_local_fixture(dest: Path) -> None:
     )
 
 
-def check_o3_o3bis_contract_guard() -> None:
-    """O3 + O3bis : la garde de CONTRAT de `adapters/chips._guard_href` (décision E-b).
+def _https_envelope() -> tuple[Envelope, str]:
+    """Enveloppe A01 dont les hrefs sont restés en `https://`, et le href `scl` de son
+    premier item.
 
-    Fabrique le href `https://` de l'oracle O3 SANS rien inventer ni mocker (décision
-    d'ancrage n°3) : une `FixtureSource` dont `cog_dir` est un répertoire VIDE ne trouve
-    aucun fichier local à `_localize_hrefs` — les hrefs de l'enveloppe restent ceux
-    enregistrés par `record_cog_fixtures.py`, en `https://` d'origine.
-
-    Appelle directement `chips._guard_href` (fonction interne, importée par son module,
-    PAS copiée) plutôt que d'ouvrir réellement l'asset : c'est ce qui permet de vérifier
-    O3bis (« l'ouverture est tentée normalement » sous `TINY_WAE_OFFLINE` absent) SANS
-    émettre de requête réseau réelle dans le gate — la garde ne lève rien, donc le code
-    appelant *tenterait* l'ouverture ; ce script ne la tente pas lui-même (hors gate,
-    aucun accès réseau n'est acceptable), il vérifie seulement que rien ne l'empêche.
+    Fabriquée SANS rien inventer ni mocker (décision d'ancrage n°3) : une `FixtureSource`
+    dont `cog_dir` est un répertoire VIDE ne trouve aucun fichier local à `_localize_hrefs`
+    — les hrefs de l'enveloppe restent ceux enregistrés par `record_cog_fixtures.py`.
     """
     settings = _settings()
     site = _site(SITE_ID)
     with tempfile.TemporaryDirectory() as empty_cog_dir:
         source = FixtureSource(settings, stac_dir=DEFAULT_STAC_DIR, cog_dir=Path(empty_cog_dir))
         envelope = source.search(site, _WINDOW)
-        assert envelope.items, "corpus A01 vide sur la fenêtre du smoke — fixture absente ?"
-        href = envelope.items[0].assets["scl"]
-        assert href.startswith("https://"), (
-            f"O3 : href={href!r} attendu https:// (cog_dir vide, rien à localiser)"
-        )
+    assert envelope.items, "corpus A01 vide sur la fenêtre du smoke — fixture absente ?"
+    href = envelope.items[0].assets["scl"]
+    assert href.startswith("https://"), (
+        f"href={href!r} attendu https:// (cog_dir vide, rien à localiser)"
+    )
+    return envelope, href
 
-    previous = _set_offline(True)
-    try:
-        try:
-            chips_module._guard_href(href)  # noqa: SLF001 — fonction interne, cf. docstring.
-        except RemoteAccessForbidden:
-            pass
-        else:
-            raise AssertionError(
-                "O3 : RemoteAccessForbidden attendue (TINY_WAE_OFFLINE=1, href https://) — "
-                "aucune exception levée"
-            )
-    finally:
-        _restore_offline(previous)
 
+def check_o3_contract_guard_end_to_end(dest: Path) -> None:
+    """O3 : sous `TINY_WAE_OFFLINE=1`, un href `https://` fait ÉCHOUER l'ingestion réelle,
+    avec `RemoteAccessForbidden` nommée dans la cause — et sans qu'aucune requête ne parte.
+
+    ⭐ Passe par le PIPELINE COMPLET (`ingest_from_source`), pas par un appel direct à la
+    garde : ce que l'oracle protège, ce n'est pas que `chips._guard_href` sache lever, c'est
+    que le chemin d'ingestion la déclenche. Un test qui appellerait la garde isolément
+    resterait VERT si l'appel disparaissait de `read_scl` — précisément le faux-vert que
+    cette fiche existe pour empêcher.
+
+    Aucun réseau n'est émis : la garde lève AVANT toute ouverture rasterio, c'est le
+    contrat de `adapters/chips` (décision E-b). C'est ce qui rend ce test possible dans un
+    gate hors ligne.
+    """
+    settings = _settings()
+    site = _site(SITE_ID)
+    envelope, _ = _https_envelope()
+
+    data_root = dest / "data_o3"
+    outcome = ingest_from_source(
+        site=site,
+        window=_WINDOW,
+        source=_SingleItemSource(envelope=envelope, item=envelope.items[0]),
+        settings=settings,
+        data_root=data_root,
+    )
+    assert outcome.run.counters["failed"] == 1, (
+        f"O3 : counters['failed']={outcome.run.counters['failed']} attendu 1 "
+        "(href https:// sous TINY_WAE_OFFLINE=1 doit faire échouer l'item)"
+    )
+    manifest = read_manifest(data_root, SITE_ID, envelope.items[0].item_id)
+    assert manifest.status == "failed", f"O3 : status={manifest.status!r} attendu 'failed'"
+    cause = manifest.cause or ""
+    assert RemoteAccessForbidden.__name__ in cause or "TINY_WAE_OFFLINE" in cause, (
+        f"O3 : cause={cause!r} ne nomme ni RemoteAccessForbidden ni TINY_WAE_OFFLINE"
+    )
+    assert manifest.files == [], f"O3 : files={manifest.files!r} — rien ne doit être écrit"
+
+
+def check_o3bis_guard_not_permanent() -> None:
+    """O3bis : sans `TINY_WAE_OFFLINE`, la garde ne bloque rien (elle n'est pas permanente).
+
+    Seul cas où l'on appelle `chips._guard_href` directement plutôt que le pipeline :
+    vérifier littéralement que « l'ouverture est tentée normalement » obligerait à émettre
+    une vraie requête réseau DANS le gate, ce qui est exclu (`just check` reste hors ligne).
+    On vérifie donc que rien ne s'y oppose, ce qui est exactement ce que l'oracle demande.
+    """
+    _, href = _https_envelope()
     previous = _set_offline(False)
     try:
         try:
-            chips_module._guard_href(href)  # noqa: SLF001
+            chips_module._guard_href(href)  # noqa: SLF001 — fonction interne, cf. docstring.
         except RemoteAccessForbidden as exc:
             raise AssertionError(
                 "O3bis : la garde ne doit PAS bloquer quand TINY_WAE_OFFLINE est absent "
@@ -255,7 +284,8 @@ def run_replay() -> None:
     Pose `TINY_WAE_OFFLINE=1` pour toute la durée (décision d'ancrage n°5), l'enlève en
     sortant même en cas d'échec. Exécute, dans l'ordre : O1 (ingestion réelle), O4 (même
     ingestion sur un `data_root` neuf, deuxième témoin de répétabilité), O2 (fixture
-    locale manquante), O3/O3bis (garde de contrat).
+    locale manquante), O3 (garde de contrat sur le pipeline complet), puis O3bis hors
+    variable (la garde n'est pas permanente).
     """
     previous = _set_offline(True)
     try:
@@ -265,11 +295,13 @@ def run_replay() -> None:
             check_o1_o4_ingest_ok(Path(tmp2), run_label="O1/O4 run 2")
         with tempfile.TemporaryDirectory() as tmp3:
             check_o2_missing_local_fixture(Path(tmp3))
+        with tempfile.TemporaryDirectory() as tmp4:
+            check_o3_contract_guard_end_to_end(Path(tmp4))
     finally:
         _restore_offline(previous)
 
-    # O3/O3bis gère elle-même la variable d'environnement (bascule ON puis OFF).
-    check_o3_o3bis_contract_guard()
+    # O3bis se vérifie hors de la variable (elle la retire elle-même le temps du contrôle).
+    check_o3bis_guard_not_permanent()
 
 
 def run_live() -> None:
