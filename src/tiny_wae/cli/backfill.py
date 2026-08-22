@@ -7,10 +7,26 @@ n°1 de la fiche) — ce module parse les options, charge la config, appelle l'o
 
 ``build_source`` est SON PROPRE point de couture (même règle que ``cli/ingest.py``,
 décision d'ancrage n°4 de l0-03.4) : ne pas le partager avec un autre CLI.
+
+Accusé de réception et interruption immédiate (obs-02) : la POLITIQUE du Ctrl+C vit ici,
+pas dans ``adapters/`` (D1) — ``_on_stop_requested`` est le callback câblé sur
+``run_backfill(on_stop_requested=...)``, appelé SYNCHRONEMENT par le gestionnaire de
+signal pur. Premier appel (``already_requested`` faux) : accusé de réception immédiat
+(D2). Second appel (déjà demandé) : message D4 puis ``os._exit(130)`` IMMÉDIAT (D3) — une
+exception ne suffirait pas ici, le thread principal est bloqué dans ``as_completed``, à
+l'intérieur d'un ``with ThreadPoolExecutor(...)`` dont ``__exit__`` appelle
+``shutdown(wait=True)`` et attendrait la fin de tous les workers (ancrage de la fiche).
+Les deux messages s'écrivent par ``os.write(2, ...)``, PAS par ``logging`` ni
+``typer.echo`` (D5) : un gestionnaire de signal s'exécute entre deux bytecodes du thread
+principal, et passer par le verrou de handler de ``logging`` exposerait à un interblocage
+si le signal frappe pendant que ce même thread le détient déjà.
 """
 
 from __future__ import annotations
 
+import contextlib
+import os
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -30,6 +46,20 @@ from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Site, SiteValidationError
 from tiny_wae.core.statuses import RUN_STATUSES
 from tiny_wae.core.windows import Window, backfill_windows
+
+# Messages du gestionnaire de Ctrl+C (obs-02, D2/D4/D7) — AUCUN emoji, le mot porte
+# l'information mieux qu'un pictogramme pour un opérateur qui lit dans l'urgence. Le saut
+# de ligne initial sépare visuellement le message d'une ligne de progression en cours
+# d'écriture par un AUTRE thread au même instant (`logging` sérialise ses propres lignes,
+# mais pas contre cette écriture directe sur le descripteur).
+_FIRST_INTERRUPT_MESSAGE = (
+    "\nbackfill : interruption demandée (Ctrl+C) : les fenêtres en cours vont à leur "
+    "terme, aucune nouvelle n'est lancée ; un second Ctrl+C interrompt immédiatement.\n"
+)
+_SECOND_INTERRUPT_MESSAGE = (
+    "\nbackfill : arrêt immédiat (2e Ctrl+C) : des fichiers partiels sans manifeste "
+    "peuvent subsister, ils seront réingérés au prochain run.\n"
+)
 
 
 def register(app: typer.Typer) -> None:
@@ -64,6 +94,36 @@ def _select_sites(sites: list[Site], raw: str) -> list[Site]:
     if unknown:
         raise ValueError(f"--sites : id(s) inconnu(s) {unknown} (cf. sites.yaml)")
     return [by_id[site_id] for site_id in requested]
+
+
+def _emit_signal_message(message: str) -> None:
+    """Écrit ``message`` DIRECTEMENT sur le descripteur STDERR (fd 2), en contournant le
+    buffer Python de ``sys.stderr`` et le logger (D5). Sûr en contexte de gestionnaire de
+    signal : ``os.write`` ne prend aucun verrou Python. ``sys.stderr.flush()`` d'abord,
+    pour que tout ce qui a DÉJÀ été écrit via `logging`/`typer.echo` (canal figé par
+    obs-01, lui aussi STDERR) apparaisse AVANT ce message plutôt que de rester coincé dans
+    un buffer d'écriture Python encore en attente."""
+    with contextlib.suppress(OSError):  # flux déjà fermé : best-effort, pas fatal ici.
+        sys.stderr.flush()
+    os.write(2, message.encode("utf-8"))
+
+
+def _on_stop_requested(already_requested: bool) -> None:
+    """Politique du Ctrl+C (obs-02, D2/D3/D4) — callback câblé sur
+    ``run_backfill(on_stop_requested=...)``, appelé SYNCHRONEMENT par le gestionnaire de
+    signal pur d'``adapters/backfill.py``. Premier Ctrl+C (``already_requested`` faux) :
+    accusé de réception, puis retour normal (l'arrêt propre existant, l0-04.1, continue de
+    jouer). Second Ctrl+C (``already_requested`` vrai) : message D4 puis sortie IMMÉDIATE
+    ``os._exit(130)`` — ``130 = 128 + SIGINT``, convention shell. ``os._exit`` et non une
+    exception : le thread principal est bloqué dans ``as_completed``, à l'intérieur d'un
+    ``with ThreadPoolExecutor(...)`` dont ``__exit__`` fait ``shutdown(wait=True)`` ;
+    lever depuis le handler attendrait la fin de tous les workers, exactement ce que
+    l'opérateur cherche à éviter en tapant un second Ctrl+C."""
+    if not already_requested:
+        _emit_signal_message(_FIRST_INTERRUPT_MESSAGE)
+        return
+    _emit_signal_message(_SECOND_INTERRUPT_MESSAGE)
+    os._exit(130)
 
 
 def _report_counters(outcome: BackfillOutcome) -> None:
@@ -143,6 +203,7 @@ def backfill(
         data_root=Path(settings.data_root),
         workers=workers if workers is not None else settings.backfill_workers,
         force=force,
+        on_stop_requested=_on_stop_requested,
     )
 
     _report_counters(outcome)
