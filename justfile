@@ -75,6 +75,7 @@ cwl:
     pixi run cwltool --validate cwl/search.cwl
     pixi run cwltool --validate cwl/ingest.cwl
     pixi run cwltool --validate cwl/workflow.cwl
+    pixi run cwltool --validate cwl/update.cwl
 
 # exécution RÉELLE d'un tool/workflow CWL (hors gate — fait du réseau)
 # ex. just cwl-run cwl/workflow.cwl --site A01 --from_date 2026-01-01 --to_date 2026-01-10 …

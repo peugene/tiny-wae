@@ -77,6 +77,12 @@ def test_ingest_cwl_base_command() -> None:
     assert doc["baseCommand"] == ["python", "-m", "tiny_wae", "ingest"]
 
 
+def test_update_cwl_base_command() -> None:
+    """`update.cwl` appelle bien `python -m tiny_wae update` (l0-06.2)."""
+    doc = _load_cwl("update.cwl")
+    assert doc["baseCommand"] == ["python", "-m", "tiny_wae", "update"]
+
+
 def test_search_cwl_prefixes_match_real_cli_options() -> None:
     """Oracle O3 (remplacé) : chaque prefix de search.cwl est une option réelle de
     `python -m tiny_wae search`. Casse si une option de cli/search.py est renommée
@@ -109,6 +115,21 @@ def test_ingest_cwl_prefixes_match_real_cli_options() -> None:
     )
 
 
+def test_update_cwl_prefixes_match_real_cli_options() -> None:
+    """Même oracle pour update.cwl (l0-06.2) : chaque prefix déclaré est une option
+    réelle de `python -m tiny_wae update`. Casse si une option de cli/update.py est
+    renommée sans mettre à jour cwl/update.cwl."""
+    doc = _load_cwl("update.cwl")
+    declared = _declared_prefixes(doc)
+    assert declared, "update.cwl doit déclarer au moins un inputBinding.prefix"
+    real_options = _cli_option_prefixes("update")
+    for cwl_input_name, prefix in declared.items():
+        assert prefix in real_options, (
+            f"update.cwl: input {cwl_input_name!r} déclare le prefix {prefix!r}, "
+            f"absent des options réelles de `update` ({sorted(real_options)})"
+        )
+
+
 def test_ingest_cwl_declares_data_root_env_var_requirement() -> None:
     """L'oracle O2 repose sur TINY_WAE_DATA_ROOT posé via EnvVarRequirement (ingest n'a
     aucune option --data-root — cf. cwl/README.md)."""
@@ -116,6 +137,16 @@ def test_ingest_cwl_declares_data_root_env_var_requirement() -> None:
     requirements = doc.get("requirements", {})
     env_req = requirements.get("EnvVarRequirement")
     assert env_req is not None, "ingest.cwl doit déclarer un EnvVarRequirement"
+    assert "TINY_WAE_DATA_ROOT" in env_req.get("envDef", {})
+
+
+def test_update_cwl_declares_data_root_env_var_requirement() -> None:
+    """Même levier que ingest.cwl pour update.cwl : `update` n'a aucune option
+    --data-root, la racine de stockage passe par TINY_WAE_DATA_ROOT."""
+    doc = _load_cwl("update.cwl")
+    requirements = doc.get("requirements", {})
+    env_req = requirements.get("EnvVarRequirement")
+    assert env_req is not None, "update.cwl doit déclarer un EnvVarRequirement"
     assert "TINY_WAE_DATA_ROOT" in env_req.get("envDef", {})
 
 
