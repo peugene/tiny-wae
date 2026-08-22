@@ -24,8 +24,14 @@ from tiny_wae.core.acquisition import Acquisition
 
 SCHEMA_VERSION = 1
 
-# Les 4 compteurs obligatoires de l'enveloppe (décision E-a du chapeau l0-02).
-_COUNTER_KEYS: tuple[str, ...] = ("found_stac", "skipped_scene_cloud", "off_tile", "found_tile")
+# Les 4 compteurs obligatoires de l'enveloppe (décision E-a du chapeau l0-02). Public :
+# ``adapters/manifests.py`` les compose avec les 6 statuts au lieu de les recopier.
+ENVELOPE_COUNTERS: tuple[str, ...] = (
+    "found_stac",
+    "skipped_scene_cloud",
+    "off_tile",
+    "found_tile",
+)
 
 
 class ConservationError(ValueError):
@@ -50,7 +56,7 @@ class Envelope:
 
     def __post_init__(self) -> None:
         """Vérifie la présence des 4 compteurs puis les deux invariants de conservation."""
-        missing = [key for key in _COUNTER_KEYS if key not in self.counters]
+        missing = [key for key in ENVELOPE_COUNTERS if key not in self.counters]
         if missing:
             raise ConservationError(f"envelope.counters : clé(s) manquante(s) {missing}")
 

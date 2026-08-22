@@ -36,36 +36,16 @@ from pathlib import Path
 from typing import Any
 
 from tiny_wae.core.bands import BAND_ORDER_10M, BAND_ORDER_20M
+from tiny_wae.core.envelope import ENVELOPE_COUNTERS
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Grid
+from tiny_wae.core.statuses import RUN_STATUSES
 
 SCHEMA_VERSION = 1
 
-# Statuts possibles au manifeste (5 valeurs — l'énumération normative des 6 statuts de
-# run, dont "skipped", est celle du chapeau l0-02 ; "skipped" n'est jamais écrit à un
-# manifeste : un item déjà ingéré au grid_hash courant n'est pas retraité).
-MANIFEST_STATUSES: frozenset[str] = frozenset(
-    {"ingested", "rejected_clouds", "rejected_invalid", "rejected_nodata", "failed"}
-)
-
-# Les 6 statuts de run.json (énumération normative : chapeau l0-02).
-RUN_STATUSES: tuple[str, ...] = (
-    "ingested",
-    "rejected_clouds",
-    "rejected_invalid",
-    "rejected_nodata",
-    "failed",
-    "skipped",
-)
-
-# Les 4 compteurs d'enveloppe (recopiés depuis l0-02) + les 6 statuts ci-dessus.
-_COUNTER_KEYS: tuple[str, ...] = (
-    "found_stac",
-    "skipped_scene_cloud",
-    "off_tile",
-    "found_tile",
-    *RUN_STATUSES,
-)
+# Les 4 compteurs d'enveloppe + les 6 statuts — COMPOSÉS depuis core/, jamais recopiés
+# (post-revue 1, constat A2 : le vocabulaire de domaine appartient à ``core/``).
+_COUNTER_KEYS: tuple[str, ...] = (*ENVELOPE_COUNTERS, *RUN_STATUSES)
 
 
 class ManifestError(ValueError):

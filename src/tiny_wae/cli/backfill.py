@@ -24,11 +24,11 @@ from tiny_wae.adapters.config_io import (
     load_settings,
     load_sites,
 )
-from tiny_wae.adapters.manifests import RUN_STATUSES
 from tiny_wae.adapters.stac import EarthSearchSource, StacSource
 from tiny_wae.cli import exit_codes
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Site, SiteValidationError
+from tiny_wae.core.statuses import RUN_STATUSES
 from tiny_wae.core.windows import Window, backfill_windows
 
 

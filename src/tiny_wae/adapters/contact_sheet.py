@@ -22,6 +22,7 @@ import rasterio
 from PIL import Image, ImageDraw, ImageFont
 
 from tiny_wae.adapters.manifests import Manifest, list_for_site
+from tiny_wae.core.artifacts import CHIP_10M_FILENAME
 from tiny_wae.core.bands import BAND_ORDER_10M
 from tiny_wae.core.sites import Site
 
@@ -121,7 +122,7 @@ def _build_cell(site: Site, data_root: Path) -> SheetCell:
             label_lines=(f"{site.id} - {site.name}", _NO_CHIP_LABEL),
             image=None,
         )
-    chip_path = Path(data_root) / site.id / manifest.item_id / "chip.tif"
+    chip_path = Path(data_root) / site.id / manifest.item_id / CHIP_10M_FILENAME
     image = render_rgb(chip_path)
     date_label = manifest.datetime.split("T", 1)[0]
     return SheetCell(
@@ -270,8 +271,8 @@ def _build_first_last_cell(site: Site, data_root: Path) -> FirstLastCell:
             first_image=None,
             last_image=None,
         )
-    first_path = Path(data_root) / site.id / first_manifest.item_id / "chip.tif"
-    last_path = Path(data_root) / site.id / last_manifest.item_id / "chip.tif"
+    first_path = Path(data_root) / site.id / first_manifest.item_id / CHIP_10M_FILENAME
+    last_path = Path(data_root) / site.id / last_manifest.item_id / CHIP_10M_FILENAME
     first_date = first_manifest.datetime.split("T", 1)[0]
     last_date = last_manifest.datetime.split("T", 1)[0]
     return FirstLastCell(

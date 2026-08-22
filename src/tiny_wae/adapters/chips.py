@@ -25,6 +25,7 @@ from rasterio.enums import Resampling
 from rasterio.windows import from_bounds
 
 from tiny_wae.core.acquisition import Acquisition
+from tiny_wae.core.artifacts import CHIP_10M_FILENAME, CHIP_20M_FILENAME, SCL_FILENAME
 from tiny_wae.core.bands import BAND_ORDER_10M, BAND_ORDER_20M
 from tiny_wae.core.geometry import chip_bounds, transform_for
 from tiny_wae.core.settings import Settings
@@ -35,11 +36,6 @@ NODATA_VALUE = 0
 
 # Nom EXACT de la variable d'environnement (décision d'ancrage n°5) — aucune variante.
 OFFLINE_ENV_VAR = "TINY_WAE_OFFLINE"
-
-# Noms de fichiers figés (décision d'ancrage n°6).
-CHIP_10M_FILENAME = "chip.tif"
-CHIP_20M_FILENAME = "chip_20m.tif"
-SCL_FILENAME = "scl.tif"
 
 
 class EpsgMismatchError(ValueError):

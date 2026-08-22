@@ -39,7 +39,6 @@ from tiny_wae.adapters.chips import (
     write_chips,
 )
 from tiny_wae.adapters.manifests import (
-    RUN_STATUSES,
     Manifest,
     Run,
     grid_hash,
@@ -53,11 +52,12 @@ from tiny_wae.core.envelope import Envelope
 from tiny_wae.core.scl import verdict as scl_verdict
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Grid, Site
+from tiny_wae.core.statuses import RUN_STATUSES
 from tiny_wae.core.windows import Window
 
 # Seuil du signalement de tuile suspecte (O5ter, chapeau l0-03) — dénominateur found_tile,
 # jamais found_stac (décision E-a du chapeau l0-02 : "found" seul est banni).
-_TILE_SUSPECT_RATIO = 0.20
+TILE_SUSPECT_RATIO = 0.20
 
 
 @dataclass(frozen=True, slots=True)
@@ -426,7 +426,7 @@ def _run_ingestion(
 
     found_tile = envelope_counters["found_tile"]
     nodata_ratio = status_counts["rejected_nodata"] / found_tile if found_tile > 0 else 0.0
-    tile_suspect = nodata_ratio > _TILE_SUSPECT_RATIO
+    tile_suspect = nodata_ratio > TILE_SUSPECT_RATIO
 
     counters = {
         "found_stac": envelope_counters["found_stac"],

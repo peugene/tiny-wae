@@ -18,19 +18,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
-# Les 6 statuts normatifs (chapeau l0-02) — recopiés en ANCRAGE, jamais redéfinis
-# différemment (cf. adapters/manifests.RUN_STATUSES, la même énumération).
-RUN_STATUSES: tuple[str, ...] = (
-    "ingested",
-    "rejected_clouds",
-    "rejected_invalid",
-    "rejected_nodata",
-    "failed",
-    "skipped",
-)
-
-# Fichiers attendus au manifeste d'un item ingéré (chip 10 m, chip 20 m, masque SCL).
-EXPECTED_FILES: tuple[str, ...] = ("chip.tif", "chip_20m.tif", "scl.tif")
+from tiny_wae.core.artifacts import EXPECTED_FILES
+from tiny_wae.core.statuses import RUN_STATUSES
 
 # Classes SCL mises en avant par l'instrument V3 différé (2 = ombre de nuage, 11 = neige).
 SCL_HIGHLIGHT_CLASSES: tuple[str, ...] = ("2", "11")
