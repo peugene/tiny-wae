@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-01</b></nav><h1>[obs-01] Système de logging + progression du backfill <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : observabilite</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../a-faire/obs-02.html"><code>obs-02</code></a> Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-01</b></nav><h1>[obs-01] Système de logging + progression du backfill <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : observabilite</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../a-faire/obs-02.html"><code>obs-02</code></a> Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#obs-01-systeme-de-logging-progression-du-backfill">[obs-01] — Système de logging + progression du backfill</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -357,10 +357,68 @@ n'ont pas chacun produit au moins une fenêtre (D11).</p>
 </ul>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="../a-faire/obs-02.html">[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate →</a></div><p class="gen">Généré le 22/08/2026 20:06 — le .md fait foi.</p></article></body></html>
+<li>
+<p><strong>Ce qui a été fait</strong> : <code>cli/logging_setup.py</code> (nouveau, seul module installant un
+  handler, STDERR), option globale <code>--log-level</code> sur <code>__main__.py</code> avec la précédence
+  <code>--log-level</code> &gt; <code>TINY_WAE_LOG_LEVEL</code> &gt; <code>INFO</code>, instrumentation de <code>adapters/backfill.py</code>
+  (ligne d'ouverture + une ligne par fenêtre terminée), fonctions pures
+  <code>_eta_seconds</code> / <code>_eta_uncertain</code> / <code>_format_eta</code>, distribution du numérateur <code>n</code> sous
+  verrou, retrait des emoji des messages console, bascule D10 des deux tests <code>sites-list</code>
+  sur <code>result.stdout</code>.</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> (16 tests dans <code>tests/test_logging.py</code>) :</p>
+</li>
+<li>O1+O2 : <strong>12/12</strong> lignes émises, les <code>n</code> forment une permutation exacte de <code>1..12</code>.</li>
+<li>O3 : <code>result.stdout == ""</code>.</li>
+<li>O4 : 1 ligne WARNING nommant le site fautif, le run continue (1 ligne INFO pour l'autre).</li>
+<li>O5 : <code>--log-level WARNING</code> -&gt; <strong>0</strong> ligne INFO, la ligne WARNING subsiste.</li>
+<li>O6 : variable seule -&gt; même résultat ; variable + option -&gt; <strong>l'option gagne</strong>.</li>
+<li>O7 : 25 sites réels x 3 mois = <strong>75 fenêtres</strong>, <code>workers=6</code> -&gt; <strong>75/75</strong> lignes bien
+    formées, <strong>0</strong> malformée, permutation <code>1..75</code>.</li>
+<li>O8 : <code>_eta_seconds(10, 100, 30.0) == 270.0</code> exactement ; <code>done=0</code> -&gt; <code>None</code> ;
+    <code>done == total</code> -&gt; <code>0.0</code>.</li>
+<li>O9 : <code>—</code> avant la 1re fenêtre et sur la dernière ligne ; <code>?</code> sous chacune des deux
+    conditions de D11, absent quand les deux sont fausses.</li>
+<li><strong>O10 (mutation, le seul verdict qui prouve quelque chose)</strong> : appel de log retiré -&gt;
+    O1/O2 <strong>ROUGE</strong> (<code>assert 0 == 12</code>, aucune ligne émise) ; restauré -&gt; <strong>VERT</strong>, diff
+    final identique.</li>
+<li>O11 : <code>grep logging</code> sur <code>core/</code> -&gt; <strong>0</strong>.</li>
+<li>O11bis : <strong>0</strong> emoji dans les chaînes affichées de <code>src/</code>, soit <strong>-4</strong> par rapport à
+    <code>a6724e0</code> (et non -2 : l'ancrage sous-comptait, cf. écarts).</li>
+<li>
+<p>O12 : <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> — <strong>266 tests</strong> (250 au départ,
+    +16). Les 29 assertions <code>.stderr</code> et les 5 de <code>test_cli_backfill.py</code> inchangées
+    (diff vérifié à 0) ; seules les 2 lignes de D10 modifiées.</p>
+</li>
+<li>
+<p><strong>Écarts par rapport à la fiche, assumés et documentés</strong> :
+  1. <strong>Périmètre dépassé de 2 fichiers</strong> : l'ancrage ne nommait que les 2 emoji de
+     <code>cli/backfill.py</code>, mais <code>cli/ingest.py:109</code> et <code>cli/update.py:107</code> en portaient un
+     chacun. Les 4 ont été retirés, sinon l'oracle « 0 occurrence » aurait été faux.
+     Aucun test ne s'y accrochait (vérifié).
+  2. <strong><code>%(name)s</code> sorti du format global</strong> : D3 impose <code>getLogger(__name__)</code>, donc le nom
+     réel est <code>tiny_wae.adapters.backfill</code>, ce qui aurait cassé l'alignement en colonnes
+     figé par la fiche. Le label <code>backfill</code> est composé dans le message. Le rendu visuel
+     figé est respecté, le mécanisme diffère.
+  3. <strong>O9 testé par appel direct</strong> plutôt que par simulation du pool : l'entrelacement réel
+     n'est pas déterministe, il ne peut pas servir d'oracle exact.
+  4. <strong>Correction post-revue</strong> : la relecture de la sortie RÉELLE (et non des seuls tests) a
+     montré qu'une fenêtre à compteurs tous nuls produisait une ligne sans charge utile,
+     terminée par deux espaces. Conforme à la lettre de la fiche, contraire à son objectif.
+     Corrigée par le marqueur <code>aucun item</code>, avec un test dédié et la garantie qu'aucune
+     ligne ne se termine par un espace.</p>
+</li>
+<li>
+<p><strong>Non testé</strong> (inchangé par rapport à la fiche) : aucun run réel de plusieurs heures, la
+  justesse prédictive de l'ETA n'est pas mesurée, <code>ingest</code>/<code>update</code>/<code>report</code>/<code>search</code> ne
+  sont pas instrumentés, le comportement sous cwltool n'est pas vérifié, aucune sortie
+  structurée, le niveau DEBUG n'a aucun contenu.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>3edd163</code> (implémentation), <code>cf33379</code> (correction fenêtre sans item),
+  <code>506825b</code> (merge <code>--no-ff</code> sur <code>develop</code>).</p>
+</li>
+<li><strong>Date</strong> : 2026-08-22</li>
+</ul><div class="prevnext"><a href="l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="../a-faire/obs-02.html">[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate →</a></div><p class="gen">Généré le 22/08/2026 20:58 — le .md fait foi.</p></article></body></html>

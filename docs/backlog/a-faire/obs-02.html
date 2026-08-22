@@ -45,12 +45,13 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../en-cours/obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#5aa7d8">En cours</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#obs-02-arret-du-backfill-accuse-de-reception-et-interruption-immediate">[obs-02] — Arrêt du backfill : accusé de réception et interruption immédiate</a><ul>
 <li><a href="#objectif">Objectif</a></li>
 <li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
 <li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-a6724e0">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD a6724e0)</a></li>
+<li><a href="#ancrage-anticipe-pose-pendant-le-dispatch-dobs-01-a-head-3cd90e2">⚠ Ancrage anticipé (posé pendant le dispatch d'obs-01, à HEAD 3cd90e2)</a></li>
 <li><a href="#decisions-actees">⭐ Décisions actées</a></li>
 <li><a href="#fichiers-touches">Fichiers touchés</a></li>
 </ul>
@@ -120,6 +121,29 @@ compte, et rien ne lui permet de forcer un arrêt s'il ne veut pas attendre.</p>
 <p>Re-vérifié à <code>3cd90e2</code> au moment du dispatch : les 6 emplacements cités ci-dessus sont
   inchangés — <code>_request_stop</code> toujours l. 122, <code>cli/backfill.py</code> l. 91,
   <code>tests/test_backfill.py</code> l. 34 et 354.</p>
+<h3 id="ancrage-anticipe-pose-pendant-le-dispatch-dobs-01-a-head-3cd90e2">⚠ Ancrage anticipé (posé pendant le dispatch d'<code>obs-01</code>, à HEAD <code>3cd90e2</code>)</h3>
+<p><code>obs-01</code> modifie <strong>les deux mêmes fichiers</strong> que cette fiche (<code>adapters/backfill.py</code> et
+<code>cli/backfill.py</code>). L'ancrage ci-dessus se scinde donc en deux :</p>
+<p><strong>Faits INDÉPENDANTS d'<code>obs-01</code>, acquis</strong> :</p>
+<ul>
+<li>La sémantique d'arrêt (test de <code>stop_event</code> en tête de boucle, annulation des futures,
+  restauration des handlers en <code>finally</code>) ne fait pas partie du périmètre d'<code>obs-01</code> : elle
+  ne bougera pas.</li>
+<li>L'ordre d'écriture chips → manifeste et l'atomicité de <code>_write_json_atomic</code> ne sont pas
+  dans le périmètre d'<code>obs-01</code> : la garantie « pas de manifeste fantôme » tient.</li>
+<li><strong><code>os._exit(130)</code> passe le lint du projet</strong> — vérifié en soumettant le code à <code>ruff</code> sous
+  le chemin réel <code>src/tiny_wae/cli/backfill.py</code> : <code>SLF001</code> (accès à un membre privé) ne
+  s'applique pas aux membres de module. Aucun <code>noqa</code> n'est donc nécessaire.</li>
+</ul>
+<p>⚠ <strong>Faits DÉPENDANTS, à RECONFIRMER APRÈS le merge d'<code>obs-01</code></strong> — ne pas les tenir pour
+acquis, ils sont faux dès qu'<code>obs-01</code> est mergée :</p>
+<ul>
+<li><strong>Tous les numéros de ligne</strong> cités plus haut pour <code>adapters/backfill.py</code> (l. 122, 204-212)
+  et <code>cli/backfill.py</code> (l. 91) seront décalés par l'insertion du logging.</li>
+<li>Le <strong>canal et le format</strong> des messages : <code>obs-01</code> fige le format de ligne et retire les
+  emojis des messages existants (ses D2 et D13). Le message d'arrêt doit s'y conformer, et
+  la ligne <code>cli/backfill.py:91</code> n'aura plus son <code>⚠</code>.</li>
+</ul>
 <h3 id="decisions-actees">⭐ Décisions actées</h3>
 <ul>
 <li><strong>D1 — Le handler reste PUR.</strong> <code>_request_stop</code> gagne un paramètre
@@ -262,4 +286,4 @@ un compteur dans <code>adapters/</code>. La politique d'arrêt appartient au CLI
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../en-cours/obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 20:06 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 20:58 — le .md fait foi.</p></article></body></html>

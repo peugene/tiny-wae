@@ -255,9 +255,58 @@ n'ont pas chacun produit au moins une fenêtre (D11).
 
 ## Résumé de réalisation
 
-*(à remplir avant de déplacer la fiche dans `fait/`)*
+- **Ce qui a été fait** : `cli/logging_setup.py` (nouveau, seul module installant un
+  handler, STDERR), option globale `--log-level` sur `__main__.py` avec la précédence
+  `--log-level` > `TINY_WAE_LOG_LEVEL` > `INFO`, instrumentation de `adapters/backfill.py`
+  (ligne d'ouverture + une ligne par fenêtre terminée), fonctions pures
+  `_eta_seconds` / `_eta_uncertain` / `_format_eta`, distribution du numérateur `n` sous
+  verrou, retrait des emoji des messages console, bascule D10 des deux tests `sites-list`
+  sur `result.stdout`.
 
-- **Ce qui a été fait** : …
-- **Verdict de l'oracle** : [chiffres obtenus, y compris défavorables]
-- **Commit(s)** : …
-- **Date** : AAAA-MM-JJ
+- **Verdict de l'oracle** (16 tests dans `tests/test_logging.py`) :
+  - O1+O2 : **12/12** lignes émises, les `n` forment une permutation exacte de `1..12`.
+  - O3 : `result.stdout == ""`.
+  - O4 : 1 ligne WARNING nommant le site fautif, le run continue (1 ligne INFO pour l'autre).
+  - O5 : `--log-level WARNING` -> **0** ligne INFO, la ligne WARNING subsiste.
+  - O6 : variable seule -> même résultat ; variable + option -> **l'option gagne**.
+  - O7 : 25 sites réels x 3 mois = **75 fenêtres**, `workers=6` -> **75/75** lignes bien
+    formées, **0** malformée, permutation `1..75`.
+  - O8 : `_eta_seconds(10, 100, 30.0) == 270.0` exactement ; `done=0` -> `None` ;
+    `done == total` -> `0.0`.
+  - O9 : `—` avant la 1re fenêtre et sur la dernière ligne ; `?` sous chacune des deux
+    conditions de D11, absent quand les deux sont fausses.
+  - **O10 (mutation, le seul verdict qui prouve quelque chose)** : appel de log retiré ->
+    O1/O2 **ROUGE** (`assert 0 == 12`, aucune ligne émise) ; restauré -> **VERT**, diff
+    final identique.
+  - O11 : `grep logging` sur `core/` -> **0**.
+  - O11bis : **0** emoji dans les chaînes affichées de `src/`, soit **-4** par rapport à
+    `a6724e0` (et non -2 : l'ancrage sous-comptait, cf. écarts).
+  - O12 : `just check` **vert sur `develop` après merge** — **266 tests** (250 au départ,
+    +16). Les 29 assertions `.stderr` et les 5 de `test_cli_backfill.py` inchangées
+    (diff vérifié à 0) ; seules les 2 lignes de D10 modifiées.
+
+- **Écarts par rapport à la fiche, assumés et documentés** :
+  1. **Périmètre dépassé de 2 fichiers** : l'ancrage ne nommait que les 2 emoji de
+     `cli/backfill.py`, mais `cli/ingest.py:109` et `cli/update.py:107` en portaient un
+     chacun. Les 4 ont été retirés, sinon l'oracle « 0 occurrence » aurait été faux.
+     Aucun test ne s'y accrochait (vérifié).
+  2. **`%(name)s` sorti du format global** : D3 impose `getLogger(__name__)`, donc le nom
+     réel est `tiny_wae.adapters.backfill`, ce qui aurait cassé l'alignement en colonnes
+     figé par la fiche. Le label `backfill` est composé dans le message. Le rendu visuel
+     figé est respecté, le mécanisme diffère.
+  3. **O9 testé par appel direct** plutôt que par simulation du pool : l'entrelacement réel
+     n'est pas déterministe, il ne peut pas servir d'oracle exact.
+  4. **Correction post-revue** : la relecture de la sortie RÉELLE (et non des seuls tests) a
+     montré qu'une fenêtre à compteurs tous nuls produisait une ligne sans charge utile,
+     terminée par deux espaces. Conforme à la lettre de la fiche, contraire à son objectif.
+     Corrigée par le marqueur `aucun item`, avec un test dédié et la garantie qu'aucune
+     ligne ne se termine par un espace.
+
+- **Non testé** (inchangé par rapport à la fiche) : aucun run réel de plusieurs heures, la
+  justesse prédictive de l'ETA n'est pas mesurée, `ingest`/`update`/`report`/`search` ne
+  sont pas instrumentés, le comportement sous cwltool n'est pas vérifié, aucune sortie
+  structurée, le niveau DEBUG n'a aucun contenu.
+
+- **Commit(s)** : `3edd163` (implémentation), `cf33379` (correction fenêtre sans item),
+  `506825b` (merge `--no-ff` sur `develop`).
+- **Date** : 2026-08-22
