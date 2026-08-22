@@ -13,7 +13,8 @@ subtasks: []
 
 > Fiche de backlog : sert de **brief (prompt)** pour l'IA.
 > Avancement = dossier : `maturation/` → `a-faire/` → `en-cours/` → `fait/`.
-> ⚠ **Placement à confirmer par le PO** : même arbitrage que `obs-01`, dont elle dépend.
+> ✅ **Placement validé par le PO le 2026-08-22** : même arbitrage qu'`obs-01`, dont elle
+> dépend.
 > Le `depends_on: [obs-01]` est réel : `obs-01` fige le canal (STDERR), le format et le
 > niveau de sortie. Les inverser ferait définir deux fois, différemment, où et comment
 > l'application parle à l'opérateur.
@@ -89,7 +90,12 @@ Deux ajouts, aucun changement de la sémantique d'arrêt existante :
   exception **motivée** à `obs-01`, pas un canal concurrent : elle est limitée aux deux
   messages du handler.
 - **D6 — Le message final existant (`cli/backfill.py:91`) est conservé** : il joue un rôle
-  différent (bilan après arrêt, avec les compteurs), et un test l'atteste.
+  différent (bilan après arrêt, avec les compteurs), et un test l'atteste. Son `⚠` initial
+  disparaît en revanche — cf. D7.
+- **D7 — AUCUN emoji dans les messages** (règle projet posée par le PO le 2026-08-22, cf.
+  D13 d'`obs-01`). Les deux messages de cette fiche s'écrivent en toutes lettres : le mot
+  porte l'information mieux qu'un pictogramme, et ces deux messages-ci sont précisément ceux
+  qu'un opérateur lit dans l'urgence.
 
 ### Fichiers touchés
 

@@ -13,8 +13,9 @@ subtasks: []
 
 > Fiche de backlog : sert de **brief (prompt)** pour l'IA.
 > Avancement = dossier : `maturation/` → `a-faire/` → `en-cours/` → `fait/`.
-> ⚠ **Placement à confirmer par le PO** : id hors de la séquence `l0-*` du chantier
-> `lot-0-ingestion` (déclarée fermée à `l0-06`), sur le précédent d'`out-01` et de `l0-07`.
+> ✅ **Placement validé par le PO le 2026-08-22** (lancement du run) : id hors de la
+> séquence `l0-*` du chantier `lot-0-ingestion` (déclarée fermée à `l0-06`), sur le
+> précédent d'`out-01` et de `l0-07`.
 > Le `depends_on: [l0-04.1]` n'est pas décoratif : c'est cette fiche qui a créé le pool de
 > workers et `_process_site`, seul point d'où une progression peut être émise. Elle est en
 > `fait/`, la dépendance est donc satisfaite.
@@ -49,6 +50,12 @@ Deux objectifs, dans cet ordre :
 - **Le point d'émission naturel existe déjà** : `adapters/backfill.py::_process_site` boucle
   sur les fenêtres d'un site et dispose sur place de `site.id`, de la `Window`, et de
   l'`IngestOutcome` retourné (donc de `outcome.run.counters`) ou de l'exception capturée.
+- **L'ordonnancement rend l'ETA non trivial** (mesuré par simulation le 2026-08-22) : une
+  tâche = un site, donc avec 6 workers seuls 6 sites tournent à un instant donné, un 7e ne
+  démarrant qu'à la fin complète d'un autre. Conséquences chiffrées sur un run
+  `--sites all --months 48 --workers 6` : le 25e site ne démarre qu'à **77 %** du run, et
+  la **fin du run se déroule à parallélisme dégradé** (moins de 6 sites actifs). C'est ce
+  qui dicte le critère du `?` (D11).
 - **La concurrence est réelle** : `_process_site` s'exécute dans N threads d'un
   `ThreadPoolExecutor` (`workers`, défaut `settings.backfill_workers` = **6** dans
   `config/settings.yaml`). Toute écriture console émise depuis ce point est **concurrente**.
@@ -69,9 +76,13 @@ Deux objectifs, dans cet ordre :
 - **Aucune dépendance à ajouter** : `logging` est dans la stdlib, et
   `tests/test_packaging.py:73` filtre les imports par `sys.stdlib_module_names` — un
   `import logging` n'entre donc pas au contrat de la wheel et ne casse pas ce test.
-- ⚠ **`__main__.py` porte une interdiction explicite** : « ⭐ Ce fichier n'est PLUS JAMAIS
-  modifié après l0-01.2 ». Elle vise l'ajout de **sous-commandes** (qui passent par
-  `cli/discovery.py`), mais sa lettre couvre toute modification — arbitrage ci-dessous.
+- ✅ **Verrou levé le 2026-08-22 (décision PO)** : `__main__.py` portait « ⭐ Ce fichier
+  n'est PLUS JAMAIS modifié après l0-01.2 ». Cette phrase **disait plus que l'invariant
+  réel**, qui est testé mécaniquement par
+  `tests/test_cli_discovery.py::test_main_module_has_no_per_command_wiring` : le fichier ne
+  doit référencer **aucun module de commande par son nom**. Une option globale ne viole pas
+  cet invariant. L'inscription a été reformulée en conséquence — le fichier peut évoluer,
+  le câblage par commande reste interdit et vérifié.
 
 ### ⭐ Décisions actées
 
@@ -98,14 +109,41 @@ Deux objectifs, dans cet ordre :
   item par item (hors périmètre).
 - **D7 — `adapters/backfill.py` loggue directement via son logger de module.** C'est de
   l'I/O, donc la couche `adapters/` y a droit ; `core/` n'y a pas droit (D3).
-- **D8 — ⚠ à confirmer par le PO : `__main__.py` est modifié** pour porter l'option globale
-  `--log-level` sur son `@app.callback()`, et son inscription est **amendée** en « aucune
-  sous-commande ne s'ajoute ici » (l'intention réelle de la règle). Si le PO refuse, le repli
-  est `TINY_WAE_LOG_LEVEL` seule, sans option de ligne de commande — le reste de la fiche est
-  inchangé.
+- **D8 — `__main__.py` porte l'option globale `--log-level`** sur son `@app.callback()`.
+  Tranché par le PO le 2026-08-22 : l'inscription qui semblait l'interdire a été corrigée
+  (cf. ancrage). ⛔ Le câblage d'une sous-commande y reste interdit — c'est l'invariant
+  testé, il ne bouge pas.
 - **D9 — Le pourcentage est en FENÊTRES, pas en temps, et il est annoncé comme indicatif.**
   Une fenêtre sans item coûte une requête STAC ; une fenêtre à 6 items coûte 6
   téléchargements de chips. Le `%` ne prétend donc pas mesurer le temps restant.
+- **D11 — Un ETA est affiché, et son incertitude est PORTÉE PAR L'AFFICHAGE.** Extrapolation
+  linéaire : `restant = (total − done) × elapsed / done`, valant `—` **avant** la première
+  fenêtre terminée **et sur la dernière ligne** (`done == total` : il n'y a plus rien à
+  attendre, `ETA 0min00` serait du bruit). Il est suffixé d'un `?` sous **deux** conditions, dont l'une suffit :
+  1. `done < 5 % du total` (60 fenêtres sur 1200) — l'échantillon est trop court ;
+  2. **ou** le nombre de sites encore actifs est **inférieur au nombre de workers** : c'est
+     la phase de queue, où le parallélisme s'effondre et où l'ETA devient mécaniquement
+     optimiste. **Mesuré sur la simulation** : à 89,8 % du run, l'ETA annonce 18 min alors
+     qu'il reste 43 min de C07 seul — une sous-estimation d'un facteur **2,4**, que le `?`
+     est précisément là pour signaler.
+
+  ⚠ **Le critère « tous les sites ont démarré » a été essayé puis ÉCARTÉ SUR MESURE.** Une
+  tâche = un site (l0-04.1), donc avec 6 workers le 25e site ne démarre qu'après la fin de
+  19 autres. Simulation de l'ordonnancement réel (25 sites × 48 fenêtres, 6 workers,
+  coûts de fenêtre tirés entre 21 s et 117 s) : le 25e site démarre à **77 % du run**. Un
+  `?` présent sur 77 % des lignes ne signale plus rien. Avec le critère retenu, il tombe à
+  la 60e ligne. Demandé explicitement par le PO le 2026-08-22, en connaissance du biais.
+- **D13 — AUCUN emoji dans le code ni dans les sorties console** (règle projet, posée par
+  le PO le 2026-08-22 : « arrêter de mettre des emojis dans le code »). Le niveau de log
+  porte déjà la gravité, un pictogramme y est redondant. ⛔ Ne pas écrire `⚠`, `⭐`, `⛔`
+  dans un message affiché. Au passage, les **2** occurrences déjà présentes dans les
+  messages de `cli/backfill.py` (l. 86 et 91) sont retirées — aucun test ne s'y accroche
+  (vérifié). Les accents et flèches (`ÉCHEC`, `→`) ne sont pas concernés : ce sont des
+  caractères de texte.
+- **D12 — Le calcul de l'ETA est une fonction PURE de `adapters/backfill.py`**
+  (`_eta_seconds(done, total, elapsed_s) -> float | None`), testée par appel direct. ⛔ Aucun
+  oracle statistique sur sa justesse prédictive : mesurer « l'ETA était-il bon ? » sur des
+  fixtures qui tournent en millisecondes ne prouverait rien.
 - **D10 — Les deux tests `sites-list` passent de `result.output` à `result.stdout`.** Coût
   nul, et cela fixe leur intention réelle (ils testent une sortie de données) au lieu de les
   laisser exposés au premier log émis en amont.
@@ -114,23 +152,32 @@ Deux objectifs, dans cet ordre :
 
 - `src/tiny_wae/cli/logging_setup.py` — **nouveau** : `configure_logging(level: str) -> None`,
   seul endroit qui installe un handler (STDERR) et un format.
-- `src/tiny_wae/__main__.py` — option globale `--log-level`, appel de `configure_logging`,
-  inscription amendée (cf. D8).
+- `src/tiny_wae/__main__.py` — option globale `--log-level` et appel de
+  `configure_logging`. L'inscription du docstring a **déjà** été corrigée (commit du
+  2026-08-22) : ne pas la rétablir.
 - `src/tiny_wae/adapters/backfill.py` — logger de module ; ligne d'ouverture (nombre de
   sites, de fenêtres, total, workers) et une ligne par fenêtre terminée dans `_process_site`.
   Le total est déjà calculable sur place : `sum(len(w) for w in windows_by_site.values())`.
+  Plus les deux fonctions pures `_eta_seconds` / `_format_eta` (D12).
 - `tests/test_logging.py` — **nouveau** : les oracles ci-dessous.
 - `tests/test_cli_commands.py` — D10 (2 lignes).
 
 ### Format de ligne (figé)
 
 ```
-2026-08-22 16:04:12 INFO  backfill    47/1200 ( 3.9%)  A01  2022-09-01→2022-10-01  ingested=2 skipped=4
-2026-08-22 16:04:19 WARNING backfill   48/1200 ( 4.0%)  B03  2022-09-01→2022-10-01  ÉCHEC : <message>
+2026-08-22 16:04:12 INFO     backfill    47/1200 (  3.9%) ETA 2h11?  A01  2022-09-01→2022-10-01  found_stac=3 ingested=2 rejected_clouds=1
+2026-08-22 16:04:19 WARNING  backfill    48/1200 (  4.0%) ETA 2h11?  B03  2022-09-01→2022-10-01  ÉCHEC : <message>
 ```
+
+**Colonnes fixes à gauche, charge utile variable à droite** : l'avancement, le pourcentage
+et l'ETA occupent des positions constantes, ce qui les rend lisibles en colonne dans un flux
+de 1200 lignes ; les compteurs, de longueur variable, ferment la ligne.
 
 Seuls les compteurs **non nuls** sont rendus, triés par clé — une ligne à 12 compteurs à zéro
 est illisible et masque l'information utile.
+
+`ETA` vaut `—` avant la première fenêtre terminée, et porte un `?` tant que les 25 sites
+n'ont pas chacun produit au moins une fenêtre (D11).
 
 ## Définition de « terminé »
 
@@ -138,8 +185,12 @@ est illisible et masque l'information utile.
 - [ ] Le niveau suit la précédence D4 ; un niveau invalide sort en `exit_codes.USAGE`, pas en
       trace Python.
 - [ ] `adapters/backfill.py` émet une ligne d'ouverture puis une ligne par fenêtre terminée.
-- [ ] Chaque ligne de progression porte : `n/total`, un pourcentage, l'id du site, les bornes
-      de la fenêtre, et soit les compteurs non nuls, soit le message d'échec.
+- [ ] Chaque ligne de progression porte : `n/total`, un pourcentage, un **ETA**, l'id du
+      site, les bornes de la fenêtre, et soit les compteurs non nuls, soit le message d'échec.
+- [ ] L'ETA vaut `—` avant la première fenêtre terminée et porte un `?` selon les deux
+      conditions de D11 (échantillon < 5 %, ou phase de queue).
+- [ ] Aucun emoji dans le code ni dans une sortie console ; les 2 de `cli/backfill.py` sont
+      retirés (D13).
 - [ ] Une fenêtre en échec est loguée en **WARNING**, jamais en INFO.
 - [ ] `grep -rn "logging" src/tiny_wae/core/` → **0 résultat**.
 - [ ] Les 38 `typer.echo` existants sont **inchangés** (D5).
@@ -158,17 +209,23 @@ est illisible et masque l'information utile.
 | O5 | `--log-level WARNING` sur le run d'O1 | **0** ligne de progression ; les lignes d'échec d'O4 subsistent |
 | O6 | `TINY_WAE_LOG_LEVEL=WARNING` sans `--log-level`, puis les deux ensemble | même résultat qu'O5 ; l'option de ligne de commande **gagne** sur la variable |
 | O7 | concurrence : run à `--workers 6` sur ≥ 50 fenêtres, chaque ligne confrontée au motif figé | **100 %** des lignes bien formées — aucune ligne entrelacée, tronquée ou fusionnée |
-| O8 | **mutation** : retirer l'appel de log dans `_process_site`, relancer `just test -k logging` | O1 et O2 passent au **ROUGE**, puis au vert après restauration |
-| O9 | `grep -rn "logging" src/tiny_wae/core/` | **0** résultat |
-| O10 | non-régression | `just check` vert — **250 tests** au départ ; les 29 assertions `.stderr` et les 5 de `test_cli_backfill.py` **inchangées** ; seules les 2 lignes de D10 sont modifiées |
+| O8 | `_eta_seconds` par appel direct : `(done=10, total=100, elapsed_s=30.0)`, puis `(done=0, …)`, puis `(done=total, …)` | **`270.0` exactement**, puis `None`, puis `0.0` — aucune division par zéro, aucun négatif |
+| O9 | rendu de l'ETA sur une ligne : avant la 1re fenêtre · sites partiellement démarrés · 25 sites démarrés | `ETA —` · `ETA <durée>?` · `ETA <durée>` — le `?` disparaît **exactement** quand le 25e site a produit sa 1re fenêtre |
+| O10 | **mutation** : retirer l'appel de log dans `_process_site`, relancer `just test -k logging` | O1 et O2 passent au **ROUGE**, puis au vert après restauration |
+| O11 | `grep -rn "logging" src/tiny_wae/core/` | **0** résultat |
+| O11bis | recherche d'emoji sur `src/`, `tests/`, `scripts/` restreinte aux **chaînes affichées** | **0** occurrence — et le compte global sur `src/` a **diminué** de 2 par rapport à HEAD `a6724e0` |
+| O12 | non-régression | `just check` vert — **250 tests** au départ ; les 29 assertions `.stderr` et les 5 de `test_cli_backfill.py` **inchangées** ; seules les 2 lignes de D10 sont modifiées |
 
 **Non testé par cette fiche** (chiffres honnêtes) :
 
 - **Aucun run réel.** Le gate est hors réseau : la tenue du log sur les ~1200 lignes d'un
   backfill de 48 mois sur le NAS n'est **pas** mesurée ici. C'est à la campagne `l0-04.H` de
   le constater.
-- **Le `%` n'est pas validé comme prédicteur de temps** — il ne prétend pas l'être (D9).
-  Aucun ETA n'est produit (cf. Notes).
+- **Ni le `%` ni l'ETA ne sont validés comme prédicteurs de temps.** L'ETA est produit
+  (D11) et son **calcul** est testé exactement (O8/O9), mais sa **justesse prédictive ne
+  l'est pas** : sur des fixtures qui tournent en millisecondes, un tel oracle ne mesurerait
+  que le bruit. L'ETA est faux par construction tant que les 25 sites n'ont pas démarré —
+  c'est assumé, signalé par le `?`, et accepté par le PO en connaissance de cause.
 - **Les autres CLIs ne sont pas instrumentés.** `ingest`, `update`, `report`, `search`
   gardent leur unique rapport final : le **socle** est transverse, l'**instrumentation** ne
   l'est pas.
@@ -180,9 +237,10 @@ est illisible et masque l'information utile.
 
 ## Notes / pistes
 
-- **ETA délibérément hors périmètre.** Un temps restant extrapolé linéairement est faux tant
-  que les 25 sites n'ont pas tous démarré, et devient trompeur dès qu'un site est plus lourd
-  que les autres. À instruire séparément si le `%` ne suffit pas à l'usage.
+- **L'ETA a d'abord été écarté, puis remis au périmètre par le PO** (2026-08-22) : le `%`
+  seul ne répond pas à la vraie question d'un run de plusieurs heures (« j'attends ou je
+  reviens demain ? »). Le compromis retenu n'est pas de le rendre juste — il ne peut pas
+  l'être tôt — mais de **rendre son incertitude visible** (D11).
 - Extensions possibles, non retenues ici : `--log-format json`, `--progress-every N` pour
   raréfier les lignes, instrumentation des autres CLIs, ligne de synthèse périodique
   (« 6 sites en cours, 3 terminés »).

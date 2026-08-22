@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#obs-02-arret-du-backfill-accuse-de-reception-et-interruption-immediate">[obs-02] — Arrêt du backfill : accusé de réception et interruption immédiate</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -67,7 +67,8 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <blockquote>
 <p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
 Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
-⚠ <strong>Placement à confirmer par le PO</strong> : même arbitrage que <code>obs-01</code>, dont elle dépend.
+✅ <strong>Placement validé par le PO le 2026-08-22</strong> : même arbitrage qu'<code>obs-01</code>, dont elle
+dépend.
 Le <code>depends_on: [obs-01]</code> est réel : <code>obs-01</code> fige le canal (STDERR), le format et le
 niveau de sortie. Les inverser ferait définir deux fois, différemment, où et comment
 l'application parle à l'opérateur.</p>
@@ -140,7 +141,12 @@ compte, et rien ne lui permet de forcer un arrêt s'il ne veut pas attendre.</p>
   exception <strong>motivée</strong> à <code>obs-01</code>, pas un canal concurrent : elle est limitée aux deux
   messages du handler.</li>
 <li><strong>D6 — Le message final existant (<code>cli/backfill.py:91</code>) est conservé</strong> : il joue un rôle
-  différent (bilan après arrêt, avec les compteurs), et un test l'atteste.</li>
+  différent (bilan après arrêt, avec les compteurs), et un test l'atteste. Son <code>⚠</code> initial
+  disparaît en revanche — cf. D7.</li>
+<li><strong>D7 — AUCUN emoji dans les messages</strong> (règle projet posée par le PO le 2026-08-22, cf.
+  D13 d'<code>obs-01</code>). Les deux messages de cette fiche s'écrivent en toutes lettres : le mot
+  porte l'information mieux qu'un pictogramme, et ces deux messages-ci sont précisément ceux
+  qu'un opérateur lit dans l'urgence.</li>
 </ul>
 <h3 id="fichiers-touches">Fichiers touchés</h3>
 <ul>
@@ -253,4 +259,4 @@ un compteur dans <code>adapters/</code>. La politique d'arrêt appartient au CLI
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 19:36 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 20:04 — le .md fait foi.</p></article></body></html>
