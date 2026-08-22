@@ -34,6 +34,9 @@ from tiny_wae.adapters.contact_sheet import (
     CELL_PX,
     GRID_COLUMNS,
     LABEL_HEIGHT_PX,
+    _build_cell,
+    _load_font,
+    _to_ascii,
     build_contact_sheet,
     latest_ingested_manifest,
     render_rgb,
@@ -226,3 +229,40 @@ def test_o2_stretch_percentile_constant_band_is_black_not_nan() -> None:
 
     assert result.dtype == np.uint8
     assert np.array_equal(result, np.zeros((8, 8), dtype=np.uint8))
+
+
+def test_libelles_sans_tofu_quelle_que_soit_la_police() -> None:
+    """Aucun libellé ne s'affiche en tofu, avec ou sans police TrueType disponible.
+
+    ⚠ Mesuré sur la PREMIÈRE planche réelle des 25 sites : la police intégrée de Pillow
+    rend un carré vide pour `é`, `ê`, `ï` — « Aéroport King Salman » s'y lisait
+    « A□roport ». Deux protections, testées ici toutes les deux :
+
+    - une TrueType système est cherchée en priorité (`_load_font` rend `accents_ok=True`) ;
+    - à défaut, les libellés sont translittérés en ASCII (`_to_ascii`), ce qui donne
+      « Aeroport » — moins joli, mais lisible et surtout DÉTERMINISTE.
+
+    Le piège de mesure à ne pas refaire : un tofu ALLUME des pixels. Compter les pixels
+    non nuls ne prouve rien, c'est la couverture de glyphes qu'il faut tester.
+    """
+    _, accents_ok = _load_font()
+    sites = load_sites(DEFAULT_SITES_PATH)
+    assert len(sites) == 25, f"{len(sites)} sites chargés, 25 attendus"
+
+    for site in sites:
+        cellule = _build_cell(site, Path("data-inexistant-pour-forcer-la-case-grise"))
+        for ligne in cellule.label_lines:
+            rendu = ligne if accents_ok else _to_ascii(ligne)
+            assert rendu.isascii() or accents_ok, (
+                f"libellé non rendable sans TrueType : {rendu!r} — translittération manquante"
+            )
+            # Le séparateur du code doit rester ASCII dans TOUS les cas : c'est lui qui
+            # apparaissait en tofu sur les 25 cases, pas seulement sur les noms accentués.
+            assert "—" not in ligne, f"tiret cadratin réintroduit dans un libellé : {ligne!r}"
+
+
+def test_to_ascii_translittere_sans_perdre_le_sens() -> None:
+    """`_to_ascii` retire les diacritiques et laisse le texte lisible."""
+    assert _to_ascii("Aéroport King Salman") == "Aeroport King Salman"
+    assert _to_ascii("Forêt de Bouconne") == "Foret de Bouconne"
+    assert _to_ascii("Parc solaire M. bin Rashid (Dubaï)") == "Parc solaire M. bin Rashid (Dubai)"

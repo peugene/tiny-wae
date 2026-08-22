@@ -12,6 +12,7 @@ réécrire — exception actée à l'invariant add-only (cf. fiche).
 
 from __future__ import annotations
 
+import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,6 +41,8 @@ STRETCH_HIGH_PERCENTILE = 98.0
 # Géométrie de la planche (une imagette carrée + un bandeau d'étiquette en dessous).
 CELL_PX = 200
 LABEL_HEIGHT_PX = 34
+# Taille des libellés, en points (n'a d'effet qu'avec une police TrueType).
+LABEL_FONT_PX = 12
 GRID_COLUMNS = 5
 
 _GRAY_CELL_COLOR = (170, 170, 170)
@@ -105,7 +108,7 @@ def _build_cell(site: Site, data_root: Path) -> SheetCell:
     if manifest is None:
         return SheetCell(
             site_id=site.id,
-            label_lines=(f"{site.id} — {site.name}", _NO_CHIP_LABEL),
+            label_lines=(f"{site.id} - {site.name}", _NO_CHIP_LABEL),
             image=None,
         )
     chip_path = Path(data_root) / site.id / manifest.item_id / "chip.tif"
@@ -113,14 +116,50 @@ def _build_cell(site: Site, data_root: Path) -> SheetCell:
     date_label = manifest.datetime.split("T", 1)[0]
     return SheetCell(
         site_id=site.id,
-        label_lines=(f"{site.id} — {site.name}", date_label),
+        label_lines=(f"{site.id} - {site.name}", date_label),
         image=image,
     )
 
 
-def _default_font() -> ImageFont.ImageFont | ImageFont.FreeTypeFont:
-    """Police PIL bitmap intégrée — aucune dépendance externe, aucun accès réseau."""
-    return ImageFont.load_default()
+# Polices TrueType cherchées, dans l'ordre, pour les libellés (aucune n'est une dépendance :
+# on retombe proprement sur la police intégrée si aucune n'est présente).
+_FONT_CANDIDATES = (
+    "DejaVuSans.ttf",  # linux (fonts-dejavu-core)
+    "LiberationSans-Regular.ttf",
+    "NotoSans-Regular.ttf",
+    "arial.ttf",  # windows
+    "Arial.ttf",
+)
+
+
+def _load_font(
+    size: int = LABEL_FONT_PX,
+) -> tuple[ImageFont.ImageFont | ImageFont.FreeTypeFont, bool]:
+    """Police des libellés, et si elle sait rendre les caractères accentués.
+
+    ⚠ Mesuré sur la première planche réelle des 25 sites (22/08/2026) : la police intégrée
+    de Pillow (``load_default``) rend un **tofu** — le carré du glyphe manquant — pour
+    ``é``, ``ê``, ``ï`` comme pour le tiret cadratin. « Aéroport King Salman » s'y lisait
+    « A□roport ». Le piège est qu'un tofu ALLUME des pixels : compter les pixels non nuls
+    ne prouve pas que le bon glyphe a été tracé, il faut regarder l'image.
+
+    Renvoie ``(police, accents_ok)``. Quand aucune TrueType n'est trouvée, l'appelant
+    translittère les libellés en ASCII (``_to_ascii``) : mieux vaut « Aeroport » lisible
+    qu'un carré vide, et le rendu reste **déterministe** d'une plateforme à l'autre.
+    """
+    for candidate in _FONT_CANDIDATES:
+        try:
+            return ImageFont.truetype(candidate, size), True
+        except OSError:
+            continue
+    return ImageFont.load_default(), False
+
+
+def _to_ascii(text: str) -> str:
+    """Translittère en ASCII (``Forêt`` -> ``Foret``) — filet quand la police n'a pas les
+    glyphes accentués. Décompose puis retire les diacritiques, sans dépendance externe."""
+    decomposed = unicodedata.normalize("NFKD", text)
+    return decomposed.encode("ascii", "ignore").decode("ascii")
 
 
 def _paste_cell(
@@ -137,9 +176,10 @@ def _paste_cell(
 
     label_y0 = y0 + CELL_PX
     draw.rectangle([x0, label_y0, x0 + CELL_PX, label_y0 + LABEL_HEIGHT_PX], fill=_LABEL_BG_COLOR)
-    font = _default_font()
+    font, accents_ok = _load_font()
     for i, line in enumerate(cell.label_lines):
-        draw.text((x0 + 4, label_y0 + 2 + i * 12), line, fill=_LABEL_FG_COLOR, font=font)
+        text = line if accents_ok else _to_ascii(line)
+        draw.text((x0 + 4, label_y0 + 2 + i * 12), text, fill=_LABEL_FG_COLOR, font=font)
 
 
 def build_contact_sheet(
