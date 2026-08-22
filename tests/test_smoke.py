@@ -1,20 +1,28 @@
-"""Tests scripts/smoke.py (l0-03.4) — oracle O7 : le smoke minimal du gate `just check`.
+"""Tests scripts/smoke.py (l0-03.7) — le gate permanent : smoke replay/live + garde de
+contrat.
 
 ``scripts/`` n'est pas un package importable normalement (``mypy`` ne le couvre pas non
 plus, ``pyproject.toml`` : ``files = ["src"]``) : ce test le charge par chemin
-(``importlib.util.spec_from_file_location``, décision d'ancrage n°2 de la fiche).
+(``importlib.util.spec_from_file_location``, comme posé par l0-03.4).
 
-Couvre :
-- témoin POSITIF : ``run_smoke`` avec la source par défaut (1 item synthétique) réussit
-  silencieusement (aucune ``AssertionError``), et les 3 fichiers + le manifeste existent.
-- témoin NÉGATIF : un double du port qui ne rend RIEN (``with_item=False``) fait échouer
-  ``run_smoke`` (``AssertionError``, ``assets_read`` resté à 0) — un smoke qui passerait
-  vert sur une source vide serait un gate creux.
+Couvre les oracles de la fiche (hors O5, ``--live``, hors gate — non exercé sous pytest,
+zéro réseau) :
+
+- O1/O4 : ``check_o1_o4_ingest_ok`` réussit deux fois de suite sur un ``data_root`` vierge
+  à chaque fois (répétabilité), ``content_hashes`` identiques aux deux runs.
+- O2 : un asset dont le href ``file://`` pointe vers un chemin absent fait échouer l'item
+  (``status == "failed"``), et le chemin manquant est nommé littéralement dans
+  ``manifest.cause``.
+- O3/O3bis : la garde de contrat (``chips._guard_href``) lève ``RemoteAccessForbidden``
+  sous ``TINY_WAE_OFFLINE=1`` pour un href ``https://``, et NE lève rien quand la
+  variable est absente.
+- ``main()`` (mode ``--replay``, celui câblé dans ``just smoke``) sort en 0.
 """
 
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -37,29 +45,57 @@ def _load_smoke_module() -> ModuleType:
 smoke = _load_smoke_module()
 
 
-def test_o7_temoin_positif_run_smoke_reussit(tmp_path: Path) -> None:
-    """La source par défaut (1 item synthétique) fait passer `run_smoke` : 3 fichiers,
-    manifeste `status == "ingested"`, `assets_read > 0`."""
-    source = smoke.build_fake_source(tmp_path / "raw", with_item=True)
-    smoke.run_smoke(tmp_path, source)  # ne lève rien -> vert
-
-    item_dir = tmp_path / "data" / smoke.SITE_ID / smoke.ITEM_ID
-    assert (item_dir / "chip.tif").exists()
-    assert (item_dir / "chip_20m.tif").exists()
-    assert (item_dir / "scl.tif").exists()
-
-
-def test_o7_temoin_negatif_double_qui_ne_rend_rien_fait_echouer_le_smoke(tmp_path: Path) -> None:
-    """Un double du port qui ne rend RIEN (0 item) fait échouer `run_smoke` : le gate
-    doit être ROUGE, pas passer en silence sur une source vide."""
-    empty_source = smoke.build_fake_source(tmp_path / "raw", with_item=False)
-    with pytest.raises(AssertionError):
-        smoke.run_smoke(tmp_path, empty_source)
+@pytest.fixture(autouse=True)
+def _restore_offline_env() -> None:
+    """Garde-fou de test : quel que soit ce que le module fait, l'environnement du process
+    pytest ne doit jamais garder ``TINY_WAE_OFFLINE`` en sortie d'un test (décision
+    d'ancrage n°5 de la fiche : la variable ne doit jamais fuir)."""
+    previous = os.environ.get(smoke.OFFLINE_ENV_VAR)
+    yield
+    if previous is None:
+        os.environ.pop(smoke.OFFLINE_ENV_VAR, None)
+    else:
+        os.environ[smoke.OFFLINE_ENV_VAR] = previous
 
 
-def test_o7_main_exit_code_zero(capsys: pytest.CaptureFixture[str]) -> None:
-    """`main()` (le point d'entrée `just smoke`) sort en 0 sur le chemin heureux."""
+def test_o1_o4_ingest_ok_est_repetable(tmp_path: Path) -> None:
+    """O1 + O4 : deux runs sur deux `data_root` vierges rendent le MÊME `content_hashes`,
+    tous deux avec `assets_read > 0` — témoin positif ET répétabilité."""
+    previous = smoke._set_offline(True)
+    try:
+        smoke.check_o1_o4_ingest_ok(tmp_path / "run1", run_label="test run 1")
+        smoke.check_o1_o4_ingest_ok(tmp_path / "run2", run_label="test run 2")
+
+        manifest1 = smoke.read_manifest(tmp_path / "run1" / "data", smoke.SITE_ID, smoke.ITEM_ID)
+        manifest2 = smoke.read_manifest(tmp_path / "run2" / "data", smoke.SITE_ID, smoke.ITEM_ID)
+        assert manifest1.content_hashes == manifest2.content_hashes
+        assert manifest1.assets_read > 0
+        assert manifest2.assets_read > 0
+    finally:
+        smoke._restore_offline(previous)
+
+
+def test_o2_fixture_locale_manquante_nomme_le_chemin(tmp_path: Path) -> None:
+    """O2 : le chemin du fichier manquant est nommé littéralement dans `manifest.cause` —
+    ni un mot vague, ni une classe d'exception : le chemin exact."""
+    previous = smoke._set_offline(True)
+    try:
+        smoke.check_o2_missing_local_fixture(tmp_path)  # ne lève rien -> le mécanisme marche
+    finally:
+        smoke._restore_offline(previous)
+
+
+def test_o3_o3bis_garde_de_contrat() -> None:
+    """O3/O3bis : passe silencieusement si la garde se comporte comme attendu dans les
+    deux régimes (`TINY_WAE_OFFLINE` posé / absent) — sinon lève `AssertionError`."""
+    smoke.check_o3_o3bis_contract_guard()
+
+
+def test_main_replay_exit_code_zero(capsys: pytest.CaptureFixture[str]) -> None:
+    """`main()` (mode `--replay`, celui câblé dans `just smoke`) sort en 0 sur le chemin
+    heureux, et n'a PAS laissé fuir `TINY_WAE_OFFLINE` dans l'environnement du process."""
     with pytest.raises(SystemExit) as exc_info:
         smoke.main()
     assert exc_info.value.code == 0
     assert "vert" in capsys.readouterr().out
+    assert smoke.OFFLINE_ENV_VAR not in os.environ
