@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-01</b></nav><h1>[obs-01] Système de logging + progression du backfill <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : observabilite</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="obs-02.html"><code>obs-02</code></a> Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-01</b></nav><h1>[obs-01] Système de logging + progression du backfill <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : M<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : observabilite</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../a-faire/obs-02.html"><code>obs-02</code></a> Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#obs-01-systeme-de-logging-progression-du-backfill">[obs-01] — Système de logging + progression du backfill</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -136,6 +136,8 @@ muet. C'est le défaut qui a motivé cette fiche, constaté sur un lancement ré
   cet invariant. L'inscription a été reformulée en conséquence — le fichier peut évoluer,
   le câblage par commande reste interdit et vérifié.</li>
 </ul>
+<p>Re-vérifié à <code>3cd90e2</code> au moment du dispatch : les 6 emplacements cités ci-dessus sont
+  inchangés (seul <code>__main__.py</code> a bougé, cf. la puce « verrou levé »).</p>
 <h3 id="decisions-actees">⭐ Décisions actées</h3>
 <ul>
 <li><strong>D1 — <code>logging</code> de la stdlib, pas de dépendance nouvelle, pas de mécanisme maison.</strong>
@@ -361,4 +363,4 @@ n'ont pas chacun produit au moins une fenêtre (D11).</p>
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="obs-02.html">[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate →</a></div><p class="gen">Généré le 22/08/2026 20:04 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="../a-faire/obs-02.html">[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate →</a></div><p class="gen">Généré le 22/08/2026 20:06 — le .md fait foi.</p></article></body></html>

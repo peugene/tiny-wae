@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>obs-02</b></nav><h1>[obs-02] Arrêt du backfill : accusé de réception et interruption immédiate <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : exploitation</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../en-cours/obs-01.html"><code>obs-01</code></a> Système de logging + progression du backfill <span class="pill" style="background:#5aa7d8">En cours</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#obs-02-arret-du-backfill-accuse-de-reception-et-interruption-immediate">[obs-02] — Arrêt du backfill : accusé de réception et interruption immédiate</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -117,6 +117,9 @@ compte, et rien ne lui permet de forcer un arrêt s'il ne veut pas attendre.</p>
   <code>_request_stop(stop_event, 0, None)</code> — trois arguments positionnels. Toute évolution de
   signature le touche. Il est importé l. 34.</li>
 </ul>
+<p>Re-vérifié à <code>3cd90e2</code> au moment du dispatch : les 6 emplacements cités ci-dessus sont
+  inchangés — <code>_request_stop</code> toujours l. 122, <code>cli/backfill.py</code> l. 91,
+  <code>tests/test_backfill.py</code> l. 34 et 354.</p>
 <h3 id="decisions-actees">⭐ Décisions actées</h3>
 <ul>
 <li><strong>D1 — Le handler reste PUR.</strong> <code>_request_stop</code> gagne un paramètre
@@ -259,4 +262,4 @@ un compteur dans <code>adapters/</code>. La politique d'arrêt appartient au CLI
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 20:04 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../en-cours/obs-01.html">← [obs-01] Système de logging + progression du backfill</a><a href="../fait/out-01.html">[out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part →</a></div><p class="gen">Généré le 22/08/2026 20:06 — le .md fait foi.</p></article></body></html>
