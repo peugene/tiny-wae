@@ -29,7 +29,7 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.2</b></nav><h1>[l0-06.2] update.cwl — le tool du run quotidien</h1><p>En cours · effort S · outillage · phase O3 · depends_on : <a href="../fait/l0-06.1.html"><code>l0-06.1</code></a>, <a href="../fait/l0-05.2.html"><code>l0-05.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li><a href="../fait/l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li>→ <a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/out-01.html"><code>out-01</code></a> Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</li></ul></div><h1 id="l0-062-tool-cwl-update">[l0-06.2] — Tool CWL update</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-06.html"><code>▣ l0-06</code></a> › <b>l0-06.2</b></nav><h1>[l0-06.2] update.cwl — le tool du run quotidien</h1><p>Fait · effort S · outillage · phase O3 · depends_on : <a href="l0-06.1.html"><code>l0-06.1</code></a>, <a href="l0-05.2.html"><code>l0-05.2</code></a></p></div></div><article><div class="nav"><b>Chapeau</b> : <a href="l0-06.html"><code>l0-06</code></a> [CHAPEAU] Emballage CWL — tools + workflow, validation locale<ul><li><a href="l0-06.1.html"><code>l0-06.1</code></a> search.cwl + ingest.cwl + workflow.cwl + README + recette just cwl dans le gate</li><li>→ <a href="l0-06.2.html"><code>l0-06.2</code></a> update.cwl — le tool du run quotidien</li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/out-01.html"><code>out-01</code></a> Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</li></ul></div><h1 id="l0-062-tool-cwl-update">[l0-06.2] — Tool CWL update</h1>
 <h2 id="perimetre-fichiers-nommes">Périmètre (fichiers nommés)</h2>
 <ul>
 <li><code>cwl/update.cwl</code> (CommandLineTool v1.2, <code>baseCommand: [python, -m, tiny_wae, update]</code>),
@@ -118,4 +118,50 @@ aucun contrat partagé en cours de création.</p>
 <p><strong>Non testé</strong> : exécution planifiée réelle (infra).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant <code>fait/</code>)</em></p><p class="gen">Généré le 22/08/2026 03:05 — le .md fait foi.</p></article></body></html>
+<p><strong>Livré</strong> (commit <code>2fc3a8e</code>, mergé en <code>8d4c17f</code>) : <code>cwl/update.cwl</code>, section « update » de
+<code>cwl/README.md</code>, recette <code>just cwl</code> étendue au 4ᵉ fichier, 3 tests dans <code>tests/test_cwl.py</code>.
+<strong>208 → 213 tests</strong> (avec le correctif de planche mergé entre-temps). <code>just check</code> vert,
+<strong>4 fichiers CWL validés</strong>.</p>
+<h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Seuil</th>
+<th>Mesuré</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just cwl</code> : 0 erreur sur <strong>4</strong> fichiers, <code>just check</code> vert</td>
+<td>4/4 « is valid CWL » (cwltool 3.2.20260720092025) ; gate complet vert</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>O2 [local, réseau]</td>
+<td>après amorçage, le <strong>2ᵉ</strong> run rend <code>ingested == 0</code> <strong>et</strong> <code>assets_read == 0</code></td>
+<td>amorçage <code>ingest --site A01 --from 2026-08-02 --to 2026-08-21</code> sur <code>data_root</code> vierge → <code>ingested=4, failed=0</code> · <strong>1er</strong> <code>cwltool update.cwl</code> → <code>up_to_date, ingested=0, assets_read=1</code> (rattrape la fenêtre restée ouverte, comportement attendu) · <strong>2ᵉ</strong> run → <strong><code>ingested=0, assets_read=0</code></strong></td>
+<td>✅ <strong>exécuté</strong>, pas déclaré</td>
+</tr>
+</tbody>
+</table>
+<h3 id="successcodes-0-1-et-pourquoi"><code>successCodes: [0, 1]</code> — et pourquoi</h3>
+<p>Même raisonnement qu'<code>ingest.cwl</code>, documenté dans le README : <code>FAILURE=1</code> recouvre à la fois
+un échec métier classique <strong>et</strong> le site vierge (qui renvoie vers <code>backfill</code>). Sur un run
+quotidien planifié, les deux sont des résultats légitimes, pas des incidents d'exécution —
+l'idempotence <code>grid_hash</code> rattrapera au run suivant. <code>USAGE=2</code> et <code>INCONCLUSIVE=3</code> restent
+des échecs CWL : une config invalide ou un amont mort doivent, eux, faire échouer le tool.</p>
+<h3 id="ce-qui-a-bien-fonctionne">Ce qui a bien fonctionné</h3>
+<p>L'ancrage n'a été trouvé faux sur aucun point — <code>just run update --help</code> a confirmé les
+options exactes (<code>--sites</code>, <code>--now</code>, <code>--sites-path</code>, <code>--settings-path</code>, <strong>aucune
+<code>--data-root</code></strong>), et l'agent n'a eu <strong>aucune décision hors fiche</strong> à prendre : les trois
+points délicats (<code>successCodes</code>, <code>outputs: []</code>, protocole d'amorçage d'O2) étaient tranchés
+d'avance. ⭐ L'agent a par ailleurs commencé à remplir ce résumé de réalisation, s'en est
+aperçu et l'a <strong>annulé lui-même</strong> (<code>git checkout --</code>) : <code>docs/backlog/</code> n'est pas dans son
+périmètre.</p>
+<h3 id="non-teste-explicite">Non testé (explicite)</h3>
+<p>Exécution planifiée réelle en cron / PID-FLOW (hors lot, chapeau l0-06) · <code>--sites</code> avec une
+liste CSV multi-sites sur le tool CWL réel (seul <code>A01</code> a été exercé) · le cas
+<code>INCONCLUSIVE=3</code> (tous les échecs d'origine réseau), non déclenché pendant les runs d'O2.</p><p class="gen">Généré le 22/08/2026 03:22 — le .md fait foi.</p></article></body></html>
