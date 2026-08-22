@@ -3688,12 +3688,17 @@ packages:
 - pypi: ./
   name: tiny-wae
   version: 0.1.0
-  sha256: 9068569da87fd8e4d0f4803a20788863a2b823b22aa391f7f4152dad394b3d4a
+  sha256: c803986b3641fb3a0485775f19170db81c32d9b3161bb9d4106bbca6e42d3179
   requires_dist:
   - typer>=0.15
   - pyyaml>=6.0
   - httpx>=0.27
   - pystac-client>=0.8
+  - numpy>=2.0
+  - rasterio>=1.4
+  - affine>=2.4
+  - pyproj>=3.6
+  - pillow>=11.0
   requires_python: '>=3.12'
 - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h1df4ec4_4.conda
   build_number: 104
