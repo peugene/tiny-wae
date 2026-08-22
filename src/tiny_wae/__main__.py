@@ -2,10 +2,13 @@
 
 Chaque étape de pipeline = une sous-commande à I/O explicites (cf. CLAUDE.md, couches).
 
-⭐ Ce fichier n'est PLUS JAMAIS modifié après l0-01.2 : les sous-commandes s'ajoutent en
-déposant un module dans `cli/` qui expose `register(app: typer.Typer) -> None` — c'est
+⭐ AUCUNE sous-commande ne se câble ici : elles s'ajoutent en déposant un module dans
+`cli/` qui expose `register(app: typer.Typer) -> None` — c'est
 `cli.discovery.discover_commands` (appelée ci-dessous) qui les importe et les enregistre.
 Un module de `cli/` sans `register` est ignoré (utilitaire interne, pas une commande).
+L'invariant est vérifié mécaniquement par
+`tests/test_cli_discovery.py::test_main_module_has_no_per_command_wiring` — c'est LUI la
+règle ; ce fichier peut évoluer par ailleurs (option globale, callback).
 
 Taxonomie fermée du lot (décision chapeau l0-01, 9 sous-commandes) : `version` (ci-dessous),
 `sites-validate`, `sites-list` (l0-01.2), `search`, `ingest`, `backfill`, `update`, `report`,
