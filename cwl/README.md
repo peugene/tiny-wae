@@ -96,7 +96,7 @@ introspection `click`/`typer` (`typer.main.get_command`, pas un parsing de
 ## Run local (hors gate, réseau)
 
 ```
-pixi run cwltool --outdir /tmp/cwl-run-out cwl/workflow.cwl \
+just cwl-run cwl/workflow.cwl \
     --site A01 --from_date 2026-01-01 --to_date 2026-01-10 \
     --data_root /tmp/cwl-run-data \
     --sites_path config/sites.yaml --settings_path config/settings.yaml
@@ -108,10 +108,10 @@ cf. avertissement plus haut. Les omettre casse le run avec une erreur trompeuse,
 `Settings.__init__() missing ... arguments`, pas « fichier introuvable ».)
 
 (exécution réelle, pas `--validate` : hors gate — `just cwl` ne fait QUE de la
-validation statique, cf. plus haut. Cette invocation reste hors `justfile` parce que
-c'est un run d'exploration ponctuel de l'oracle O2, pas un usage répété qui, lui,
-mériterait sa propre recette — pour le même geste répété, préférer une recette
-dédiée plutôt que ce `pixi run` à la main).
+validation statique, cf. plus haut. La recette `cwl-run` existe précisément pour que
+`pixi` ne s'écrive nulle part ailleurs que dans le `justfile` : la règle façade vaut
+aussi pour la doc et pour un run ponctuel, sinon la bascule d'un gestionnaire
+d'environnement à l'autre se paie en chasse aux occurrences dispersées.)
 
 Comparer avec le run CLI direct équivalent :
 

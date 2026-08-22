@@ -76,6 +76,11 @@ cwl:
     pixi run cwltool --validate cwl/ingest.cwl
     pixi run cwltool --validate cwl/workflow.cwl
 
+# exécution RÉELLE d'un tool/workflow CWL (hors gate — fait du réseau)
+# ex. just cwl-run cwl/workflow.cwl --site A01 --from_date 2026-01-01 --to_date 2026-01-10 …
+cwl-run file *args:
+    pixi run cwltool --outdir /tmp/cwl-run-out {{file}} {{args}}
+
 # ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:
     just lint && just types && just test && just smoke && just cwl
