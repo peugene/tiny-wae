@@ -104,7 +104,7 @@ def _report_summary(results: list[SiteUpdateResult], now: datetime) -> None:
     )
     if now.day == 1:
         typer.echo(
-            "⭐ 1er du mois : penser au rattrapage mensuel des retraitements tardifs "
+            "1er du mois : penser au rattrapage mensuel des retraitements tardifs "
             "(`just run backfill --site <id> --months 2`) — non automatisé, cf. README",
             err=True,
         )

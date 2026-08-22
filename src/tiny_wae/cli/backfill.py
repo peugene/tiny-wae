@@ -83,12 +83,12 @@ def _report_counters(outcome: BackfillOutcome) -> None:
         )
         for failure in result.failures:
             typer.echo(
-                f"⚠ site={result.site_id} fenêtre=[{failure.window.start}, "
+                f"site={result.site_id} fenêtre=[{failure.window.start}, "
                 f"{failure.window.end}[ : {failure.error}",
                 err=True,
             )
     if outcome.interrupted:
-        typer.echo("⚠ backfill interrompu (SIGINT) : soumissions arrêtées", err=True)
+        typer.echo("backfill interrompu (SIGINT) : soumissions arrêtées", err=True)
     if outcome.failed_site_ids:
         typer.echo(f"site(s) en échec : {outcome.failed_site_ids}", err=True)
 
