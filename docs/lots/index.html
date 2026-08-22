@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lots — feuille de route tiny-wae</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>tiny-wae — lots</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -29,9 +29,35 @@ th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
 td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
 tbody tr:nth-child(even){background:#f3f7fa}
 @media print{article{border:none;padding:0}}
-</style></head><body><div class="banner"><div class="inner"><h1>Lots — feuille de route tiny-wae</h1><p>Généré le 21/08/2026 depuis README.md — le .md fait foi.</p></div></div><article><h1 id="lots-feuille-de-route-du-poc-tiny-wae">Lots — feuille de route du POC tiny-wae</h1>
-<p><strong>Statut</strong> : document de pilotage (architecte/PO) — source de vérité du lotissement.
-<strong>Date</strong> : 21/08/2026 (transféré depuis un dossier de travail hors dépôt, désormais versionné ICI)</p>
+
+.badge{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;font-size:.78em;
+font-weight:600;vertical-align:middle}
+.banner .badge{margin-left:8px}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 16px 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:18px 20px;
+box-shadow:0 1px 3px rgba(20,40,60,.06);display:flex;flex-direction:column;
+transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 6px 18px rgba(20,40,60,.12);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:1.08em;line-height:1.35}
+.card h2 a{color:#1d4d66;text-decoration:none}.card h2 a:hover{color:#2c6e91}
+.card .excerpt{color:#5c6b76;font-size:.9em;flex:1;margin:10px 0 14px}
+.card .foot{display:flex;justify-content:space-between;font-size:.82em;color:#5c6b76}
+.counters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}
+.counter{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:10px 18px;
+min-width:110px}
+.counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.roadmap{margin-top:38px}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog du projet</a></nav><h1>tiny-wae — feuille de route</h1><p>1 lot(s) — le .md fait foi, cette page est dérivée.</p></div></div><div class="wrap"><div class="counters"><div class="counter"><b style="color:#15803d">1</b><span>Validé</span></div></div><div class="cards"><div class="card"><h2><a href="lot-0-sites.html">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a></h2><div><span class="badge" style="background:#15803d">Validé</span></div><p class="excerpt">Mettre en place la plomberie données : sélection de 25 sites, récupération automatisée des vignettes (chips) Sentinel-2 L2A sur 48 mois glissants, masquage nuages, stockage NAS, puis ingestion…</p><div class="foot"><span>20/08/2026</span><span>lot-0-sites.md</span></div></div></div><article class="roadmap">
 <hr />
 <h2 id="vision">Vision</h2>
 <p>Système de surveillance de sites par imagerie Sentinel-2 : des opérateurs surveillent des
@@ -40,7 +66,7 @@ restent en analyse manuelle. Colonne vertébrale technique : <strong>l'embedding
 acquisition</strong> (GFM → pgvector) — catalogage, détection de changement, recherche par
 similarité et interrogation NL en découlent. Projet perso.</p>
 <h2 id="le-lotissement">Le lotissement</h2>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Lot</th>
@@ -81,7 +107,7 @@ similarité et interrogation NL en découlent. Projet perso.</p>
 <td>—</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Chaque lot devient un <strong>chantier</strong> du backlog (<code>docs/backlog/</code>, méthode
 <code>_methode-backlog.md</code>) : roadmap → revue adversariale → fiches mûries → <code>/run</code>. Les oracles
 sont figés avant implémentation.</p>
@@ -95,4 +121,4 @@ sont figés avant implémentation.</p>
 </ul>
 <h2 id="convention-documentaire">Convention documentaire</h2>
 <p>Les <code>.md</code> de ce dossier sont la source (canal agents) ; les <code>.html</code> sont générés
-(<code>just md2html &lt;src&gt; &lt;dest&gt; "Titre"</code>) pour lecture humaine. Ne pas éditer les <code>.html</code>.</p></article></body></html>
+(<code>just md2html &lt;src&gt; &lt;dest&gt; "Titre"</code>) pour lecture humaine. Ne pas éditer les <code>.html</code>.</p></article><p class="gen">Généré le 22/08/2026 09:20 — ne pas éditer (écrasé).</p></div></body></html>

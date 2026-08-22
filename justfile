@@ -69,6 +69,10 @@ smoke:
 dashboard:
     pixi run python scripts/backlog.py dashboard --project "tiny-wae"
 
+# feuille de route : index des lots + une page par lot (états, sommaire, navigation)
+lots:
+    pixi run python scripts/backlog.py lots --project "tiny-wae"
+
 # md → html : just md2html _roadmap.md roadmap.html "Titre"
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"

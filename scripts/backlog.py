@@ -231,6 +231,8 @@ padding:16px 20px;margin:14px 0}
 .docs a{color:var(--accent);margin-right:14px;font-size:.85em}
 a{color:var(--accent)}
 .gen{color:var(--muted);font-size:.78em;margin-top:36px;text-align:center}
+.xnav{margin:0 0 6px;font-size:.88em}.xnav a{text-decoration:none}
+.xnav a:hover{text-decoration:underline}
 """
 
 
@@ -503,7 +505,13 @@ def cmd_dashboard(project: str, backlog: Path) -> int:
         for s in STATES
     )
     base = backlog / "maturation"
-    body = f'<div class="counters">{counters}</div>'
+    # lien vers la feuille de route si elle a déjà été générée (navigation dans les deux sens)
+    lots_index = backlog.parent / "lots" / "index.html"
+    body = ""
+    if lots_index.exists():
+        rel = Path(os.path.relpath(lots_index, base)).as_posix()
+        body = f'<p class="xnav"><a href="{esc(rel)}">📚 Feuille de route (lots)</a></p>'
+    body += f'<div class="counters">{counters}</div>'
     anomalies, infos = check_graph(all_fiches, index)
     if anomalies:
         items = "".join(f"<li>{esc(a)}</li>" for a in anomalies)
@@ -607,12 +615,303 @@ def cmd_md2html(src: Path, dest: Path, title: str, banner: str) -> int:
     return 0
 
 
+# ── lots (feuille de route) ─────────────────────────────────────────────────────
+# Un LOT est une tranche de la feuille de route, pilotée par l'architecte/PO. C'est un
+# objet DIFFÉRENT d'une fiche de backlog : pas de dossier-état, pas de graphe de
+# dépendances — un statut lisible DANS la fiche, et un ordre de lecture.
+# Pourquoi une sous-commande dédiée plutôt qu'un md2html par fichier : sans index, sans
+# badge d'état et sans navigation, un dossier de lots redevient un tas de pages orphelines.
+
+# (motif cherché dans le statut, libellé affiché, couleur) — ORDRE SIGNIFICATIF :
+# le premier motif trouvé gagne, donc le plus spécifique d'abord.
+LOT_STATUSES: list[tuple[str, str, str]] = [
+    ("abandonn", "Abandonné", "#b91c1c"),
+    ("obsol", "Obsolète", "#6b7280"),
+    ("livr", "Livré", "#15803d"),
+    ("valid", "Validé", "#15803d"),
+    ("en cours", "En cours", "#1d4ed8"),
+    ("maturation", "Maturation", "#8b7bd8"),
+    ("brouillon", "Brouillon", "#b45309"),
+    ("proposé", "Proposé", "#b45309"),
+    ("pilotage", "Pilotage", "#5c6b76"),
+]
+LOT_INTRO = "README.md"  # la feuille de route elle-même : devient le corps de l'index
+
+
+def lot_status(raw: str) -> tuple[str, str]:
+    """Normalise un statut en texte libre vers (libellé court, couleur). Inconnu -> gris."""
+    low = raw.lower()
+    for key, label, color in LOT_STATUSES:
+        if key in low:
+            return label, color
+    return (raw.strip()[:24] or "—"), "#6b7280"
+
+
+def inline_md(s: str) -> str:
+    """Échappe le HTML puis rend le markdown INLINE minimal (gras, code) d'un champ d'en-tête.
+
+    Ces valeurs sont du markdown écrit à la main : les afficher en texte brut laisserait des
+    `**` visibles dans le bandeau."""
+    out = esc(s)
+    out = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", out)
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", out)
+
+
+def lot_field_of(fields: list[tuple[str, str]], name: str) -> str:
+    """Valeur d'un champ d'en-tête par son nom (insensible à la casse) ; "" si absent."""
+    for key, val in fields:
+        if key.lower() == name.lower():
+            return val
+    return ""
+
+
+def split_header_fields(md_text: str) -> tuple[list[tuple[str, str]], str]:
+    """Détache le bloc d'en-tête `**Champ** : valeur` qui suit le H1, du reste du corps.
+
+    Ces champs sont réaffichés dans le bandeau de la page : les laisser AUSSI dans le corps
+    produit un doublon visuel (et un badge d'état qui répète la ligne juste en dessous).
+    Retourne ([(champ, valeur), …], corps sans ce bloc).
+    """
+    lines = md_text.splitlines()
+    i = 0
+    while i < len(lines) and (not lines[i].strip() or lines[i].lstrip().startswith("#")):
+        i += 1  # saute le H1 et les lignes vides qui l'entourent
+    fields: list[tuple[str, str]] = []
+    j = i
+    while j < len(lines):
+        m = re.match(r"\s*\*\*([^*]+)\*\*\s*:\s*(.+?)\s*$", lines[j])
+        if not m:
+            break
+        fields.append((m.group(1).strip(), m.group(2).strip()))
+        j += 1
+    if not fields:
+        return [], md_text
+    return fields, "\n".join(lines[:i] + lines[j:])
+
+
+def lot_excerpt(text: str, limit: int = 200) -> str:
+    """Premier paragraphe de prose (ni titre, ni champ d'en-tête, ni tableau, ni liste)."""
+    for block in re.split(r"\n\s*\n", text):
+        b = block.strip()
+        if not b or b.startswith(("#", ">", "|", "-", "*", "!", "```", "---", "**")):
+            continue
+        clean = re.sub(r"[*_`#\[\]]", "", b.replace("\n", " ")).strip()
+        if len(clean) > limit:
+            clean = clean[: limit - 1].rsplit(" ", 1)[0] + "…"
+        return clean
+    return ""
+
+
+@dataclass
+class Lot:
+    slug: str
+    titre: str
+    label: str
+    color: str
+    date: str
+    excerpt: str
+    body_md: str
+    header: list[tuple[str, str]]
+    path: Path
+    order: tuple[int, str]
+
+
+def load_lot(path: Path) -> Lot:
+    """Charge une fiche de lot : frontmatter s'il y en a un, sinon en-tête `**Champ** :`."""
+    meta, body_md = parse_frontmatter(path.read_text(encoding="utf-8"))
+    titre = str(meta.get("titre", meta.get("title", "")))
+    if not titre:
+        m = re.search(r"^#\s+(.+?)\s*$", body_md, re.MULTILINE)
+        titre = re.sub(r"[*_`]", "", m.group(1)).strip() if m else path.stem
+    fields, body_md = split_header_fields(body_md)
+    statut = str(meta.get("statut", meta.get("status", ""))) or lot_field_of(fields, "Statut")
+    date_raw = str(meta.get("date", "")) or lot_field_of(fields, "Date")
+    date = re.split(r"\s+[—–-]\s+", date_raw)[0].strip()[:40]
+    label, color = lot_status(statut)
+    # le bandeau reprend l'en-tête retiré du corps (+ les champs venus du frontmatter)
+    header = fields or [(k, v) for k, v in (("Statut", statut), ("Date", date_raw)) if v]
+    num = re.search(r"lot[ _-]?(\d+)", path.stem, re.IGNORECASE)
+    return Lot(
+        slug=path.stem,
+        titre=titre,
+        label=label,
+        color=color,
+        date=date,
+        excerpt=lot_excerpt(body_md),
+        body_md=body_md,
+        header=header,
+        path=path,
+        order=(int(num.group(1)) if num else 999, path.stem),
+    )
+
+
+LOTS_CSS = (
+    LIGHT_CSS
+    + """
+.badge{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;font-size:.78em;
+font-weight:600;vertical-align:middle}
+.banner .badge{margin-left:8px}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 16px 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:18px 20px;
+box-shadow:0 1px 3px rgba(20,40,60,.06);display:flex;flex-direction:column;
+transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 6px 18px rgba(20,40,60,.12);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:1.08em;line-height:1.35}
+.card h2 a{color:#1d4d66;text-decoration:none}.card h2 a:hover{color:#2c6e91}
+.card .excerpt{color:#5c6b76;font-size:.9em;flex:1;margin:10px 0 14px}
+.card .foot{display:flex;justify-content:space-between;font-size:.82em;color:#5c6b76}
+.counters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}
+.counter{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:10px 18px;
+min-width:110px}
+.counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.roadmap{margin-top:38px}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{.toc-box,.prevnext,.crumb{display:none}}
+"""
+)
+
+
+def render_lot_page(lot: Lot, lots: list[Lot], dash: Path) -> bool:
+    """Rend une fiche de lot : breadcrumb, badge d'état, sommaire, précédent/suivant."""
+    here = lot.path.parent
+    md = markdown.Markdown(extensions=MD_EXT)
+    body = md.convert(lot.body_md)
+    body = body.replace("<table>", '<div class="tablewrap"><table>').replace(
+        "</table>", "</table></div>"
+    )
+    body = re.sub(r"<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.DOTALL)  # H1 = le bandeau
+
+    toc_html = getattr(md, "toc", "")
+    toc = ""
+    if toc_html.count("<li>") >= 2:
+        toc = f'<details class="toc-box" open><summary>Sommaire</summary>{toc_html}</details>'
+
+    crumbs = ['<a href="index.html">📚 Lots</a>']
+    if dash.exists():
+        crumbs.insert(
+            0, f'<a href="{esc(Path(os.path.relpath(dash, here)).as_posix())}">🏠 Backlog</a>'
+        )
+    crumbs.append(f"<b>{esc(lot.slug)}</b>")
+
+    i = lots.index(lot)
+    prev = (
+        f'<a href="{esc(lots[i - 1].slug)}.html">← {esc(lots[i - 1].titre)}</a>'
+        if i
+        else "<span></span>"
+    )
+    nxt = (
+        f'<a href="{esc(lots[i + 1].slug)}.html">{esc(lots[i + 1].titre)} →</a>'
+        if i + 1 < len(lots)
+        else "<span></span>"
+    )
+    badge = f'<span class="badge" style="background:{lot.color}">{esc(lot.label)}</span>'
+    meta = "<br>".join(f"<b>{esc(k)}</b> : {inline_md(v)}" for k, v in lot.header) or "&nbsp;"
+    now = datetime.now().strftime("%d/%m/%Y %H:%M")
+    return write_if_changed(
+        lot.path.with_suffix(".html"),
+        f'<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
+        f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f"<title>{esc(lot.titre)}</title><style>{LOTS_CSS}</style></head><body>"
+        f'<div class="banner"><div class="inner">'
+        f'<nav class="crumb">{" › ".join(crumbs)}</nav>'
+        f"<h1>{esc(lot.titre)} {badge}</h1><p>{meta}</p></div></div>"
+        f"<article>{toc}{body}"
+        f'<div class="prevnext">{prev}{nxt}</div>'
+        f'<p class="gen">Généré le {now} depuis {esc(lot.path.name)} — le .md fait foi.</p>'
+        f"</article></body></html>",
+    )
+
+
+def cmd_lots(project: str, lots_dir: Path, backlog: Path) -> int:
+    """Génère l'index des lots + une page par lot (états, sommaire, navigation)."""
+    if not lots_dir.is_dir():
+        print(f"✗ {lots_dir} : dossier introuvable — une fiche par lot (`lot-N-*.md`),")
+        print("  plus un README.md optionnel qui sert de corps à l'index.")
+        return 1
+    dash = backlog / "maturation" / "etat.html"
+    # `_*.md` = modèles et notes de travail (même convention que le backlog) ; README = l'intro.
+    lots = sorted(
+        (
+            load_lot(p)
+            for p in lots_dir.glob("*.md")
+            if p.name != LOT_INTRO and not p.name.startswith("_")
+        ),
+        key=lambda x: x.order,
+    )
+    rewritten = sum(render_lot_page(lot, lots, dash) for lot in lots)
+
+    counts: dict[str, tuple[int, str]] = {}
+    for lot in lots:
+        n, _ = counts.get(lot.label, (0, lot.color))
+        counts[lot.label] = (n + 1, lot.color)
+    counters = "".join(
+        f'<div class="counter"><b style="color:{c}">{n}</b><span>{esc(lab)}</span></div>'
+        for lab, (n, c) in sorted(counts.items())
+    )
+    cards = "".join(
+        f'<div class="card"><h2><a href="{esc(lot.slug)}.html">{esc(lot.titre)}</a></h2>'
+        f'<div><span class="badge" style="background:{lot.color}">{esc(lot.label)}</span></div>'
+        f'<p class="excerpt">{esc(lot.excerpt)}</p>'
+        f'<div class="foot"><span>{esc(lot.date)}</span><span>{esc(lot.path.name)}</span></div>'
+        f"</div>"
+        for lot in lots
+    )
+    # README.md (la feuille de route) devient le corps de l'index : une seule page à ouvrir.
+    intro = ""
+    intro_src = lots_dir / LOT_INTRO
+    if intro_src.exists():
+        _, intro_md = parse_frontmatter(intro_src.read_text(encoding="utf-8"))
+        _, intro_md = split_header_fields(intro_md)  # l'en-tête du README n'est pas un lot
+        html_intro = markdown.Markdown(extensions=MD_EXT).convert(intro_md)
+        html_intro = re.sub(r"<h1[^>]*>.*?</h1>", "", html_intro, count=1, flags=re.DOTALL)
+        html_intro = html_intro.replace("<table>", '<div class="tablewrap"><table>').replace(
+            "</table>", "</table></div>"
+        )
+        intro = f'<article class="roadmap">{html_intro}</article>'
+    nav = ""
+    if dash.exists():
+        rel = Path(os.path.relpath(dash, lots_dir)).as_posix()
+        nav = f'<nav class="crumb"><a href="{esc(rel)}">🏠 Backlog du projet</a></nav>'
+
+    now = datetime.now().strftime("%d/%m/%Y %H:%M")
+    out = lots_dir / "index.html"
+    write_if_changed(
+        out,
+        f'<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
+        f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f"<title>{esc(project)} — lots</title><style>{LOTS_CSS}</style></head><body>"
+        f'<div class="banner"><div class="inner">{nav}'
+        f"<h1>{esc(project)} — feuille de route</h1>"
+        f"<p>{len(lots)} lot(s) — le .md fait foi, cette page est dérivée.</p></div></div>"
+        f'<div class="wrap"><div class="counters">{counters}</div>'
+        f'<div class="cards">{cards}</div>{intro}'
+        f'<p class="gen">Généré le {now} — ne pas éditer (écrasé).</p></div></body></html>',
+    )
+    for lot in lots:
+        print(f"  {lot.label:<12} {lot.slug}")
+    print(f"  {'Pages .html':<12} {rewritten}/{len(lots)} réécrite(s)")
+    print(f"✓ index des lots : {out}")
+    return 0
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description="backlog-kit Python : dashboard + md2html")
+    ap = argparse.ArgumentParser(description="backlog-kit Python : dashboard + lots + md2html")
     sp = ap.add_subparsers(dest="cmd", required=True)
     d = sp.add_parser("dashboard", help="génère maturation/etat.html + archives")
     d.add_argument("--project", default="Projet")
     d.add_argument("--backlog", default="docs/backlog", type=Path)
+    lo = sp.add_parser("lots", help="génère l'index des lots + une page par lot")
+    lo.add_argument("--project", default="Projet")
+    lo.add_argument("--lots", default="docs/lots", type=Path)
+    lo.add_argument("--backlog", default="docs/backlog", type=Path)
     m = sp.add_parser("md2html", help="convertit un .md en .html lisible/imprimable")
     m.add_argument("src", type=Path)
     m.add_argument("dest", type=Path)
@@ -621,6 +920,8 @@ def main() -> int:
     a = ap.parse_args()
     if a.cmd == "dashboard":
         return cmd_dashboard(a.project, a.backlog)
+    if a.cmd == "lots":
+        return cmd_lots(a.project, a.lots, a.backlog)
     return cmd_md2html(a.src, a.dest, a.title, a.banner)
 
 
