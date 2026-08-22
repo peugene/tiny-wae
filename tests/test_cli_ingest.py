@@ -339,7 +339,7 @@ def test_force_reingere_meme_grid_hash_identique(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """2e run SANS --force -> skipped=1 ; 2e run AVEC --force -> ingested=1 de nouveau."""
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     item = _make_clear_item(tmp_path, "ITEM_C")
     envelope = Envelope.from_dict(_envelope_payload([item]))
     _patch_source(monkeypatch, _FakeSource(envelope))
@@ -408,7 +408,7 @@ def test_grille_non_calculee_usage_jamais_un_item_failed(tmp_path: Path) -> None
 
 def test_o5_un_item_echoue_exit_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """1 item sur 3 échoue (hrefs introuvables), les 2 autres traités -> exit FAILURE (1)."""
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     items = [
         _make_clear_item(tmp_path, "ITEM_OK1"),
         _make_failing_item("ITEM_KO"),
@@ -448,7 +448,7 @@ def test_o6_tous_les_items_echouent_reseau_exit_inconclusive(
 ) -> None:
     """Amont injoignable simulé : TOUS les items échouent (hrefs introuvables), aucun
     n'aboutit -> exit INCONCLUSIVE (3), distinct du cas O5 qui rend 1."""
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     items = [_make_failing_item("ITEM_KO1"), _make_failing_item("ITEM_KO2")]
     envelope = Envelope.from_dict(_envelope_payload(items))
     _patch_source(monkeypatch, _FakeSource(envelope))

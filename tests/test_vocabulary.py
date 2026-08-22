@@ -70,7 +70,7 @@ def test_les_compteurs_d_enveloppe_sont_composes_et_non_recopies() -> None:
     statuts, composés. Avant, les 4 étaient re-listés à la main dans `adapters/`."""
     from tiny_wae.core.envelope import ENVELOPE_COUNTERS
 
-    assert manifests_module._COUNTER_KEYS == (*ENVELOPE_COUNTERS, *statuses.RUN_STATUSES)
+    assert (*ENVELOPE_COUNTERS, *statuses.RUN_STATUSES) == manifests_module._COUNTER_KEYS
 
 
 def _run_avec_tuile_suspecte() -> Run:

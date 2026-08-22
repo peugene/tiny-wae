@@ -125,15 +125,14 @@ def _retry_call[T](fn: Callable[[], T], settings: Settings) -> T:
     for attempt in range(attempts):
         try:
             return fn()
-        except Exception as exc:  # noqa: BLE001 — reclassifiée par l'appelant, jamais avalée
+        except Exception as exc:
             last_exc = exc
             if not _is_network_error(exc):
                 raise
             if attempt < attempts - 1:
                 _sleep(settings.http_backoff_s)
-    assert (
-        last_exc is not None
-    )  # attempts >= 1 (settings.validate() garantit http_retries > 0... >=0)
+    if last_exc is None:  # inatteignable : attempts >= 1, donc au moins une tentative
+        raise RuntimeError("_retry_call : aucune tentative exécutée (attempts < 1 ?)")
     raise last_exc
 
 
@@ -415,10 +414,9 @@ def _run_ingestion(
             grid_hash_value=current_hash,
         )
         status_counts[status] += 1
-        if status == "ingested":
-            manifest = read_manifest(data_root, site_id, acq.item_id)
-            assets_read_total += manifest.assets_read
-        elif status in ("rejected_clouds", "rejected_invalid", "rejected_nodata"):
+        # Tous les statuts qui ont produit un manifeste exploitable — `failed` en produit
+        # un aussi (avec sa `cause`), mais son `assets_read` ne compte pas ici.
+        if status in ("ingested", "rejected_clouds", "rejected_invalid", "rejected_nodata"):
             manifest = read_manifest(data_root, site_id, acq.item_id)
             assets_read_total += manifest.assets_read
         elif status == "failed" and not is_network:

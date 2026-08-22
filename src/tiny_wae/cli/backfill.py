@@ -94,20 +94,20 @@ def _report_counters(outcome: BackfillOutcome) -> None:
 
 
 def backfill(
-    sites_arg: str = typer.Option(  # noqa: B008 — idiome typer standard.
+    sites_arg: str = typer.Option(
         "all", "--sites", help="'all' ou liste d'ids séparés par des virgules (ex. A01,B02)."
     ),
-    months: int = typer.Option(48, "--months", help="Nombre de mois à couvrir, du plus récent."),  # noqa: B008
-    workers: int | None = typer.Option(  # noqa: B008
+    months: int = typer.Option(48, "--months", help="Nombre de mois à couvrir, du plus récent."),
+    workers: int | None = typer.Option(
         None, "--workers", help="Taille du pool (défaut : settings.backfill_workers)."
     ),
-    now: str | None = typer.Option(  # noqa: B008
+    now: str | None = typer.Option(
         None,
         "--now",
         help="Date de référence YYYY-MM-DD (défaut : date du jour). Passée LITTÉRALEMENT "
         "aux fenêtres — jamais recalculée en aval.",
     ),
-    force: bool = typer.Option(  # noqa: B008
+    force: bool = typer.Option(
         False, "--force", help="Ré-ingestion inconditionnelle (ignore l'idempotence grid_hash)."
     ),
     sites_path: Path = typer.Option(  # noqa: B008

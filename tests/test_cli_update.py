@@ -283,7 +283,7 @@ def test_exit_ok_sans_echec(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
 def test_sites_all_par_defaut_traite_les_deux_sites(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     _patch_source(monkeypatch, _MultiSiteSource({}))
 
     result = runner.invoke(
@@ -304,7 +304,7 @@ def test_sites_all_par_defaut_traite_les_deux_sites(
 
 
 def test_sites_csv_filtre_un_seul_site(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     _patch_source(monkeypatch, _MultiSiteSource({}))
 
     result = runner.invoke(
@@ -328,7 +328,7 @@ def test_sites_csv_filtre_un_seul_site(tmp_path: Path, monkeypatch: pytest.Monke
 
 
 def test_sites_id_inconnu_usage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     _patch_source(monkeypatch, _MultiSiteSource({}))
 
     result = runner.invoke(
@@ -353,7 +353,7 @@ def test_sites_id_inconnu_usage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
 
 def test_now_mal_forme_usage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     _patch_source(monkeypatch, _MultiSiteSource({}))
 
     result = runner.invoke(
@@ -375,7 +375,7 @@ def test_now_mal_forme_usage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
 def test_rappel_rattrapage_mensuel_le_premier_du_mois(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sites_path, settings_path, data_root = _write_config(tmp_path)
+    sites_path, settings_path, _data_root = _write_config(tmp_path)
     _patch_source(monkeypatch, _MultiSiteSource({}))
 
     result = runner.invoke(

@@ -23,7 +23,7 @@ nuageux (un seul item clair sur 4) : aucun test n'attend 4 ``ingested`` sur B09.
 from __future__ import annotations
 
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -295,7 +295,10 @@ class _BlockingThenRealSource:
     started_event: threading.Event
     release_event: threading.Event
     _blocked_once: bool = False
-    _lock: threading.Lock = threading.Lock()
+    # `field(default_factory=...)` et PAS `threading.Lock()` : un défaut de dataclass est
+    # évalué UNE fois, à la définition de la classe — le verrou serait partagé par toutes
+    # les instances (débusqué par ruff RUF009).
+    _lock: threading.Lock = field(default_factory=threading.Lock)
 
     def search(self, site: Site, window: Window) -> Envelope:
         with self._lock:

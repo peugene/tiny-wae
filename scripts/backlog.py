@@ -429,13 +429,13 @@ def check_graph(fiches: list[Fiche], index: dict[str, Fiche]) -> tuple[list[str]
         if color.get(fid) == 2:
             return
         if color.get(fid) == 1:
-            cycle = " → ".join(stack[stack.index(fid) :] + [fid])
+            cycle = " → ".join([*stack[stack.index(fid) :], fid])
             anomalies.append(f"cycle : {cycle}")
             return
         color[fid] = 1
         for d in index[fid].depends_on if fid in index else []:
             if d in index:
-                visit(d, stack + [fid])
+                visit(d, [*stack, fid])
         color[fid] = 2
 
     for f in fiches:

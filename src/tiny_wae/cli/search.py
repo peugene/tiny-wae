@@ -59,9 +59,9 @@ def _parse_date(label: str, raw: str) -> datetime:
 
 
 def search(
-    site_id: str = typer.Option(..., "--site", help="Id du site (sites.yaml)."),  # noqa: B008
-    date_from: str = typer.Option(..., "--from", help="Début de fenêtre, YYYY-MM-DD."),  # noqa: B008
-    date_to: str = typer.Option(..., "--to", help="Fin de fenêtre, YYYY-MM-DD."),  # noqa: B008
+    site_id: str = typer.Option(..., "--site", help="Id du site (sites.yaml)."),
+    date_from: str = typer.Option(..., "--from", help="Début de fenêtre, YYYY-MM-DD."),
+    date_to: str = typer.Option(..., "--to", help="Fin de fenêtre, YYYY-MM-DD."),
     json_path: Path | None = typer.Option(  # noqa: B008 — idiome typer standard.
         None, "--json", help="Écrit l'enveloppe JSON dans ce fichier plutôt que sur STDOUT."
     ),

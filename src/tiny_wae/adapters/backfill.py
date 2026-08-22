@@ -119,7 +119,7 @@ def build_tasks(sites: list[Site], windows: list[Window]) -> dict[str, list[Wind
     return {site.id: list(windows) for site in sites}
 
 
-def _request_stop(stop_event: threading.Event, signum: int, frame: object) -> None:
+def _request_stop(stop_event: threading.Event, _signum: int, _frame: object) -> None:
     """Gestionnaire de signal — fonction PURE : ne fait QUE positionner ``stop_event``,
     aucun I/O, aucun accès au pool. Testable directement (appel de fonction, PAS un vrai
     signal — décision d'ancrage n°5 : le déclenchement du signal n'est pas portable
