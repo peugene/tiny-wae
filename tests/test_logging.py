@@ -16,8 +16,6 @@ from __future__ import annotations
 import ast
 import logging
 import re
-import shutil
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from re import Match
@@ -610,52 +608,19 @@ def _current_src_sources() -> dict[str, str]:
     return {str(path): path.read_text(encoding="utf-8") for path in sorted(root.rglob("*.py"))}
 
 
-def _git_show_tree(ref: str, root: str) -> dict[str, str]:
-    """Contenu de tous les `.py` sous `root` tels qu'ils existaient à `ref` (via
-    `git ls-tree`/`git show`) — indépendant de l'arbre de travail courant. ``ref``/``root``
-    viennent du corps du test (littéraux), jamais d'une entrée externe — chemin complet de
-    l'exécutable résolu via ``shutil.which`` (S607)."""
-    git = shutil.which("git")
-    assert git is not None, "git introuvable sur PATH"
-    listing = subprocess.run(  # noqa: S603 — args entièrement littéraux, aucune entrée externe.
-        [git, "ls-tree", "-r", "--name-only", ref, root],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.splitlines()
-    sources: dict[str, str] = {}
-    for path in listing:
-        if path.endswith(".py"):
-            sources[path] = subprocess.run(  # noqa: S603 — idem (path vient de git ls-tree).
-                [git, "show", f"{ref}:{path}"], capture_output=True, text=True, check=True
-            ).stdout
-    return sources
-
-
 def test_o11bis_zero_emoji_dans_les_chaines_affichees_de_src() -> None:
     """O11bis (volet « 0 occurrence ») : aucune chaîne affichée de `src/tiny_wae/` ne
     porte plus l'un des emoji bannis, après retrait des 4 occurrences trouvées (2 dans
     `cli/backfill.py`, nommées par la fiche, + 2 dans `cli/ingest.py`/`cli/update.py`,
-    NON nommées par la fiche mais mesurées au même titre — cf. compte-rendu de dispatch)."""
+    NON nommées par la fiche mais mesurées au même titre — cf. compte-rendu de dispatch).
+
+    Un second test comparait ce compte a celui du commit `a6724e0` pour prouver la BAISSE.
+    Il a ete retire : il appelait `git ls-tree` sur un commit precis, ce qui echoue sur un
+    clone superficiel (`actions/checkout` ne recupere qu'un commit par defaut) — vert en
+    local, rouge en CI. Un test doit porter sur une propriete du CODE, jamais sur
+    l'historique du depot. La mesure de la baisse reste consignee dans le resume de
+    realisation d'`obs-01`, ou elle a sa place."""
     assert _count_displayed_emoji(_current_src_sources()) == 0
-
-
-def test_o11bis_baisse_mesuree_vs_head_a6724e0() -> None:
-    """O11bis (volet « compte global sur src/ ») : mesuré à HEAD `a6724e0` (l'ancrage de
-    la fiche), le compte RÉEL est de 4 chaînes affichées avec emoji dans `src/` — pas 2
-    (la fiche n'en nommait que 2, dans `cli/backfill.py` ; `cli/ingest.py` et
-    `cli/update.py` en portaient chacun 1 de plus, non nommés). Le compte courant est 0 :
-    la baisse mesurée est donc de 4, pas de 2 — un delta STRICTEMENT supérieur au
-    minimum attendu par la fiche satisfait sa lettre (« diminué de 2 ») tout en la
-    dépassant, ce qui est reporté tel quel plutôt que maquillé en « exactement 2 »."""
-    baseline_sources = _git_show_tree("a6724e0", "src/tiny_wae")
-    baseline_count = _count_displayed_emoji(baseline_sources)
-    current_count = _count_displayed_emoji(_current_src_sources())
-
-    assert baseline_count == 4
-    assert current_count == 0
-    assert baseline_count - current_count == 4
-    assert baseline_count - current_count >= 2  # exigence littérale de la fiche.
 
 
 # ── Portée du niveau : le namespace du projet, pas la racine (correctif post-livraison) ──
