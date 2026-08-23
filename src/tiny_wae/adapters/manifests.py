@@ -13,8 +13,11 @@ Porte deux schémas versionnés (``schema_version: 1``) :
 - **run.json** (``<data_root>/{site_id}/runs/{run_id}.json``) : le journal d'un run, avec
   ses compteurs et **deux invariants de conservation** vérifiés à l'écriture
   (``ConservationError`` sinon, décision E-a) :
-  ``found_stac == skipped_scene_cloud + off_tile + found_tile`` et
-  ``found_tile == somme des 6 statuts``.
+  ``found_stac == skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme``
+  (``skipped_asset_scheme`` : D2 de la fiche data-01) et
+  ``found_tile == somme des 6 statuts``. ⭐ D6 (data-01) : ``skipped_asset_scheme`` est
+  TOLÉRÉ ABSENT à la LECTURE (``aggregate_counters``, il vaut alors 0) — jamais à
+  l'écriture, qui reste stricte.
 
 ⭐ Arbitrage n°2 (21/08) : ``aggregate_counters`` **somme** les compteurs de runs et ne
 prétend PAS dédupliquer (impossible : ``run.json`` ne porte que des scalaires) — en régime
@@ -43,9 +46,17 @@ from tiny_wae.core.statuses import RUN_STATUSES
 
 SCHEMA_VERSION = 1
 
-# Les 4 compteurs d'enveloppe + les 6 statuts — COMPOSÉS depuis core/, jamais recopiés
+# Les 5 compteurs d'enveloppe + les 6 statuts — COMPOSÉS depuis core/, jamais recopiés
 # (post-revue 1, constat A2 : le vocabulaire de domaine appartient à ``core/``).
 _COUNTER_KEYS: tuple[str, ...] = (*ENVELOPE_COUNTERS, *RUN_STATUSES)
+
+# D6 (fiche data-01) : compteurs d'enveloppe tolérés ABSENTS à la LECTURE d'un run.json
+# déjà écrit (valent alors 0) — jamais à l'écriture (``write_run`` reste strict, O8). Liste
+# EXPLICITE plutôt qu'un "toute clé manquante vaut 0" générique : un statut manquant sur un
+# journal existant resterait une vraie corruption, jamais masquée silencieusement. Seul
+# ``skipped_asset_scheme`` (D2, absent des 1404 run.json de la campagne du 2026-08-23) y
+# figure ; un futur compteur neuf s'ajouterait ici explicitement, au même titre.
+_READ_TOLERANT_COUNTER_KEYS: frozenset[str] = frozenset({"skipped_asset_scheme"})
 
 
 class ManifestError(ValueError):
@@ -101,8 +112,9 @@ class Run:
     """Journal d'un run d'ingestion — un fichier ``run.json`` par run.
 
     ``window`` est un mapping ``{"start": ..., "end": ...}`` (chaînes ISO). ``counters``
-    porte les 4 compteurs d'enveloppe (l0-02) + les 6 statuts (cf. ``RUN_STATUSES``) ;
-    ``write_run`` vérifie les deux invariants de conservation avant d'écrire.
+    porte les 5 compteurs d'enveloppe (l0-02, ``skipped_asset_scheme`` ajouté par data-01)
+    + les 6 statuts (cf. ``RUN_STATUSES``) ; ``write_run`` vérifie les deux invariants de
+    conservation avant d'écrire.
     """
 
     schema_version: int
@@ -255,12 +267,17 @@ def _validate_counters(counters: dict[str, int]) -> None:
     if missing:
         raise ConservationError(f"run.counters : clé(s) manquante(s) {missing}")
 
-    envelope_sum = counters["skipped_scene_cloud"] + counters["off_tile"] + counters["found_tile"]
+    envelope_sum = (
+        counters["skipped_scene_cloud"]
+        + counters["off_tile"]
+        + counters["found_tile"]
+        + counters["skipped_asset_scheme"]
+    )
     if counters["found_stac"] != envelope_sum:
         raise ConservationError(
             "invariant violé : found_stac="
-            f"{counters['found_stac']} != skipped_scene_cloud+off_tile+found_tile="
-            f"{envelope_sum}"
+            f"{counters['found_stac']} != skipped_scene_cloud+off_tile+found_tile"
+            f"+skipped_asset_scheme={envelope_sum}"
         )
 
     status_sum = sum(counters[status] for status in RUN_STATUSES)
@@ -300,6 +317,17 @@ def list_runs(data_root: Path, site_id: str) -> list[Run]:
     return sorted(runs, key=lambda r: r.run_id)
 
 
+def _with_read_tolerant_defaults(counters: dict[str, int]) -> dict[str, int]:
+    """D6 (fiche data-01) : complète ``counters`` relu d'un run.json existant avec ``0``
+    pour chaque clé de ``_READ_TOLERANT_COUNTER_KEYS`` absente — jamais pour les autres,
+    qui restent exigées par ``_validate_counters`` (une clé ANCIENNE manquante est une
+    vraie corruption, pas un cas de rétrocompatibilité)."""
+    filled = dict(counters)
+    for key in _READ_TOLERANT_COUNTER_KEYS:
+        filled.setdefault(key, 0)
+    return filled
+
+
 def aggregate_counters(data_root: Path, site_id: str) -> dict[str, int]:
     """Somme les compteurs de tous les runs d'un site — donnée de VOLUME, pas de complétude.
 
@@ -307,11 +335,15 @@ def aggregate_counters(data_root: Path, site_id: str) -> dict[str, int]:
     permanent) : ``run.json`` ne porte que des scalaires, cette fonction ne prétend PAS
     dédupliquer. Pour la complétude (l'ensemble exact des items déjà traités), utiliser
     ``item_ids_for_site``. Chaque run relu est revalidé (``ConservationError`` si un
-    invariant y est violé, au même titre qu'à l'écriture).
+    invariant y est violé, au même titre qu'à l'écriture) — après complétion D6 des
+    compteurs neufs tolérés absents (``_with_read_tolerant_defaults``), pour rester
+    lisible sur les 1404 run.json de la campagne du 2026-08-23, écrits avant
+    ``skipped_asset_scheme``.
     """
     totals: dict[str, int] = dict.fromkeys(_COUNTER_KEYS, 0)
     for run in list_runs(data_root, site_id):
-        _validate_counters(run.counters)
+        counters = _with_read_tolerant_defaults(run.counters)
+        _validate_counters(counters)
         for key in _COUNTER_KEYS:
-            totals[key] += run.counters[key]
+            totals[key] += counters[key]
     return totals

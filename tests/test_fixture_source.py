@@ -246,4 +246,5 @@ def test_fixture_source_fenetre_vide_rend_enveloppe_vide() -> None:
         "skipped_scene_cloud": 0,
         "off_tile": 0,
         "found_tile": 0,
+        "skipped_asset_scheme": 0,
     }

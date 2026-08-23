@@ -112,11 +112,19 @@ class CompletenessResult:
 
 def check_conservation(counters: dict[str, int]) -> bool:
     """Vérifie les deux invariants de conservation du chapeau l0-02 sur un ``counters``
-    déjà agrégé : ``found_stac == skipped_scene_cloud + off_tile + found_tile`` ET
-    ``found_tile == somme des 6 statuts``. Rend ``False`` (jamais d'exception) — c'est un
-    verdict de rapport, pas une garde d'écriture (celle-ci vit déjà dans
+    déjà agrégé : ``found_stac == skipped_scene_cloud + off_tile + found_tile +
+    skipped_asset_scheme`` (``skipped_asset_scheme`` : D3, fiche data-01 — troisième copie
+    de cette identité, non listée par l'ancrage de la fiche mais corrigée ici pour rester
+    cohérente avec ``core/envelope.py`` et ``adapters/manifests.py``) ET ``found_tile ==
+    somme des 6 statuts``. Rend ``False`` (jamais d'exception) — c'est un verdict de
+    rapport, pas une garde d'écriture (celle-ci vit déjà dans
     ``adapters.manifests.write_run``)."""
-    envelope_sum = counters["skipped_scene_cloud"] + counters["off_tile"] + counters["found_tile"]
+    envelope_sum = (
+        counters["skipped_scene_cloud"]
+        + counters["off_tile"]
+        + counters["found_tile"]
+        + counters["skipped_asset_scheme"]
+    )
     status_sum = sum(counters[status] for status in RUN_STATUSES)
     return counters["found_stac"] == envelope_sum and counters["found_tile"] == status_sum
 

@@ -66,8 +66,9 @@ def test_les_noms_de_fichiers_sont_le_meme_objet_partout() -> None:
 
 
 def test_les_compteurs_d_enveloppe_sont_composes_et_non_recopies() -> None:
-    """Les 10 clés de `run.json` = les 4 compteurs d'enveloppe (core/envelope) + les 6
-    statuts, composés. Avant, les 4 étaient re-listés à la main dans `adapters/`."""
+    """Les 11 clés de `run.json` = les 5 compteurs d'enveloppe (core/envelope,
+    `skipped_asset_scheme` ajouté par data-01) + les 6 statuts, composés. Avant, les
+    compteurs d'enveloppe étaient re-listés à la main dans `adapters/`."""
     from tiny_wae.core.envelope import ENVELOPE_COUNTERS
 
     assert (*ENVELOPE_COUNTERS, *statuses.RUN_STATUSES) == manifests_module._COUNTER_KEYS
@@ -77,7 +78,13 @@ def _run_avec_tuile_suspecte() -> Run:
     """Un `Run` minimal cohérent, marqué `tile_suspect` — seul champ qui compte ici."""
     counters = dict.fromkeys(statuses.RUN_STATUSES, 0)
     counters.update(
-        {"found_stac": 5, "skipped_scene_cloud": 0, "off_tile": 0, "found_tile": 5},
+        {
+            "found_stac": 5,
+            "skipped_scene_cloud": 0,
+            "off_tile": 0,
+            "found_tile": 5,
+            "skipped_asset_scheme": 0,
+        },
         rejected_nodata=5,
     )
     return Run(

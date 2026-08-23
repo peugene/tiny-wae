@@ -99,7 +99,8 @@ def search(
     typer.echo(
         f"site={site.id}  found_stac={counters['found_stac']}  "
         f"skipped_scene_cloud={counters['skipped_scene_cloud']}  "
-        f"off_tile={counters['off_tile']}  found_tile={counters['found_tile']}",
+        f"off_tile={counters['off_tile']}  found_tile={counters['found_tile']}  "
+        f"skipped_asset_scheme={counters['skipped_asset_scheme']}",
         err=True,
     )
 

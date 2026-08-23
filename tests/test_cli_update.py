@@ -134,7 +134,13 @@ def _empty_envelope(site_id: str) -> Envelope:
         schema_version=1,
         site_id=site_id,
         window={"start": "2026-01-01T00:00:00", "end": "2026-02-01T00:00:00"},
-        counters={"found_stac": 0, "skipped_scene_cloud": 0, "off_tile": 0, "found_tile": 0},
+        counters={
+            "found_stac": 0,
+            "skipped_scene_cloud": 0,
+            "off_tile": 0,
+            "found_tile": 0,
+            "skipped_asset_scheme": 0,
+        },
         items=[],
     )
 

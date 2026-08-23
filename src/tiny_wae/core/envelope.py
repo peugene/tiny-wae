@@ -5,10 +5,16 @@ avec ses compteurs. Consommée par ``ingest --acquisitions`` (l0-03.4) et le ste
 
 ⭐ Deux dénominateurs (décision Philippe E-a, chapeau l0-02 — le mot ``found`` seul est
 BANNI du lot) : ``found_stac`` (avant tout filtre) et ``found_tile`` = ``found_stac -
-skipped_scene_cloud - off_tile`` (les items réellement instruits). L'invariant de
-conservation ``found_stac == skipped_scene_cloud + off_tile + found_tile`` ET
-``found_tile == len(items)`` est vérifié À LA CONSTRUCTION — une ``Envelope`` incohérente
-ne peut pas exister.
+skipped_scene_cloud - off_tile - skipped_asset_scheme`` (les items réellement instruits).
+L'invariant de conservation ``found_stac == skipped_scene_cloud + off_tile + found_tile +
+skipped_asset_scheme`` ET ``found_tile == len(items)`` est vérifié À LA CONSTRUCTION — une
+``Envelope`` incohérente ne peut pas exister.
+
+⭐ ``skipped_asset_scheme`` (D2/D3, fiche data-01) compte les items dont un asset MAPPÉ
+porte un href inaccessible (``s3://`` sur le bucket JP2 requester-pays de la campagne du
+2026-08-23) — l'item est écarté et compté ICI, jamais silencieusement perdu, sans faire
+échouer le reste de la fenêtre (``adapters/stac.py::build_envelope`` rattrape l'exception de
+parsing, décision D1).
 
 ⛔ ``ConservationError`` est définie ICI, pas importée depuis ``adapters/manifests.py`` :
 ``core/`` ne dépend jamais d'``adapters/`` (règle de couche). La duplication du nom entre
@@ -24,13 +30,15 @@ from tiny_wae.core.acquisition import Acquisition
 
 SCHEMA_VERSION = 1
 
-# Les 4 compteurs obligatoires de l'enveloppe (décision E-a du chapeau l0-02). Public :
+# Les 5 compteurs obligatoires de l'enveloppe (décision E-a du chapeau l0-02,
+# ``skipped_asset_scheme`` ajouté par D2 de la fiche data-01). Public :
 # ``adapters/manifests.py`` les compose avec les 6 statuts au lieu de les recopier.
 ENVELOPE_COUNTERS: tuple[str, ...] = (
     "found_stac",
     "skipped_scene_cloud",
     "off_tile",
     "found_tile",
+    "skipped_asset_scheme",
 )
 
 
@@ -55,7 +63,7 @@ class Envelope:
     items: list[Acquisition]
 
     def __post_init__(self) -> None:
-        """Vérifie la présence des 4 compteurs puis les deux invariants de conservation."""
+        """Vérifie la présence des 5 compteurs puis les deux invariants de conservation."""
         missing = [key for key in ENVELOPE_COUNTERS if key not in self.counters]
         if missing:
             raise ConservationError(f"envelope.counters : clé(s) manquante(s) {missing}")
@@ -64,12 +72,13 @@ class Envelope:
             self.counters["skipped_scene_cloud"]
             + self.counters["off_tile"]
             + self.counters["found_tile"]
+            + self.counters["skipped_asset_scheme"]
         )
         if self.counters["found_stac"] != envelope_sum:
             raise ConservationError(
                 "invariant violé : found_stac="
-                f"{self.counters['found_stac']} != "
-                f"skipped_scene_cloud+off_tile+found_tile={envelope_sum}"
+                f"{self.counters['found_stac']} != skipped_scene_cloud+off_tile+found_tile"
+                f"+skipped_asset_scheme={envelope_sum}"
             )
         if self.counters["found_tile"] != len(self.items):
             raise ConservationError(

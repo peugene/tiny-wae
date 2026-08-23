@@ -12,9 +12,16 @@ préfixé (``MGRS-52TEL``) — ``parse_item`` retire ce préfixe vendeur, qui di
 une bascule CDSE, au même titre que ``earthsearch:boa_offset_applied``.
 
 ⚠ **Garde href** : pour les clés d'assets MAPPÉES (``Settings.asset_keys``) uniquement,
-tout href ``s3://`` fait lever ``StacSourceError`` — les assets non mappés des items S2C
-(``cloud``, ``snow`` — restent en ``s3://`` chez earth-search) sont ignorés sans erreur,
-qu'ils soient mappés ou non n'entre pas en jeu puisqu'on ne les regarde jamais.
+tout href ``s3://`` fait lever ``AssetSchemeError`` (sous-classe DÉDIÉE de
+``StacSourceError``) — les assets non mappés des items S2C (``cloud``, ``snow`` — restent
+en ``s3://`` chez earth-search) sont ignorés sans erreur, qu'ils soient mappés ou non
+n'entre pas en jeu puisqu'on ne les regarde jamais. ``parse_item`` GARDE ce comportement
+(elle lève : c'est un parseur, il signale) ; c'est ``build_envelope``, dans la boucle de
+construction de l'enveloppe, qui rattrape SPÉCIFIQUEMENT ``AssetSchemeError`` (jamais
+``StacSourceError`` en général — un ``proj:code`` malformé reste une vraie panne, D4),
+compte l'item dans ``skipped_asset_scheme`` et loggue un WARNING avant de passer au
+suivant — un item fautif n'emporte plus la fenêtre entière (D1, fiche data-01, campagne du
+2026-08-23 : 5 items sur 14 967 avaient fait échouer 5 fenêtres complètes).
 
 ⚠ **Écart mesuré vs la fiche (21/08/2026, fixtures live)** : les items earth-search actuels
 ne portent PLUS ``properties.proj:epsg`` (la clé documentée par la fiche) — seulement
@@ -24,6 +31,7 @@ accepte les deux formes ; voir sa docstring.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -37,12 +45,34 @@ from tiny_wae.core.sites import Site
 from tiny_wae.core.tiles import wgs84_survey_bbox
 from tiny_wae.core.windows import Window
 
+logger = logging.getLogger(__name__)
+
 # earth-search rend le code MGRS préfixé par ce marqueur vendeur (à retirer — décision n°1).
 _MGRS_VENDOR_PREFIX = "MGRS-"
 
 
 class StacSourceError(ValueError):
-    """Erreur de parsing ou de filtrage d'un item STAC (href s3:// sur un asset mappé…)."""
+    """Erreur de parsing ou de filtrage d'un item STAC (proj:code malformé, tuile de
+    référence absente…)."""
+
+
+class AssetSchemeError(StacSourceError):
+    """Un asset MAPPÉ porte un href d'un schéma refusé (``s3://`` — bucket JP2
+    *requester-pays* inaccessible sans identifiants, campagne du 2026-08-23, fiche data-01).
+
+    ⭐ Sous-classe DÉDIÉE de ``StacSourceError`` (pas la classe elle-même) : c'est ce qui
+    permet à ``build_envelope`` de ne rattraper QUE ce défaut PRÉCIS (D1) sans avaler
+    d'autres erreurs de parsing bien réelles (ex. ``proj:code`` malformé, levée par
+    ``_extract_epsg`` plus loin dans ``parse_item``) — celles-ci doivent continuer à faire
+    échouer toute la fenêtre, la garde n'est élargie à AUCUN autre défaut (D4). ``item_id``
+    et ``asset_key`` sont TOUJOURS renseignés (jamais ``None``) : c'est ce qui permet au
+    catcher de loguer l'item et la clé fautifs sans reparser le message (O4).
+    """
+
+    def __init__(self, message: str, *, item_id: str, asset_key: str) -> None:
+        super().__init__(message)
+        self.item_id = item_id
+        self.asset_key = asset_key
 
 
 class StacUnreachable(Exception):
@@ -107,7 +137,9 @@ def parse_item(item: dict[str, Any], asset_keys: tuple[str, ...]) -> Acquisition
     jamais soumis à la garde anti-``s3://`` ci-dessous. Un asset mappé absent de l'item est
     silencieusement omis (n'ajoute pas d'entrée à ``assets``/``radiometry``).
 
-    Lève ``StacSourceError`` si un asset MAPPÉ porte un href ``s3://`` (garde du chapeau).
+    Lève ``AssetSchemeError`` (sous-classe de ``StacSourceError``) si un asset MAPPÉ porte
+    un href ``s3://`` (garde du chapeau) ; ``StacSourceError`` nue pour un autre défaut de
+    parsing (``proj:code`` malformé, via ``_extract_epsg``).
     """
     props = item["properties"]
     raw_assets = item.get("assets", {})
@@ -120,8 +152,10 @@ def parse_item(item: dict[str, Any], asset_keys: tuple[str, ...]) -> Acquisition
             continue
         href = asset["href"]
         if href.startswith("s3://"):
-            raise StacSourceError(
-                f"item {item['id']!r} : asset mappé {key!r} en s3:// ({href!r}) — refusé"
+            raise AssetSchemeError(
+                f"item {item['id']!r} : asset mappé {key!r} en s3:// ({href!r}) — refusé",
+                item_id=str(item["id"]),
+                asset_key=key,
             )
         assets[key] = href
         radiometry[key] = _parse_radiometry(asset)
@@ -155,7 +189,11 @@ def build_envelope(
 
     Fonction de ``(items, tuile)`` uniquement (ne lit ni réseau ni ``sites.yaml``) : c'est
     ce qui permet à l'oracle O4 de la fiche de passer ``reference_tile`` en littéral, sans
-    dépendre du relevé réseau de l0-01.3. Compte ``skipped_scene_cloud`` (``eo:cloud_cover
+    dépendre du relevé réseau de l0-01.3. Compte D'ABORD ``skipped_asset_scheme`` (l'item ne
+    parse même pas — ``parse_item`` lève ``AssetSchemeError``, D1 de la fiche data-01 ;
+    SEULE cette sous-classe précise de ``StacSourceError`` est rattrapée ici, jamais la
+    classe mère : un ``proj:code`` malformé reste une vraie panne de parsing, elle continue
+    de faire échouer toute la fenêtre, D4), puis ``skipped_scene_cloud`` (``eo:cloud_cover
     >= scene_cloud_max``) puis ``off_tile`` (``tile != reference_tile``, sur le reste) — un
     item nuageux hors tuile compte dans ``skipped_scene_cloud``, jamais dans ``off_tile``
     (ordre de filtre fixé par le périmètre de la fiche).
@@ -163,10 +201,24 @@ def build_envelope(
     found_stac = len(raw_items)
     skipped_scene_cloud = 0
     off_tile = 0
+    skipped_asset_scheme = 0
     kept: list[Acquisition] = []
 
     for raw in raw_items:
-        acquisition = parse_item(raw, asset_keys)
+        try:
+            acquisition = parse_item(raw, asset_keys)
+        except AssetSchemeError as exc:
+            # D1/D5 (fiche data-01) : l'item est ÉCARTÉ et COMPTÉ, la fenêtre continue —
+            # jamais silencieux (WARNING), jamais propagé (la garde de parse_item n'est
+            # PAS assouplie, D4 : on ne tente aucune traduction s3:// -> https://).
+            skipped_asset_scheme += 1
+            logger.warning(
+                "item %s : asset %s inaccessible (%s) — item écarté, fenêtre poursuivie (data-01)",
+                exc.item_id,
+                exc.asset_key,
+                exc,
+            )
+            continue
         if acquisition.scene_cloud_cover >= scene_cloud_max:
             skipped_scene_cloud += 1
             continue
@@ -180,6 +232,7 @@ def build_envelope(
         "skipped_scene_cloud": skipped_scene_cloud,
         "off_tile": off_tile,
         "found_tile": len(kept),
+        "skipped_asset_scheme": skipped_asset_scheme,
     }
     return Envelope(
         schema_version=1,

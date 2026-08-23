@@ -42,6 +42,7 @@ from tiny_wae.adapters.config_io import (
 )
 from tiny_wae.adapters.stac import EarthSearchSource, StacSource
 from tiny_wae.cli import exit_codes
+from tiny_wae.core.envelope import ENVELOPE_COUNTERS
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Site, SiteValidationError
 from tiny_wae.core.statuses import RUN_STATUSES
@@ -130,9 +131,11 @@ def _report_counters(outcome: BackfillOutcome) -> None:
     """Écrit sur STDERR un résumé par site : compteurs agrégés (somme des fenêtres
     traitées) puis, pour un site en échec, ses fenêtres fautives nommées."""
     for result in outcome.site_results:
-        totals: dict[str, int] = dict.fromkeys(RUN_STATUSES, 0)
-        for status in ("found_stac", "skipped_scene_cloud", "off_tile", "found_tile"):
-            totals[status] = 0
+        # Compteurs COMPOSÉS depuis core/ (ENVELOPE_COUNTERS + RUN_STATUSES), jamais
+        # recopiés en dur — sinon un compteur neuf (ex. skipped_asset_scheme, data-01)
+        # manquerait ici pour un site sans AUCUNE fenêtre aboutie (même défaut que celui
+        # corrigé par la fiche dans adapters/manifests.py).
+        totals: dict[str, int] = dict.fromkeys((*ENVELOPE_COUNTERS, *RUN_STATUSES), 0)
         for run_outcome in result.outcomes:
             for key, value in run_outcome.run.counters.items():
                 totals[key] = totals.get(key, 0) + value
