@@ -57,7 +57,8 @@ Sur le second point : recalculée depuis le tableau publié, l'identité O1 mont
 5 (un par site touché par `data-01`). L'identité vraie, avec le 4e terme, boucle :
 `21426 = 3993 (ssc) + 3935 (off_tile) + 13493 (found_tile) + 5 (skipped_asset_scheme)`.
 
-### ⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD `189b0cb`)
+### ⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD `189b0cb` ; **revérifié au
+dispatch à HEAD `5b2beff` — `git diff 189b0cb..HEAD -- src/ tests/` vide, l'ancrage tient**)
 
 - **La cause est nommée dans le code lui-même.** `adapters/manifests.py::aggregate_counters`
   porte en docstring : *« Somme les compteurs de tous les runs d'un site — donnée de VOLUME,
@@ -110,8 +111,9 @@ n°2 que pour la complétude) : il est exact par construction, la somme des jour
 - **D1** — Le ratio et le classement se calculent sur le **corpus distinct**, jamais sur
   `counters`. Numérateur : nombre de manifestes de statut `ingested`. Dénominateur :
   `len(manifests)`, soit le nombre d'items **distincts** instruits ayant atteint l'écriture.
-- **D2** — `SiteReport` gagne les deux comptes distincts comme champs explicites (p. ex.
-  `distinct_ingested` / `distinct_instructed`), remplis par `build_site_report`.
+- **D2** — `SiteReport` gagne deux champs explicites **nommés `distinct_ingested` et
+  `distinct_instructed`** (noms ARRÊTÉS, ne pas en inventer d'autres), remplis par
+  `build_site_report`.
   `ingested_ratio` est recalculé sur eux. **Ne pas** dériver le dénominateur de
   `found_tile − skipped` : cette soustraction est fausse dès qu'un journal manque (cf.
   ancrage).
@@ -130,8 +132,9 @@ n°2 que pour la complétude) : il est exact par construction, la somme des jour
   saison donnés, elle ne produit pas le faux changement que cette section sert à anticiper.
   Elle reste comptée dans les manifestes, récupérable à tout moment.
 - **D9** — Le titre de section **cesse d'être écrit en dur** : les libellés vivent dans un
-  seul mapping (p. ex. `SCL_CLASS_LABELS = {"3": "ombre de nuage", "11": "neige"}`) dont
-  dérivent ET la constante ET le titre. C'est ce qui empêche la dérive de recommencer :
+  seul mapping **nommé `SCL_CLASS_LABELS`** (nom ARRÊTÉ), de contenu exact
+  `{"3": "ombre de nuage", "11": "neige"}`, dont dérivent ET `SCL_HIGHLIGHT_CLASSES`
+  (= `tuple(SCL_CLASS_LABELS)`) ET le titre de section. C'est ce qui empêche la dérive de recommencer :
   aujourd'hui le libellé faux existe à deux endroits qui s'ignorent (`report.py:24` et
   `report.py:336`).
 - **D10** — Aucun emoji dans le code ni dans la sortie console (règle permanente du projet).
