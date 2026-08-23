@@ -93,7 +93,9 @@ def test_o1_report_defaut_ecrit_le_site_c07_avec_les_comptes_mesures(
     assert result.exit_code == exit_codes.OK, result.output
     assert out_path.exists()
     markdown = out_path.read_text(encoding="utf-8")
-    assert "| C07 | 15 | 1 | 2 | 12 | 6 | 3 | 1 | 1 | 1 | 0 |" in markdown
+    # rep-01, D4 : colonne skipped_asset_scheme ajoutée entre off_tile et found_tile (= 0
+    # sur ce corpus).
+    assert "| C07 | 15 | 1 | 2 | 0 | 12 | 6 | 3 | 1 | 1 | 1 | 0 |" in markdown
 
 
 # ── O2ter (wiring CLI) : --check-completeness sur C07 ────────────────────────────────────

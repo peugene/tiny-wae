@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -52,7 +53,13 @@ from tiny_wae.adapters.manifests import (
     list_for_site,
 )
 from tiny_wae.adapters.stac import build_envelope
-from tiny_wae.core.report import build_site_report, check_completeness, render_report
+from tiny_wae.core.report import (
+    SCL_CLASS_LABELS,
+    SCL_HIGHLIGHT_CLASSES,
+    build_site_report,
+    check_completeness,
+    render_report,
+)
 from tiny_wae.core.settings import EXPECTED_ASSET_KEYS
 from tiny_wae.core.windows import Window
 
@@ -93,9 +100,10 @@ def test_o1_c07_comptes_geles_mesures_par_aggregate_counters() -> None:
 
 
 def test_o1_site_report_et_rendu_markdown() -> None:
-    """``conservation: OK`` ; ratio 6/12 avec dénominateur affiché ; failed_pct = 1/12 =
-    8,3 % signalé > 1 % ; classes SCL agrégées (mesurées : classe 4 = 393216, classes 2/11
-    = 0 sur ce corpus, aucune n'est absente du rendu)."""
+    """``conservation: OK`` ; ratio distinct 6/12 avec dénominateur affiché ; failed_pct =
+    1/12 = 8,3 % signalé > 1 % ; classes SCL agrégées (mesurées : classe 4 = 393216, classes
+    3/11 = 0 sur ce corpus, aucune n'est absente du rendu — rep-01, D8 : la classe mise en
+    avant est désormais 3 [ombre de nuage], plus 2 [ombre de relief])."""
     counters = _c07_counters()
     report = build_site_report(
         SITE_ID,
@@ -106,18 +114,23 @@ def test_o1_site_report_et_rendu_markdown() -> None:
     )
 
     assert report.conservation_ok is True
+    # C07 n'a qu'un seul run (cf. docstring du fichier) : ratio distinct == ratio de volume.
     assert report.ingested_ratio == pytest.approx(6 / 12)
+    assert report.distinct_ingested == 6
+    assert report.distinct_instructed == 12
     assert report.failed_pct == pytest.approx(100 * 1 / 12)
     assert report.failed_pct > 1.0  # > seuil légitime (chapeau l0-04, critère 4)
     assert report.bytes_written == 54_000_000  # somme mesurée des bytes_written 'ingested'
-    assert report.scl_class_counts["2"] == 0
+    assert report.scl_class_counts["3"] == 0
     assert report.scl_class_counts["11"] == 0
     assert report.scl_class_counts["4"] == 393216
 
     markdown = render_report([report])
-    assert "| C07 | 15 | 1 | 2 | 12 | 6 | 3 | 1 | 1 | 1 | 0 | 8.3 % | OK | OK |" in markdown
-    assert "6/12" in markdown  # ratio + dénominateur affiché (pires cas en tête)
-    assert "classe **2**" in markdown
+    # rep-01, D4 : colonne skipped_asset_scheme ajoutée entre off_tile et found_tile (= 0
+    # sur ce corpus, mesuré via _c07_counters()).
+    assert "| C07 | 15 | 1 | 2 | 0 | 12 | 6 | 3 | 1 | 1 | 1 | 0 | 8.3 % | OK | OK |" in markdown
+    assert "6/12" in markdown  # ratio distinct + dénominateur affiché (pires cas en tête)
+    assert "classe **3**" in markdown  # rep-01, D8 : ombre de nuage, remplace la classe 2
     assert "classe **11**" in markdown
 
 
@@ -352,3 +365,211 @@ def test_o2ter_overlap_completude_rouge_item_manquant_nomme(tmp_path: Path) -> N
     assert result.ok is False
     assert result.missing == frozenset({"S2A_OVERLAP_004"})
     assert result.extra == frozenset()
+
+
+# ── rep-01 : ratio et classement DISTINCTS (insensibles aux relances), colonne
+#    ``skipped_asset_scheme`` affichée, bonne classe SCL mise en avant ────────────────────
+#
+# Fixtures 100% en mémoire (fiche rep-01 : « le corpus réel de la campagne n'est pas
+# reproductible en test ») : ``_FakeManifest`` ne porte que les attributs de
+# ``core.report.ManifestLike`` (Protocol structurel) — pas de dépendance à
+# ``adapters.manifests.Manifest`` ni à ses ~20 champs sans rapport avec ces oracles.
+
+
+@dataclass(frozen=True, slots=True)
+class _FakeManifest:
+    """Manifeste minimal satisfaisant ``ManifestLike`` — un par item DISTINCT (jamais un
+    par run) : c'est cette distinction que rep-01 teste."""
+
+    item_id: str
+    status: str
+    files: list[str] = field(default_factory=list)
+    content_hashes: dict[str, str] = field(default_factory=dict)
+    grid_hash: str = "f" * 64
+    chip_nodata_pct: float = 0.0
+    scl_class_counts: dict[str, int] = field(default_factory=dict)
+    bytes_written: int = 0
+    datetime: str = "2026-08-23T00:00:00Z"
+
+
+def _rep01_counters(**overrides: int) -> dict[str, int]:
+    """Compteurs de VOLUME conformes à l'identité de conservation (O4), tous les statuts
+    RUN_STATUSES à 0 par défaut — ``overrides`` fixe les compteurs mesurés du cas testé."""
+    base = {
+        "found_stac": 0,
+        "skipped_scene_cloud": 0,
+        "off_tile": 0,
+        "skipped_asset_scheme": 0,
+        "found_tile": 0,
+        "ingested": 0,
+        "rejected_clouds": 0,
+        "rejected_invalid": 0,
+        "rejected_nodata": 0,
+        "failed": 0,
+        "skipped": 0,
+    }
+    base.update(overrides)
+    return base
+
+
+def _worst_case_section(markdown: str) -> str:
+    return markdown.split("## Pires cas en tête")[1].split("## Classes SCL")[0]
+
+
+def test_rep01_o1_ratio_insensible_aux_relances() -> None:
+    """Site à 3 items DISTINCTS (2 ``ingested``, 1 ``rejected_clouds``) relancé une fois —
+    le second run ne fait que revoir les 3 items déjà traités (``skipped`` += 3 dans les
+    compteurs de VOLUME). Attendu : ratio publié 2/3 = 66,7 %, PAS 2/6 = 33,3 %.
+    Discriminant : ce test échoue si le ratio est calculé sur ``counters`` (qui vaut
+    ingested=2 / found_tile=6, à cause du second run)."""
+    manifests = [
+        _FakeManifest(item_id="S2A_001", status="ingested"),
+        _FakeManifest(item_id="S2A_002", status="ingested"),
+        _FakeManifest(item_id="S2A_003", status="rejected_clouds"),
+    ]
+    # Run 1 (3 items instruits) + run 2 (les 3 mêmes items relus, tous ``skipped``) :
+    counters = _rep01_counters(found_stac=6, found_tile=6, ingested=2, rejected_clouds=1, skipped=3)
+
+    report = build_site_report(
+        "RELANCE", counters, manifests, current_grid_hash="f" * 64, chip_nodata_pct_max=1.0
+    )
+
+    assert report.distinct_ingested == 2
+    assert report.distinct_instructed == 3
+    assert report.ingested_ratio == pytest.approx(2 / 3)
+    assert report.ingested_ratio != pytest.approx(2 / 6)  # le défaut corrigé, nommé
+
+    markdown = render_report([report])
+    worst_case = _worst_case_section(markdown)
+    assert "2/3" in worst_case
+    assert "2/6" not in worst_case
+
+
+def test_rep01_o2_classement_sur_ratio_distinct() -> None:
+    """Site X : ratio distinct EXCELLENT (8/10 = 80 %) mais très relancé (``counters``
+    ingested=8/found_tile=40 -> 20 % en volume). Site Y : ratio distinct MOINS BON
+    (3/10 = 30 %) mais jamais relancé (``counters`` == ratio distinct). Attendu : X (le
+    meilleur site réel) apparaît APRÈS Y dans « pires cas en tête ». Discriminant :
+    trié sur ``counters`` (0,20 puis 0,30), X apparaîtrait AVANT Y — l'inverse."""
+    manifests_x = [_FakeManifest(item_id=f"X_{i:02d}", status="ingested") for i in range(8)] + [
+        _FakeManifest(item_id=f"X_{i:02d}", status="rejected_clouds") for i in range(8, 10)
+    ]
+    counters_x = _rep01_counters(
+        found_stac=40, found_tile=40, ingested=8, rejected_clouds=2, skipped=30
+    )
+    report_x = build_site_report(
+        "X", counters_x, manifests_x, current_grid_hash="f" * 64, chip_nodata_pct_max=1.0
+    )
+    assert report_x.ingested_ratio == pytest.approx(0.8)
+    # Le ratio de VOLUME (celui du défaut) serait pire — la preuve que ce cas discrimine :
+    assert counters_x["ingested"] / counters_x["found_tile"] == pytest.approx(0.2)
+
+    manifests_y = [_FakeManifest(item_id=f"Y_{i:02d}", status="ingested") for i in range(3)] + [
+        _FakeManifest(item_id=f"Y_{i:02d}", status="rejected_clouds") for i in range(3, 10)
+    ]
+    counters_y = _rep01_counters(found_stac=10, found_tile=10, ingested=3, rejected_clouds=7)
+    report_y = build_site_report(
+        "Y", counters_y, manifests_y, current_grid_hash="f" * 64, chip_nodata_pct_max=1.0
+    )
+    assert report_y.ingested_ratio == pytest.approx(0.3)
+
+    markdown = render_report([report_x, report_y])
+    worst_case = _worst_case_section(markdown)
+    # Y (pire ratio distinct réel) doit apparaître AVANT X (meilleur ratio distinct réel).
+    assert worst_case.index("**Y**") < worst_case.index("**X**")
+
+
+def test_rep01_o3_colonne_skipped_asset_scheme_affichee() -> None:
+    """L'en-tête du tableau nomme ``skipped_asset_scheme`` et la cellule du site testé
+    (compteur = 2) affiche bien 2."""
+    counters = _rep01_counters(found_stac=10, skipped_asset_scheme=2, found_tile=8, ingested=8)
+    report = build_site_report(
+        "SCHEME",
+        counters,
+        [_FakeManifest(item_id=f"SCHEME_{i}", status="ingested") for i in range(8)],
+        current_grid_hash="f" * 64,
+        chip_nodata_pct_max=1.0,
+    )
+
+    markdown = render_report([report])
+    assert "skipped_asset_scheme" in markdown
+    row = next(line for line in markdown.splitlines() if line.startswith("| SCHEME |"))
+    header_row = next(line for line in markdown.splitlines() if line.startswith("| site |"))
+    cells = [cell.strip() for cell in row.strip("|").split("|")]
+    header_cells = [cell.strip() for cell in header_row.strip("|").split("|")]
+    assert cells[header_cells.index("skipped_asset_scheme")] == "2"
+
+
+def test_rep01_o4_identite_re_verifiable_dans_la_ligne_rendue() -> None:
+    """La somme ``skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme``,
+    LUE DANS LA LIGNE MARKDOWN RENDUE, égale ``found_stac`` de cette même ligne — l'oracle
+    se revérifie donc à l'œil sur le tableau publié, sans redescendre au code."""
+    counters = _rep01_counters(
+        found_stac=21,
+        skipped_scene_cloud=4,
+        off_tile=5,
+        found_tile=11,
+        skipped_asset_scheme=1,
+        ingested=11,
+    )
+    report = build_site_report(
+        "IDENTITE",
+        counters,
+        [_FakeManifest(item_id=f"IDENTITE_{i}", status="ingested") for i in range(11)],
+        current_grid_hash="f" * 64,
+        chip_nodata_pct_max=1.0,
+    )
+    assert report.conservation_ok is True
+
+    markdown = render_report([report])
+    header_row = next(line for line in markdown.splitlines() if line.startswith("| site |"))
+    row = next(line for line in markdown.splitlines() if line.startswith("| IDENTITE |"))
+    header_cells = [cell.strip() for cell in header_row.strip("|").split("|")]
+    cells = [cell.strip() for cell in row.strip("|").split("|")]
+
+    def as_int(name: str) -> int:
+        return int(cells[header_cells.index(name)])
+
+    envelope_sum = (
+        as_int("skipped_scene_cloud")
+        + as_int("off_tile")
+        + as_int("found_tile")
+        + as_int("skipped_asset_scheme")
+    )
+    assert envelope_sum == as_int("found_stac")
+
+
+def test_rep01_o6_bonne_classe_scl_mise_en_avant() -> None:
+    """Site dont les manifestes ``ingested`` portent des comptes SCL non nuls et distincts
+    sur les classes 2, 3 et 11. Attendu : une ligne pour la classe 3 (ombre de nuage) et
+    une pour la classe 11 (neige), AUCUNE pour la classe 2 (ombre de relief — non
+    pertinente pour anticiper les faux changements), et un titre de section qui dérive de
+    ``SCL_CLASS_LABELS``/``SCL_HIGHLIGHT_CLASSES`` — jamais une chaîne figée. Discriminant :
+    échoue avec l'ancienne constante ``("2", "11")`` (classe 2 apparaîtrait, classe 3 non),
+    et échoue aussi si le titre est réécrit en dur (le titre attendu est ici RECALCULÉ
+    depuis les mêmes constantes que ``render_report``, pas recopié à la main)."""
+    manifests = [
+        _FakeManifest(
+            item_id="SCL_1",
+            status="ingested",
+            scl_class_counts={"2": 100, "3": 300, "11": 200},
+        )
+    ]
+    counters = _rep01_counters(found_stac=1, found_tile=1, ingested=1)
+    report = build_site_report(
+        "SCL", counters, manifests, current_grid_hash="f" * 64, chip_nodata_pct_max=1.0
+    )
+    assert report.scl_class_counts == {"2": 100, "3": 300, "11": 200}
+
+    markdown = render_report([report])
+    scl_section = markdown.split("## Classes SCL agrégées")[1]
+
+    assert SCL_HIGHLIGHT_CLASSES == ("3", "11")
+    for scl_class in SCL_HIGHLIGHT_CLASSES:
+        assert f"classe **{scl_class}**" in scl_section
+    assert "classe **2**" not in scl_section
+
+    expected_title_classes = ", ".join(
+        f"{scl_class} = {SCL_CLASS_LABELS[scl_class]}" for scl_class in SCL_HIGHLIGHT_CLASSES
+    )
+    assert f"## Classes SCL agrégées ({expected_title_classes} — instrument V3)" in markdown
