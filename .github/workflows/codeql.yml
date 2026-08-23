@@ -31,7 +31,7 @@ jobs:
       security-events: write   # publier les résultats dans l'onglet Security
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # v4 et pas v3 : la v3 cible Node 20 (déprécié, forcé sur Node 24 par le runner)
       # et sera retirée en décembre 2026. Les deux avertissements du 1er run venaient
       # de là — c'est exactement ce que Dependabot signalera désormais tout seul.
