@@ -44,6 +44,14 @@ sortie du run. Cinq items sur 14 967 ont suffi à faire sortir une campagne de 6
   `S2A_31UCT_20240123`, `S2B_31TGJ_20241204`, `S2A_36RYS_20240901`, `S2A_19KEQ_20240123`,
   `S2B_31TFJ_20241204` — les dates se répètent d'un site à l'autre, ce qui confirme un
   défaut de **catalogue**, pas de site.
+- ⭐ **La portée est plus large que le backfill — constaté le 2026-08-23 en exécution.**
+  `report --check-completeness` échoue sur le MÊME défaut, avec le même item
+  (`S2B_31TGJ_20241204_0_L2A`), et sort en exit 1. Or ce contrôle est **un critère de recette
+  du Lot 0** (checklist de `l0-04.H`) : tant que ce défaut est là, la recette est
+  inexécutable. Le chemin d'appel est identique — `cli/report.py:95` -> `search()` ->
+  `build_envelope` (l. 232) -> `parse_item` (l. 169) — donc le correctif de cette fiche le
+  couvre **sans travail supplémentaire**. À vérifier après merge en rejouant la commande
+  réelle, pas seulement les tests.
 - ⚠ **Une identité comptable protège l'enveloppe** (`core/envelope.py`, l. 59-78) :
   `found_stac == skipped_scene_cloud + off_tile + found_tile`, **et**
   `found_tile == len(items)`. Toute violation lève `ConservationError`. Un item écarté sans
