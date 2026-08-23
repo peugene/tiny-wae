@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l0-07-write_manifest-refuse-un-statut-illegitime">[l0-07] — write_manifest refuse un statut illégitime</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -67,7 +67,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <blockquote>
 <p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
 Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
-⚠ <strong>Placement à confirmer par le PO</strong> : id <code>l0-07</code> hors de la séquence du chantier
+✅ <strong>Placement validé par le PO le 2026-08-23</strong> (lancement du run) : id <code>l0-07</code> hors de la séquence du chantier
 <code>lot-0-ingestion</code> (qui s'arrête à <code>l0-06</code>), fiche autonome sans <code>parent:</code> — sur le
 précédent d'<code>out-01</code>. Rattacher au chapeau <code>l0-03</code> rouvrirait sa taxonomie, déclarée
 fermée. Le <code>depends_on: [l0-03.2]</code> n'est pas décoratif : c'est cette fiche qui a créé
@@ -83,6 +83,11 @@ silencieusement, et ne se découvre qu'au moment où un agrégat ne tombe plus j
 <p>Poser la garde à l'écriture, sur le patron déjà en place pour les compteurs de run.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD <code>c67bfc1</code>)</h3>
+<p>Re-vérifié le 2026-08-23 à HEAD <code>690e899</code> avant dispatch : <code>Manifest.status</code> toujours
+<code>str</code> libre, <code>MANIFEST_STATUSES</code> toujours absente, et
+<code>tests/test_vocabulary.py::test_manifest_statuses_a_bien_disparu</code> toujours présent (le
+test que cette fiche doit remplacer, pas supprimer). Base de non-régression : <strong>276</strong>
+tests depuis <code>obs-01</code>/<code>obs-02</code>.</p>
 <ul>
 <li><strong><code>Manifest.status: str</code></strong> (<code>adapters/manifests.py:80</code>) — aucune contrainte, ni au type,
   ni à la construction, ni à l'écriture.</li>
@@ -167,18 +172,17 @@ présenter à la garde. Ne pas « améliorer » en durcissant le dataclass.</p>
 </tr>
 <tr>
 <td>O5</td>
-<td><strong>mutation</strong> : retirer l'appel à la garde dans <code>write_manifest</code>, relancer <code>just test -k manifest</code></td>
-<td>O1 passe au <strong>ROUGE</strong>, puis au vert après restauration</td>
-</tr>
-<tr>
-<td>O6</td>
 <td>non-régression</td>
-<td><code>just check</code> vert — <strong>250 tests</strong> au départ, aucun test existant modifié hors <code>test_vocabulary.py</code></td>
+<td><code>just check</code> vert — <strong>276 tests</strong> au départ, aucun test existant modifié hors <code>test_vocabulary.py</code></td>
 </tr>
 </tbody>
 </table></div>
 <p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
 <ul>
+<li><strong>Pas de test de mutation</strong> (règle projet posée par le PO le 2026-08-22 : « on fait des
+  tests, ils doivent passer au vert »). L'oracle de mutation qui figurait ici a été retiré.
+  Écrire O1 <strong>avant</strong> la garde, et constater qu'il est rouge, suffit — c'est gratuit et ça
+  se fait dans le fil de l'implémentation.</li>
 <li><strong><code>read_manifest</code> reste permissif, délibérément.</strong> Durcir la lecture rendrait illisible un
   corpus historique écrit par une version antérieure — on refuserait de relire des données
   qu'on a nous-mêmes produites. La garde protège ce qu'on écrit, pas ce qu'on a écrit.</li>
@@ -204,4 +208,4 @@ non appliquée ne l'est pas.</p>
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 22/08/2026 11:08 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 08:10 — le .md fait foi.</p></article></body></html>

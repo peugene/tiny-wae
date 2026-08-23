@@ -18,4 +18,6 @@
 | P2 | `out-01` | Outillage — étendre mypy strict à `tests/` (24 erreurs mesurées) : la conformité aux Protocols n'est vérifiée nulle part (constat du run N5) |
 | P1 | `obs-01` | Observabilité — véritable système de logging + progression suivable du backfill (1200 fenêtres, plusieurs heures, aucune sortie avant la fin : constaté sur un run réel) |
 | P2 | `obs-02` | Exploitation — Ctrl+C du backfill : accusé de réception immédiat et second Ctrl+C qui interrompt (l'arrêt fonctionne déjà, il est muet) |
+| P1 | `perf-01` | Performance — poser les réglages GDAL dans le code : mesuré, ils font passer la campagne de ~21 h à 6 h 13, et ils n'existent aujourd'hui que dans une ligne de commande |
+| P1 | `data-01` | Robustesse — un asset `s3://` inaccessible ne doit plus faire perdre la fenêtre entière (5 items sur 14 967 ont fait sortir la campagne en échec) |
 | P3 | — | Améliorations kit à reporter (_tools_python → _tools/_tools_js) : barème S/M/L · pattern chapeau/sous-tâches dans le modèle de fiche · fiches humaines (categorie humain + règle /run « ne jamais dispatcher ») |
