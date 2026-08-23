@@ -1,0 +1,586 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l0-04.H] [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.H</b></nav><h1>[l0-04.H] [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O2</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette <span class="pill" style="background:#69b076">Fait</span><ul><li><a href="l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l0-04h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l0-04.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
+<li><a href="#objet">Objet</a></li>
+<li><a href="#checklist-philippe">Checklist Philippe</a></li>
+<li><a href="#critere-de-sortie">Critère de sortie</a></li>
+<li><a href="#lecture-de-jugement-2026-08-23-0-alerte-sur-25-sites">Lecture de jugement (2026-08-23) — 0 alerte sur 25 sites</a><ul>
+<li><a href="#prealable-le-ratio-et-la-taille-du-corpus-ne-mesurent-pas-la-meme-chose">Préalable : le ratio et la taille du corpus ne mesurent pas la même chose</a></li>
+<li><a href="#ce-qui-rend-la-lecture-credible">Ce qui rend la lecture crédible</a></li>
+<li><a href="#reserve-1-a07-zhangzhou-anomalie-de-nature-differente-non-corrigeable">Réserve 1 — A07 Zhangzhou : anomalie de nature différente, non corrigeable</a></li>
+<li><a href="#reserve-2-deux-defauts-daffichage-de-report-non-bloquants-fiche-rep-01">Réserve 2 — deux défauts d'affichage de report (non bloquants, fiche rep-01)</a></li>
+<li><a href="#sites-les-plus-pauvres-en-observations-contrainte-a-porter-au-lot-2">Sites les plus pauvres en observations — contrainte à porter au Lot 2</a></li>
+</ul>
+</li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p><strong>Réalisée par Philippe</strong> (lancement d'infra + jugement de recette). Le run s'arrête ici
+via <code>depends_on</code> — c'est le second et dernier gate humain du Lot 0.</p>
+</blockquote>
+<h2 id="objet">Objet</h2>
+<p>Lancer la campagne réelle (machine cible, data_root = NAS), produire le rapport et la
+planche, prononcer la recette du Lot 0.</p>
+<h2 id="checklist-philippe">Checklist Philippe</h2>
+<ul>
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run backfill --sites all --months 48 --workers 6</code>
+      <strong>FAIT le 2026-08-23</strong> : 1200/1200 fenêtres, <strong>6 h 13</strong>, 0 retry, 16 Go, 5468 chips
+      ingérés, 5 fenêtres en échec (cf. <code>data-01</code>). Relançable : idempotent (mesuré, une
+      fenêtre déjà faite se rejoue en ~2 s).
+      ⚠ <strong>La durée dépend entièrement de <code>perf-01</code></strong> : sans les réglages GDAL, le même run
+      était projeté à <strong>~21 h</strong>. Ne pas reprendre l'estimation « 3-5 h » d'origine, qui
+      n'avait jamais été mesurée.</li>
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run report --out &lt;data_root&gt;/report.md</code>
+      puis lire ce fichier.
+      ⚠ <strong><code>--out</code> est nécessaire</strong> : son défaut est <code>report.md</code> <strong>relatif au répertoire
+      courant</strong>, donc à la racine du dépôt et non dans le <code>data_root</code> (vérifié dans
+      <code>cli/report.py:50</code>). <strong>Les 4 critères mécaniques sont
+      marqués par l'outil, pas par toi</strong> : (1) <code>conservation: OK</code> sur les 25 sites et sur
+      l'agrégat ; (2) complétude (ci-dessous) ; (3) <code>integrite: OK</code> par site (fichiers,
+      hashes, <code>grid_hash</code> courant, nodata) ; (4) <code>failed_pct ≤ 1 %</code> par site.
+      <em>(Numérotation O1→O4 de <code>docs/lots/lot-0-sites.md</code> §5.)</em></li>
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run report --check-completeness --sites A01,C07,A03 --from 2022-09-01 --to &lt;fin de campagne&gt;</code>
+      → écart <strong>0</strong>. <strong>FAIT le 2026-08-23</strong> : <code>A01 OK (0 écart)</code>, <code>C07 OK (0 écart)</code>,
+      <code>A03 OK (0 écart)</code>, exit 0 — après le correctif <code>data-01</code> et un backfill de rattrapage
+      sur les 5 sites concernés (240 fenêtres en 3 min 57, 28 items valides récupérés).
+      ⚠ <strong><code>--from</code> et <code>--to</code> sont OBLIGATOIRES</strong> avec <code>--check-completeness</code> (sinon exit 2,
+      <code>usage : --check-completeness requiert --sites, --from et --to</code>). Constaté le
+      2026-08-23 : la commande écrite ici sans eux échoue. La requête
+      témoin reproduit <strong>les trois filtres du pipeline</strong> (bbox + fenêtre + <code>grid:code</code> +
+      <code>eo:cloud_cover &lt; 95 %</code>) ; tout écart est listé item par item par l'outil.</li>
+<li>[X] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run contact-sheet --first-last --out &lt;data_root&gt;/contact-sheet-first-last.png</code>
+      → contrôle visuel de non-régression.
+      ⚠ <strong><code>--out</code> est nécessaire</strong> : son défaut est <code>contact-sheet.png</code> <strong>à la racine du
+      dépôt</strong> (<code>cli/contact_sheet.py:30</code>). C'est le piège déjà rencontré sur <code>l0-03.H</code>, où
+      il a failli faire relire une planche périmée. La correction n'avait pas été propagée
+      jusqu'ici.</li>
+<li>[x] <strong>Volume transféré</strong> (hors instrument, décision E-d) : <strong>déclaré NON MESURÉ</strong>
+      (décision Philippe, 2026-08-23). Le compteur réseau système n'a pas été relevé
+      avant/après la campagne. Reste connu et exact : <strong>17 127 502 701 octets écrits</strong>
+      (~15,95 Gio, somme des <code>bytes_written</code>). Le transfert GDAL réel est nécessairement
+      SUPÉRIEUR (assets lus puis fenêtrés, SCL lu et jeté sur les rejets) mais n'est pas
+      instrumentable depuis Python. Non bloquant : aucun critère mécanique n'en dépend.</li>
+<li>[x] <strong>Lecture de jugement</strong> — <strong>FAITE le 2026-08-23, 0 alerte sur 25 sites.</strong> Tableau
+      complet et raisonnement en §« Lecture de jugement » ci-dessous.</li>
+<li>[x] <strong>Recette du Lot 0</strong> : <strong>GO pour le Lot 1</strong>, verdict consigné dans
+      <code>docs/lots/lot-0-sites.md</code> §7 (chiffres retenus, 2 réserves non bloquantes).</li>
+<li>[x] Déplacer cette fiche en <code>fait/</code> avec le résumé.</li>
+</ul>
+<h2 id="critere-de-sortie">Critère de sortie</h2>
+<p>Rapport publié ; <strong>les 4 critères mécaniques au vert</strong> (conservation 25/25, complétude
+écart 0, <code>integrite: OK</code>, <code>failed_pct ≤ 1 %</code>) ; recette prononcée dans le document de lot
+avec les chiffres retenus et tes réserves sur les ratios (jugement humain assumé).
+Les corrections tardives de coordonnées (rares — l0-03.H est passé avant) suivent
+la même mécanique <code>grid_hash</code> : éditer, re-survey, re-backfill du site, re-report.</p>
+<hr />
+<hr />
+<h2 id="lecture-de-jugement-2026-08-23-0-alerte-sur-25-sites">Lecture de jugement (2026-08-23) — 0 alerte sur 25 sites</h2>
+<h3 id="prealable-le-ratio-et-la-taille-du-corpus-ne-mesurent-pas-la-meme-chose">Préalable : le ratio et la taille du corpus ne mesurent pas la même chose</h3>
+<p>L'identité comptable donne <code>ratio = 100 % − nuages % − invalid % − failed %</code>. Donc
+<code>off_tile</code> et <code>skipped_scene_cloud</code>, retirés <strong>en amont</strong> de <code>found_tile</code>, <strong>n'influent pas
+sur le ratio</strong> : ils réduisent le NOMBRE d'observations. A05 Akkuyu le démontre — 46,7 %
+d'<code>off_tile</code> et pourtant 76,1 % de ratio.</p>
+<ul>
+<li><strong>Le ratio</strong> juge la qualité atmosphérique et la géométrie de fauchée.</li>
+<li><strong>La colonne <code>ingested</code></strong> juge ce qui contraint réellement le Lot 2 : combien de dates.</li>
+</ul>
+<p>⚠ <strong>Ce tableau est reconstruit sur le CORPUS DISTINCT (le disque), pas sur les colonnes du
+rapport</strong> — cf. réserve 2 : <code>report</code> agrège tous les runs, donc son <code>found_tile</code> recompte
+les items revus par les relances et son classement « pires cas » est faux.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Site</th>
+<th>Lieu</th>
+<th><code>ing/instr.</code></th>
+<th><strong>Ratio</strong></th>
+<th><code>off_tile</code></th>
+<th>scène &gt;95 %</th>
+<th>nuages</th>
+<th><code>invalid</code></th>
+<th>Explication chiffrée</th>
+<th>Alerte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>B08</td>
+<td>Port de Chancay (PE)</td>
+<td>63/322</td>
+<td><strong>19,6 %</strong></td>
+<td>43,9 %</td>
+<td>7,8 %</td>
+<td>79,8 %</td>
+<td>0,6 %</td>
+<td>Nuages 79,8 % (stratus côtier permanent) ; corpus amputé par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A07</td>
+<td>Zhangzhou (CN)</td>
+<td>112/443</td>
+<td><strong>25,3 %</strong></td>
+<td>0,0 %</td>
+<td>28,2 %</td>
+<td>24,8 %</td>
+<td>49,9 %</td>
+<td><strong>Bord de fauchée</strong> : <code>invalid_pct</code> bimodal (0 % ou 40-95 %), nuages faibles</td>
+<td>⚠ cf. réserve 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A02</td>
+<td>Hinkley Point C (UK)</td>
+<td>141/448</td>
+<td><strong>31,5 %</strong></td>
+<td>0,0 %</td>
+<td>33,3 %</td>
+<td>56,0 %</td>
+<td>12,5 %</td>
+<td>Nuages 56,0 % + 33,3 % de scènes écartées — cas défavorable annoncé en fiche</td>
+<td>non</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A04</td>
+<td>Flamanville (FR)</td>
+<td>83/242</td>
+<td><strong>34,3 %</strong></td>
+<td>35,6 %</td>
+<td>29,5 %</td>
+<td>65,7 %</td>
+<td>0,0 %</td>
+<td>Nuages 65,7 % (Cotentin) ; corpus amputé par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A03</td>
+<td>Sizewell C (UK)</td>
+<td>169/445</td>
+<td><strong>38,0 %</strong></td>
+<td>34,3 %</td>
+<td>33,5 %</td>
+<td>61,8 %</td>
+<td>0,2 %</td>
+<td>Nuages 61,8 % ; corpus amputé par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>6</td>
+<td>C01</td>
+<td>Centrale de Golfech (FR)</td>
+<td>104/273</td>
+<td><strong>38,1 %</strong></td>
+<td>49,1 %</td>
+<td>25,9 %</td>
+<td>56,8 %</td>
+<td>5,1 %</td>
+<td>Nuages 56,8 % ; corpus amputé de moitié par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>7</td>
+<td>C07</td>
+<td>Punggye-ri (KP)</td>
+<td>104/255</td>
+<td><strong>40,8 %</strong></td>
+<td>42,7 %</td>
+<td>17,2 %</td>
+<td>58,4 %</td>
+<td>0,8 %</td>
+<td>Nuages 58,4 % ; multi-tuiles 42,7 % (fiche annonçait ≈ 50 %)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>8</td>
+<td>C08</td>
+<td>Forêt de Bouconne (FR)</td>
+<td>119/264</td>
+<td>45,1 %</td>
+<td>0,0 %</td>
+<td>25,4 %</td>
+<td>52,3 %</td>
+<td>2,7 %</td>
+<td>Nuages 52,3 % (Toulouse)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>9</td>
+<td>C02</td>
+<td>Airbus Blagnac (FR)</td>
+<td>126/264</td>
+<td>47,7 %</td>
+<td>0,0 %</td>
+<td>25,4 %</td>
+<td>51,5 %</td>
+<td>0,8 %</td>
+<td>Nuages 51,5 % — jumeau de C08 (même tuile)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>10</td>
+<td>B09</td>
+<td>Autoroute A69 (FR)</td>
+<td>259/539</td>
+<td>48,1 %</td>
+<td>0,0 %</td>
+<td>22,3 %</td>
+<td>51,8 %</td>
+<td>0,2 %</td>
+<td>Nuages 51,8 % (Tarn)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>11</td>
+<td>C04</td>
+<td>Raffinerie de Lacq (FR)</td>
+<td>249/509</td>
+<td>48,9 %</td>
+<td>0,0 %</td>
+<td>26,3 %</td>
+<td>50,5 %</td>
+<td>0,6 %</td>
+<td>Nuages 50,5 % (piémont pyrénéen)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>12</td>
+<td>B07</td>
+<td>Salar d'Atacama (CL)</td>
+<td>165/321</td>
+<td>51,4 %</td>
+<td>49,5 %</td>
+<td>0,6 %</td>
+<td>48,0 %</td>
+<td>0,6 %</td>
+<td>Nuages 48,0 % ; corpus amputé de moitié par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>13</td>
+<td>A08</td>
+<td>Vogtle 3-4 (US)</td>
+<td>251/487</td>
+<td>51,5 %</td>
+<td>0,0 %</td>
+<td>21,7 %</td>
+<td>48,5 %</td>
+<td>0,0 %</td>
+<td>Nuages 48,5 % (Géorgie)</td>
+<td>non</td>
+</tr>
+<tr>
+<td>14</td>
+<td>C06</td>
+<td>Base aérienne d'Engels (RU)</td>
+<td>219/418</td>
+<td>52,4 %</td>
+<td>0,0 %</td>
+<td>33,7 %</td>
+<td>47,4 %</td>
+<td>0,0 %</td>
+<td>Nuages 47,4 %</td>
+<td>non</td>
+</tr>
+<tr>
+<td>15</td>
+<td>A01</td>
+<td>ITER Cadarache (FR)</td>
+<td>194/297</td>
+<td>65,3 %</td>
+<td>0,0 %</td>
+<td>13,9 %</td>
+<td>34,7 %</td>
+<td>0,0 %</td>
+<td>Provence — mono-tuile parfaite</td>
+<td>non</td>
+</tr>
+<tr>
+<td>16</td>
+<td>C03</td>
+<td>Port de Fos-sur-Mer (FR)</td>
+<td>391/581</td>
+<td>67,3 %</td>
+<td>0,0 %</td>
+<td>15,4 %</td>
+<td>32,7 %</td>
+<td>0,0 %</td>
+<td>Provence</td>
+<td>non</td>
+</tr>
+<tr>
+<td>17</td>
+<td>B04</td>
+<td>Barrage GERD (ET)</td>
+<td>210/311</td>
+<td>67,5 %</td>
+<td>0,0 %</td>
+<td>10,1 %</td>
+<td>32,2 %</td>
+<td>0,3 %</td>
+<td>Mousson éthiopienne saisonnière</td>
+<td>non</td>
+</tr>
+<tr>
+<td>18</td>
+<td>A06</td>
+<td>El Dabaa (EG)</td>
+<td>466/652</td>
+<td>71,5 %</td>
+<td>0,0 %</td>
+<td>2,7 %</td>
+<td>28,2 %</td>
+<td>0,2 %</td>
+<td>Côte égyptienne</td>
+<td>non</td>
+</tr>
+<tr>
+<td>19</td>
+<td>A05</td>
+<td>Akkuyu (TR)</td>
+<td>239/314</td>
+<td>76,1 %</td>
+<td>46,7 %</td>
+<td>7,0 %</td>
+<td>23,9 %</td>
+<td>0,0 %</td>
+<td>Bon ratio, corpus amputé de moitié par multi-tuiles</td>
+<td>non</td>
+</tr>
+<tr>
+<td>20</td>
+<td>B06</td>
+<td>Mine d'Escondida (CL)</td>
+<td>257/319</td>
+<td>80,6 %</td>
+<td>0,0 %</td>
+<td>0,6 %</td>
+<td>19,1 %</td>
+<td>0,3 %</td>
+<td>Atacama</td>
+<td>non</td>
+</tr>
+<tr>
+<td>21</td>
+<td>B03</td>
+<td>Nouvelle capitale (EG)</td>
+<td>276/335</td>
+<td>82,4 %</td>
+<td>0,0 %</td>
+<td>2,5 %</td>
+<td>17,6 %</td>
+<td>0,0 %</td>
+<td>Désert</td>
+<td>non</td>
+</tr>
+<tr>
+<td>22</td>
+<td>B05</td>
+<td>Parc solaire Dubaï (AE)</td>
+<td>258/308</td>
+<td>83,8 %</td>
+<td>0,0 %</td>
+<td>1,9 %</td>
+<td>16,2 %</td>
+<td>0,0 %</td>
+<td>Désert</td>
+<td>non</td>
+</tr>
+<tr>
+<td>23</td>
+<td>B02</td>
+<td>Aéroport King Salman (SA)</td>
+<td>260/309</td>
+<td>84,1 %</td>
+<td>0,0 %</td>
+<td>3,4 %</td>
+<td>15,9 %</td>
+<td>0,0 %</td>
+<td>Désert</td>
+<td>non</td>
+</tr>
+<tr>
+<td>24</td>
+<td>C05</td>
+<td>Natanz (IR)</td>
+<td>499/589</td>
+<td>84,7 %</td>
+<td>0,0 %</td>
+<td>5,8 %</td>
+<td>15,3 %</td>
+<td>0,0 %</td>
+<td>Plateau iranien</td>
+<td>non</td>
+</tr>
+<tr>
+<td>25</td>
+<td>B01</td>
+<td>NEOM The Line (SA)</td>
+<td>579/628</td>
+<td><strong>92,2 %</strong></td>
+<td>0,0 %</td>
+<td>0,8 %</td>
+<td>7,3 %</td>
+<td>0,5 %</td>
+<td>Désert du Tabuk — meilleur site du corpus</td>
+<td>non</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>TOTAL</strong></td>
+<td></td>
+<td><strong>5793 / 9873</strong></td>
+<td><strong>58,7 %</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>0 alerte</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="ce-qui-rend-la-lecture-credible">Ce qui rend la lecture crédible</h3>
+<p>Le classement suit la climatologie, pas le hasard — meilleur signe que le filtre SCL fait
+son travail :</p>
+<ul>
+<li>Les <strong>7 sites désertiques ou arides</strong> (B01, B02, B03, B05, B06, C05, A06) occupent les
+  7 dernières lignes, tous ≥ 71 %.</li>
+<li>Les <strong>5 sites du Sud-Ouest français</strong> (C01, C02, C04, C08, B09) tombent dans une bande
+  étroite de 38 à 49 %.</li>
+<li><strong>C02 et C08</strong> partagent la même tuile MGRS : <code>found_stac</code> identique (354), scènes
+  écartées identiques (90), corpus identique (264). Deux mesures indépendantes qui
+  coïncident au chiffre près.</li>
+<li>Les <strong>3 sites maritimes tempérés</strong> (A02 Hinkley, A03 Sizewell, A04 Flamanville) sont
+  groupés à 31-38 %, comme la fiche de lot l'anticipait.</li>
+</ul>
+<p><strong>Aucun ratio faible n'est sans explication chiffrée : le critère d'alerte de cette fiche
+n'est déclenché sur aucun site.</strong></p>
+<h3 id="reserve-1-a07-zhangzhou-anomalie-de-nature-differente-non-corrigeable">Réserve 1 — A07 Zhangzhou : anomalie de nature différente, non corrigeable</h3>
+<p>Seul site où le ratio n'est PAS gouverné par les nuages : <strong>221 items sur 443 rejetés en
+<code>invalid</code></strong>, avec un <code>cloud_pct</code> de l'ordre de 0,5 %. La distribution est franchement
+bimodale — les items ingérés sont <strong>tous</strong> à <code>invalid_pct = 0,0 %</code>, les rejetés s'étalent
+de 40 à 95 % (mesuré : 2 items ≥ 99 %, 216 entre 50 et 99 %, 3 sous 50 %).</p>
+<p>Signature d'un chip en <strong>bord de fauchée</strong> : il n'est couvert que par une des deux orbites
+passant sur la tuile 50QNM, l'autre le laisse en zone de remplissage. Comme <code>off_tile = 0</code>,
+<strong>aucune tuile alternative ne contient le chip</strong> — re-épingler ne réglerait rien. À accepter
+comme caractéristique définitive du site.</p>
+<h3 id="reserve-2-deux-defauts-daffichage-de-report-non-bloquants-fiche-rep-01">Réserve 2 — deux défauts d'affichage de <code>report</code> (non bloquants, fiche <code>rep-01</code>)</h3>
+<ol>
+<li><strong>Ratio <code>ingested/found_tile</code> faussé par les relances.</strong> <code>report</code> agrège tous les
+   journaux : <code>found_tile</code> recompte les items revus, alors qu'<code>ingested</code> reste stable (les
+   re-rencontres sont marquées <code>skipped</code>). Effet mesuré sur la section « Pires cas en
+   tête » : <strong>A03 y figure 1er</strong> (14,5 %) alors qu'il est 5e sur le corpus réel, et
+   <strong>B01 apparaît 12e</strong> (45,8 %) alors que c'est le MEILLEUR site à 92,2 %. Le classement
+   publié est donc inexploitable en l'état.</li>
+<li><strong>La colonne <code>skipped_asset_scheme</code> n'est pas affichée</strong> alors qu'elle fait partie de
+   l'identité de conservation depuis <code>data-01</code>. Conséquence : l'identité O1 n'est plus
+   re-vérifiable à la main depuis le tableau — recalculée sans ce terme, elle montre un
+   faux écart de 5. Vérifié : <code>21426 = 3993 + 3935 + 13493 + 5</code>, conservation réellement
+   OK sur les 25 sites ET sur l'agrégat.</li>
+</ol>
+<h3 id="sites-les-plus-pauvres-en-observations-contrainte-a-porter-au-lot-2">Sites les plus pauvres en observations — contrainte à porter au Lot 2</h3>
+<p><strong>B08 (63 chips, 1 tous les 23 j)</strong>, <strong>A04 (83)</strong>, <strong>C07 (104)</strong> et <strong>C01 (104)</strong>, contre
+<strong>B01 (579, 1 tous les 2,5 j)</strong>. Moyenne du parc : 232 observations par site sur 48 mois,
+soit une tous les 6,3 jours. Ces observations ne sont PAS réparties uniformément sur les
+sites nuageux (concentration estivale) — distribution mensuelle <strong>non mesurée</strong>.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><strong>Recette du Lot 0 prononcée le 2026-08-23 : GO pour le Lot 1</strong> (verdict consigné dans
+<code>docs/lots/lot-0-sites.md</code> §7).</p>
+<p><strong>Les 4 critères mécaniques, chiffrés :</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Verdict</th>
+<th>Chiffre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1 conservation</td>
+<td><strong>OK</strong></td>
+<td>25/25 sites + agrégat : <code>21426 = 3993 + 3935 + 13493 + 5</code></td>
+</tr>
+<tr>
+<td>O2 complétude</td>
+<td><strong>OK</strong></td>
+<td>écart <strong>0</strong> sur A01, C07, A03 (après correctif <code>data-01</code> + rattrapage)</td>
+</tr>
+<tr>
+<td>O3 intégrité</td>
+<td><strong>OK</strong></td>
+<td><code>integrite: OK</code> sur 25/25 sites</td>
+</tr>
+<tr>
+<td>O4 <code>failed_pct</code></td>
+<td><strong>OK</strong></td>
+<td>2 échecs sur 13 493 = <strong>0,015 %</strong> (max par site 0,2 %, seuil 1 %)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Campagne</strong> : 1200/1200 fenêtres, <strong>6 h 13</strong>, 0 retry, <strong>5 793 chips</strong> ingérés sur
+<strong>9 873 items</strong> instruits (<strong>58,7 %</strong>), <strong>17 127 502 701 octets écrits</strong> (~15,95 Gio).</p>
+<p><strong>Jugement humain</strong> : 0 alerte sur 25 sites — tout ratio faible a son explication chiffrée
+(cf. §Lecture de jugement).</p>
+<p><strong>Réserves non bloquantes</strong> : (1) A07 Zhangzhou en bord de fauchée, 50 % d'items <code>invalid</code>,
+non corrigeable ; (2) deux défauts d'affichage de <code>report</code> → fiche <code>rep-01</code> en maturation.</p>
+<p><strong>Non fait, assumé</strong> : <em>volume réellement transféré</em> — déclaré <strong>non mesuré</strong> (décision
+Philippe). Seuls les octets ÉCRITS sont connus, le transfert GDAL n'est pas instrumentable
+depuis Python (décision E-d). Aucun critère mécanique n'en dépend.</p><div class="prevnext"><a href="l0-04.2.html">← [l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</a><span></span></div><p class="gen">Généré le 23/08/2026 13:32 — le .md fait foi.</p></article></body></html>
