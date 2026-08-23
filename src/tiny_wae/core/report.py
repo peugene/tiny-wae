@@ -21,8 +21,15 @@ from typing import Protocol
 from tiny_wae.core.artifacts import EXPECTED_FILES
 from tiny_wae.core.statuses import RUN_STATUSES
 
-# Classes SCL mises en avant par l'instrument V3 différé (2 = ombre de nuage, 11 = neige).
-SCL_HIGHLIGHT_CLASSES: tuple[str, ...] = ("2", "11")
+# Libellés des classes SCL mises en avant par l'instrument V3 différé (rep-01, D9) — SOURCE
+# UNIQUE : le titre de section et ``SCL_HIGHLIGHT_CLASSES`` en dérivent tous les deux, pour
+# ne plus jamais dupliquer le fait (avant rep-01 : "2 = ombre de nuage" était FAUX — dans la
+# classification de scène Sentinel-2 L2A, 2 = ombres portées du relief, 3 = ombre de nuage).
+SCL_CLASS_LABELS: dict[str, str] = {"3": "ombre de nuage", "11": "neige"}
+
+# Classes SCL mises en avant dans le rapport — DÉRIVÉE de ``SCL_CLASS_LABELS`` (rep-01, D9),
+# jamais re-listée à la main.
+SCL_HIGHLIGHT_CLASSES: tuple[str, ...] = tuple(SCL_CLASS_LABELS)
 
 # Seuil légitime unique de la recette (chapeau l0-04, critère 4) : failed / found_tile.
 FAILED_PCT_MAX = 1.0
@@ -81,6 +88,10 @@ class SiteReport:
     integrity_issues: tuple[IntegrityIssue, ...]
     scl_class_counts: dict[str, int]
     bytes_written: int
+    # rep-01, D1/D2 : corpus DISTINCT (un manifeste par item, jamais sur-compté par les
+    # relances) — noms ARRÊTÉS par la fiche, ne pas en inventer d'autres.
+    distinct_ingested: int
+    distinct_instructed: int
 
     @property
     def integrity_ok(self) -> bool:
@@ -89,11 +100,13 @@ class SiteReport:
 
     @property
     def ingested_ratio(self) -> float:
-        """``ingested / found_tile`` — 0.0 si ``found_tile`` == 0 (site jamais instruit)."""
-        found_tile = self.counters.get("found_tile", 0)
-        if found_tile == 0:
+        """``distinct_ingested / distinct_instructed`` (rep-01, D1) — calculé sur le corpus
+        DISTINCT des manifestes, jamais sur ``counters`` (qui SOMME les runs et grossit à
+        chaque relance, cf. docstring d'``adapters.manifests.aggregate_counters``). 0.0 si
+        ``distinct_instructed`` == 0 (site jamais instruit)."""
+        if self.distinct_instructed == 0:
             return 0.0
-        return self.counters["ingested"] / found_tile
+        return self.distinct_ingested / self.distinct_instructed
 
 
 @dataclass(frozen=True, slots=True)
@@ -215,6 +228,11 @@ def build_site_report(
         integrity_issues=tuple(issues),
         scl_class_counts=_merge_scl_class_counts(ingested),
         bytes_written=sum(m.bytes_written for m in ingested),
+        # rep-01, D1 : ``manifests`` est déjà la liste distincte (un par item), donc
+        # ``len(manifests)`` et ``len(ingested)`` sont, par construction, insensibles au
+        # nombre de relances du site.
+        distinct_ingested=len(ingested),
+        distinct_instructed=len(manifests),
     )
 
 
@@ -243,27 +261,39 @@ def _integrity_cell(report: SiteReport) -> str:
 
 
 def _worst_case_line(report: SiteReport) -> str:
-    """Phrase d'explication factuelle automatique (fiche : « pires cas en tête »)."""
+    """Phrase d'explication factuelle automatique (fiche : « pires cas en tête »).
+
+    rep-01, D5 : le ratio publié est le ratio DISTINCT (insensible aux relances), avec un
+    libellé de dénominateur sans ambiguïté. Les pourcentages de causes restent calculés sur
+    ``counters`` (volume) — délibéré : robustes aux relances, tout y grossit ensemble — et
+    leur libellé le dit explicitement (``volume``) pour ne pas les confondre avec le ratio
+    distinct qui précède.
+    """
     counters = report.counters
     causes = []
     if counters.get("off_tile", 0) > 0:
-        causes.append(f"multi-tuiles : off_tile={counters['off_tile']}/{counters['found_stac']}")
+        causes.append(
+            f"multi-tuiles : off_tile={counters['off_tile']}/found_stac={counters['found_stac']} "
+            "(volume)"
+        )
     if counters.get("rejected_clouds", 0) > 0:
         causes.append(
-            f"nuages : rejected_clouds={counters['rejected_clouds']}/{counters['found_tile']}"
+            f"nuages : rejected_clouds={counters['rejected_clouds']}/"
+            f"found_tile={counters['found_tile']} (volume)"
         )
     cause_text = " ; ".join(causes) if causes else "aucune cause dominante mesurée"
     return (
-        f"- **{report.site_id}** : ingested/found_tile = "
-        f"{counters.get('ingested', 0)}/{counters.get('found_tile', 0)} — {cause_text}"
+        f"- **{report.site_id}** : ingested/instruits (distincts) = "
+        f"{report.distinct_ingested}/{report.distinct_instructed} — {cause_text}"
     )
 
 
 def render_report(reports: list[SiteReport]) -> str:
     """Rend le rapport Markdown complet (fiche l0-04.2) : table par site (colonnes de
     conservation, ``failed_pct``, verdicts ``conservation``/``integrite``), section
-    « pires cas en tête » triée sur ``ingested / found_tile`` croissant, agrégat
-    ``scl_class_counts`` (classes 2/11 mises en avant) et volumes.
+    « pires cas en tête » triée sur le ratio DISTINCT ``distinct_ingested /
+    distinct_instructed`` croissant (rep-01, D1 : insensible aux relances), agrégat
+    ``scl_class_counts`` (classes de ``SCL_HIGHLIGHT_CLASSES`` mises en avant) et volumes.
 
     ``bytes_downloaded`` n'est PAS agrégé ici : la fiche (décision E-d) exige que ce champ
     porte sa mention de portée (STAC seul, GDAL non instrumentable) — ce module reçoit des
@@ -273,21 +303,23 @@ def render_report(reports: list[SiteReport]) -> str:
     lines: list[str] = ["# Rapport d'ingestion — tiny-wae", ""]
 
     lines.append(
-        "| site | found_stac | skipped_scene_cloud | off_tile | found_tile | ingested | "
-        "rejected_clouds | rejected_invalid | rejected_nodata | failed | skipped | "
-        "failed_pct | conservation | integrite |"
+        "| site | found_stac | skipped_scene_cloud | off_tile | skipped_asset_scheme | "
+        "found_tile | ingested | rejected_clouds | rejected_invalid | rejected_nodata | "
+        "failed | skipped | failed_pct | conservation | integrite |"
     )
-    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for report in reports:
         counters = report.counters
         lines.append(
-            "| {site_id} | {found_stac} | {skipped_scene_cloud} | {off_tile} | {found_tile} | "
-            "{ingested} | {rejected_clouds} | {rejected_invalid} | {rejected_nodata} | "
-            "{failed} | {skipped} | {failed_pct:.1f} % | {conservation} | {integrite} |".format(
+            "| {site_id} | {found_stac} | {skipped_scene_cloud} | {off_tile} | "
+            "{skipped_asset_scheme} | {found_tile} | {ingested} | {rejected_clouds} | "
+            "{rejected_invalid} | {rejected_nodata} | {failed} | {skipped} | "
+            "{failed_pct:.1f} % | {conservation} | {integrite} |".format(
                 site_id=report.site_id,
                 found_stac=counters.get("found_stac", 0),
                 skipped_scene_cloud=counters.get("skipped_scene_cloud", 0),
                 off_tile=counters.get("off_tile", 0),
+                skipped_asset_scheme=counters.get("skipped_asset_scheme", 0),
                 found_tile=counters.get("found_tile", 0),
                 ingested=counters.get("ingested", 0),
                 rejected_clouds=counters.get("rejected_clouds", 0),
@@ -325,15 +357,18 @@ def render_report(reports: list[SiteReport]) -> str:
                 lines.append(f"- **{report.site_id}** / `{issue.item_id}` : {issue.cause}")
 
     lines.append("")
-    lines.append(
-        "## Pires cas en tête (ingested / found_tile, sans seuil — caractéristique de site)"
-    )
+    lines.append("## Pires cas en tête (ratio sur corpus distinct — caractéristique de site)")
     lines.append("")
     for report in sorted(reports, key=lambda r: r.ingested_ratio):
         lines.append(_worst_case_line(report))
 
     lines.append("")
-    lines.append("## Classes SCL agrégées (2 = ombre de nuage, 11 = neige — instrument V3)")
+    # rep-01, D9 : titre DÉRIVÉ de ``SCL_CLASS_LABELS`` — plus jamais écrit en dur, source
+    # unique avec ``SCL_HIGHLIGHT_CLASSES``.
+    scl_title_classes = ", ".join(
+        f"{scl_class} = {SCL_CLASS_LABELS[scl_class]}" for scl_class in SCL_HIGHLIGHT_CLASSES
+    )
+    lines.append(f"## Classes SCL agrégées ({scl_title_classes} — instrument V3)")
     lines.append("")
     scl_totals: dict[str, int] = {}
     bytes_written_total = 0
