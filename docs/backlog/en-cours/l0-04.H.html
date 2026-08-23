@@ -66,10 +66,10 @@ via <code>depends_on</code> — c'est le second et dernier gate humain du Lot 0.
 planche, prononcer la recette du Lot 0.</p>
 <h2 id="checklist-philippe">Checklist Philippe</h2>
 <ul>
-<li>[ ] <code>TINY_WAE_DATA_ROOT=&lt;NAS&gt; just run backfill --sites all --months 48 --workers 6</code>
+<li>[X] <code>TINY_WAE_DATA_ROOT=&lt;NAS&gt; just run backfill --sites all --months 48 --workers 6</code>
       (durée attendue ~3-5 h avec pool — mesures de l0-03.7/O5 à confronter ; relançable :
       idempotent).</li>
-<li>[ ] <code>just run report</code> → lire <code>&lt;data_root&gt;/report.md</code>. <strong>Les 4 critères mécaniques sont
+<li>[X] <code>just run report</code> → lire <code>&lt;data_root&gt;/report.md</code>. <strong>Les 4 critères mécaniques sont
       marqués par l'outil, pas par toi</strong> : (1) <code>conservation: OK</code> sur les 25 sites et sur
       l'agrégat ; (2) complétude (ci-dessous) ; (3) <code>integrite: OK</code> par site (fichiers,
       hashes, <code>grid_hash</code> courant, nodata) ; (4) <code>failed_pct ≤ 1 %</code> par site.
@@ -100,4 +100,4 @@ Les corrections tardives de coordonnées (rares — l0-03.H est passé avant) su
 la même mécanique <code>grid_hash</code> : éditer, re-survey, re-backfill du site, re-report.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><div class="prevnext"><a href="../fait/l0-04.2.html">← [l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</a><span></span></div><p class="gen">Généré le 23/08/2026 08:38 — le .md fait foi.</p></article></body></html>
+<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><div class="prevnext"><a href="../fait/l0-04.2.html">← [l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</a><span></span></div><p class="gen">Généré le 23/08/2026 08:54 — le .md fait foi.</p></article></body></html>
