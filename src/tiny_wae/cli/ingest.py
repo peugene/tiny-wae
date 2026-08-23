@@ -88,14 +88,16 @@ def _require_grid_computed(site: Site) -> None:
 
 
 def _report_counters(site_id: str, run: Run) -> None:
-    """Écrit les compteurs finaux sur STDERR — les 4 compteurs d'enveloppe puis les 6
-    statuts, plus bytes et durée (cf. fiche : discipline des flux, rien d'autre sur
+    """Écrit les compteurs finaux sur STDERR — les 5 compteurs d'enveloppe (D5, fiche
+    data-01 : ``skipped_asset_scheme`` ajouté à la ligne — un écart compté qui ne
+    s'afficherait nulle part sur STDERR serait aussi opaque qu'un échec silencieux) puis
+    les 6 statuts, plus bytes et durée (cf. fiche : discipline des flux, rien d'autre sur
     STDOUT que ce que le CLI y écrit explicitement — ici tout part sur STDERR)."""
     c = run.counters
     typer.echo(
         f"site={site_id}  found_stac={c['found_stac']}  "
         f"skipped_scene_cloud={c['skipped_scene_cloud']}  off_tile={c['off_tile']}  "
-        f"found_tile={c['found_tile']}",
+        f"found_tile={c['found_tile']}  skipped_asset_scheme={c['skipped_asset_scheme']}",
         err=True,
     )
     statuses = "  ".join(f"{status}={c[status]}" for status in RUN_STATUSES)

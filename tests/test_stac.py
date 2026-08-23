@@ -27,6 +27,7 @@ import pystac_client.exceptions
 import pytest
 
 from tiny_wae.adapters.stac import (
+    AssetSchemeError,
     EarthSearchSource,
     StacSourceError,
     StacUnreachable,
@@ -182,7 +183,8 @@ def test_verrou_normalisation_tile_mgrs_prefix() -> None:
 
 
 def test_garde_href_s3_sur_asset_mappe_leve() -> None:
-    """Un asset MAPPÉ (ex. 'blue') en s3:// fait lever StacSourceError — jamais silencieux."""
+    """Un asset MAPPÉ (ex. 'blue') en s3:// fait lever AssetSchemeError — jamais silencieux
+    (et AssetSchemeError EST un StacSourceError, cf. test dédié ci-dessous)."""
     item = {
         "id": "FAKE_ITEM",
         "properties": {
@@ -198,8 +200,17 @@ def test_garde_href_s3_sur_asset_mappe_leve() -> None:
         },
         "assets": {"blue": {"href": "s3://bucket/blue.tif"}},
     }
-    with pytest.raises(StacSourceError):
+    with pytest.raises(AssetSchemeError) as excinfo:
         parse_item(item, EXPECTED_ASSET_KEYS)
+    assert excinfo.value.item_id == "FAKE_ITEM"
+    assert excinfo.value.asset_key == "blue"
+
+
+def test_asset_scheme_error_est_bien_un_stac_source_error() -> None:
+    """AssetSchemeError EST un StacSourceError (sous-classe) : un `except StacSourceError`
+    amont continue de l'attraper — seul `build_envelope` cible la sous-classe PRÉCISE
+    pour ne rattraper QUE ce défaut, jamais un autre (data-01, D1/D4)."""
+    assert issubclass(AssetSchemeError, StacSourceError)
 
 
 def test_garde_href_s3_asset_non_mappe_ignore() -> None:
@@ -225,6 +236,173 @@ def test_garde_href_s3_asset_non_mappe_ignore() -> None:
     acquisition = parse_item(item, EXPECTED_ASSET_KEYS)
     assert "cloud" not in acquisition.assets
     assert acquisition.assets["blue"] == "https://example.test/blue.tif"
+
+
+# ── Oracle fiche data-01 : un asset s3:// n'emporte plus la fenêtre entière ──────────
+
+
+def _item(
+    item_id: str,
+    *,
+    tile: str = "52TEL",
+    cloud_cover: float = 1.0,
+    blue_href: str = "https://example.test/blue.tif",
+    extra_assets: dict[str, dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """Item STAC brut minimal, littéral (même forme que la garde s3:// existante ci-dessus) —
+    utilisé pour composer des lots synthétiques sans dépendre des fixtures enregistrées."""
+    assets = {"blue": {"href": blue_href}}
+    if extra_assets:
+        assets.update(extra_assets)
+    return {
+        "id": item_id,
+        "properties": {
+            "datetime": "2024-01-01T00:00:00Z",
+            "platform": "sentinel-2a",
+            "grid:code": f"MGRS-{tile}",
+            "s2:sequence": "0",
+            "eo:cloud_cover": cloud_cover,
+            "s2:nodata_pixel_percentage": 0.0,
+            "s2:processing_baseline": "05.09",
+            "earthsearch:boa_offset_applied": True,
+            "proj:code": "EPSG:32652",
+        },
+        "assets": assets,
+    }
+
+
+def test_data01_o1_un_item_s3_n_emporte_plus_la_fenetre() -> None:
+    """O1 : 1 item sur 5 porte un asset mappé s3:// -- l'appel ABOUTIT, found_tile==4,
+    skipped_asset_scheme==1, aucune exception (jusque là, elle emportait toute la fenêtre)."""
+    raw_items = [_item(f"OK_{i}") for i in range(4)] + [
+        _item("FAUTIF", blue_href="s3://sentinel-s2-l2a/bucket/blue.jp2")
+    ]
+    envelope = build_envelope(
+        site_id="A01",
+        window=_window(),
+        raw_items=raw_items,
+        reference_tile="52TEL",
+        scene_cloud_max=95,
+        asset_keys=EXPECTED_ASSET_KEYS,
+    )
+    assert envelope.counters["found_tile"] == 4
+    assert envelope.counters["skipped_asset_scheme"] == 1
+    assert {acq.item_id for acq in envelope.items} == {"OK_0", "OK_1", "OK_2", "OK_3"}
+
+
+def test_data01_o2_identite_comptable_sur_le_meme_lot() -> None:
+    """O2 : found_stac == skipped_scene_cloud+off_tile+found_tile+skipped_asset_scheme ET
+    found_tile == len(items) sur le lot d'O1 -- aucun ConservationError (vérifié par
+    construction dans build_envelope/Envelope.__post_init__, réaffirmé ici explicitement)."""
+    raw_items = [_item(f"OK_{i}") for i in range(4)] + [
+        _item("FAUTIF", blue_href="s3://sentinel-s2-l2a/bucket/blue.jp2")
+    ]
+    envelope = build_envelope(
+        site_id="A01",
+        window=_window(),
+        raw_items=raw_items,
+        reference_tile="52TEL",
+        scene_cloud_max=95,
+        asset_keys=EXPECTED_ASSET_KEYS,
+    )
+    counters = envelope.counters
+    assert counters["found_stac"] == (
+        counters["skipped_scene_cloud"]
+        + counters["off_tile"]
+        + counters["found_tile"]
+        + counters["skipped_asset_scheme"]
+    )
+    assert counters["found_tile"] == len(envelope.items)
+
+
+def test_data01_o3_asset_non_mappe_s3_n_elargit_pas_la_garde() -> None:
+    """O3 : un item dont seul un asset NON mappé ('cloud') est en s3:// est ingéré
+    NORMALEMENT -- skipped_asset_scheme reste à 0, la garde ne s'élargit pas (D4)."""
+    raw_items = [_item("SEUL", extra_assets={"cloud": {"href": "s3://bucket/cloud.jp2"}})]
+    envelope = build_envelope(
+        site_id="A01",
+        window=_window(),
+        raw_items=raw_items,
+        reference_tile="52TEL",
+        scene_cloud_max=95,
+        asset_keys=EXPECTED_ASSET_KEYS,
+    )
+    assert envelope.counters["skipped_asset_scheme"] == 0
+    assert envelope.counters["found_tile"] == 1
+    assert envelope.items[0].item_id == "SEUL"
+
+
+def test_data01_build_envelope_ne_rattrape_pas_un_autre_stac_source_error() -> None:
+    """DISCRIMINANT (D4, garde non élargie) : un ``proj:code`` malformé lève un
+    ``StacSourceError`` NU (pas ``AssetSchemeError``) et build_envelope ne le rattrape PAS
+    — il propage, comme avant la fiche. Sans la sous-classe dédiée, un `except
+    StacSourceError` trop large aurait avalé ce défaut de parsing sous
+    `skipped_asset_scheme`, à tort."""
+    item = _item("MAUVAIS_EPSG")
+    item["properties"]["proj:code"] = "EPSG:pas-un-entier"
+    with pytest.raises(StacSourceError) as excinfo:
+        build_envelope(
+            site_id="A01",
+            window=_window(),
+            raw_items=[item],
+            reference_tile="52TEL",
+            scene_cloud_max=95,
+            asset_keys=EXPECTED_ASSET_KEYS,
+        )
+    assert not isinstance(excinfo.value, AssetSchemeError)
+
+
+def test_data01_o4_log_warning_id_et_cle_fautive(caplog: pytest.LogCaptureFixture) -> None:
+    """O4 : 1 ligne WARNING contenant l'id de l'item écarté ET la clé d'asset fautive."""
+    raw_items = [_item("ITEM_FAUTIF", blue_href="s3://sentinel-s2-l2a/bucket/blue.jp2")]
+    with caplog.at_level("WARNING", logger="tiny_wae.adapters.stac"):
+        envelope = build_envelope(
+            site_id="A01",
+            window=_window(),
+            raw_items=raw_items,
+            reference_tile="52TEL",
+            scene_cloud_max=95,
+            asset_keys=EXPECTED_ASSET_KEYS,
+        )
+    assert envelope.counters["skipped_asset_scheme"] == 1
+    warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+    assert len(warnings) == 1
+    message = warnings[0].getMessage()
+    assert "ITEM_FAUTIF" in message
+    assert "blue" in message
+
+
+# Ids réels de la campagne du 2026-08-23 (cf. ancrage de la fiche data-01) -- rejoués ici
+# EN SYNTHÉTIQUE (littéraux, comme la garde s3:// ci-dessus) : aucune fixture réseau
+# n'existe pour ces items précis, seuls leurs ids et leur défaut (asset mappé s3://) sont
+# mesurés et cités par la fiche.
+_CAMPAIGN_FAULTY_ITEM_IDS = (
+    "S2A_31UCT_20240123",
+    "S2B_31TGJ_20241204",
+    "S2A_36RYS_20240901",
+    "S2A_19KEQ_20240123",
+    "S2B_31TFJ_20241204",
+)
+
+
+def test_data01_o5_les_5_items_reels_de_la_campagne_sont_ecartes() -> None:
+    """O5 : les 5 items fautifs réels de la campagne (rejoués depuis une fixture
+    synthétique) sont TOUS écartés, 0 exception, la fenêtre aboutit -- 5/5."""
+    raw_items = [
+        _item(item_id, blue_href="s3://sentinel-s2-l2a/bucket/blue.jp2")
+        for item_id in _CAMPAIGN_FAULTY_ITEM_IDS
+    ]
+    envelope = build_envelope(
+        site_id="A01",
+        window=_window(),
+        raw_items=raw_items,
+        reference_tile="52TEL",
+        scene_cloud_max=95,
+        asset_keys=EXPECTED_ASSET_KEYS,
+    )
+    assert envelope.counters["skipped_asset_scheme"] == 5
+    assert envelope.counters["found_tile"] == 0
+    assert envelope.items == []
 
 
 # ── proj:epsg / proj:code — écart mesuré vs la fiche ─────────────────────────────────

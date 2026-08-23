@@ -426,11 +426,12 @@ def _run_ingestion(
     nodata_ratio = status_counts["rejected_nodata"] / found_tile if found_tile > 0 else 0.0
     tile_suspect = nodata_ratio > TILE_SUSPECT_RATIO
 
+    # Compteurs d'enveloppe COMPOSÉS depuis ``envelope_counters`` (jamais recopiés un à un) :
+    # c'est ce qui a évité, pour la fiche data-01, de devoir ajouter ici une 5e ligne
+    # littérale pour ``skipped_asset_scheme`` — le prochain compteur neuf d'``ENVELOPE_COUNTERS``
+    # traversera ce point sans y toucher (même principe que ``manifests._COUNTER_KEYS``).
     counters = {
-        "found_stac": envelope_counters["found_stac"],
-        "skipped_scene_cloud": envelope_counters["skipped_scene_cloud"],
-        "off_tile": envelope_counters["off_tile"],
-        "found_tile": found_tile,
+        **envelope_counters,
         **status_counts,
     }
 

@@ -210,6 +210,7 @@ def _envelope_payload(items: list[Acquisition]) -> dict[str, object]:
             "skipped_scene_cloud": 0,
             "off_tile": 0,
             "found_tile": found_tile,
+            "skipped_asset_scheme": 0,
         },
         items=items,
     )

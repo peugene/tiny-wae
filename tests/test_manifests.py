@@ -12,6 +12,14 @@ Couvre l'oracle de la fiche :
 - O4  : last_datetime sur le corpus C07, statuts rejetés inclus.
 - O4bis : item_ids_for_site (site OVERLAP, 2 runs partageant 3 items) a la bonne
         cardinalité (union) alors qu'aggregate_counters sur-compte de 3.
+
+Couvre aussi l'oracle de la fiche data-01 (asset s3:// n'emporte plus la fenêtre) côté
+``manifests.py`` — le piège confirmé de son ancrage (``_validate_counters`` s'applique aussi
+à la lecture) :
+- O7  : aggregate_counters sur un run.json SANS ``skipped_asset_scheme`` (le corpus C07 lui-
+        même, écrit avant la fiche) -- aucune exception, la clé absente compte pour 0.
+- O8  : write_run reste STRICT si SEULE ``skipped_asset_scheme`` manque -- la tolérance ne
+        vaut qu'à la lecture.
 """
 
 from __future__ import annotations
@@ -96,6 +104,7 @@ def _sample_run(**overrides: object) -> Run:
             "skipped_scene_cloud": 0,
             "off_tile": 0,
             "found_tile": 3,
+            "skipped_asset_scheme": 0,
             "ingested": 3,
             "rejected_clouds": 0,
             "rejected_invalid": 0,
@@ -135,13 +144,21 @@ def test_run_round_trip_o1(tmp_path: Path) -> None:
 
 
 def test_aggregate_counters_corpus_o2() -> None:
-    """O2 : aggregate_counters sur le corpus C07 rend les comptes CONNUS documentés."""
+    """O2 : aggregate_counters sur le corpus C07 rend les comptes CONNUS documentés.
+
+    ⭐ data-01/O7 : le corpus fixture ``tests/fixtures/manifests/C07/runs/*.json`` a été
+    écrit AVANT cette fiche — il ne porte PAS ``skipped_asset_scheme`` (mêmes conditions
+    que les 1404 ``run.json`` réels de la campagne du 2026-08-23). ``aggregate_counters``
+    l'ajoute quand même au résultat, valant 0 (D6) : ``totals`` porte bien la clé alors que
+    AUCUN fichier du corpus ne la porte — la preuve directe de la rétrocompatibilité de
+    lecture, sans toucher au corpus."""
     totals = aggregate_counters(FIXTURES_ROOT, "C07")
     assert totals == {
         "found_stac": 15,
         "skipped_scene_cloud": 1,
         "off_tile": 2,
         "found_tile": 12,
+        "skipped_asset_scheme": 0,
         "ingested": 6,
         "rejected_clouds": 3,
         "rejected_invalid": 1,
@@ -149,9 +166,12 @@ def test_aggregate_counters_corpus_o2() -> None:
         "failed": 1,
         "skipped": 0,
     }
-    # Les deux invariants bouclent : 15 = 1+2+12 ; 12 = 6+3+1+1+1+0.
+    # Les deux invariants bouclent : 15 = 1+2+12+0 ; 12 = 6+3+1+1+1+0.
     assert totals["found_stac"] == (
-        totals["skipped_scene_cloud"] + totals["off_tile"] + totals["found_tile"]
+        totals["skipped_scene_cloud"]
+        + totals["off_tile"]
+        + totals["found_tile"]
+        + totals["skipped_asset_scheme"]
     )
     assert totals["found_tile"] == (
         totals["ingested"]
@@ -161,6 +181,19 @@ def test_aggregate_counters_corpus_o2() -> None:
         + totals["failed"]
         + totals["skipped"]
     )
+
+
+def test_o7_run_json_reel_sans_la_cle_neuve_reste_lisible() -> None:
+    """data-01/O7 : confirme, en lisant le FICHIER brut, que le corpus C07 ne porte PAS
+    ``skipped_asset_scheme`` -- condition d'entrée exacte de l'oracle, pas une hypothèse."""
+    run_path = FIXTURES_ROOT / "C07" / "runs" / "run-2026-01-31.json"
+    data = json.loads(run_path.read_text(encoding="utf-8"))
+    assert "skipped_asset_scheme" not in data["counters"]
+
+    # aggregate_counters relit ce fichier (parmi d'autres du site) sans lever, et le
+    # compteur neuf absent vaut bien 0 dans le résultat.
+    totals = aggregate_counters(FIXTURES_ROOT, "C07")
+    assert totals["skipped_asset_scheme"] == 0
 
 
 def test_corpus_c07_a_douze_manifestes() -> None:
@@ -178,8 +211,9 @@ def test_write_run_conservation_violee_o2bis(tmp_path: Path) -> None:
         counters={
             "found_stac": 15,
             "skipped_scene_cloud": 1,
-            "off_tile": 3,  # muté : 1+3+12 = 16 != 15
+            "off_tile": 3,  # muté : 1+3+12+0 = 16 != 15
             "found_tile": 12,
+            "skipped_asset_scheme": 0,
             "ingested": 6,
             "rejected_clouds": 3,
             "rejected_invalid": 1,
@@ -211,6 +245,31 @@ def test_write_run_cle_manquante_leve() -> None:
     run = _sample_run(counters={"found_stac": 1})
     with pytest.raises(ConservationError):
         write_run(Path("unused"), run)
+
+
+def test_o8_write_run_stricte_meme_avec_seul_skipped_asset_scheme_absent(tmp_path: Path) -> None:
+    """data-01/O8 : counters par ailleurs COMPLET et cohérent, seule ``skipped_asset_scheme``
+    manque -- ``write_run`` lève quand même ``ConservationError`` (la tolérance D6 vaut
+    UNIQUEMENT à la lecture d'un run.json déjà écrit, jamais à l'écriture d'un run neuf) et
+    n'écrit rien."""
+    run = _sample_run(
+        counters={
+            "found_stac": 3,
+            "skipped_scene_cloud": 0,
+            "off_tile": 0,
+            "found_tile": 3,
+            # "skipped_asset_scheme" volontairement absent.
+            "ingested": 3,
+            "rejected_clouds": 0,
+            "rejected_invalid": 0,
+            "rejected_nodata": 0,
+            "failed": 0,
+            "skipped": 0,
+        }
+    )
+    with pytest.raises(ConservationError):
+        write_run(tmp_path, run)
+    assert list_runs(tmp_path, run.site_id) == []
 
 
 # --- O3 : interruption simulée, tmp orphelin --------------------------------------------

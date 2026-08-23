@@ -102,7 +102,7 @@ class _FailingSiteSource:
 @dataclass(frozen=True, slots=True)
 class _InstantEmptySource:
     """Double ``StacSource`` sans AUCUNE E/S (ni réseau, ni fixture COG) : rend une
-    enveloppe vide mais valide (conservation triviale : 4 compteurs à 0, 0 item) pour
+    enveloppe vide mais valide (conservation triviale : 5 compteurs à 0, 0 item) pour
     N'IMPORTE QUEL site. Utilisé UNIQUEMENT par O7 (volume/concurrence, 25 sites réels —
     seuls A01/B09 ont un corpus ``FixtureSource`` enregistré) : le contenu des fenêtres y
     est hors-sujet, seule la mécanique de progression compte."""
@@ -117,6 +117,7 @@ class _InstantEmptySource:
                 "skipped_scene_cloud": 0,
                 "off_tile": 0,
                 "found_tile": 0,
+                "skipped_asset_scheme": 0,
             },
             items=[],
         )
