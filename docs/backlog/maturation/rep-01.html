@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[rep-01] Le ratio publié par report est faussé par les relances, et O1 n&#x27;est plus vérifiable à la main</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>rep-01</b></nav><h1>[rep-01] Le ratio publié par report est faussé par les relances, et O1 n&#x27;est plus vérifiable à la main <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : rapport</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/data-01.html"><code>data-01</code></a> Un asset inaccessible ne fait plus perdre la fenêtre entière <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#rep-01-le-ratio-publie-par-report-est-fausse-par-les-relances">[rep-01] — Le ratio publié par report est faussé par les relances</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#constat-mesure-compte-rendu-pas-un-oracle">Constat mesuré (compte-rendu, PAS un oracle)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-189b0cb">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD 189b0cb)</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Deux défauts d'<strong>affichage</strong> de <code>report</code>, relevés le 2026-08-23 pendant la lecture de
+jugement de la recette du Lot 0 (<code>l0-04.H</code>). <strong>La donnée est saine dans les deux cas</strong> —
+c'est sa présentation qui est fausse, d'où l'effort S et l'absence de caractère bloquant.</p>
+<ol>
+<li><strong>Le ratio <code>ingested / found_tile</code> est faussé dès qu'un site a été relancé.</strong> Il mélange
+   un numérateur stable (les items ingérés une fois pour toutes, par idempotence) et un
+   dénominateur qui grossit à chaque run. La section « Pires cas en tête », qui trie sur ce
+   ratio, publie donc un <strong>classement faux</strong>.</li>
+<li><strong>La colonne <code>skipped_asset_scheme</code> n'est pas affichée</strong> alors qu'elle est entrée dans
+   l'identité de conservation avec <code>data-01</code>. Conséquence : l'oracle <strong>O1 n'est plus
+   re-vérifiable à la main</strong> depuis le tableau publié.</li>
+</ol>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="constat-mesure-compte-rendu-pas-un-oracle">Constat mesuré (compte-rendu, PAS un oracle)</h3>
+<p>Sur le rapport de la campagne 25×48 régénéré le 2026-08-23 :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Ratio publié</th>
+<th>Ratio réel (corpus distinct)</th>
+<th>Rang publié</th>
+<th>Rang réel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A03 Sizewell</td>
+<td>14,5 % (169/1162)</td>
+<td><strong>38,0 %</strong> (169/445)</td>
+<td><strong>1er (pire)</strong></td>
+<td>5e</td>
+</tr>
+<tr>
+<td>B01 NEOM</td>
+<td>45,8 % (570/1245)</td>
+<td><strong>92,2 %</strong> (579/628)</td>
+<td>12e</td>
+<td><strong>25e (meilleur)</strong></td>
+</tr>
+<tr>
+<td>A01 ITER</td>
+<td>24,8 % (191/770)</td>
+<td><strong>65,3 %</strong> (194/297)</td>
+<td>6e</td>
+<td>15e</td>
+</tr>
+</tbody>
+</table></div>
+<p>Le site présenté comme le pire du parc ne l'est pas, et le meilleur site du parc est publié
+au milieu du classement. Les sites intacts sont ceux qui n'ont jamais été relancés — le
+défaut est donc <strong>invisible tant qu'on ne relance rien</strong>, ce qui explique qu'il ait passé
+les fiches <code>l0-04.x</code>.</p>
+<p>Sur le second point : recalculée depuis le tableau publié, l'identité O1 montre un écart de
+5 (un par site touché par <code>data-01</code>). L'identité vraie, avec le 4e terme, boucle :
+<code>21426 = 3993 (ssc) + 3935 (off_tile) + 13493 (found_tile) + 5 (skipped_asset_scheme)</code>.</p>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-189b0cb">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD <code>189b0cb</code>)</h3>
+<ul>
+<li><strong>La cause est nommée dans le code lui-même.</strong> <code>adapters/manifests.py::aggregate_counters</code>
+  porte en docstring : <em>« Somme les compteurs de tous les runs d'un site — donnée de VOLUME,
+  pas de complétude. ⚠ Sur-compte dès que des runs se recouvrent […] cette fonction ne
+  prétend PAS dédupliquer. »</em> C'est l'<strong>arbitrage n°2 du 21/08</strong>, rappelé en tête du module.
+  Le défaut n'est pas ce sur-comptage — il est <strong>voulu et correct</strong> pour le tableau de
+  volume : il est qu'une donnée de volume est réutilisée comme <strong>taux</strong>.</li>
+<li><code>core/report.py:91</code> — <code>SiteReport.ingested_ratio</code> calcule
+  <code>counters["ingested"] / counters["found_tile"]</code>, donc <strong>sur le <code>counters</code> sur-comptant</strong>.</li>
+<li><code>core/report.py:332</code> — <code>render_report</code> trie la section « pires cas » sur <code>r.ingested_ratio</code>.</li>
+<li><code>core/report.py:245</code> — <code>_worst_case_line</code> réaffiche <code>ingested/found_tile</code> et les causes,
+  toutes prises dans <code>counters</code>.</li>
+<li>⭐ <strong>Le correctif ne demande AUCUNE I/O nouvelle.</strong> <code>build_site_report</code>
+  (<code>core/report.py:187</code>) reçoit déjà <code>manifests: Sequence[ManifestLike]</code> — la liste
+  complète des manifestes du site, un par item <strong>distinct</strong> — et en extrait déjà
+  <code>ingested = [m for m in manifests if m.status == "ingested"]</code> (ligne 205) pour le contrôle
+  d'intégrité. Le numérateur et le dénominateur distincts sont donc <strong>déjà en main</strong>.</li>
+<li><code>adapters/manifests.py::item_ids_for_site</code> documente la même distinction et sert déjà de
+  référence exacte pour la complétude (O2) : c'est la doctrine du projet, on l'applique ici.</li>
+<li><code>core/report.py:113</code> — <code>check_conservation</code> compte bien les <strong>4</strong> termes
+  (<code>skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme</code>) : le verdict <code>OK</code>
+  du tableau est juste. Seul l'<strong>affichage</strong> omet la colonne.</li>
+<li><code>core/report.py:278</code> — la ligne d'en-tête du tableau markdown est écrite en dur ; c'est là
+  que la colonne manque.</li>
+</ul>
+<p>⚠ <strong>Fait mesuré à ne pas chercher à réconcilier</strong> : sur A01, le nombre de manifestes sur
+disque (297) diffère de <code>found_tile − skipped</code> (770 − 478 = 292), et <code>rejected_clouds</code>
+agrégé (101) est inférieur au compte disque (103). Des journaux de runs interrompus
+manquent. <strong>C'est précisément pourquoi le compte de manifestes fait foi</strong> (même arbitrage
+n°2 que pour la complétude) : il est exact par construction, la somme des journaux non.</p>
+<h3 id="decisions-actees">⭐ Décisions actées</h3>
+<ul>
+<li><strong>D1</strong> — Le ratio et le classement se calculent sur le <strong>corpus distinct</strong>, jamais sur
+  <code>counters</code>. Numérateur : nombre de manifestes de statut <code>ingested</code>. Dénominateur :
+  <code>len(manifests)</code>, soit le nombre d'items <strong>distincts</strong> instruits ayant atteint l'écriture.</li>
+<li><strong>D2</strong> — <code>SiteReport</code> gagne les deux comptes distincts comme champs explicites (p. ex.
+  <code>distinct_ingested</code> / <code>distinct_instructed</code>), remplis par <code>build_site_report</code>.
+  <code>ingested_ratio</code> est recalculé sur eux. <strong>Ne pas</strong> dériver le dénominateur de
+  <code>found_tile − skipped</code> : cette soustraction est fausse dès qu'un journal manque (cf.
+  ancrage).</li>
+<li><strong>D3</strong> — Le <strong>tableau de volume reste inchangé</strong> : ses colonnes sont des compteurs de
+  volume, correctes comme telles, et O1 en dépend. On ne « corrige » pas <code>aggregate_counters</code>.</li>
+<li><strong>D4</strong> — La colonne <strong><code>skipped_asset_scheme</code></strong> est ajoutée au tableau, entre <code>off_tile</code> et
+  <code>found_tile</code> (ordre de l'identité O1), pour rendre celle-ci re-vérifiable à l'œil.</li>
+<li><strong>D5</strong> — <code>_worst_case_line</code> affiche désormais le ratio distinct et <strong>libelle ses
+  dénominateurs sans ambiguïté</strong> : <code>ingested/instruits (distincts)</code> pour le ratio,
+  <code>off_tile=N/found_stac</code> (volume) pour les causes. Les pourcentages de causes restent
+  calculés sur <code>counters</code> — ils sont <strong>robustes aux relances</strong>, tout y grossit ensemble.</li>
+<li><strong>D6</strong> — Le titre de la section devient explicite sur ce qu'il classe :
+  « Pires cas en tête (ratio sur corpus distinct — caractéristique de site) ».</li>
+<li><strong>D7</strong> — Aucun emoji dans le code ni dans la sortie console (règle permanente du projet).</li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/core/report.py</code> — <code>SiteReport</code> (champs + <code>ingested_ratio</code>),
+  <code>build_site_report</code>, <code>_worst_case_line</code>, <code>render_report</code> (en-tête et ligne du tableau).</li>
+<li><code>tests/test_report.py</code> — tests des oracles ci-dessous.</li>
+<li>⛔ <strong>Ne pas toucher</strong> <code>adapters/manifests.py</code> : son sur-comptage est volontaire et documenté.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>Le ratio et le classement publiés sont ceux du corpus distinct, insensibles au nombre de
+  relances d'un site.</li>
+<li>Le tableau affiche <code>skipped_asset_scheme</code> et l'identité O1 se revérifie par addition des
+  colonnes affichées.</li>
+<li>Les libellés de dénominateurs ne laissent aucune ambiguïté sur ce qui est distinct et ce
+  qui est du volume.</li>
+<li><code>just check</code> vert au commit de la fiche.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<p>Tous sur <strong>fixtures</strong>, en mémoire ou en <code>tmp_path</code> : le corpus réel de la campagne n'est pas
+reproductible en test, et un oracle porte sur une propriété du code <strong>à l'instant présent</strong>.</p>
+<ul>
+<li><strong>O1 — insensibilité aux relances (l'oracle central).</strong> Fixture : un site à <strong>3 items
+  distincts</strong> (2 <code>ingested</code>, 1 <code>rejected_clouds</code>) et <strong>2 journaux de runs</strong> dont le second
+  ne fait que re-voir les items déjà traités (<code>skipped = 3</code>). Attendu : ratio publié
+  <strong>2/3 = 66,7 %</strong>, et NON <code>2/6 = 33,3 %</code>. <strong>Discriminant</strong> : le test échoue si le ratio est
+  calculé sur <code>counters</code>.</li>
+<li><strong>O2 — classement.</strong> Fixture à 2 sites : le site X a un meilleur ratio distinct mais plus
+  de relances que le site Y. Attendu : X apparaît <strong>après</strong> Y dans « pires cas en tête ».
+  <strong>Discriminant</strong> : l'ordre s'inverse si le tri porte sur <code>counters</code>.</li>
+<li><strong>O3 — colonne présente.</strong> L'en-tête du tableau contient <code>skipped_asset_scheme</code>, et sur une
+  fixture où ce compteur vaut 2, la cellule affiche <code>2</code>.</li>
+<li><strong>O4 — identité re-vérifiable.</strong> Sur une fixture, la somme des colonnes
+  <code>skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme</code> <strong>lues dans la ligne
+  markdown rendue</strong> égale la colonne <code>found_stac</code> de cette même ligne.</li>
+<li><strong>O5 — non-régression du volume.</strong> Les colonnes de compteurs existantes et le verdict
+  <code>conservation</code> sont inchangés à fixture identique (les tests actuels de <code>test_report.py</code>
+  restent verts sans modification de leurs attendus).</li>
+</ul>
+<p><strong>Non testé, explicite</strong> : le corpus réel de la campagne (non reproductible) ; la
+distribution mensuelle des observations (hors périmètre) ; l'exactitude de
+<code>aggregate_counters</code> elle-même (inchangée par cette fiche, et volontairement sur-comptante).</p><div class="prevnext"><a href="../fait/perf-01.html">← [perf-01] Réglages GDAL pour la lecture des COG distants</a><span></span></div><p class="gen">Généré le 23/08/2026 13:32 — le .md fait foi.</p></article></body></html>
