@@ -62,9 +62,6 @@ SITE_ID = "C07"
 
 # Littéral factice du corpus C07 tel quel (cf. ancrage) — 64 caractères 'f'.
 _FIXTURE_FAKE_GRID_HASH = "f" * 64
-# Fichiers attendus au manifeste d'un item ingéré (repris de core/report.EXPECTED_FILES,
-# en LITTÉRAL ici pour ne pas coupler le test à l'implémentation qu'il vérifie).
-_EXPECTED_FILES = ("chip.tif", "chip_20m.tif", "scl.tif")
 
 
 def _c07_manifests() -> list[Manifest]:
@@ -223,6 +220,9 @@ def test_o2quater_mutation_fichier_manquant_rougeoie_item_nomme(tmp_path: Path) 
     data_root = _sanitized_c07_corpus(tmp_path, subdir="missing_file")
     manifest_path = data_root / SITE_ID / "S2A_C07_ING01" / "manifest.json"
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    # LITTÉRAL, pas `core.artifacts.SCL_FILENAME` : importer la constante couplerait le
+    # test à l'implémentation qu'il vérifie — un renommage des deux côtés à la fois
+    # passerait alors inaperçu.
     data["files"] = [f for f in data["files"] if f != "scl.tif"]
     manifest_path.write_text(json.dumps(data), encoding="utf-8")
 

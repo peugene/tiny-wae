@@ -15,7 +15,6 @@ requires-python = ">=3.12"
 dependencies = [
     "typer>=0.15",
     "pyyaml>=6.0",
-    "httpx>=0.27",
     "pystac-client>=0.8",
     # Natifs. Déclarés ici pour le paquet ET dans [tool.pixi.dependencies] ci-dessous pour
     # notre env de dev : pixi les prend alors de conda-forge (builds natifs cohérents),
@@ -73,11 +72,23 @@ ruff = "*"
 mypy = "*"
 pytest = "*"
 markdown = "*"          # backlog-kit (dashboard + md2html)
+# httpx : utilisé UNIQUEMENT par scripts/survey_tiles.py (préparation des grilles), jamais
+# par src/. Il était au contrat de la wheel, qui faisait donc installer un client HTTP
+# inutile dans le venv du worker — débusqué par deptry (DEP002).
+httpx = "*"
 pytest-socket = "*"     # garde réseau des tests (--disable-socket)
+# pytest-cov : mesure À LA DEMANDE (`just coverage`), volontairement HORS du gate —
+# un seuil global de couverture se contourne avec des tests qui appellent sans
+# asserter. Ce qui protège ici, c'est le test de mutation, pas un pourcentage.
+pytest-cov = "*"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 # cwltool : pas de build conda-forge compatible python 3.12 disponible — PyPI.
 cwltool = "*"
+# deptry : hygiène des dépendances (déclarée non utilisée, utilisée non déclarée, et
+# surtout TRANSITIVE utilisée directement — c'est le défaut qui a laissé `affine` hors
+# du contrat du paquet). Ce que ni ruff ni mypy ne regardent.
+deptry = "*"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }
@@ -88,13 +99,51 @@ line-length = 100
 src = ["src", "tests", "scripts"]
 
 [tool.ruff.lint]
-# Base pragmatique : erreurs + pyflakes + imports + bugbear + upgrade + comprehensions.
-select = ["E", "F", "I", "B", "UP", "C4"]
+# Base : erreurs + pyflakes + imports + bugbear + upgrade + comprehensions.
+# Élargissement mesuré (post-revue 1) : le sous-ensemble activé au scaffold couvrait le
+# tiers de ce que ruff sait faire, et les familles ci-dessous ne coûtent presque rien —
+# comptage réel sur `src/` avant activation : S=2, ARG=2, SIM=1, PTH=0, T20=0, et 0 pour
+# RET/PIE/ISC/A/ICN/BLE/SLF (celles-là sont donc de la pure anti-régression).
+select = [
+    "E", "F", "I", "B", "UP", "C4",
+    "S",        # flake8-bandit : SAST Python (assert en prod, subprocess, tempfile…)
+    "BLE",      # `except Exception` non ré-levé — les 6 usages délibérés portent déjà un noqa
+    "SLF",      # accès à un membre privé d'un autre objet
+    "ARG",      # argument déclaré et jamais utilisé
+    "PTH",      # os.path -> pathlib
+    "T20",      # `print` oublié dans du code de production
+    "SIM", "RET", "PIE", "ISC", "A", "ICN",
+    "RUF",
+    "PLC0414",  # ré-export implicite (`import x as x`) — le noqa existant le cible
+]
+
+# ⛔ RUF001/002/003 = « caractère unicode ambigu ». Le projet écrit ses commentaires et ses
+# docstrings en FRANÇAIS : « », — et … y sont normaux, pas ambigus. 15 faux positifs mesurés
+# sur `src/` — la règle est inapplicable ici, pas contournée au cas par cas.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# Un test EST fait d'assertions ; interdire `assert` dans `tests/` n'a pas de sens (641
+# occurrences mesurées). Les arguments non utilisés y sont le lot des fixtures et des
+# doubles qui doivent respecter une signature imposée.
+# SLF001 : plusieurs oracles portent sur des fonctions privées (`_retry_call`,
+# `_report_counters`…). Tester l'unité derrière une porte publique serait un test moins
+# discriminant, pas un test plus propre.
+"tests/**" = ["S101", "ARG001", "ARG002", "ARG005", "SLF001"]
+# `scripts/` = outils en ligne de commande : écrire sur la console EST leur interface.
+# Seul T201 est exempté globalement ; les autres familles y sont tenues comme dans src/.
+"scripts/**" = ["T201"]
+# `smoke.py` SEUL : `assert` y est le mécanisme de vérification assumé (17 occurrences —
+# c'est la nature d'un script de contrôle), pas une négligence.
+"scripts/smoke.py" = ["S101"]
 
 [tool.mypy]
 # Strict sur NOTRE code, pragmatique sur l'écosystème (libs géospatiales mal typées).
 strict = true
-files = ["src", "tests"]
+# `scripts/` inclus : mesuré, il passait DÉJÀ le strict sans une seule erreur — l'exclure
+# ne protégeait rien, ça laissait juste `backlog.py`, `smoke.py` et les enregistreurs de
+# fixtures hors du filet n°1.
+files = ["src", "tests", "scripts"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

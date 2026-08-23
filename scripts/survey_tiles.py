@@ -248,7 +248,10 @@ def _write_atomic(path: Path, content: str) -> None:
     """Écrit `content` dans `path` de façon atomique (tmp + rename même filesystem)."""
     fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=".sites-", suffix=".yaml.tmp")
     try:
-        with open(fd, "w", encoding="utf-8") as f:
+        # ⚠ PTH123 est un FAUX POSITIF ici : `fd` est un descripteur entier rendu par
+        # `mkstemp`, que `Path.open()` ne sait pas prendre — et réécrire en
+        # `tmp_path.open()` fuiterait le descripteur.
+        with open(fd, "w", encoding="utf-8") as f:  # noqa: PTH123
             f.write(content)
         Path(tmp_path).replace(path)
     except BaseException:

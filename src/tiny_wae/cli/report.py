@@ -129,20 +129,20 @@ def report(
     out: Path = typer.Option(  # noqa: B008
         DEFAULT_OUT_PATH, "--out", help="Chemin du rapport Markdown produit."
     ),
-    check_completeness_flag: bool = typer.Option(  # noqa: B008
+    check_completeness_flag: bool = typer.Option(
         False,
         "--check-completeness",
         help="Contrôle de complétude réseau (arbitrage n°2) au lieu du rapport agrégé.",
     ),
-    sites_arg: str | None = typer.Option(  # noqa: B008
+    sites_arg: str | None = typer.Option(
         None,
         "--sites",
         help="Ids de sites séparés par des virgules (requis avec --check-completeness).",
     ),
-    date_from: str | None = typer.Option(  # noqa: B008
+    date_from: str | None = typer.Option(
         None, "--from", help="Début de fenêtre YYYY-MM-DD (requis avec --check-completeness)."
     ),
-    date_to: str | None = typer.Option(  # noqa: B008
+    date_to: str | None = typer.Option(
         None, "--to", help="Fin de fenêtre YYYY-MM-DD (requis avec --check-completeness)."
     ),
     sites_path: Path = typer.Option(  # noqa: B008

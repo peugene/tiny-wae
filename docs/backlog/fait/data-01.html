@@ -1,0 +1,298 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[data-01] Un asset inaccessible ne fait plus perdre la fenêtre entière</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>data-01</b></nav><h1>[data-01] Un asset inaccessible ne fait plus perdre la fenêtre entière <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : robustesse</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#data-01-un-asset-inaccessible-ne-fait-plus-perdre-la-fenetre-entiere">[data-01] — Un asset inaccessible ne fait plus perdre la fenêtre entière</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-690e899">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD 690e899)</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Sur la campagne d'historique du 2026-08-23, <strong>5 items</strong> du catalogue exposaient leurs assets
+sur <code>s3://sentinel-s2-l2a</code> (les JP2 d'origine, bucket <em>requester-pays</em>) au lieu du bucket
+public de COG. La garde du chapeau <code>l0-02</code> les refuse — <strong>et elle a raison</strong> : ce bucket est
+inaccessible sans identifiants et facturé au demandeur.</p>
+<p>Le défaut n'est pas le refus, c'est sa <strong>portée</strong>. La garde lève pendant le parsing de la
+recherche, donc l'item fautif emporte <strong>toute la fenêtre</strong>, puis le site, puis le code de
+sortie du run. Cinq items sur 14 967 ont suffi à faire sortir une campagne de 6 heures en
+<code>FAILURE</code>.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-690e899">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD <code>690e899</code>)</h3>
+<ul>
+<li><strong>La garde</strong> est dans <code>adapters/stac.py::parse_item</code> (l. 102-125) : pour chaque clé
+  d'asset <strong>mappée</strong>, un href commençant par <code>s3://</code> lève <code>StacSourceError</code>. Les assets non
+  mappés (<code>cloud</code>, <code>snow</code> des items S2C, eux aussi en <code>s3://</code>) ne sont jamais lus, donc
+  jamais soumis à la garde — comportement voulu, à conserver.</li>
+<li><strong>La portée du dégât</strong> vient de l'appelant : <code>parse_item</code> est appelé l. 169, <strong>dans la
+  boucle qui construit l'enveloppe</strong>. L'exception n'est pas rattrapée : elle remonte à
+  <code>search()</code>, puis à <code>ingest_from_source</code>, et <code>adapters/backfill.py::_process_site</code> compte
+  la fenêtre entière en <code>TaskFailure</code>. Tous les autres items de la fenêtre sont perdus avec.</li>
+<li><strong>Mesure exacte de l'impact</strong> (campagne du 2026-08-23) : <strong>5 fenêtres</strong> sur 1200 (0,4 %),
+  <strong>5 items</strong> sur 14 967 (0,03 %), <strong>5 sites</strong> marqués en échec (A01, A03, B01, B07, C03),
+  <strong>exit 1</strong> sur l'ensemble du run. Les items fautifs sont
+  <code>S2A_31UCT_20240123</code>, <code>S2B_31TGJ_20241204</code>, <code>S2A_36RYS_20240901</code>, <code>S2A_19KEQ_20240123</code>,
+  <code>S2B_31TFJ_20241204</code> — les dates se répètent d'un site à l'autre, ce qui confirme un
+  défaut de <strong>catalogue</strong>, pas de site.</li>
+<li>⭐ <strong>La portée est plus large que le backfill — constaté le 2026-08-23 en exécution.</strong>
+  <code>report --check-completeness</code> échoue sur le MÊME défaut, avec le même item
+  (<code>S2B_31TGJ_20241204_0_L2A</code>), et sort en exit 1. Or ce contrôle est <strong>un critère de recette
+  du Lot 0</strong> (checklist de <code>l0-04.H</code>) : tant que ce défaut est là, la recette est
+  inexécutable. Le chemin d'appel est identique — <code>cli/report.py:95</code> -&gt; <code>search()</code> -&gt;
+  <code>build_envelope</code> (l. 232) -&gt; <code>parse_item</code> (l. 169) — donc le correctif de cette fiche le
+  couvre <strong>sans travail supplémentaire</strong>. À vérifier après merge en rejouant la commande
+  réelle, pas seulement les tests.</li>
+<li>⚠ <strong>Une identité comptable protège l'enveloppe</strong> (<code>core/envelope.py</code>, l. 59-78) :
+  <code>found_stac == skipped_scene_cloud + off_tile + found_tile</code>, <strong>et</strong>
+  <code>found_tile == len(items)</code>. Toute violation lève <code>ConservationError</code>. Un item écarté sans
+  être compté casserait donc l'invariant — c'est le vrai point technique de la fiche.</li>
+<li><strong><code>ENVELOPE_COUNTERS</code></strong> (<code>core/envelope.py</code>, l. 29-34) est l'énumération normative des 4
+  compteurs d'enveloppe. <code>adapters/manifests.py:48</code> en dérive
+  <code>_COUNTER_KEYS = (*ENVELOPE_COUNTERS, *RUN_STATUSES)</code>.</li>
+<li>⛔ <strong>PIÈGE CONFIRMÉ — la validation s'applique aussi à la LECTURE.</strong>
+  <code>manifests.py::_validate_counters</code> (l. 247) exige la présence de <strong>toutes</strong> les clés de
+  <code>_COUNTER_KEYS</code> et lève <code>ConservationError</code> sinon. Elle est appelée par <code>write_run</code>
+  (l. 280) <strong>mais AUSSI par <code>aggregate_counters</code> (l. 314), qui itère sur les runs relus</strong>.
+  Ajouter naïvement <code>skipped_asset_scheme</code> à <code>ENVELOPE_COUNTERS</code> rendrait donc les
+  <strong>1404 <code>run.json</code> déjà écrits</strong> (16 Go de campagne) illisibles par <code>aggregate_counters</code>,
+  et casserait <code>report</code>. Vérifié par lecture le 2026-08-23, ce n'est pas une hypothèse.</li>
+<li>⚠ <strong>L'identité comptable est DUPLIQUÉE</strong> : elle est écrite dans <code>core/envelope.py</code>
+  (l. 63-72) <strong>et</strong> dans <code>manifests.py::_validate_counters</code> (l. 256). Les deux devront être
+  modifiées de façon cohérente — c'est exactement le défaut que la méthode nomme
+  (« une énumération normative n'existe qu'à UN endroit »), déjà présent dans le code.</li>
+</ul>
+<h3 id="decisions-actees">⭐ Décisions actées</h3>
+<ul>
+<li><strong>D1 — L'item fautif est ÉCARTÉ et COMPTÉ, la fenêtre continue.</strong> <code>parse_item</code> garde son
+  comportement (elle lève : c'est un parseur, il signale), et c'est <strong>l'appelant</strong>, dans la
+  boucle de construction de l'enveloppe, qui rattrape, compte et passe au suivant.</li>
+<li><strong>D2 — Un nouveau compteur d'enveloppe : <code>skipped_asset_scheme</code></strong>, ajouté à
+  <code>ENVELOPE_COUNTERS</code>. Ce n'est pas un statut de manifeste : aucun manifeste n'est écrit
+  pour un item qu'on n'a jamais pu lire. ⛔ Ne pas toucher à <code>RUN_STATUSES</code>.</li>
+<li><strong>D3 — L'identité comptable est ÉTENDUE, pas contournée</strong> :
+  <code>found_stac == skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme</code>.
+  Elle est modifiée <strong>au point de définition</strong> (<code>core/envelope.py</code>), jamais dupliquée.</li>
+<li><strong>D4 — La garde n'est pas assouplie.</strong> On ne tente <strong>pas</strong> de traduire <code>s3://</code> en <code>https://</code> :
+  <code>sentinel-s2-l2a</code> est un bucket <em>requester-pays</em> et les objets y sont des JP2, pas des COG.
+  Une traduction produirait des accès facturés, ou des échecs plus tardifs et plus obscurs.</li>
+<li><strong>D6 — ⭐ Rétrocompatibilité à la LECTURE, obligatoire.</strong> Un compteur neuf est toléré
+  <strong>absent</strong> d'un journal existant et vaut alors <code>0</code> ; l'invariant de conservation ne
+  s'applique STRICTEMENT qu'à l'<strong>écriture</strong>. Même principe que la décision de <code>l0-07</code> sur
+  <code>read_manifest</code> : on ne refuse pas de relire des données qu'on a soi-même produites.
+  ⛔ Aucune migration des 1404 journaux : c'est le code qui s'adapte, pas le corpus.</li>
+<li><strong>D5 — L'écart reste visible.</strong> Un item écarté est loggué en <strong>WARNING</strong> (le logging
+  d'<code>obs-01</code> est en place), avec l'id de l'item et la clé d'asset fautive. Un rejet
+  silencieux serait pire que l'échec actuel : on croirait la campagne complète.</li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/core/envelope.py</code> — <code>ENVELOPE_COUNTERS</code> + identité comptable (D2, D3).</li>
+<li><code>src/tiny_wae/adapters/stac.py</code> — rattrapage dans la boucle de construction (l. ~169),
+  comptage, log WARNING.</li>
+<li><code>src/tiny_wae/adapters/manifests.py</code> — vérifier que <code>_COUNTER_KEYS</code> suit automatiquement
+  (elle dérive d'<code>ENVELOPE_COUNTERS</code>) ; ne rien y écrire en dur.</li>
+<li><code>tests/test_envelope.py</code>, <code>tests/test_stac.py</code> — les oracles ci-dessous.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Une fenêtre contenant un item à asset mappé <code>s3://</code> <strong>aboutit</strong>, avec les autres items
+      ingérés normalement.</li>
+<li>[ ] L'item écarté est compté dans <code>skipped_asset_scheme</code> et loggué en WARNING avec son id.</li>
+<li>[ ] L'identité comptable inclut le nouveau compteur et reste vérifiée.</li>
+<li>[ ] <code>RUN_STATUSES</code> est inchangée ; aucun manifeste n'est écrit pour un item écarté.</li>
+<li>[ ] Les manifestes et <code>run.json</code> existants restent relisibles (le compteur est neuf, donc
+      absent des anciens journaux — cf. non-testé).</li>
+<li>[ ] <code>just check</code> vert au commit de la fiche.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>enveloppe construite sur un lot d'items dont <strong>1</strong> porte un asset mappé <code>s3://</code> et 4 sont sains</td>
+<td>l'appel <strong>aboutit</strong> ; <code>found_tile == 4</code> ; <code>skipped_asset_scheme == 1</code> ; aucune exception</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>identité comptable sur ce même cas</td>
+<td><code>found_stac == skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme</code>, et <code>found_tile == len(items)</code> — aucun <code>ConservationError</code></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>un item dont seul un asset <strong>NON mappé</strong> (<code>cloud</code>) est en <code>s3://</code></td>
+<td>il est <strong>ingéré normalement</strong> : <code>skipped_asset_scheme == 0</code>. La garde ne s'élargit pas</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>log de l'item écarté</td>
+<td><strong>1</strong> ligne WARNING contenant l'id de l'item et la clé d'asset fautive</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>les 5 items réels de la campagne (ids de l'ancrage), rejoués depuis une fixture</td>
+<td><strong>5/5</strong> écartés, <strong>0</strong> exception, les fenêtres aboutissent</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>RUN_STATUSES</code> et les statuts de manifeste</td>
+<td><strong>inchangés</strong> (diff vide sur <code>core/statuses.py</code>)</td>
+</tr>
+<tr>
+<td>O7</td>
+<td><strong><code>aggregate_counters</code> sur un <code>run.json</code> SANS la nouvelle clé</strong> (le cas des 1404 existants)</td>
+<td><strong>aucune exception</strong> ; la clé absente compte pour <code>0</code>. C'est l'oracle qui garde D6, et le seul qui protège les 16 Go de campagne</td>
+</tr>
+<tr>
+<td>O8</td>
+<td><code>_validate_counters</code> à l'ÉCRITURE, sur des compteurs privés de la nouvelle clé</td>
+<td>lève toujours <code>ConservationError</code> — la tolérance vaut à la lecture, pas à l'écriture</td>
+</tr>
+<tr>
+<td>O9</td>
+<td>non-régression</td>
+<td><code>just check</code> vert — <strong>276 tests</strong> au départ ; le smoke passe ; les fixtures STAC existantes donnent les <strong>mêmes</strong> compteurs qu'avant (aucune ne contient d'asset mappé <code>s3://</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
+<ul>
+<li><strong>La rétrocompatibilité est testée (O7), la campagne réelle ne l'est pas.</strong> O7 s'exerce
+  sur un journal fabriqué, pas sur les 1404 journaux du NAS. Un passage de <code>report</code> sur le
+  corpus réel reste à faire par l'humain après livraison — c'est cinq secondes, et c'est la
+  seule preuve qui porte sur les vraies données.</li>
+<li><strong>Les 5 fenêtres perdues ne sont pas rattrapées</strong> : la fiche corrige le comportement, elle
+  ne relance pas la campagne. Il faudra un <code>backfill</code> ciblé sur les 5 couples site/fenêtre.</li>
+<li><strong>Aucun autre schéma d'href n'est traité</strong> (<code>ftp://</code>, <code>gs://</code>…) : seul <code>s3://</code> est
+  rencontré dans les faits.</li>
+<li><strong>Aucune vérification que l'asset est réellement lisible</strong> : un <code>https://</code> mort échouera
+  toujours plus loin, à l'ouverture, comme aujourd'hui.</li>
+</ul>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<ul>
+<li>
+<p><strong>Ce qui a été fait</strong> : <code>skipped_asset_scheme</code> ajouté à <code>ENVELOPE_COUNTERS</code> et à
+  l'identité comptable ; <code>AssetSchemeError(StacSourceError)</code> <strong>dédiée</strong> levée par
+  <code>parse_item</code> et rattrapée <strong>spécifiquement</strong> par <code>build_envelope</code>, qui compte, loggue en
+  WARNING et poursuit. <code>_with_read_tolerant_defaults</code> en <strong>liste blanche</strong> d'une seule clé,
+  appliquée uniquement dans <code>aggregate_counters</code> : <code>write_run</code> reste strict (D6).</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> : O1 à O9 <strong>tous verts</strong>. <code>just check</code> vert sur <code>develop</code> après
+  merge — <strong>293 tests</strong> (281 après <code>perf-01</code>, +12).</p>
+</li>
+<li>
+<p>⭐ <strong>Vérifié sur les DONNÉES RÉELLES, pas seulement en test</strong> (ce que l'agent ne pouvait
+  pas faire, son corpus étant hors dépôt) :
+  1. <code>report</code> relit les <strong>1404 <code>run.json</code></strong> de la campagne, qui ne portent pas la clé neuve :
+     <strong>exit 0</strong>, 25 sites. Le risque n°1 de la fiche est levé sur les vraies données.
+  2. <code>report --check-completeness --sites A01,C07,A03 --from 2022-09-01 --to 2026-08-23</code>,
+     la commande qui <strong>échouait</strong> avant : elle <strong>aboutit</strong> désormais, les 2 items <code>s3://</code>
+     rencontrés sont écartés avec un WARNING nommant l'item et l'asset, et le contrôle va
+     à son terme sur les 3 sites.</p>
+</li>
+<li>
+<p>⚠ <strong>Ce que ce contrôle réel a révélé, et qui n'était pas dans la fiche</strong> : la complétude
+  ressort <strong>ROUGE sur A01 (7 manquants) et A03 (8 manquants)</strong>, C07 à 0 écart. Ce ne sont
+  pas des régressions : ce sont <strong>les items des fenêtres perdues par la campagne</strong> du
+  2026-08-23, que cette fiche ne rattrape pas (dit dans son « non testé »).
+  <strong>Le cas d'A03 mesure exactement le coût du défaut corrigé</strong> : l'item fautif
+  (<code>S2A_31UCT_20240123</code>) était sur la tuile <strong>31UCT</strong>, alors que la tuile de référence du
+  site est <strong>31UDT</strong>. Il aurait donc été écarté en <code>off_tile</code> sans jamais être ingéré — mais
+  comme il faisait échouer le parsing <strong>avant</strong> le filtrage, il a emporté <strong>8 items
+  parfaitement valides</strong>. Un item qui ne comptait pas a fait perdre huit items qui
+  comptaient.</p>
+</li>
+<li>
+<p><strong>Écarts de périmètre, déclarés par l'agent et acceptés</strong> :
+  1. <strong><code>adapters/ingestion.py</code></strong> (mécanique, sévère) : <code>_run_ingestion</code> recopiait 4 clés à
+     la main ; sans correctif, <code>write_run</code> aurait levé <code>ConservationError</code> sur <strong>chaque</strong>
+     run. Corrigé en <code>**envelope_counters, **status_counts</code>.
+  2. <strong><code>core/report.py</code></strong> (mécanique, <strong>trouvé par l'agent</strong>) : <code>check_conservation</code> est une
+     <strong>TROISIÈME</strong> copie de l'identité comptable, que l'ancrage de la fiche n'avait pas
+     recensée — il n'en citait que deux. Sans elle, <code>report</code> aurait rendu
+     <code>conservation: ROUGE</code> à tort sur tout site ayant un item écarté, c'est-à-dire un faux
+     positif sur l'instrument de recette du projet.
+  3. <strong><code>cli/backfill.py</code>, <code>cli/ingest.py</code>, <code>cli/search.py</code></strong> (⚠ <strong>opportunistes, assumés
+     comme tels par l'agent</strong>) : ajout du compteur aux lignes STDERR, dans l'esprit de D5.
+     Rien ne l'imposait. Celui de <code>cli/ingest.py</code> a provoqué une cascade dans
+     <code>tests/test_vocabulary.py</code> — un effet que l'agent s'est infligé lui-même, et qu'il a
+     signalé plutôt que de le noyer.
+  4. Six fichiers de tests touchés mécaniquement : leurs helpers construisent des
+     <code>Envelope</code>/<code>Run</code> littéraux, dont <code>__post_init__</code> exige désormais 5 clés.</p>
+</li>
+<li>
+<p><strong>Non vérifié</strong> : les 5 fenêtres perdues ne sont <strong>pas</strong> rattrapées (un backfill ciblé
+  reste à lancer) ; aucun autre schéma d'href (<code>ftp://</code>, <code>gs://</code>) n'est traité.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>01d6cd2</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><span></span><a href="l0-01.html">[l0-01] [CHAPEAU] Socle configuration — sites, settings, CLI →</a></div><p class="gen">Généré le 23/08/2026 09:53 — le .md fait foi.</p></article></body></html>

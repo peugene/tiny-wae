@@ -1,0 +1,252 @@
+---
+id: obs-02
+titre: "Arrêt du backfill : accusé de réception et interruption immédiate"
+effort: S
+categorie: exploitation
+phase:
+depends_on: [obs-01]
+parent:
+subtasks: []
+---
+
+# [obs-02] — Arrêt du backfill : accusé de réception et interruption immédiate
+
+> Fiche de backlog : sert de **brief (prompt)** pour l'IA.
+> Avancement = dossier : `maturation/` → `a-faire/` → `en-cours/` → `fait/`.
+> ✅ **Placement validé par le PO le 2026-08-22** : même arbitrage qu'`obs-01`, dont elle
+> dépend.
+> Le `depends_on: [obs-01]` est réel : `obs-01` fige le canal (STDERR), le format et le
+> niveau de sortie. Les inverser ferait définir deux fois, différemment, où et comment
+> l'application parle à l'opérateur.
+
+## Objectif
+
+Le Ctrl+C **fonctionne déjà** sur le backfill — mais il est **muet**. L'opérateur qui
+interrompt un run de plusieurs heures n'a strictement aucun retour : ni au moment où il tape,
+ni pendant l'attente des fenêtres en vol. Rien ne lui dit que sa demande a été prise en
+compte, et rien ne lui permet de forcer un arrêt s'il ne veut pas attendre.
+
+Deux ajouts, aucun changement de la sémantique d'arrêt existante :
+
+1. **Un accusé de réception immédiat** au premier Ctrl+C, disant ce qui va se passer.
+2. **Une porte de sortie** : un second Ctrl+C interrompt immédiatement.
+
+## Contexte et périmètre
+
+### ⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD `a6724e0`)
+
+- **L'arrêt propre existe et est correct** (l0-04.1, décision d'ancrage n°5) :
+  `adapters/backfill.py::_request_stop` (l. 122) est une fonction **pure** qui ne fait que
+  `stop_event.set()` ; les handlers sont posés sur `SIGINT` et `SIGBREAK` (Windows) dans
+  `run_backfill` (l. 204-212) et **restaurés dans un `finally`**. `_process_site` teste
+  `stop_event.is_set()` **en tête de boucle** : la fenêtre en cours va à son terme, les
+  suivantes du site sont abandonnées, et les futures non démarrées sont annulées.
+  ⛔ **Cette sémantique ne change pas** — elle est validée par l'oracle O3 de `l0-04.1`.
+- **Ce qui manque est le retour à l'écran, pas le mécanisme.** Le seul message d'interruption
+  existant est `cli/backfill.py:91` (« ⚠ backfill interrompu (SIGINT) : soumissions
+  arrêtées ») — écrit par `_report_counters`, donc **après** le retour de `run_backfill`,
+  c'est-à-dire une fois toutes les fenêtres en vol terminées. Sur des chips Sentinel-2, cela
+  peut représenter plusieurs minutes de silence complet.
+- **Il n'existe aujourd'hui AUCUN moyen d'obtenir un arrêt immédiat** : un second Ctrl+C
+  ne fait que re-positionner le même `Event` déjà positionné. La seule issue est un `kill`
+  depuis un autre terminal.
+- ⚠ **Une exception ne rendrait PAS la main non plus** — c'est le point technique de la
+  fiche. Le thread principal est bloqué dans `as_completed`, à l'intérieur d'un
+  `with ThreadPoolExecutor(...)` ; son `__exit__` appelle `shutdown(wait=True)` et **attend
+  la fin de tous les workers**. Lever `KeyboardInterrupt` depuis le handler produirait donc
+  exactement l'attente que l'utilisateur cherche à éviter.
+- **Un arrêt brutal est SÛR pour les données, et c'est vérifiable** :
+  `adapters/ingestion.py` écrit les chips (`write_chips`) **avant** le manifeste (l. 352 et
+  372), et `manifests._write_json_atomic` (l. 167) écrit un fichier temporaire puis
+  `replace`. Un process tué ne peut donc pas produire un item faussement « ingéré ». Au pire
+  il laisse des **chips orphelins sans manifeste** — réingérés au run suivant, jamais lus — et
+  un résidu `.<nom>.<pid>.<tid>.tmp` qu'aucun `glob` du projet ne voit (garantie explicite du
+  docstring de `_write_json_atomic`).
+- **Un test existant est à adapter** : `tests/test_backfill.py:354` appelle
+  `_request_stop(stop_event, 0, None)` — trois arguments positionnels. Toute évolution de
+  signature le touche. Il est importé l. 34.
+
+  Re-vérifié à `3cd90e2` au moment du dispatch : les 6 emplacements cités ci-dessus sont
+  inchangés — `_request_stop` toujours l. 122, `cli/backfill.py` l. 91,
+  `tests/test_backfill.py` l. 34 et 354.
+
+### ⚠ Ancrage anticipé (posé pendant le dispatch d'`obs-01`, à HEAD `3cd90e2`)
+
+`obs-01` modifie **les deux mêmes fichiers** que cette fiche (`adapters/backfill.py` et
+`cli/backfill.py`). L'ancrage ci-dessus se scinde donc en deux :
+
+**Faits INDÉPENDANTS d'`obs-01`, acquis** :
+
+- La sémantique d'arrêt (test de `stop_event` en tête de boucle, annulation des futures,
+  restauration des handlers en `finally`) ne fait pas partie du périmètre d'`obs-01` : elle
+  ne bougera pas.
+- L'ordre d'écriture chips → manifeste et l'atomicité de `_write_json_atomic` ne sont pas
+  dans le périmètre d'`obs-01` : la garantie « pas de manifeste fantôme » tient.
+- **`os._exit(130)` passe le lint du projet** — vérifié en soumettant le code à `ruff` sous
+  le chemin réel `src/tiny_wae/cli/backfill.py` : `SLF001` (accès à un membre privé) ne
+  s'applique pas aux membres de module. Aucun `noqa` n'est donc nécessaire.
+
+✅ **RECONFIRMÉ après le merge d'`obs-01`** (HEAD `90fcc92`, le 2026-08-22) — voici les
+emplacements RÉELS, ceux du haut de fiche sont périmés là où c'est indiqué :
+
+- `adapters/backfill.py::_request_stop` : **l. 231** (était 122).
+- `adapters/backfill.py`, pose du handler `SIGINT` : **l. 385** (était 204-212).
+- `cli/backfill.py`, message d'interruption : **l. 91**, inchangé — et son `⚠` a bien été
+  retiré par `obs-01`. Le message est désormais
+  `"backfill interrompu (SIGINT) : soumissions arrêtées"`.
+- **Inchangés, vérifiés un par un** : `tests/test_backfill.py` l. 34 (import) et l. 354
+  (appel direct `_request_stop(stop_event, 0, None)`) ; `adapters/ingestion.py` l. 352 et
+  372 (`write_manifest`) ; `adapters/manifests.py` l. 167 (`_write_json_atomic`).
+- **Nouveau depuis `obs-01`** : `adapters/backfill.py` possède déjà
+  `logger = logging.getLogger(__name__)` (l. 61). ⛔ Cela ne change PAS la décision D5 : le
+  message du handler de signal passe par `os.write(2, ...)`, pas par ce logger.
+- **Base de non-régression** : **266** tests (et non 250) depuis `obs-01`.
+
+### ⭐ Décisions actées
+
+- **D1 — Le handler reste PUR.** `_request_stop` gagne un paramètre
+  `on_stop_requested: Callable[[bool], None] | None`, appelé avec `already_requested` (vrai
+  si `stop_event` était **déjà** positionné). Il ne décide de rien : « que faire du second
+  Ctrl+C » est une politique, elle appartient à `cli/`, pas à `adapters/`. La fonction reste
+  testable par appel direct, comme aujourd'hui.
+- **D2 — Premier Ctrl+C : message immédiat**, disant les trois choses que l'opérateur a
+  besoin de savoir : la demande est prise en compte, les fenêtres en cours vont à leur terme
+  (rien de nouveau n'est lancé), et un second Ctrl+C interrompt immédiatement.
+- **D3 — Second Ctrl+C : `os._exit(130)`**, après avoir vidé STDERR. `130` = `128 + SIGINT`,
+  la convention shell. `os._exit` et non une exception, pour la raison ancrée ci-dessus
+  (`shutdown(wait=True)` annulerait l'effet recherché).
+- **D4 — L'arrêt brutal s'annonce.** Le message du second Ctrl+C dit qu'il peut laisser des
+  fichiers partiels sans manifeste, réingérés au run suivant. Une surprise documentée n'en
+  est plus une ; le run suivant les corrige par idempotence (oracle O4 de `l0-04.1`).
+- **D5 — ⚠ Le message du handler s'écrit par `os.write(2, ...)`, PAS par `logging`.**
+  Motif : un handler de signal s'exécute dans le thread principal entre deux bytecodes ;
+  passer par `logging` prendrait un verrou de handler et expose à un **interblocage** si le
+  signal frappe pendant que ce même thread le détient. `os.write` sur le descripteur 2 est
+  sûr en contexte de signal, et reste sur le canal figé par `obs-01` (STDERR). C'est une
+  exception **motivée** à `obs-01`, pas un canal concurrent : elle est limitée aux deux
+  messages du handler.
+- **D6 — Le message final existant (`cli/backfill.py:91`) est conservé** : il joue un rôle
+  différent (bilan après arrêt, avec les compteurs), et un test l'atteste. Son `⚠` initial
+  disparaît en revanche — cf. D7.
+- **D7 — AUCUN emoji dans les messages** (règle projet posée par le PO le 2026-08-22, cf.
+  D13 d'`obs-01`). Les deux messages de cette fiche s'écrivent en toutes lettres : le mot
+  porte l'information mieux qu'un pictogramme, et ces deux messages-ci sont précisément ceux
+  qu'un opérateur lit dans l'urgence.
+
+### Fichiers touchés
+
+- `src/tiny_wae/adapters/backfill.py` — signature de `_request_stop` (D1) et câblage du
+  `functools.partial` dans `run_backfill` ; nouveau paramètre `on_stop_requested` de
+  `run_backfill`, transmis au handler.
+- `src/tiny_wae/cli/backfill.py` — la politique : les deux messages, et `os._exit(130)`.
+- `tests/test_backfill.py` — l. 354 adaptée à la nouvelle signature ; **ne pas la supprimer**,
+  l'oracle O3 de `l0-04.1` doit continuer de passer à l'identique.
+- `tests/test_cli_backfill.py` — les oracles ci-dessous.
+
+## Définition de « terminé »
+
+- [ ] Un premier Ctrl+C produit un message **avant** toute attente, portant les trois
+      informations de D2.
+- [ ] Un second Ctrl+C termine le process **immédiatement**, code de sortie **130**.
+- [ ] La sémantique d'arrêt de `l0-04.1` est **inchangée** : fenêtre en cours menée à terme,
+      tâches en file annulées, `interrupted` vrai, manifestes tous relisibles.
+- [ ] `_request_stop` reste une fonction pure, testable par appel direct.
+- [ ] Le message du second Ctrl+C mentionne les résidus possibles (D4).
+- [ ] `just check` vert au commit de la fiche.
+
+## Oracle / recette (figé AVANT implémentation)
+
+| # | Critère mesuré | Seuil de succès |
+|---|---|---|
+| O1 | `_request_stop` appelé directement, 1re fois, avec un espion | l'espion est appelé **exactement une fois** avec `already=False` ; `stop_event` positionné |
+| O2 | 2e appel direct sur le même `stop_event` | l'espion reçoit `already=True` ; `stop_event` toujours positionné |
+| O3 | **rejeu à l'identique de l'oracle O3 de `l0-04.1`** (`test_backfill_sigint_arrete_soumissions_et_attend_en_cours_o3`) | passe **sans modification de son corps** hors adaptation de signature : tâche en cours menée à terme, tâches en file annulées, `interrupted` vrai, **100 %** des manifestes relus par `read_manifest` |
+| O4 | texte du message de 1er Ctrl+C, sur **STDERR** | contient les 3 informations de D2 ; **rien** sur STDOUT |
+| O5 | **sous-processus réel** : `backfill` sur fixtures, `SIGINT` envoyé une fois | le message d'O4 apparaît **avant** que le process ne se termine (mesuré sur le flux, pas a posteriori) |
+| O6 | même sous-processus, **second** `SIGINT` | le process rend la main ; code de sortie **130** |
+| O7 | état du `data_root` après O6 | **0** manifeste illisible ; `list_for_site` ne retourne aucun résidu `.tmp` |
+| O8 | **mutation** : neutraliser l'appel à `on_stop_requested` dans `_request_stop` | O1, O2 et O4 passent au **ROUGE**, puis au vert après restauration |
+| O9 | non-régression | `just check` vert — **266 tests** au départ ; `cli/backfill.py:91` toujours couvert |
+
+**Non testé par cette fiche** (chiffres honnêtes) :
+
+- **O5/O6 ne tournent pas sous Windows** : l'envoi d'un vrai signal n'est pas portable
+  linux-64/win-64 — c'est déjà la décision d'ancrage n°5 de `l0-04.1`, qui teste le handler
+  par appel direct pour cette raison. Ces deux oracles sont marqués `skipif` sous
+  `win32` : **le comportement Windows n'est donc vérifié que par O1-O4**, et
+  `CTRL_BREAK_EVENT` n'est pas exercé du tout.
+- **L'atomicité des chips n'est pas garantie et n'est pas visée.** Ce qui est garanti, c'est
+  l'absence de **manifeste** fantôme : un chip partiel sans manifeste n'est jamais lu, et il
+  est réécrit au run suivant. O7 mesure la relisibilité des manifestes, pas l'intégrité des
+  GeoTIFF.
+- **Aucune reprise n'est ajoutée.** L'idempotence par `grid_hash` fait déjà office de
+  reprise ; elle est couverte par l'oracle O4 de `l0-04.1` et n'est pas rejouée ici.
+- **Rien sur le comportement du signal sous cwltool / PID-FLOW** : le moteur peut ne pas
+  propager `SIGINT` au job. Hors périmètre.
+- **Aucun `SIGTERM`** : seuls `SIGINT` et `SIGBREAK` sont traités, comme aujourd'hui. Un
+  `kill` ordinaire reste brutal et non annoncé.
+
+## Notes / pistes
+
+Origine : lancement réel d'un `backfill --sites all --months 48 --workers 6`, sur lequel les
+deux manques sont apparus ensemble — ne rien voir pendant le run (`obs-01`) et ne rien voir
+en l'arrêtant (cette fiche).
+
+Piste écartée : compter les Ctrl+C dans l'`Event` lui-même (un `Event` ne compte pas) ou via
+un compteur dans `adapters/`. La politique d'arrêt appartient au CLI (D1) ; l'état
+« déjà demandé » se lit sur `stop_event` avant de le positionner, sans état supplémentaire.
+
+---
+
+## Résumé de réalisation
+
+- **Ce qui a été fait** : `_request_stop` gagne un paramètre optionnel
+  `on_stop_requested: Callable[[bool], None] | None`, appelé avec `already_requested` lu
+  AVANT de positionner `stop_event` — la fonction reste pure (D1). La politique vit dans
+  `cli/backfill.py::_on_stop_requested` : premier appel, accusé de réception (D2) ; second,
+  message d'avertissement sur les résidus (D4) puis `os._exit(130)` (D3). Les deux messages
+  passent par `os.write(2, ...)` et non par `logging` (D5), sans aucun emoji (D7).
+
+- **Verdict de l'oracle** :
+  - O1 : espion appelé **une** fois avec `already=False`, `stop_event` positionné.
+  - O2 : second appel -> `[False, True]`, `stop_event` toujours positionné.
+  - O3 (non-régression critique) : `test_backfill_sigint_arrete_soumissions_et_attend_en_cours_o3`
+    rejoué **corps inchangé, aucune ligne supprimée dans le fichier** (diff vérifié).
+  - O4 : le message porte les **3** informations de D2, sur STDERR seul
+    (`captured.out == ""`, mesuré avec `capfd` puisque l'écriture contourne `sys.stderr`).
+  - O5/O6/O7 : sous-processus réel, **deux SIGINT réels**, rendez-vous par FIFO POSIX (pas
+    de `sleep`) avec un site bloquant et un site normal en concurrence. Accusé de réception
+    observé process encore vivant ; second signal -> code de sortie **exactement 130** ;
+    manifestes du site normal **100 % relisibles**, zéro résidu pour l'autre.
+    `skipif` sous `win32`, comme la fiche le prescrit.
+  - **O8 (mutation)** : appel à `on_stop_requested` neutralisé -> O1, O2 **et** O4 au
+    **ROUGE** (`assert [] == [False]`, `assert 'Ctrl+C' in ''`) ; restauré -> les trois au
+    **VERT**.
+  - O9 : `just check` **vert sur `develop` après merge** — **272 tests** (266 au départ, +6).
+
+- **Vérification indépendante de l'orchestrateur** (hors tests de l'agent) : sous-processus
+  réel avec une source ralentie à 3 s par fenêtre, deux SIGINT envoyés. Observé :
+  l'accusé de réception s'affiche immédiatement au premier, puis le message d'arrêt et un
+  **code de sortie 130** au second, la fenêtre en cours étant bien interrompue. Le
+  comportement promis est donc constaté de bout en bout, pas seulement testé unitairement.
+
+- **Écart par rapport à la fiche** : la fiche prévoyait d'adapter la signature d'appel de
+  `tests/test_backfill.py` l. 396 (ex-354). **Inutile en fait** : le nouveau paramètre a une
+  valeur par défaut, l'appel existant reste valide tel quel. L'adaptation annoncée n'a pas eu
+  lieu, ce qui est mieux que prévu — le test est intact à l'octet près.
+
+- **Défauts trouvés et corrigés pendant l'écriture des tests** (diligence de l'agent, hors
+  décisions de fiche) : un `repr()` appliqué deux fois dans le gabarit du script fils, qui
+  faisait bloquer indéfiniment l'ouverture du FIFO côté parent (blocage franc, pas un test
+  instable) ; et une vraie course — sans attendre la ligne de progression du site normal
+  avant de tirer les deux signaux, `os._exit` pouvait le tuer pendant son écriture de
+  manifeste, rendant O7 non déterministe.
+
+- **Non vérifié** : propagation du signal sous cwltool / PID-FLOW (hors périmètre) ;
+  `SIGTERM` et un `kill` ordinaire restent brutaux et non annoncés ; le chemin
+  `CTRL_BREAK_EVENT` de Windows n'est pas exercé — seuls O1 à O4 couvrent Windows, la fiche
+  l'admettait déjà ; l'atomicité des chips n'est pas visée, seule l'absence de manifeste
+  fantôme est garantie.
+
+- **Commit(s)** : `be310fe` (implémentation), merge `--no-ff` sur `develop`.
+- **Date** : 2026-08-22

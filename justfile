@@ -61,6 +61,11 @@ script name *args:
 survey-tiles *args:
     pixi run python scripts/survey_tiles.py {{args}}
 
+# aide à la revue humaine du centrage des sites (l0-03.H) : GeoJSON des emprises + page
+# de liens vers le Copernicus Browser et OSM. Ne valide rien — outille l'œil humain.
+review-sites *args:
+    pixi run python scripts/site_review.py {{args}}
+
 # smoke : le pipeline réel sur un périmètre minuscule (à câbler dès le Lot 0)
 smoke:
     pixi run python scripts/smoke.py
@@ -76,6 +81,20 @@ lots:
 # md → html : just md2html _roadmap.md roadmap.html "Titre"
 md2html src dest title="Doc" banner="":
     pixi run python scripts/backlog.py md2html {{src}} {{dest}} "{{title}}" "{{banner}}"
+
+# couverture — HORS gate, à la demande. Sert à repérer un module oublié, pas à produire
+# un pourcentage à défendre.
+coverage:
+    pixi run pytest --cov=tiny_wae --cov-report=term-missing:skip-covered --cov-report=
+
+# hygiène des dépendances : déclarée non utilisée, utilisée non déclarée, transitive
+# utilisée directement. Angle mort de ruff ET de mypy — c'est ce défaut qui avait laissé
+# `affine` hors du contrat de la wheel.
+# `src` SEUL : `scripts/` n'est pas dans la wheel, ses dépendances (markdown…) sont des
+# dépendances de DEV déclarées côté pixi, que deptry ne lit pas — l'y inclure produirait
+# un faux positif permanent.
+deptry:
+    pixi run deptry src
 
 # validation statique des tools/workflow CWL (cwltool --validate, un fichier à la fois :
 # passer plusieurs chemins à --validate fait interpréter les suivants comme job order).
@@ -96,4 +115,4 @@ cwl-run file *args:
 
 # ⭐ lint + types + tests + smoke + cwl = définition de « fini ». À lancer AVANT de dire « fini ».
 check:
-    just lint && just types && just test && just smoke && just cwl
+    just lint && just types && just deptry && just test && just smoke && just cwl

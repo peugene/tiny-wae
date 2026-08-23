@@ -1,0 +1,324 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[perf-01] Réglages GDAL pour la lecture des COG distants</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>perf-01</b></nav><h1>[perf-01] Réglages GDAL pour la lecture des COG distants <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : performance</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#perf-01-reglages-gdal-pour-la-lecture-des-cog-distants">[perf-01] — Réglages GDAL pour la lecture des COG distants</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-690e899">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD 690e899)</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>La campagne d'historique du 2026-08-23 a mesuré que la lecture des COG distants passait
+l'essentiel de son temps en <strong>requêtes HTTP inutiles</strong>, faute de configurer GDAL. Cinq
+variables d'environnement, posées à la main sur la ligne de commande, ont fait passer le run
+complet de <strong>~21 h à 6 h 13</strong>.</p>
+<p>Ces réglages n'existent aujourd'hui <strong>nulle part dans le dépôt</strong> : ils ont été tapés dans un
+shell et sont perdus. Il faut les poser dans le code, pour qu'ils s'appliquent quel que soit
+l'appelant — et en particulier <strong>sous PID-FLOW, où l'invocation est produite par le moteur et
+où l'environnement du worker n'est pas maîtrisé</strong>.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-690e899">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD <code>690e899</code>)</h3>
+<ul>
+<li><strong>Aucun réglage GDAL n'existe</strong> : <code>grep -rn "GDAL_\|CPL_\|VSI_\|rasterio.Env\|AWS_"</code> sur
+  <code>src/</code>, <code>config/</code>, <code>.env.example</code> et <code>justfile</code> ne rend <strong>rien</strong>.</li>
+<li><strong>Il n'existe qu'UN point d'ouverture de raster distant</strong> : <code>adapters/chips.py::_read_window</code>
+  (l. 105-121), qui fait <code>_guard_href(href)</code> puis <code>with rasterio.open(href) as src:</code>.
+  <code>_write_geotiff</code> (l. 178) ouvre en écriture, en local — hors sujet.</li>
+<li><strong>Mesures de la campagne</strong> (journaux <code>run.json</code>, <code>duration_s</code> et <code>assets_read</code> réels,
+  mêmes sites A01-A06 avant/après, donc comparables) :</li>
+</ul>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>régime</th>
+<th>n</th>
+<th>s/asset</th>
+<th>assets/min</th>
+<th>s/fenêtre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6 workers, défauts GDAL</td>
+<td>77</td>
+<td>10,5</td>
+<td>31,6</td>
+<td>303</td>
+</tr>
+<tr>
+<td>13 workers, défauts GDAL</td>
+<td>13</td>
+<td>17,1</td>
+<td>17,9</td>
+<td>665</td>
+</tr>
+<tr>
+<td>25 workers, défauts GDAL</td>
+<td>2</td>
+<td>36,4</td>
+<td>7,7</td>
+<td>458</td>
+</tr>
+<tr>
+<td><strong>6 workers + réglages</strong></td>
+<td>27</td>
+<td><strong>1,3</strong></td>
+<td><strong>228</strong></td>
+<td><strong>36</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Ce que les réglages ont AUSSI supprimé</strong> : les coupures de connexion. 3 retries urllib3
+  (<code>SSLEOFError</code>, <code>RemoteDisconnected</code>) en 55 s à 25 workers ; <strong>0 retry sur les 6 h 13</strong> du
+  run complet. Les retries étaient un symptôme du volume de requêtes parasites, pas une
+  limite d'AWS.</li>
+<li><strong>Ce qui n'était PAS le goulot</strong>, mesuré et écarté : la bande passante (8,9 Mbit/s
+  consommés sur ~74 disponibles, soit 12 %), le CPU (<strong>3,7 %</strong> d'un cœur sur 16 — donc pas
+  le GIL), le disque (drvfs mesuré à 35,6 ms/item contre 1,7 ms en ext4, mais 0,03 % du
+  temps d'une fenêtre).</li>
+<li><strong>Le parallélisme ne compensait pas</strong> : ajouter des workers faisait <strong>baisser</strong> le débit
+  agrégé (31,6 → 17,9 → 7,7 assets/min). C'est la signature d'une ressource saturée par des
+  requêtes inutiles, pas d'un manque de concurrence.</li>
+</ul>
+<h3 id="decisions-actees">⭐ Décisions actées</h3>
+<ul>
+<li><strong>D1 — Les cinq réglages retenus</strong>, exactement ceux qui ont été mesurés :</li>
+</ul>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>option</th>
+<th>rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GDAL_DISABLE_READDIR_ON_OPEN=EMPTY_DIR</code></td>
+<td>empêche GDAL de lister le « répertoire » S3 à chaque ouverture</td>
+</tr>
+<tr>
+<td><code>CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif</code></td>
+<td>empêche la recherche de fichiers annexes inexistants (<code>.aux.xml</code>, <code>.ovr</code>, <code>.msk</code>), chacun payé en 404</td>
+</tr>
+<tr>
+<td><code>GDAL_HTTP_MULTIPLEX=YES</code></td>
+<td>multiplexage des requêtes</td>
+</tr>
+<tr>
+<td><code>GDAL_HTTP_VERSION=2</code></td>
+<td>HTTP/2</td>
+</tr>
+<tr>
+<td><code>VSI_CACHE=TRUE</code></td>
+<td>cache des blocs déjà lus</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>D2 — ⚠ L'Env s'ouvre DANS LE THREAD QUI LIT.</strong> <code>rasterio.Env</code> pose ses options en
+  <strong>thread-local</strong> : un Env ouvert dans le thread principal du CLI ne s'appliquerait <strong>pas</strong>
+  aux workers du pool (<code>adapters/backfill.py</code> en lance un par site). C'est le piège central
+  de cette fiche. Le contexte est donc ouvert <strong>dans <code>_read_window</code></strong>, qui s'exécute
+  toujours dans le thread qui fait la lecture.</li>
+<li><strong>D3 — Les options sont nommées UNE fois</strong>, dans une constante de <code>adapters/chips.py</code>,
+  jamais recopiées ailleurs (ni dans le justfile, ni dans la doc, ni dans un <code>.env</code>).</li>
+<li><strong>D4 — Aucune variable d'environnement à poser par l'opérateur.</strong> Le but est précisément
+  que le réglage survive à une invocation qu'on ne contrôle pas. ⛔ Ne pas se contenter de
+  documenter les variables dans le README.</li>
+<li><strong>D5 — Ne PAS toucher <code>_guard_href</code></strong> : la garde <code>TINY_WAE_OFFLINE</code> reste appliquée avant
+  toute ouverture, dans le même ordre qu'aujourd'hui.</li>
+</ul>
+<h3 id="fichiers-touches">Fichiers touchés</h3>
+<ul>
+<li><code>src/tiny_wae/adapters/chips.py</code> — constante des options + <code>rasterio.Env</code> dans
+  <code>_read_window</code>.</li>
+<li><code>tests/test_chips.py</code> ou <code>tests/test_gdal_env.py</code> — les oracles ci-dessous.</li>
+</ul>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Les 5 options de D1 sont actives pendant <code>rasterio.open</code> dans <code>_read_window</code>.</li>
+<li>[ ] Elles le sont <strong>aussi depuis un thread worker</strong>, pas seulement dans le thread principal.</li>
+<li>[ ] Aucune variable d'environnement n'est requise de l'appelant.</li>
+<li>[ ] La garde <code>_guard_href</code> s'applique toujours avant l'ouverture.</li>
+<li>[ ] <code>just check</code> vert au commit de la fiche.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<blockquote>
+<p>⛔ Aucun oracle de performance : le gate n'a pas de réseau. Le gain est établi par la
+mesure de campagne ci-dessus, pas par un test.</p>
+</blockquote>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>rasterio.open</code> monkeypatché pour capturer <code>rasterio.env.getenv()</code> au moment de l'appel, depuis le thread principal</td>
+<td>les <strong>5</strong> options de D1 sont présentes avec leur valeur exacte</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><strong>le même test, mais l'appel lancé dans un <code>ThreadPoolExecutor</code></strong></td>
+<td>les <strong>5</strong> options y sont <strong>aussi</strong> — c'est l'oracle qui garde D2, le seul qui distingue un Env correctement placé d'un Env inopérant</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>ordre des opérations dans <code>_read_window</code></td>
+<td><code>_guard_href</code> est appelé <strong>avant</strong> l'ouverture ; sous <code>TINY_WAE_OFFLINE=1</code>, un href <code>https://</code> est toujours refusé</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>les options ne sont écrites qu'à un seul endroit</td>
+<td><code>grep</code> des 5 noms dans <code>src/</code>, <code>justfile</code>, <code>docs/</code> : chacun n'apparaît <strong>qu'une fois</strong>, dans <code>adapters/chips.py</code></td>
+</tr>
+<tr>
+<td>O5</td>
+<td>non-régression</td>
+<td><code>just check</code> vert — <strong>276 tests</strong> au départ ; le smoke (fixtures locales en <code>file://</code>) passe à l'identique</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
+<ul>
+<li><strong>Le gain de performance n'est pas testé</strong>, il est <em>mesuré ailleurs</em> (campagne du
+  2026-08-23). Aucun test du gate ne le rejoue, et aucun ne le protégerait d'une régression.</li>
+<li><strong><code>CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif</code> est un pari</strong> : il rendrait invisible tout asset
+  distant dont l'extension n'est pas <code>.tif</code>. Tous les assets mappés du projet sont des COG
+  <code>.tif</code> (les <code>s3://.jp2</code> sont déjà refusés en amont par <code>parse_item</code>), mais un changement
+  de catalogue le casserait silencieusement. Non couvert.</li>
+<li><strong>Aucune mesure sous cwltool / PID-FLOW</strong> : c'est pourtant le cas d'usage qui motive la
+  fiche. À constater lors du premier passage réel.</li>
+<li><strong>Les autres pistes ne sont pas explorées</strong> : <code>GDAL_CACHEMAX</code>, <code>GDAL_NUM_THREADS</code>,
+  <code>CPL_VSIL_CURL_CHUNK_SIZE</code> pourraient encore aider, aucune n'a été mesurée.</li>
+</ul>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>Le nombre optimal de workers est à <strong>reposer</strong> une fois cette fiche livrée : les mesures qui
+montraient une dégradation au-delà de 6 workers ont toutes été prises avec les défauts GDAL.
+Le goulot levé, le point d'équilibre a probablement changé. Ne pas reprendre les chiffres du
+tableau d'ancrage comme s'ils valaient encore.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<ul>
+<li>
+<p><strong>Ce qui a été fait</strong> : constante <code>GDAL_REMOTE_READ_OPTIONS</code> dans <code>adapters/chips.py</code>
+  (les 5 options de D1, valeurs exactes), et <code>_read_window</code> ouvre
+  <code>with rasterio.Env(**GDAL_REMOTE_READ_OPTIONS), rasterio.open(href) as src:</code>.
+  <code>_guard_href</code> reste appelée avant, dans le même ordre (D5). Aucune variable
+  d'environnement n'est requise de l'appelant.</p>
+</li>
+<li>
+<p><strong>Placement du contexte</strong> : dans <code>_read_window</code> elle-même (D2), vérifié empiriquement
+  avant écriture — <code>rasterio.env.getenv()</code> appelé depuis un worker de <code>ThreadPoolExecutor</code>
+  lève <code>EnvError</code> si l'<code>Env</code> n'a été ouvert que dans le thread principal. C'est exactement
+  le piège que D2 décrivait, et il est réel.</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> (5 tests dans <code>tests/test_chips.py</code>) :</p>
+</li>
+<li>O1 : les <strong>5</strong> options présentes avec leur valeur exacte au moment de l'appel réel à
+    <code>rasterio.open</code> (espion qui délègue à l'implémentation, pas un mock).</li>
+<li>O2 : <strong>les 5 aussi depuis un worker de <code>ThreadPoolExecutor</code></strong>. L'agent a vérifié que ce
+    test discrimine en déplaçant l'<code>Env</code> au niveau module : O1 restait vert (le faux négatif
+    classique), <strong>O2 tombait</strong> (<code>GDAL_DISABLE_READDIR_ON_OPEN : attendu 'EMPTY_DIR', vu
+    None</code>). C'est cet oracle-là qui garde la fiche.</li>
+<li>O3 : ordre réel <code>guard</code> -&gt; <code>Env</code> -&gt; <code>open</code> ; sous <code>TINY_WAE_OFFLINE=1</code> un href
+    <code>https://</code> est refusé avant toute ouverture.</li>
+<li>O4 : chacun des 5 noms d'option n'apparaît <strong>qu'une fois</strong> dans <code>src/</code>, <code>justfile</code>,
+    <code>docs/</code> hors <code>docs/backlog/</code>.</li>
+<li>
+<p>O5 : <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> — <strong>281 tests</strong> (276 au départ, +5).</p>
+</li>
+<li>
+<p><strong>Écarts par rapport à la fiche</strong> :
+  1. <strong>Périmètre du grep O4</strong> : <code>docs/backlog/</code> est exclu. La fiche <code>perf-01.md</code> cite
+     elle-même les 5 valeurs dans son tableau D1 ; sans cette exclusion le critère serait
+     structurellement infaisable dès que la fiche existe, et une fiche livrée n'est jamais
+     supprimée. Documenté dans le test.
+  2. <strong>O3 n'asserte pas une séquence stricte</strong> : <code>rasterio.open</code> est décoré en interne
+     (<code>ensure_env_with_credentials</code>) et pousse un second <code>Env</code> imbriqué. L'assertion porte
+     sur les premières occurrences, pour ne pas dépendre d'un détail d'implémentation de
+     rasterio.</p>
+</li>
+<li>
+<p><strong>Constat annexe utile</strong> : en sabotant <code>_guard_href</code>, l'agent a provoqué une vraie
+  résolution DNS — ce qui confirme que <code>--disable-socket</code> de pytest <strong>ne couvre pas GDAL</strong>.
+  La garde <code>TINY_WAE_OFFLINE</code> n'est donc pas redondante avec le harnais de test.</p>
+</li>
+<li>
+<p><strong>Non testé</strong> (inchangé) : le gain de performance n'est protégé par aucun test — il est
+  mesuré en campagne, et rien ne signalerait une régression. Aucune mesure sous
+  cwltool/PID-FLOW, qui est pourtant le cas d'usage motivant la fiche.
+  <code>CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif</code> reste un pari si le catalogue change d'extension.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>7e9f61d</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><a href="out-01.html">← [out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</a><span></span></div><p class="gen">Généré le 23/08/2026 08:38 — le .md fait foi.</p></article></body></html>

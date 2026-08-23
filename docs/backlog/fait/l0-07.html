@@ -45,12 +45,13 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l0-07-write_manifest-refuse-un-statut-illegitime">[l0-07] — write_manifest refuse un statut illégitime</a><ul>
 <li><a href="#objectif">Objectif</a></li>
 <li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
 <li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD c67bfc1)</a></li>
+<li><a href="#ancrage-anticipe-pose-pendant-le-dispatch-de-data-01-head-096f8d1">⚠ Ancrage anticipé (posé pendant le dispatch de data-01, HEAD 096f8d1)</a></li>
 <li><a href="#fichiers-touches">Fichiers touchés</a></li>
 <li><a href="#decision-actee-la-garde-est-a-lecriture-pas-a-la-construction">⭐ Décision actée : la garde est à l'ÉCRITURE, pas à la construction</a></li>
 </ul>
@@ -67,7 +68,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <blockquote>
 <p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
 Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.
-⚠ <strong>Placement à confirmer par le PO</strong> : id <code>l0-07</code> hors de la séquence du chantier
+✅ <strong>Placement validé par le PO le 2026-08-23</strong> (lancement du run) : id <code>l0-07</code> hors de la séquence du chantier
 <code>lot-0-ingestion</code> (qui s'arrête à <code>l0-06</code>), fiche autonome sans <code>parent:</code> — sur le
 précédent d'<code>out-01</code>. Rattacher au chapeau <code>l0-03</code> rouvrirait sa taxonomie, déclarée
 fermée. Le <code>depends_on: [l0-03.2]</code> n'est pas décoratif : c'est cette fiche qui a créé
@@ -83,6 +84,11 @@ silencieusement, et ne se découvre qu'au moment où un agrégat ne tombe plus j
 <p>Poser la garde à l'écriture, sur le patron déjà en place pour les compteurs de run.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <h3 id="ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD <code>c67bfc1</code>)</h3>
+<p>Re-vérifié le 2026-08-23 à HEAD <code>690e899</code> avant dispatch : <code>Manifest.status</code> toujours
+<code>str</code> libre, <code>MANIFEST_STATUSES</code> toujours absente, et
+<code>tests/test_vocabulary.py::test_manifest_statuses_a_bien_disparu</code> toujours présent (le
+test que cette fiche doit remplacer, pas supprimer). Base de non-régression : <strong>276</strong>
+tests depuis <code>obs-01</code>/<code>obs-02</code>.</p>
 <ul>
 <li><strong><code>Manifest.status: str</code></strong> (<code>adapters/manifests.py:80</code>) — aucune contrainte, ni au type,
   ni à la construction, ni à l'écriture.</li>
@@ -105,6 +111,48 @@ silencieusement, et ne se découvre qu'au moment où un agrégat ne tombe plus j
   <code>ingested</code> (13), <code>rejected_clouds</code> (3), <code>rejected_invalid</code> (1), <code>rejected_nodata</code> (1) et
   <code>failed</code> (1) — aucun <code>skipped</code>, aucune variante de casse. Les tests ne construisent des
   <code>Manifest</code> qu'avec <code>ingested</code> et <code>failed</code>. <strong>Aucune migration de données n'est requise.</strong></li>
+</ul>
+<h3 id="ancrage-anticipe-pose-pendant-le-dispatch-de-data-01-head-096f8d1">⚠ Ancrage anticipé (posé pendant le dispatch de <code>data-01</code>, HEAD <code>096f8d1</code>)</h3>
+<p><code>data-01</code> modifie <strong>le même fichier</strong> que cette fiche (<code>adapters/manifests.py</code>) et touche
+<code>core/envelope.py</code>. L'ancrage ci-dessus se scinde donc :</p>
+<p><strong>Faits INDÉPENDANTS de <code>data-01</code>, acquis</strong> :</p>
+<ul>
+<li><code>Manifest.status</code> reste un <code>str</code> libre : <code>data-01</code> ne touche ni au type ni aux statuts.</li>
+<li>Les 5 statuts réellement écrits par <code>adapters/ingestion.py</code> sont inchangés :
+  <code>data-01</code> écarte des items AVANT parsing, sans jamais écrire de manifeste pour eux.</li>
+<li>Le patron de garde <code>write_run</code> -&gt; <code>_validate_counters</code> -&gt; <code>ConservationError</code> reste le
+  modèle à imiter (<code>data-01</code> l'étend, ne le remplace pas).</li>
+<li><code>RUN_STATUSES</code> est explicitement hors du périmètre de <code>data-01</code> (sa décision D2).</li>
+</ul>
+<p>✅ <strong>RECONFIRMÉ après le merge de <code>data-01</code></strong> (HEAD <code>603be73</code>, le 2026-08-23) — emplacements
+RÉELS, ceux du haut de fiche sont périmés là où c'est indiqué :</p>
+<ul>
+<li><code>Manifest.status</code> : <strong>l. 91</strong> (était 80).</li>
+<li><code>write_manifest</code> : <strong>l. 202</strong>. <code>write_run</code> : <strong>l. 291</strong> (était 274).</li>
+<li><code>_COUNTER_KEYS</code> : <strong>l. 51</strong>, forme inchangée (<code>(*ENVELOPE_COUNTERS, *RUN_STATUSES)</code>) —
+  mais <code>ENVELOPE_COUNTERS</code> compte désormais <strong>5</strong> entrées, <code>skipped_asset_scheme</code> incluse.</li>
+<li>⛔ <strong>NOUVEAU, et c'est le piège</strong> : <code>_READ_TOLERANT_COUNTER_KEYS</code> (<strong>l. 59</strong>) et
+  <code>_with_read_tolerant_defaults</code> (<strong>l. 322-326</strong>) introduisent une tolérance à la LECTURE
+  des <code>run.json</code>. <strong>NE PAS la transposer à la garde de cette fiche</strong> : <code>write_manifest</code>
+  écrit, elle doit rester STRICTE. La tolérance existe parce qu'un corpus de 1404 journaux
+  antérieurs devait rester lisible ; aucun équivalent ici.</li>
+<li><code>core/statuses.py</code> : <strong>intact</strong>, dernier commit <code>4d89644</code>, non touché par <code>data-01</code>.</li>
+<li><code>tests/test_vocabulary.py::test_manifest_statuses_a_bien_disparu</code> : toujours présent
+  (<strong>l. 46</strong>) — le test à REMPLACER, jamais à supprimer.</li>
+<li><strong>Base de non-régression : 293 tests</strong> (et non 276).</li>
+</ul>
+<p>Ancienne liste des points à reconfirmer, pour mémoire :</p>
+<ul>
+<li><strong>Les numéros de ligne d'<code>adapters/manifests.py</code></strong> cités plus haut (<code>Manifest.status</code> l. 80,
+  <code>write_run</code> l. 274) seront décalés.</li>
+<li><strong><code>_COUNTER_KEYS</code> (l. 48) change</strong> : <code>data-01</code> ajoute <code>skipped_asset_scheme</code> à
+  <code>ENVELOPE_COUNTERS</code>, dont cette constante dérive. Cette fiche n'y touche pas, mais ne doit
+  pas se fonder sur son contenu actuel.</li>
+<li><strong><code>_validate_counters</code> gagne une tolérance à la lecture</strong> (D6 de <code>data-01</code>). La garde de
+  CETTE fiche porte sur l'ÉCRITURE d'un manifeste : elle reste stricte, sans tolérance.
+  Ne pas transposer par mimétisme la souplesse introduite à côté.</li>
+<li><strong>La base de non-régression ne sera plus 276 tests</strong> mais celle laissée par <code>perf-01</code> et
+  <code>data-01</code>. À relever au démarrage, pas à supposer.</li>
 </ul>
 <h3 id="fichiers-touches">Fichiers touchés</h3>
 <ul>
@@ -167,18 +215,17 @@ présenter à la garde. Ne pas « améliorer » en durcissant le dataclass.</p>
 </tr>
 <tr>
 <td>O5</td>
-<td><strong>mutation</strong> : retirer l'appel à la garde dans <code>write_manifest</code>, relancer <code>just test -k manifest</code></td>
-<td>O1 passe au <strong>ROUGE</strong>, puis au vert après restauration</td>
-</tr>
-<tr>
-<td>O6</td>
 <td>non-régression</td>
-<td><code>just check</code> vert — <strong>250 tests</strong> au départ, aucun test existant modifié hors <code>test_vocabulary.py</code></td>
+<td><code>just check</code> vert — <strong>276 tests</strong> au départ, aucun test existant modifié hors <code>test_vocabulary.py</code></td>
 </tr>
 </tbody>
 </table></div>
 <p><strong>Non testé par cette fiche</strong> (chiffres honnêtes) :</p>
 <ul>
+<li><strong>Pas de test de mutation</strong> (règle projet posée par le PO le 2026-08-22 : « on fait des
+  tests, ils doivent passer au vert »). L'oracle de mutation qui figurait ici a été retiré.
+  Écrire O1 <strong>avant</strong> la garde, et constater qu'il est rouge, suffit — c'est gratuit et ça
+  se fait dans le fil de l'implémentation.</li>
 <li><strong><code>read_manifest</code> reste permissif, délibérément.</strong> Durcir la lecture rendrait illisible un
   corpus historique écrit par une version antérieure — on refuserait de relire des données
   qu'on a nous-mêmes produites. La garde protège ce qu'on écrit, pas ce qu'on a écrit.</li>
@@ -198,10 +245,49 @@ non appliquée ne l'est pas.</p>
 <p>Coût attendu : une dizaine de lignes de code, l'essentiel de l'effort étant dans les tests.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 22/08/2026 11:08 — le .md fait foi.</p></article></body></html>
+<li>
+<p><strong>Ce qui a été fait</strong> : <code>MANIFEST_STATUSES</code> réintroduite dans <code>core/statuses.py</code>,
+  <strong>dérivée</strong> (<code>frozenset(RUN_STATUSES) - {"skipped"}</code>), et cette fois avec un consommateur.
+  <code>ManifestStatusError(ManifestError)</code> à côté de <code>ConservationError</code>. Garde en tête de
+  <code>write_manifest</code>, levée <strong>avant</strong> tout appel à <code>_manifest_path</code> ou
+  <code>_write_json_atomic</code> : le répertoire de l'item n'est même pas créé. <code>read_manifest</code> reste
+  permissif, avec le motif écrit dans sa docstring.</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> : O1 à O5 <strong>tous verts</strong>. <code>just check</code> vert sur <code>develop</code> après
+  merge — <strong>301 tests</strong> (293 au départ, +8).</p>
+</li>
+<li>O1 : <code>status="skipped"</code> lève, et <code>item_dir</code> n'existe pas.</li>
+<li>O2 : <code>"Ingested"</code> (casse) et <code>"ingere"</code> (faute) lèvent <strong>toutes deux</strong> — la garde n'est
+    pas une simple exclusion de <code>"skipped"</code>.</li>
+<li>O3 : <strong>5/5</strong> statuts légitimes écrivent et se relisent identiques.</li>
+<li>
+<p>O4 : le message contient littéralement le statut refusé et les 5 admis.</p>
+</li>
+<li>
+<p><strong>Périmètre : exactement les 4 fichiers annoncés</strong>, aucun débordement.</p>
+</li>
+<li>
+<p>⭐ <strong>Le piège annoncé a été évité</strong> : <code>data-01</code> venait d'introduire dans le MÊME fichier
+  une tolérance à la lecture (<code>_READ_TOLERANT_COUNTER_KEYS</code>), justifiée par un corpus de
+  1404 journaux à préserver. La garde de cette fiche porte sur l'écriture, où aucun corpus
+  n'est en jeu : elle est restée <strong>stricte</strong>, sans valeur par défaut, et le mécanisme voisin
+  n'a été ni touché ni imité.</p>
+</li>
+<li>
+<p><strong><code>test_manifest_statuses_a_bien_disparu</code> a été REMPLACÉ, pas supprimé</strong>, par
+  <code>test_manifest_statuses_est_derivee_et_a_un_consommateur</code> : il vérifie la dérivation,
+  l'identité d'objet, et prouve la consommation par un appel réel à <code>write_manifest</code>.</p>
+</li>
+<li>
+<p><strong>Non testé</strong> : pas de test de mutation (règle projet du 2026-08-22) ; aucune migration de
+  corpus (aucune n'était requise, mesuré à la rédaction) ; aucun autre champ de <code>Manifest</code>
+  n'est validé (<code>tile</code>, <code>sequence</code>, <code>platform</code>, <code>schema_version</code>) — même classe de défaut,
+  hors périmètre.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>f4fa5d6</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><a href="l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 10:21 — le .md fait foi.</p></article></body></html>

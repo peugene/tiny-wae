@@ -36,10 +36,8 @@ def register(app: typer.Typer) -> None:
 
 
 def contact_sheet(
-    latest: bool = typer.Option(  # noqa: B008 — idiome typer standard.
-        False, "--latest", help="Un chip récent par site."
-    ),
-    first_last: bool = typer.Option(  # noqa: B008
+    latest: bool = typer.Option(False, "--latest", help="Un chip récent par site."),
+    first_last: bool = typer.Option(
         False, "--first-last", help="Premier ET dernier chip ingested par site (l0-04.2)."
     ),
     out: Path = typer.Option(  # noqa: B008

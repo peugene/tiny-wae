@@ -162,7 +162,7 @@ def test_o1_write_contact_sheet_produces_png_file(ingested_data_root: Path, tmp_
 
     assert result_path == out_path
     assert out_path.exists()
-    with open(out_path, "rb") as fh:  # signature PNG, pas GeoTIFF
+    with out_path.open("rb") as fh:  # signature PNG, pas GeoTIFF
         header = fh.read(8)
     assert header == b"\x89PNG\r\n\x1a\n"
 
@@ -319,7 +319,7 @@ def test_o3_write_first_last_contact_sheet_produces_png_file(
 
     assert result_path == out_path
     assert out_path.exists()
-    with open(out_path, "rb") as fh:
+    with out_path.open("rb") as fh:
         header = fh.read(8)
     assert header == b"\x89PNG\r\n\x1a\n"
 
@@ -362,7 +362,7 @@ def test_cli_contact_sheet_first_last_ecrit_un_png(
 
     assert result.exit_code == 0, result.output
     assert out_path.exists()
-    with open(out_path, "rb") as fh:
+    with out_path.open("rb") as fh:
         header = fh.read(8)
     assert header == b"\x89PNG\r\n\x1a\n"
 

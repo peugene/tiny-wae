@@ -77,15 +77,15 @@ sites:
       origin_y: 3437880
   - id: A07
     name: "Zhangzhou"
-    lat: 23.816
-    lon: 117.578
+    lat: 23.83315
+    lon: 117.48995
     category: nuclear-construction
     note: "Réacteurs Hualong One en série"
     reference_tile: 50QNM
     grid:
       epsg: 32650
-      origin_x: 556300
-      origin_y: 2636520
+      origin_x: 547320
+      origin_y: 2638400
   - id: A08
     name: "Vogtle 3-4"
     lat: 33.143
@@ -189,15 +189,15 @@ sites:
       origin_y: 8722560
   - id: B09
     name: "Autoroute A69 Toulouse-Castres (section)"
-    lat: 43.60
-    lon: 2.00
+    lat: 43.568032
+    lon: 2.134631
     category: megaproject
     note: "Chantier linéaire — contrôle local visitable"
     reference_tile: 31TDJ
     grid:
       epsg: 32631
-      origin_x: 416720
-      origin_y: 4830480
+      origin_x: 427540
+      origin_y: 4826820
 
   # ── Catégorie C — Sites stables & veille type OSINT (8) ──────────────────────
   - id: C01

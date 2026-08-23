@@ -273,8 +273,11 @@ class _SingleItemSource:
     envelope: Envelope
     item: Acquisition
 
-    def search(self, site: Site, window: Window) -> Envelope:
-        """Rend l'enveloppe d'origine, `items` réduits au seul item substitué."""
+    def search(self, site: Site, window: Window) -> Envelope:  # noqa: ARG002
+        """Rend l'enveloppe d'origine, `items` réduits au seul item substitué.
+
+        `site` et `window` sont inutilisés mais NON préfixables : mypy compare les NOMS
+        des paramètres pour valider la conformité au Protocol `StacSource`."""
         return dataclasses.replace(self.envelope, items=[self.item])
 
 

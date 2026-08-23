@@ -279,6 +279,7 @@ def _envelope(
             "skipped_scene_cloud": skipped_scene_cloud,
             "off_tile": off_tile,
             "found_tile": found_tile,
+            "skipped_asset_scheme": 0,
         },
         items=items,
     )

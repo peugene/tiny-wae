@@ -35,7 +35,7 @@ def sites_list(
     path: Path = typer.Option(  # noqa: B008 — idiome typer standard (Option en défaut).
         DEFAULT_SITES_PATH, "--path", help="Chemin vers sites.yaml."
     ),
-    as_json: bool = typer.Option(False, "--json", help="Sortie JSON plutôt que texte."),  # noqa: B008
+    as_json: bool = typer.Option(False, "--json", help="Sortie JSON plutôt que texte."),
 ) -> None:
     """Liste les sites (STDOUT, texte ou JSON) ; erreurs sur STDERR, exit USAGE."""
     try:

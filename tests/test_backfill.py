@@ -23,7 +23,7 @@ nuageux (un seul item clair sur 4) : aucun test n'attend 4 ``ingested`` sur B09.
 from __future__ import annotations
 
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -280,6 +280,48 @@ def test_backfill_echec_o2_nest_pas_all_failures_network(tmp_path: Path) -> None
     assert not outcome.all_failures_network
 
 
+# ── obs-02 O1/O2 : `_request_stop` notifie `on_stop_requested` (accusé de réception) ──
+# Numérotées "obs02" pour ne pas se confondre avec le O1/O2 de l0-04.1 ci-dessus, sur le
+# MÊME fichier — ce sont les oracles de la fiche obs-02 (dont dépend obs-02), qui teste
+# `_request_stop` par appel DIRECT, comme O3 juste en dessous (pas un vrai signal, décision
+# d'ancrage n°5 de l0-04.1 : non portable linux-64/win-64).
+
+
+def test_request_stop_premier_appel_espion_already_false_obs02_o1() -> None:
+    """obs-02 O1 : 1er appel DIRECT de `_request_stop` avec un espion -> l'espion est
+    appelé EXACTEMENT une fois avec `already=False` ; `stop_event` positionné."""
+    stop_event = threading.Event()
+    calls: list[bool] = []
+
+    _request_stop(stop_event, 0, None, on_stop_requested=calls.append)
+
+    assert calls == [False]
+    assert stop_event.is_set()
+
+
+def test_request_stop_second_appel_espion_already_true_obs02_o2() -> None:
+    """obs-02 O2 : 2e appel DIRECT sur le MÊME `stop_event` déjà positionné -> l'espion
+    reçoit `already=True` ; `stop_event` reste positionné (pas de "dé-arm" au repassage)."""
+    stop_event = threading.Event()
+    calls: list[bool] = []
+
+    _request_stop(stop_event, 0, None, on_stop_requested=calls.append)
+    _request_stop(stop_event, 0, None, on_stop_requested=calls.append)
+
+    assert calls == [False, True]
+    assert stop_event.is_set()
+
+
+def test_request_stop_sans_espion_ne_leve_pas() -> None:
+    """`on_stop_requested` reste optionnel (défaut `None`, D1) : l'appel existant de
+    l0-04.1 (3 arguments positionnels, sans le 4e) continue de fonctionner SANS
+    modification — c'est ce qui rend l'adaptation de `tests/test_backfill.py:354`
+    inutile malgré l'évolution de signature."""
+    stop_event = threading.Event()
+    _request_stop(stop_event, 0, None)  # pas de `on_stop_requested` -> no-op silencieux.
+    assert stop_event.is_set()
+
+
 # ── O3 : interruption propre (gestionnaire appelé directement, PAS un vrai signal) ────
 
 
@@ -295,7 +337,10 @@ class _BlockingThenRealSource:
     started_event: threading.Event
     release_event: threading.Event
     _blocked_once: bool = False
-    _lock: threading.Lock = threading.Lock()
+    # `field(default_factory=...)` et PAS `threading.Lock()` : un défaut de dataclass est
+    # évalué UNE fois, à la définition de la classe — le verrou serait partagé par toutes
+    # les instances (débusqué par ruff RUF009).
+    _lock: threading.Lock = field(default_factory=threading.Lock)
 
     def search(self, site: Site, window: Window) -> Envelope:
         with self._lock:

@@ -104,7 +104,7 @@ def _report_summary(results: list[SiteUpdateResult], now: datetime) -> None:
     )
     if now.day == 1:
         typer.echo(
-            "⭐ 1er du mois : penser au rattrapage mensuel des retraitements tardifs "
+            "1er du mois : penser au rattrapage mensuel des retraitements tardifs "
             "(`just run backfill --site <id> --months 2`) — non automatisé, cf. README",
             err=True,
         )
@@ -124,10 +124,10 @@ def _exit_code_for(results: list[SiteUpdateResult]) -> int:
 
 
 def update(
-    sites: str = typer.Option(  # noqa: B008 — idiome typer standard.
+    sites: str = typer.Option(
         "all", "--sites", help="Ids CSV à traiter, ou `all` (défaut) pour tout le parc."
     ),
-    now: str | None = typer.Option(  # noqa: B008
+    now: str | None = typer.Option(
         None,
         "--now",
         help="Horodatage injecté (YYYY-MM-DD[THH:MM:SS]) — sans option, horloge système.",

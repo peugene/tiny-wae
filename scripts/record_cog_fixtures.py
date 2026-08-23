@@ -137,7 +137,10 @@ def _write_stac_fixture(name: str, items: list[dict[str, Any]]) -> Path:
     fd, tmp_name = tempfile.mkstemp(dir=STAC_FIXTURES_DIR, prefix=f".{name}.", suffix=".tmp")
     tmp_path = Path(tmp_name)
     try:
-        with open(fd, "w", encoding="utf-8") as f:
+        # ⚠ PTH123 est un FAUX POSITIF ici : `fd` est un descripteur entier rendu par
+        # `mkstemp`, que `Path.open()` ne sait pas prendre — et réécrire en
+        # `tmp_path.open()` fuiterait le descripteur.
+        with open(fd, "w", encoding="utf-8") as f:  # noqa: PTH123
             f.write(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         tmp_path.replace(path)
     except BaseException:
@@ -212,9 +215,7 @@ def _record_item_cog(item: dict[str, Any], *, grid: Grid, settings: Settings) ->
     return written
 
 
-def _record_site(
-    client: Client, settings: Settings, site: Site, raw_items: list[dict[str, Any]]
-) -> None:
+def _record_site(settings: Settings, site: Site, raw_items: list[dict[str, Any]]) -> None:
     """Écrit l'enveloppe STAC brute du site puis clippe le corpus raster de chaque item."""
     _write_stac_fixture(f"cog_{site.id.lower()}.json", raw_items)
     print(
@@ -289,13 +290,14 @@ def run() -> int:
             file=sys.stderr,
         )
 
-        _record_site(client, settings, a01, a01_items)
-        _record_site(client, settings, b09, b09_items)
+        _record_site(settings, a01, a01_items)
+        _record_site(settings, b09, b09_items)
 
     except RecordNetworkError as exc:
         print(f"record-cog-fixtures : {exc}", file=sys.stderr)
         return exit_codes.INCONCLUSIVE
-    except Exception as exc:  # amont injoignable, timeout, etc. — non concluant, pas un bug.
+    except Exception as exc:  # noqa: BLE001 — amont injoignable, timeout, etc. :
+        # non concluant, pas un bug. Frontière de CLI, l'exception devient un exit code.
         print(f"record-cog-fixtures : réseau injoignable : {exc}", file=sys.stderr)
         return exit_codes.INCONCLUSIVE
 

@@ -85,7 +85,10 @@ def _write_fixture(name: str, items: list[dict[str, Any]]) -> Path:
     fd, tmp_name = tempfile.mkstemp(dir=FIXTURES_DIR, prefix=f".{name}.", suffix=".tmp")
     tmp_path = Path(tmp_name)
     try:
-        with open(fd, "w", encoding="utf-8") as f:
+        # ⚠ PTH123 est un FAUX POSITIF ici : `fd` est un descripteur entier rendu par
+        # `mkstemp`, que `Path.open()` ne sait pas prendre — et réécrire en
+        # `tmp_path.open()` fuiterait le descripteur.
+        with open(fd, "w", encoding="utf-8") as f:  # noqa: PTH123
             f.write(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         tmp_path.replace(path)
     except BaseException:
@@ -144,7 +147,8 @@ def run() -> int:
     except RecordNetworkError as exc:
         print(f"record-stac-fixtures : {exc}", file=sys.stderr)
         return exit_codes.INCONCLUSIVE
-    except Exception as exc:  # amont injoignable, timeout, etc. — non concluant, pas un bug.
+    except Exception as exc:  # noqa: BLE001 — amont injoignable, timeout, etc. :
+        # non concluant, pas un bug. Frontière de CLI, l'exception devient un exit code.
         print(f"record-stac-fixtures : réseau injoignable : {exc}", file=sys.stderr)
         return exit_codes.INCONCLUSIVE
 

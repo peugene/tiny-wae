@@ -37,6 +37,26 @@ NODATA_VALUE = 0
 # Nom EXACT de la variable d'environnement (décision d'ancrage n°5) — aucune variante.
 OFFLINE_ENV_VAR = "TINY_WAE_OFFLINE"
 
+# Réglages GDAL pour la lecture des COG distants (perf-01, D1) : mesurés en campagne le
+# 2026-08-23, ils font passer un run complet de ~21 h à 6 h 13 (goulot = requêtes HTTP
+# inutiles, pas la bande passante ni le CPU). Nommés UNE seule fois ici (D3) : jamais
+# recopiés dans le justfile, un .env ou la doc (D4) — aucune variable d'environnement n'est
+# requise de l'appelant, y compris sous PID-FLOW où l'environnement du worker n'est pas
+# maîtrisé.
+GDAL_REMOTE_READ_OPTIONS: dict[str, str] = {
+    # empêche GDAL de lister le "répertoire" S3 à chaque ouverture.
+    "GDAL_DISABLE_READDIR_ON_OPEN": "EMPTY_DIR",
+    # empêche la recherche de fichiers annexes inexistants (.aux.xml, .ovr, .msk),
+    # chacun payé en 404.
+    "CPL_VSIL_CURL_ALLOWED_EXTENSIONS": ".tif",
+    # multiplexage des requêtes.
+    "GDAL_HTTP_MULTIPLEX": "YES",
+    # HTTP/2.
+    "GDAL_HTTP_VERSION": "2",
+    # cache des blocs déjà lus.
+    "VSI_CACHE": "TRUE",
+}
+
 
 class EpsgMismatchError(ValueError):
     """``Acquisition.proj_epsg`` != ``Grid.epsg`` — chip non superposable à la grille du site."""
@@ -112,9 +132,14 @@ def _read_window(
     rééchantillonnage (``Resampling.nearest``) n'intervient que si la fenêtre calculée ne
     correspond pas exactement à ``out_shape`` (cas normal : fenêtre entière, pas de
     rééchantillonnage réel).
+
+    ``rasterio.Env`` pose ses options en THREAD-LOCAL (perf-01, D2) : un Env ouvert dans le
+    thread principal du CLI ne s'appliquerait PAS aux workers du pool de
+    ``adapters/backfill.py`` (un thread par site). Le contexte est donc ouvert ICI, dans la
+    fonction qui s'exécute toujours dans le thread qui fait la lecture — jamais plus haut.
     """
     _guard_href(href)
-    with rasterio.open(href) as src:
+    with rasterio.Env(**GDAL_REMOTE_READ_OPTIONS), rasterio.open(href) as src:
         window = from_bounds(*bounds, transform=src.transform)
         array: np.ndarray = src.read(
             1, window=window, out_shape=out_shape, resampling=Resampling.nearest

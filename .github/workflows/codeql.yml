@@ -1,0 +1,49 @@
+# CodeQL — analyse sémantique (suivi de teinte) du code Python.
+#
+# ⚠ Rendement attendu FAIBLE sur ce projet, et c'est assumé : pas de web, pas de SQL
+# dynamique, pas d'entrée utilisateur hostile. Ce qu'il peut attraper ici se limite à la
+# manipulation de chemins et à la désérialisation. On l'active quand même parce que le coût
+# est nul (dépôt public = gratuit, aucune maintenance) et que le périmètre va s'élargir :
+# le Lot 1 ouvre l'ingestion réseau et l'interrogation en langage naturel.
+#
+# ⛔ Ne PAS activer en parallèle le « default setup » de CodeQL dans les réglages GitHub :
+# les deux se marchent dessus, GitHub refuse la configuration avancée si l'autre est active.
+name: codeql
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Une passe hebdomadaire : les requêtes CodeQL évoluent, du code inchangé peut se
+    # mettre à sortir un résultat. Lundi 6 h UTC, hors des heures de travail.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # publier les résultats dans l'onglet Security
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      # v4 et pas v3 : la v3 cible Node 20 (déprécié, forcé sur Node 24 par le runner)
+      # et sera retirée en décembre 2026. Les deux avertissements du 1er run venaient
+      # de là — c'est exactement ce que Dependabot signalera désormais tout seul.
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: python
+          # `security-extended` : plus de requêtes de SÉCURITÉ que le jeu par défaut, et
+          # AUCUNE requête de qualité. Le premier run a tranché — sur 15 alertes, 0 de
+          # sécurité et 14 sans valeur ici : 10 `py/ineffectual-statement` qui visent les
+          # `...` des membres de Protocol (la façon standard de les déclarer), 3 doubles
+          # formes d'import qu'un `monkeypatch.setattr` impose, 1 `except BaseException`
+          # délibéré dans un test de concurrence. Les garder, c'est entretenir un second
+          # référentiel de dette à côté de ruff et mypy, qui eux sont DANS le gate.
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v4

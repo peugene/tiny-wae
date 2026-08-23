@@ -88,14 +88,16 @@ def _require_grid_computed(site: Site) -> None:
 
 
 def _report_counters(site_id: str, run: Run) -> None:
-    """Écrit les compteurs finaux sur STDERR — les 4 compteurs d'enveloppe puis les 6
-    statuts, plus bytes et durée (cf. fiche : discipline des flux, rien d'autre sur
+    """Écrit les compteurs finaux sur STDERR — les 5 compteurs d'enveloppe (D5, fiche
+    data-01 : ``skipped_asset_scheme`` ajouté à la ligne — un écart compté qui ne
+    s'afficherait nulle part sur STDERR serait aussi opaque qu'un échec silencieux) puis
+    les 6 statuts, plus bytes et durée (cf. fiche : discipline des flux, rien d'autre sur
     STDOUT que ce que le CLI y écrit explicitement — ici tout part sur STDERR)."""
     c = run.counters
     typer.echo(
         f"site={site_id}  found_stac={c['found_stac']}  "
         f"skipped_scene_cloud={c['skipped_scene_cloud']}  off_tile={c['off_tile']}  "
-        f"found_tile={c['found_tile']}",
+        f"found_tile={c['found_tile']}  skipped_asset_scheme={c['skipped_asset_scheme']}",
         err=True,
     )
     statuses = "  ".join(f"{status}={c[status]}" for status in RUN_STATUSES)
@@ -106,7 +108,7 @@ def _report_counters(site_id: str, run: Run) -> None:
     )
     if run.tile_suspect:
         typer.echo(
-            f"⚠ site={site_id} : > {TILE_SUSPECT_RATIO:.0%} des items de la tuile de référence "
+            f"site={site_id} : > {TILE_SUSPECT_RATIO:.0%} des items de la tuile de référence "
             "sont rejected_nodata (dénominateur found_tile) — tuile suspecte, à corriger "
             "en config (édition de sites.yaml + `just survey-tiles`), PAS d'auto-bascule",
             err=True,
@@ -130,16 +132,16 @@ def ingest(
     acquisitions: Path | None = typer.Option(  # noqa: B008 — idiome typer standard.
         None, "--acquisitions", help="Enveloppe JSON déjà produite (chaînage CWL, cf. `search`)."
     ),
-    site_id: str | None = typer.Option(  # noqa: B008
+    site_id: str | None = typer.Option(
         None, "--site", help="Id du site (sites.yaml) — forme recherche directe."
     ),
-    date_from: str | None = typer.Option(  # noqa: B008
+    date_from: str | None = typer.Option(
         None, "--from", help="Début de fenêtre, YYYY-MM-DD (requis avec --site)."
     ),
-    date_to: str | None = typer.Option(  # noqa: B008
+    date_to: str | None = typer.Option(
         None, "--to", help="Fin de fenêtre, YYYY-MM-DD (requis avec --site)."
     ),
-    force: bool = typer.Option(  # noqa: B008
+    force: bool = typer.Option(
         False, "--force", help="Ré-ingestion inconditionnelle (ignore l'idempotence grid_hash)."
     ),
     sites_path: Path = typer.Option(  # noqa: B008
@@ -184,7 +186,12 @@ def ingest(
             )
             reported_site_id = site.id
         else:
-            assert site_id is not None and date_from is not None and date_to is not None
+            if site_id is None or date_from is None or date_to is None:
+                # Inatteignable : les gardes d'usage en tête de fonction l'ont déjà
+                # refusé. C'est le narrowing que mypy exige — et contrairement à un
+                # `assert`, il survit à `python -O`.
+                typer.echo("usage : --site requiert --from ET --to", err=True)
+                raise typer.Exit(code=exit_codes.USAGE)
             site = _find_site(sites, site_id)
             _require_grid_computed(site)
             window = Window(start=_parse_date("from", date_from), end=_parse_date("to", date_to))
