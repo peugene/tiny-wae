@@ -193,3 +193,67 @@ distribution mensuelle des observations (hors périmètre) ; l'exactitude de
 la **table de classification SCL** elle-même (fait externe, documenté par l'ESA — la fiche
 l'applique, elle ne le teste pas) ; le **filtre nuages du pipeline**, hors périmètre et non
 modifié.
+
+---
+## Résumé de réalisation
+
+**Faite le 2026-08-23** — agent Sonnet medium en worktree isolé (HEAD vérifié `7496d14`),
+commit `88c0733`, mergé en `c78cd8b`. **305 tests** (+5 neufs, +1 assertion corrigée).
+
+### Verdict d'oracle chiffré
+
+| Oracle | Verdict | Mesure |
+|---|---|---|
+| O1 ratio insensible aux relances | **VERT** | fixture 3 items distincts relancée une fois : ratio = 2/3, pas 2/6 |
+| O2 classement sur ratio distinct | **VERT** | site à ratio distinct 0,8 / volume 0,2 passe bien APRÈS un site à 0,3 |
+| O3 colonne affichée | **VERT** | `skipped_asset_scheme` dans l'en-tête, cellule à 2 sur fixture |
+| O4 identité re-vérifiable | **VERT** | somme des 4 colonnes LUES dans la ligne markdown = `found_stac` |
+| O5 non-régression du volume | **VERT** | compteurs, `conservation` et `failed_pct` inchangés à fixture identique |
+| O6 bonne classe SCL | **VERT** | classes 3 et 11 rendues, classe 2 absente, titre dérivé du mapping |
+
+### ⭐ Vérification sur le CORPUS RÉEL (au-delà de l'oracle, avant merge)
+
+Le code corrigé a été exécuté sur les 9 873 manifestes de la campagne du 23/08 (sortie hors
+`data_root`, corpus non modifié). Trois faits :
+
+1. **Le classement est corrigé** : B08 → A07 → A02 → A04 → A03 en tête, B01 en queue.
+   Avant : A03 en tête et B01 au 12e rang.
+2. **Les comptes distincts du code coïncident au chiffre près avec un comptage indépendant**
+   fait à la main sur le disque (`find <site> -name chip.tif | wc -l`) : B08 63/322,
+   A07 112/443, A02 141/448, A04 83/242, A03 169/445, B01 579/628. Deux chemins de calcul
+   sans rapport donnent le même résultat.
+3. **O1 se revérifie à la main** sur les 25 sites : écart nul en additionnant les colonnes
+   affichées. **SCL** : classe 3 = 2 816 348 px (0,742 %) contre 903 143 px (0,238 %) pour
+   la classe 2 qui était mise en avant à tort — le rapport publie désormais l'ombre de
+   nuage, celle qui produira de faux changements au Lot 2.
+
+### Décisions prises en cours de route
+
+- **Débordement de périmètre assumé et déclaré** : `tests/test_cli_report.py` (1 assertion +
+  son commentaire) a dû être corrigé en plus des 2 fichiers prévus. Il portait la **même
+  assertion littérale** sur la ligne markdown que `tests/test_report.py`, que D4 change par
+  construction ; sans ça le gate restait rouge (mesuré : 1 failed, 304 passed). Mécanique,
+  aucune logique nouvelle.
+  ⚠ **Ce que ça révèle** : le format d'une ligne de rapport est asserté littéralement à deux
+  endroits qui s'ignorent — le même défaut de duplication que D9 corrige côté source. Non
+  traité ici (gel des tests du Lot 0, décision Philippe du 23/08), mais consigné.
+- **Tension O5 / D4-D8 tranchée par l'agent, correctement** : la lettre d'O5 disait « sans
+  modification de leurs attendus », or D4 et D8 changent le format affiché par construction.
+  L'agent a tranché en faveur des décisions actées et l'a signalé. C'est un défaut de
+  rédaction de mon oracle, pas de son exécution : O5 visait la non-régression des **valeurs
+  mesurées** (compteurs, `failed_pct`, `bytes_written` — strictement inchangés), pas
+  l'immuabilité du texte des tests.
+
+### Gate
+
+`ruff` (72 fichiers), `mypy` (72 fichiers), `deptry`, **305 tests**, `smoke` vert, `cwltool`
+valide. ⚠ `just check` complet ressort **rouge** en local sur `ruff format` — à cause d'un
+bloc de code Python dans une fiche **non versionnée** du chantier Lot 1 écrite en parallèle
+(`docs/backlog/maturation/lot-1-embeddings/l1-02.2.md`), hors de ce périmètre et non touchée.
+Le fichier n'étant dans aucun commit, la CI ne le voit pas.
+
+### Non fait
+
+Le `report.md` du `data_root` n'a **pas** été régénéré — la vérification a écrit ailleurs
+pour ne pas toucher au corpus. Il porte donc encore l'ancien classement jusqu'à la prochaine
+exécution de `report`.
