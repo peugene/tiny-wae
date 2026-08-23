@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l0-07-write_manifest-refuse-un-statut-illegitime">[l0-07] — write_manifest refuse un statut illégitime</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -245,10 +245,49 @@ non appliquée ne l'est pas.</p>
 <p>Coût attendu : une dizaine de lignes de code, l'essentiel de l'effort étant dans les tests.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 10:00 — le .md fait foi.</p></article></body></html>
+<li>
+<p><strong>Ce qui a été fait</strong> : <code>MANIFEST_STATUSES</code> réintroduite dans <code>core/statuses.py</code>,
+  <strong>dérivée</strong> (<code>frozenset(RUN_STATUSES) - {"skipped"}</code>), et cette fois avec un consommateur.
+  <code>ManifestStatusError(ManifestError)</code> à côté de <code>ConservationError</code>. Garde en tête de
+  <code>write_manifest</code>, levée <strong>avant</strong> tout appel à <code>_manifest_path</code> ou
+  <code>_write_json_atomic</code> : le répertoire de l'item n'est même pas créé. <code>read_manifest</code> reste
+  permissif, avec le motif écrit dans sa docstring.</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> : O1 à O5 <strong>tous verts</strong>. <code>just check</code> vert sur <code>develop</code> après
+  merge — <strong>301 tests</strong> (293 au départ, +8).</p>
+</li>
+<li>O1 : <code>status="skipped"</code> lève, et <code>item_dir</code> n'existe pas.</li>
+<li>O2 : <code>"Ingested"</code> (casse) et <code>"ingere"</code> (faute) lèvent <strong>toutes deux</strong> — la garde n'est
+    pas une simple exclusion de <code>"skipped"</code>.</li>
+<li>O3 : <strong>5/5</strong> statuts légitimes écrivent et se relisent identiques.</li>
+<li>
+<p>O4 : le message contient littéralement le statut refusé et les 5 admis.</p>
+</li>
+<li>
+<p><strong>Périmètre : exactement les 4 fichiers annoncés</strong>, aucun débordement.</p>
+</li>
+<li>
+<p>⭐ <strong>Le piège annoncé a été évité</strong> : <code>data-01</code> venait d'introduire dans le MÊME fichier
+  une tolérance à la lecture (<code>_READ_TOLERANT_COUNTER_KEYS</code>), justifiée par un corpus de
+  1404 journaux à préserver. La garde de cette fiche porte sur l'écriture, où aucun corpus
+  n'est en jeu : elle est restée <strong>stricte</strong>, sans valeur par défaut, et le mécanisme voisin
+  n'a été ni touché ni imité.</p>
+</li>
+<li>
+<p><strong><code>test_manifest_statuses_a_bien_disparu</code> a été REMPLACÉ, pas supprimé</strong>, par
+  <code>test_manifest_statuses_est_derivee_et_a_un_consommateur</code> : il vérifie la dérivation,
+  l'identité d'objet, et prouve la consommation par un appel réel à <code>write_manifest</code>.</p>
+</li>
+<li>
+<p><strong>Non testé</strong> : pas de test de mutation (règle projet du 2026-08-22) ; aucune migration de
+  corpus (aucune n'était requise, mesuré à la rédaction) ; aucun autre champ de <code>Manifest</code>
+  n'est validé (<code>tile</code>, <code>sequence</code>, <code>platform</code>, <code>schema_version</code>) — même classe de défaut,
+  hors périmètre.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>f4fa5d6</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><a href="l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 10:21 — le .md fait foi.</p></article></body></html>
