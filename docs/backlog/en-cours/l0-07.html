@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l0-07</b></nav><h1>[l0-07] write_manifest refuse un statut illégitime <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P2">P2</span><br><b>Catégorie</b> : durcissement</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.2.html"><code>l0-03.2</code></a> adapters/manifests.py — schéma complet versionné, run.json + API, atomicité <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l0-07-write_manifest-refuse-un-statut-illegitime">[l0-07] — write_manifest refuse un statut illégitime</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -124,7 +124,24 @@ tests depuis <code>obs-01</code>/<code>obs-02</code>.</p>
   modèle à imiter (<code>data-01</code> l'étend, ne le remplace pas).</li>
 <li><code>RUN_STATUSES</code> est explicitement hors du périmètre de <code>data-01</code> (sa décision D2).</li>
 </ul>
-<p>⚠ <strong>Faits DÉPENDANTS, à RECONFIRMER APRÈS le merge de <code>data-01</code></strong> :</p>
+<p>✅ <strong>RECONFIRMÉ après le merge de <code>data-01</code></strong> (HEAD <code>603be73</code>, le 2026-08-23) — emplacements
+RÉELS, ceux du haut de fiche sont périmés là où c'est indiqué :</p>
+<ul>
+<li><code>Manifest.status</code> : <strong>l. 91</strong> (était 80).</li>
+<li><code>write_manifest</code> : <strong>l. 202</strong>. <code>write_run</code> : <strong>l. 291</strong> (était 274).</li>
+<li><code>_COUNTER_KEYS</code> : <strong>l. 51</strong>, forme inchangée (<code>(*ENVELOPE_COUNTERS, *RUN_STATUSES)</code>) —
+  mais <code>ENVELOPE_COUNTERS</code> compte désormais <strong>5</strong> entrées, <code>skipped_asset_scheme</code> incluse.</li>
+<li>⛔ <strong>NOUVEAU, et c'est le piège</strong> : <code>_READ_TOLERANT_COUNTER_KEYS</code> (<strong>l. 59</strong>) et
+  <code>_with_read_tolerant_defaults</code> (<strong>l. 322-326</strong>) introduisent une tolérance à la LECTURE
+  des <code>run.json</code>. <strong>NE PAS la transposer à la garde de cette fiche</strong> : <code>write_manifest</code>
+  écrit, elle doit rester STRICTE. La tolérance existe parce qu'un corpus de 1404 journaux
+  antérieurs devait rester lisible ; aucun équivalent ici.</li>
+<li><code>core/statuses.py</code> : <strong>intact</strong>, dernier commit <code>4d89644</code>, non touché par <code>data-01</code>.</li>
+<li><code>tests/test_vocabulary.py::test_manifest_statuses_a_bien_disparu</code> : toujours présent
+  (<strong>l. 46</strong>) — le test à REMPLACER, jamais à supprimer.</li>
+<li><strong>Base de non-régression : 293 tests</strong> (et non 276).</li>
+</ul>
+<p>Ancienne liste des points à reconfirmer, pour mémoire :</p>
 <ul>
 <li><strong>Les numéros de ligne d'<code>adapters/manifests.py</code></strong> cités plus haut (<code>Manifest.status</code> l. 80,
   <code>write_run</code> l. 274) seront décalés.</li>
@@ -234,4 +251,4 @@ non appliquée ne l'est pas.</p>
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 08:38 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 10:00 — le .md fait foi.</p></article></body></html>
