@@ -1,6 +1,6 @@
 ---
 id: rep-01
-titre: "Le ratio publié par report est faussé par les relances, et O1 n'est plus vérifiable à la main"
+titre: "Trois défauts d'affichage de report : ratio faussé par les relances, O1 non vérifiable, mauvaise classe SCL mise en avant"
 effort: S
 categorie: rapport
 phase:
@@ -27,6 +27,14 @@ c'est sa présentation qui est fausse, d'où l'effort S et l'absence de caractè
 2. **La colonne `skipped_asset_scheme` n'est pas affichée** alors qu'elle est entrée dans
    l'identité de conservation avec `data-01`. Conséquence : l'oracle **O1 n'est plus
    re-vérifiable à la main** depuis le tableau publié.
+3. **La section « Classes SCL agrégées » met en avant la MAUVAISE classe** (trouvé par
+   Philippe le 2026-08-23). `SCL_HIGHLIGHT_CLASSES = ("2", "11")` est commenté
+   « 2 = ombre de nuage » — c'est faux : dans la table de classification de scène
+   Sentinel-2 L2A, **2 = ombres portées du relief** (*topographic casted shadows*) et
+   **3 = ombres de nuage** (*cloud shadows*). Le rapport publie donc l'ombre de terrain,
+   statique et prévisible, et **tait l'ombre de nuage** — précisément celle qui fabriquera
+   de faux changements au Lot 2. Mesuré sur le corpus : **classe 3 à 0,74 %** des pixels
+   contre **classe 2 à 0,24 %**. On met en avant la plus petite ET la moins pertinente.
 
 ## Contexte et périmètre
 
@@ -74,6 +82,22 @@ Sur le second point : recalculée depuis le tableau publié, l'identité O1 mont
   du tableau est juste. Seul l'**affichage** omet la colonne.
 - `core/report.py:278` — la ligne d'en-tête du tableau markdown est écrite en dur ; c'est là
   que la colonne manque.
+- `core/report.py:25` — `SCL_HIGHLIGHT_CLASSES: tuple[str, ...] = ("2", "11")`, précédé du
+  commentaire faux en `report.py:24`.
+- `core/report.py:336` — le titre de section réécrit le même libellé faux **en dur** :
+  `"## Classes SCL agrégées (2 = ombre de nuage, 11 = neige — instrument V3)"`. Il ne dérive
+  PAS de la constante : c'est la cause structurelle de la dérive, deux sources de vérité pour
+  un même fait.
+- ⭐ **Aucune donnée n'est perdue, et aucune ré-ingestion n'est nécessaire.**
+  `core/report.py:341` agrège `scl_totals` sur **toutes** les classes présentes dans les
+  manifestes ; seul l'**affichage** est filtré par `SCL_HIGHLIGHT_CLASSES` (`report.py:344`).
+  La classe 3 est donc déjà dans le corpus du 23/08 et ressortira au premier `report` qui
+  suivra le correctif.
+- Les deux seuls usages de la constante sont sa déclaration et cette boucle d'affichage
+  (`grep SCL_HIGHLIGHT_CLASSES` sur `src/ tests/ scripts/` : 2 occurrences, aucune en test).
+  Le filtre nuages du pipeline n'en dépend pas — il vit dans `core/`/`adapters/` d'ingestion
+  et travaille sur ses propres classes ({0,1} invalides, {3,8,9,10} nuages). **Cette fiche ne
+  touche donc PAS au filtrage, seulement au rapport.**
 
 ⚠ **Fait mesuré à ne pas chercher à réconcilier** : sur A01, le nombre de manifestes sur
 disque (297) diffère de `found_tile − skipped` (770 − 478 = 292), et `rejected_clouds`
@@ -101,7 +125,17 @@ n°2 que pour la complétude) : il est exact par construction, la somme des jour
   calculés sur `counters` — ils sont **robustes aux relances**, tout y grossit ensemble.
 - **D6** — Le titre de la section devient explicite sur ce qu'il classe :
   « Pires cas en tête (ratio sur corpus distinct — caractéristique de site) ».
-- **D7** — Aucun emoji dans le code ni dans la sortie console (règle permanente du projet).
+- **D8** — `SCL_HIGHLIGHT_CLASSES` devient **`("3", "11")`** : l'ombre de NUAGE remplace
+  l'ombre de relief. La classe 2 n'est pas ajoutée en troisième — elle est statique à site et
+  saison donnés, elle ne produit pas le faux changement que cette section sert à anticiper.
+  Elle reste comptée dans les manifestes, récupérable à tout moment.
+- **D9** — Le titre de section **cesse d'être écrit en dur** : les libellés vivent dans un
+  seul mapping (p. ex. `SCL_CLASS_LABELS = {"3": "ombre de nuage", "11": "neige"}`) dont
+  dérivent ET la constante ET le titre. C'est ce qui empêche la dérive de recommencer :
+  aujourd'hui le libellé faux existe à deux endroits qui s'ignorent (`report.py:24` et
+  `report.py:336`).
+- **D10** — Aucun emoji dans le code ni dans la sortie console (règle permanente du projet).
+  *(ancien D7, renuméroté)*
 
 ### Fichiers touchés
 
@@ -138,10 +172,21 @@ reproductible en test, et un oracle porte sur une propriété du code **à l'ins
 - **O4 — identité re-vérifiable.** Sur une fixture, la somme des colonnes
   `skipped_scene_cloud + off_tile + found_tile + skipped_asset_scheme` **lues dans la ligne
   markdown rendue** égale la colonne `found_stac` de cette même ligne.
+- **O6 — la bonne classe SCL est mise en avant.** Fixture : un site dont les manifestes
+  portent `scl_class_counts` non nuls sur les classes **2, 3 et 11**, avec trois valeurs
+  distinctes. Attendu dans le markdown rendu : une ligne pour la classe **3** et une pour la
+  classe **11**, **aucune pour la classe 2**, et le titre de section qui nomme la classe 3
+  « ombre de nuage ». **Discriminant** : le test échoue avec la constante actuelle `("2","11")`,
+  et échoue aussi si le titre reste écrit en dur (le libellé et la constante doivent provenir
+  du même mapping — vérifier en assertant que le titre contient bien les classes de
+  `SCL_HIGHLIGHT_CLASSES`, pas une chaîne figée).
 - **O5 — non-régression du volume.** Les colonnes de compteurs existantes et le verdict
   `conservation` sont inchangés à fixture identique (les tests actuels de `test_report.py`
   restent verts sans modification de leurs attendus).
 
 **Non testé, explicite** : le corpus réel de la campagne (non reproductible) ; la
 distribution mensuelle des observations (hors périmètre) ; l'exactitude de
-`aggregate_counters` elle-même (inchangée par cette fiche, et volontairement sur-comptante).
+`aggregate_counters` elle-même (inchangée par cette fiche, et volontairement sur-comptante) ;
+la **table de classification SCL** elle-même (fait externe, documenté par l'ESA — la fiche
+l'applique, elle ne le teste pas) ; le **filtre nuages du pipeline**, hors périmètre et non
+modifié.
