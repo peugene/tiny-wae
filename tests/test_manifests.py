@@ -20,6 +20,12 @@ Couvre aussi l'oracle de la fiche data-01 (asset s3:// n'emporte plus la fenêtr
         même, écrit avant la fiche) -- aucune exception, la clé absente compte pour 0.
 - O8  : write_run reste STRICT si SEULE ``skipped_asset_scheme`` manque -- la tolérance ne
         vaut qu'à la lecture.
+
+Couvre aussi l'oracle de la fiche l0-07 (``write_manifest`` refuse un statut illégitime) :
+- O1 (l0-07) : status="skipped" -- ManifestStatusError, rien n'est écrit.
+- O2 (l0-07) : status="Ingested" (casse) puis "ingere" (faute) -- lève dans les deux cas.
+- O3 (l0-07) : les 5 statuts légitimes, un par un -- écrivent et se relisent identiques.
+- O4 (l0-07) : le message de ManifestStatusError cite le statut refusé et les 5 admis.
 """
 
 from __future__ import annotations
@@ -37,6 +43,7 @@ from tiny_wae.adapters.manifests import (
     ConservationError,
     EmptyGridError,
     Manifest,
+    ManifestStatusError,
     Run,
     aggregate_counters,
     grid_hash,
@@ -51,6 +58,7 @@ from tiny_wae.adapters.manifests import (
 )
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Grid
+from tiny_wae.core.statuses import MANIFEST_STATUSES
 
 FIXTURES_ROOT = Path("tests/fixtures/manifests")
 
@@ -347,6 +355,56 @@ def test_item_ids_for_site_vs_aggregate_o4bis() -> None:
     totals = aggregate_counters(FIXTURES_ROOT, "OVERLAP")
     assert totals["ingested"] == 10  # 5 (run A) + 5 (run B), 3 items comptés deux fois
     assert totals["ingested"] - len(ids) == 3  # la preuve du sur-comptage
+
+
+# --- l0-07 : write_manifest refuse un statut illégitime -------------------------------
+
+
+def test_write_manifest_refuse_skipped_o1_l0_07(tmp_path: Path) -> None:
+    """O1 (l0-07) : status="skipped" lève ManifestStatusError, rien n'est écrit -- ni
+    manifest.json, ni tmp résiduel (le dossier cible n'existe même pas : la garde est
+    vérifiée AVANT toute création de répertoire)."""
+    manifest = _sample_manifest(status="skipped")
+    with pytest.raises(ManifestStatusError):
+        write_manifest(tmp_path, manifest)
+    item_dir = tmp_path / manifest.site_id / manifest.item_id
+    assert not item_dir.exists()
+
+
+def test_write_manifest_refuse_casse_et_faute_o2_l0_07(tmp_path: Path) -> None:
+    """O2 (l0-07) : la garde n'est pas une simple exclusion de "skipped" -- une casse
+    différente ("Ingested") et une faute de frappe ("ingere") lèvent aussi, toutes les
+    deux, et rien n'est écrit dans les deux cas."""
+    for statut_invalide in ("Ingested", "ingere"):
+        manifest = _sample_manifest(status=statut_invalide, item_id=f"item-{statut_invalide}")
+        with pytest.raises(ManifestStatusError):
+            write_manifest(tmp_path, manifest)
+        item_dir = tmp_path / manifest.site_id / manifest.item_id
+        assert not item_dir.exists()
+
+
+@pytest.mark.parametrize("statut", sorted(MANIFEST_STATUSES))
+def test_write_manifest_accepte_les_5_statuts_legitimes_o3_l0_07(
+    tmp_path: Path, statut: str
+) -> None:
+    """O3 (l0-07) : les 5 statuts légitimes, un par un, écrivent normalement et se relisent
+    identiques par read_manifest -- 5/5."""
+    manifest = _sample_manifest(status=statut, item_id=f"item-{statut}")
+    write_manifest(tmp_path, manifest)
+    reread = read_manifest(tmp_path, manifest.site_id, manifest.item_id)
+    assert reread == manifest
+
+
+def test_message_manifest_status_error_o4_l0_07(tmp_path: Path) -> None:
+    """O4 (l0-07) : le message de ManifestStatusError cite littéralement le statut refusé
+    et les 5 statuts admis."""
+    manifest = _sample_manifest(status="skipped")
+    with pytest.raises(ManifestStatusError) as exc_info:
+        write_manifest(tmp_path, manifest)
+    message = str(exc_info.value)
+    assert "skipped" in message
+    for statut_admis in MANIFEST_STATUSES:
+        assert statut_admis in message
 
 
 # --- Divers : comportements auxiliaires -----------------------------------------------

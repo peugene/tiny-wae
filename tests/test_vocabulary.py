@@ -13,6 +13,7 @@ prouve qu'il n'y en a qu'une.
 
 from __future__ import annotations
 
+from pathlib import Path
 from types import ModuleType
 
 import pytest
@@ -22,7 +23,7 @@ import tiny_wae.adapters.ingestion as ingestion_module
 import tiny_wae.adapters.manifests as manifests_module
 import tiny_wae.cli.ingest as ingest_module
 import tiny_wae.core.report as report_module
-from tiny_wae.adapters.manifests import Run
+from tiny_wae.adapters.manifests import Manifest, Run
 from tiny_wae.core import artifacts, statuses
 
 
@@ -43,14 +44,49 @@ def test_les_statuts_sont_la_meme_objet_partout() -> None:
         )
 
 
-def test_manifest_statuses_a_bien_disparu() -> None:
-    """`MANIFEST_STATUSES` n'existe plus nulle part : elle n'a jamais eu de consommateur.
+def _manifeste_minimal(status: str) -> Manifest:
+    """Manifest minimal, complet mais sans autre prétention : sert uniquement à prouver que
+    `write_manifest` consulte réellement MANIFEST_STATUSES (fiche l0-07), pas à tester ses
+    autres champs (couverts par tests/test_manifests.py)."""
+    return Manifest(
+        schema_version=1,
+        site_id="A01",
+        item_id="item-vocabulaire",
+        datetime="2026-01-01T00:00:00Z",
+        tile="31TGM",
+        sequence="0",
+        platform="sentinel-2a",
+        status=status,
+        cause=None,
+        invalid_pct=0.0,
+        cloud_pct=0.0,
+        chip_nodata_pct=0.0,
+        scl_class_counts={},
+        processing_baseline="05.00",
+        boa_offset_applied=True,
+        radiometry={},
+        grid_hash="a" * 64,
+        assets_read=0,
+        content_hashes={},
+        bytes_downloaded=0,
+        bytes_written=0,
+        duration_s=0.0,
+        files=[],
+        versions={},
+    )
 
-    Ce test dit à quoi s'attendre à qui la chercherait — et fait échouer sa réintroduction
-    silencieuse. La règle qu'elle prétendait porter (« `skipped` n'est jamais écrit à un
-    manifeste ») n'était appliquée par personne : `write_manifest` ne valide pas le statut."""
-    assert not hasattr(statuses, "MANIFEST_STATUSES")
-    assert not hasattr(manifests_module, "MANIFEST_STATUSES")
+
+def test_manifest_statuses_est_derivee_et_a_un_consommateur(tmp_path: Path) -> None:
+    """`MANIFEST_STATUSES` (fiche l0-07) remplace `test_manifest_statuses_a_bien_disparu`,
+    devenu faux : la constante est réintroduite, DÉRIVÉE de `RUN_STATUSES` (jamais re-listée
+    à la main), cette fois avec le consommateur qui lui manquait à sa suppression --
+    `write_manifest` refuse d'écrire un manifeste dont le statut n'y figure pas."""
+    assert frozenset(statuses.RUN_STATUSES) - {"skipped"} == statuses.MANIFEST_STATUSES
+    assert _attribut(manifests_module, "MANIFEST_STATUSES") is statuses.MANIFEST_STATUSES
+
+    manifest = _manifeste_minimal(status="skipped")
+    with pytest.raises(manifests_module.ManifestStatusError):
+        manifests_module.write_manifest(tmp_path, manifest)
 
 
 def test_les_noms_de_fichiers_sont_le_meme_objet_partout() -> None:

@@ -42,7 +42,7 @@ from tiny_wae.core.bands import BAND_ORDER_10M, BAND_ORDER_20M
 from tiny_wae.core.envelope import ENVELOPE_COUNTERS
 from tiny_wae.core.settings import Settings
 from tiny_wae.core.sites import Grid
-from tiny_wae.core.statuses import RUN_STATUSES
+from tiny_wae.core.statuses import MANIFEST_STATUSES, RUN_STATUSES
 
 SCHEMA_VERSION = 1
 
@@ -69,6 +69,11 @@ class EmptyGridError(ManifestError):
 
 class ConservationError(ManifestError):
     """Un invariant de conservation des compteurs de run est violé (décision E-a)."""
+
+
+class ManifestStatusError(ManifestError):
+    """``manifest.status`` n'est pas un statut légitime (fiche l0-07, garde symétrique de
+    ``ConservationError`` : à l'ÉCRITURE d'un manifeste, jamais à sa lecture)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,16 +207,32 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> Path:
 def write_manifest(data_root: Path, manifest: Manifest) -> Path:
     """Écrit le manifeste d'un item, de façon atomique (tmp + rename).
 
+    Lève ``ManifestStatusError`` (et n'écrit rien — ni ``manifest.json``, ni tmp résiduel)
+    si ``manifest.status`` n'est pas l'un des statuts légitimes de ``MANIFEST_STATUSES``
+    (fiche l0-07) : la garde porte sur l'ÉCRITURE, sur le patron de ``write_run`` /
+    ``_validate_counters`` ; ``read_manifest`` reste délibérément permissif (cf. sa
+    docstring).
+
     Doit être appelé EN DERNIER par l'appelant (``adapters/chips.py``), après que tous les
     fichiers de sortie de l'item ont été écrits sur disque — c'est ce qui garantit qu'un
     manifeste présent atteste de fichiers complets.
     """
+    if manifest.status not in MANIFEST_STATUSES:
+        raise ManifestStatusError(
+            f"manifest.status={manifest.status!r} refusé — statuts admis : "
+            f"{sorted(MANIFEST_STATUSES)}"
+        )
     path = _manifest_path(data_root, manifest.site_id, manifest.item_id)
     return _write_json_atomic(path, asdict(manifest))
 
 
 def read_manifest(data_root: Path, site_id: str, item_id: str) -> Manifest:
-    """Lit le manifeste d'un item. Lève ``FileNotFoundError`` s'il n'existe pas."""
+    """Lit le manifeste d'un item. Lève ``FileNotFoundError`` s'il n'existe pas.
+
+    Ne valide PAS ``status`` (délibéré, fiche l0-07) : durcir la lecture rendrait illisible
+    un manifeste écrit par une version antérieure, éventuellement moins stricte. La garde
+    protège ce qu'on écrit (``write_manifest``), pas ce qu'on a déjà écrit.
+    """
     path = _manifest_path(data_root, site_id, item_id)
     data = json.loads(path.read_text(encoding="utf-8"))
     return Manifest(**data)
