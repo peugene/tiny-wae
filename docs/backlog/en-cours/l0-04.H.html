@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.H</b></nav><h1>[l0-04.H] [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O2</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="../maturation/lot-0-ingestion/l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-0-ingestion/l0-04.html"><code>▣ l0-04</code></a> › <b>l0-04.H</b></nav><h1>[l0-04.H] [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O2</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-03.H.html"><code>l0-03.H</code></a> [HUMAIN] Validation de la planche précoce + corrections de coordonnées <span class="pill" style="background:#69b076">Fait</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-0-ingestion/l0-04.html"><code>l0-04</code></a> [CHAPEAU] Historique — backfill, report, contact-sheet, campagne et recette <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="../fait/l0-04.1.html"><code>l0-04.1</code></a> CLI backfill — boucle sites × fenêtres, pool de workers, isolation, interruption propre <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../fait/l0-04.2.html"><code>l0-04.2</code></a> CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures <span class="pill" style="background:#69b076">Fait</span></li><li>→ <a href="l0-04.H.html"><code>l0-04.H</code></a> [HUMAIN] Campagne historique réelle 25×48 + recette du Lot 0 <span class="pill" style="background:#5aa7d8">En cours</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l0-04h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l0-04.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
 <li><a href="#objet">Objet</a></li>
@@ -66,18 +66,37 @@ via <code>depends_on</code> — c'est le second et dernier gate humain du Lot 0.
 planche, prononcer la recette du Lot 0.</p>
 <h2 id="checklist-philippe">Checklist Philippe</h2>
 <ul>
-<li>[X] <code>TINY_WAE_DATA_ROOT=&lt;NAS&gt; just run backfill --sites all --months 48 --workers 6</code>
-      (durée attendue ~3-5 h avec pool — mesures de l0-03.7/O5 à confronter ; relançable :
-      idempotent).</li>
-<li>[X] <code>just run report</code> → lire <code>&lt;data_root&gt;/report.md</code>. <strong>Les 4 critères mécaniques sont
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run backfill --sites all --months 48 --workers 6</code>
+      <strong>FAIT le 2026-08-23</strong> : 1200/1200 fenêtres, <strong>6 h 13</strong>, 0 retry, 16 Go, 5468 chips
+      ingérés, 5 fenêtres en échec (cf. <code>data-01</code>). Relançable : idempotent (mesuré, une
+      fenêtre déjà faite se rejoue en ~2 s).
+      ⚠ <strong>La durée dépend entièrement de <code>perf-01</code></strong> : sans les réglages GDAL, le même run
+      était projeté à <strong>~21 h</strong>. Ne pas reprendre l'estimation « 3-5 h » d'origine, qui
+      n'avait jamais été mesurée.</li>
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run report --out &lt;data_root&gt;/report.md</code>
+      puis lire ce fichier.
+      ⚠ <strong><code>--out</code> est nécessaire</strong> : son défaut est <code>report.md</code> <strong>relatif au répertoire
+      courant</strong>, donc à la racine du dépôt et non dans le <code>data_root</code> (vérifié dans
+      <code>cli/report.py:50</code>). <strong>Les 4 critères mécaniques sont
       marqués par l'outil, pas par toi</strong> : (1) <code>conservation: OK</code> sur les 25 sites et sur
       l'agrégat ; (2) complétude (ci-dessous) ; (3) <code>integrite: OK</code> par site (fichiers,
       hashes, <code>grid_hash</code> courant, nodata) ; (4) <code>failed_pct ≤ 1 %</code> par site.
       <em>(Numérotation O1→O4 de <code>docs/lots/lot-0-sites.md</code> §5.)</em></li>
-<li>[ ] <code>just run report --check-completeness --sites A01,C07,A03</code> → écart <strong>0</strong>. La requête
+<li>[x] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run report --check-completeness --sites A01,C07,A03 --from 2022-09-01 --to &lt;fin de campagne&gt;</code>
+      → écart <strong>0</strong>. <strong>FAIT le 2026-08-23</strong> : <code>A01 OK (0 écart)</code>, <code>C07 OK (0 écart)</code>,
+      <code>A03 OK (0 écart)</code>, exit 0 — après le correctif <code>data-01</code> et un backfill de rattrapage
+      sur les 5 sites concernés (240 fenêtres en 3 min 57, 28 items valides récupérés).
+      ⚠ <strong><code>--from</code> et <code>--to</code> sont OBLIGATOIRES</strong> avec <code>--check-completeness</code> (sinon exit 2,
+      <code>usage : --check-completeness requiert --sites, --from et --to</code>). Constaté le
+      2026-08-23 : la commande écrite ici sans eux échoue. La requête
       témoin reproduit <strong>les trois filtres du pipeline</strong> (bbox + fenêtre + <code>grid:code</code> +
       <code>eo:cloud_cover &lt; 95 %</code>) ; tout écart est listé item par item par l'outil.</li>
-<li>[ ] <code>just run contact-sheet --first-last</code> → contrôle visuel de non-régression.</li>
+<li>[ ] <code>TINY_WAE_DATA_ROOT=&lt;data_root&gt; just run contact-sheet --first-last --out &lt;data_root&gt;/contact-sheet-first-last.png</code>
+      → contrôle visuel de non-régression.
+      ⚠ <strong><code>--out</code> est nécessaire</strong> : son défaut est <code>contact-sheet.png</code> <strong>à la racine du
+      dépôt</strong> (<code>cli/contact_sheet.py:30</code>). C'est le piège déjà rencontré sur <code>l0-03.H</code>, où
+      il a failli faire relire une planche périmée. La correction n'avait pas été propagée
+      jusqu'ici.</li>
 <li>[ ] <strong>Volume transféré</strong> (hors instrument, décision E-d) : relever le compteur réseau
       système avant/après la campagne, OU consigner « non mesuré ». Le rapport donne les
       octets <strong>écrits</strong> (exacts) et les octets STAC (partiels, portée dite) — pas le
@@ -100,4 +119,4 @@ Les corrections tardives de coordonnées (rares — l0-03.H est passé avant) su
 la même mécanique <code>grid_hash</code> : éditer, re-survey, re-backfill du site, re-report.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><div class="prevnext"><a href="../fait/l0-04.2.html">← [l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</a><span></span></div><p class="gen">Généré le 23/08/2026 08:54 — le .md fait foi.</p></article></body></html>
+<p><em>(rempli par Philippe : chiffres clés, réserves, verdict de recette)</em></p><div class="prevnext"><a href="../fait/l0-04.2.html">← [l0-04.2] CLI report (agrégats, ratios, SCL) + contact-sheet --first-last — testés sur fixtures</a><span></span></div><p class="gen">Généré le 23/08/2026 10:22 — le .md fait foi.</p></article></body></html>
