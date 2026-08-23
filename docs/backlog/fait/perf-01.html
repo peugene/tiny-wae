@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>perf-01</b></nav><h1>[perf-01] Réglages GDAL pour la lecture des COG distants <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : performance</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>perf-01</b></nav><h1>[perf-01] Réglages GDAL pour la lecture des COG distants <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : performance</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-03.3.html"><code>l0-03.3</code></a> Lecture COG fenêtrée + écriture chip.tif / chip_20m.tif / scl.tif <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#perf-01-reglages-gdal-pour-la-lecture-des-cog-distants">[perf-01] — Réglages GDAL pour la lecture des COG distants</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -265,10 +265,60 @@ Le goulot levé, le point d'équilibre a probablement changé. Ne pas reprendre 
 tableau d'ancrage comme s'ils valaient encore.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/out-01.html">← [out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</a><span></span></div><p class="gen">Généré le 23/08/2026 08:12 — le .md fait foi.</p></article></body></html>
+<li>
+<p><strong>Ce qui a été fait</strong> : constante <code>GDAL_REMOTE_READ_OPTIONS</code> dans <code>adapters/chips.py</code>
+  (les 5 options de D1, valeurs exactes), et <code>_read_window</code> ouvre
+  <code>with rasterio.Env(**GDAL_REMOTE_READ_OPTIONS), rasterio.open(href) as src:</code>.
+  <code>_guard_href</code> reste appelée avant, dans le même ordre (D5). Aucune variable
+  d'environnement n'est requise de l'appelant.</p>
+</li>
+<li>
+<p><strong>Placement du contexte</strong> : dans <code>_read_window</code> elle-même (D2), vérifié empiriquement
+  avant écriture — <code>rasterio.env.getenv()</code> appelé depuis un worker de <code>ThreadPoolExecutor</code>
+  lève <code>EnvError</code> si l'<code>Env</code> n'a été ouvert que dans le thread principal. C'est exactement
+  le piège que D2 décrivait, et il est réel.</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> (5 tests dans <code>tests/test_chips.py</code>) :</p>
+</li>
+<li>O1 : les <strong>5</strong> options présentes avec leur valeur exacte au moment de l'appel réel à
+    <code>rasterio.open</code> (espion qui délègue à l'implémentation, pas un mock).</li>
+<li>O2 : <strong>les 5 aussi depuis un worker de <code>ThreadPoolExecutor</code></strong>. L'agent a vérifié que ce
+    test discrimine en déplaçant l'<code>Env</code> au niveau module : O1 restait vert (le faux négatif
+    classique), <strong>O2 tombait</strong> (<code>GDAL_DISABLE_READDIR_ON_OPEN : attendu 'EMPTY_DIR', vu
+    None</code>). C'est cet oracle-là qui garde la fiche.</li>
+<li>O3 : ordre réel <code>guard</code> -&gt; <code>Env</code> -&gt; <code>open</code> ; sous <code>TINY_WAE_OFFLINE=1</code> un href
+    <code>https://</code> est refusé avant toute ouverture.</li>
+<li>O4 : chacun des 5 noms d'option n'apparaît <strong>qu'une fois</strong> dans <code>src/</code>, <code>justfile</code>,
+    <code>docs/</code> hors <code>docs/backlog/</code>.</li>
+<li>
+<p>O5 : <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> — <strong>281 tests</strong> (276 au départ, +5).</p>
+</li>
+<li>
+<p><strong>Écarts par rapport à la fiche</strong> :
+  1. <strong>Périmètre du grep O4</strong> : <code>docs/backlog/</code> est exclu. La fiche <code>perf-01.md</code> cite
+     elle-même les 5 valeurs dans son tableau D1 ; sans cette exclusion le critère serait
+     structurellement infaisable dès que la fiche existe, et une fiche livrée n'est jamais
+     supprimée. Documenté dans le test.
+  2. <strong>O3 n'asserte pas une séquence stricte</strong> : <code>rasterio.open</code> est décoré en interne
+     (<code>ensure_env_with_credentials</code>) et pousse un second <code>Env</code> imbriqué. L'assertion porte
+     sur les premières occurrences, pour ne pas dépendre d'un détail d'implémentation de
+     rasterio.</p>
+</li>
+<li>
+<p><strong>Constat annexe utile</strong> : en sabotant <code>_guard_href</code>, l'agent a provoqué une vraie
+  résolution DNS — ce qui confirme que <code>--disable-socket</code> de pytest <strong>ne couvre pas GDAL</strong>.
+  La garde <code>TINY_WAE_OFFLINE</code> n'est donc pas redondante avec le harnais de test.</p>
+</li>
+<li>
+<p><strong>Non testé</strong> (inchangé) : le gain de performance n'est protégé par aucun test — il est
+  mesuré en campagne, et rien ne signalerait une régression. Aucune mesure sous
+  cwltool/PID-FLOW, qui est pourtant le cas d'usage motivant la fiche.
+  <code>CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif</code> reste un pari si le catalogue change d'extension.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>7e9f61d</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><a href="out-01.html">← [out-01] Étendre mypy strict à tests/ — la substituabilité aux Protocols n&#x27;est vérifiée nulle part</a><span></span></div><p class="gen">Généré le 23/08/2026 08:38 — le .md fait foi.</p></article></body></html>

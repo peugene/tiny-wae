@@ -51,6 +51,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#objectif">Objectif</a></li>
 <li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
 <li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-22-head-c67bfc1">⚠ Ancrage dans le code réel (vérifié le 2026-08-22, HEAD c67bfc1)</a></li>
+<li><a href="#ancrage-anticipe-pose-pendant-le-dispatch-de-data-01-head-096f8d1">⚠ Ancrage anticipé (posé pendant le dispatch de data-01, HEAD 096f8d1)</a></li>
 <li><a href="#fichiers-touches">Fichiers touchés</a></li>
 <li><a href="#decision-actee-la-garde-est-a-lecriture-pas-a-la-construction">⭐ Décision actée : la garde est à l'ÉCRITURE, pas à la construction</a></li>
 </ul>
@@ -110,6 +111,31 @@ tests depuis <code>obs-01</code>/<code>obs-02</code>.</p>
   <code>ingested</code> (13), <code>rejected_clouds</code> (3), <code>rejected_invalid</code> (1), <code>rejected_nodata</code> (1) et
   <code>failed</code> (1) — aucun <code>skipped</code>, aucune variante de casse. Les tests ne construisent des
   <code>Manifest</code> qu'avec <code>ingested</code> et <code>failed</code>. <strong>Aucune migration de données n'est requise.</strong></li>
+</ul>
+<h3 id="ancrage-anticipe-pose-pendant-le-dispatch-de-data-01-head-096f8d1">⚠ Ancrage anticipé (posé pendant le dispatch de <code>data-01</code>, HEAD <code>096f8d1</code>)</h3>
+<p><code>data-01</code> modifie <strong>le même fichier</strong> que cette fiche (<code>adapters/manifests.py</code>) et touche
+<code>core/envelope.py</code>. L'ancrage ci-dessus se scinde donc :</p>
+<p><strong>Faits INDÉPENDANTS de <code>data-01</code>, acquis</strong> :</p>
+<ul>
+<li><code>Manifest.status</code> reste un <code>str</code> libre : <code>data-01</code> ne touche ni au type ni aux statuts.</li>
+<li>Les 5 statuts réellement écrits par <code>adapters/ingestion.py</code> sont inchangés :
+  <code>data-01</code> écarte des items AVANT parsing, sans jamais écrire de manifeste pour eux.</li>
+<li>Le patron de garde <code>write_run</code> -&gt; <code>_validate_counters</code> -&gt; <code>ConservationError</code> reste le
+  modèle à imiter (<code>data-01</code> l'étend, ne le remplace pas).</li>
+<li><code>RUN_STATUSES</code> est explicitement hors du périmètre de <code>data-01</code> (sa décision D2).</li>
+</ul>
+<p>⚠ <strong>Faits DÉPENDANTS, à RECONFIRMER APRÈS le merge de <code>data-01</code></strong> :</p>
+<ul>
+<li><strong>Les numéros de ligne d'<code>adapters/manifests.py</code></strong> cités plus haut (<code>Manifest.status</code> l. 80,
+  <code>write_run</code> l. 274) seront décalés.</li>
+<li><strong><code>_COUNTER_KEYS</code> (l. 48) change</strong> : <code>data-01</code> ajoute <code>skipped_asset_scheme</code> à
+  <code>ENVELOPE_COUNTERS</code>, dont cette constante dérive. Cette fiche n'y touche pas, mais ne doit
+  pas se fonder sur son contenu actuel.</li>
+<li><strong><code>_validate_counters</code> gagne une tolérance à la lecture</strong> (D6 de <code>data-01</code>). La garde de
+  CETTE fiche porte sur l'ÉCRITURE d'un manifeste : elle reste stricte, sans tolérance.
+  Ne pas transposer par mimétisme la souplesse introduite à côté.</li>
+<li><strong>La base de non-régression ne sera plus 276 tests</strong> mais celle laissée par <code>perf-01</code> et
+  <code>data-01</code>. À relever au démarrage, pas à supposer.</li>
 </ul>
 <h3 id="fichiers-touches">Fichiers touchés</h3>
 <ul>
@@ -208,4 +234,4 @@ non appliquée ne l'est pas.</p>
 <li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 08:10 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/l0-06.html">← [l0-06] [CHAPEAU] Emballage CWL — tools + workflow, validation locale</a><a href="../fait/l0-R1.html">[l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel →</a></div><p class="gen">Généré le 23/08/2026 08:38 — le .md fait foi.</p></article></body></html>

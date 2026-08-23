@@ -133,9 +133,48 @@ tableau d'ancrage comme s'ils valaient encore.
 
 ## Résumé de réalisation
 
-*(à remplir avant de déplacer la fiche dans `fait/`)*
+- **Ce qui a été fait** : constante `GDAL_REMOTE_READ_OPTIONS` dans `adapters/chips.py`
+  (les 5 options de D1, valeurs exactes), et `_read_window` ouvre
+  `with rasterio.Env(**GDAL_REMOTE_READ_OPTIONS), rasterio.open(href) as src:`.
+  `_guard_href` reste appelée avant, dans le même ordre (D5). Aucune variable
+  d'environnement n'est requise de l'appelant.
 
-- **Ce qui a été fait** : …
-- **Verdict de l'oracle** : [chiffres obtenus, y compris défavorables]
-- **Commit(s)** : …
-- **Date** : AAAA-MM-JJ
+- **Placement du contexte** : dans `_read_window` elle-même (D2), vérifié empiriquement
+  avant écriture — `rasterio.env.getenv()` appelé depuis un worker de `ThreadPoolExecutor`
+  lève `EnvError` si l'`Env` n'a été ouvert que dans le thread principal. C'est exactement
+  le piège que D2 décrivait, et il est réel.
+
+- **Verdict de l'oracle** (5 tests dans `tests/test_chips.py`) :
+  - O1 : les **5** options présentes avec leur valeur exacte au moment de l'appel réel à
+    `rasterio.open` (espion qui délègue à l'implémentation, pas un mock).
+  - O2 : **les 5 aussi depuis un worker de `ThreadPoolExecutor`**. L'agent a vérifié que ce
+    test discrimine en déplaçant l'`Env` au niveau module : O1 restait vert (le faux négatif
+    classique), **O2 tombait** (`GDAL_DISABLE_READDIR_ON_OPEN : attendu 'EMPTY_DIR', vu
+    None`). C'est cet oracle-là qui garde la fiche.
+  - O3 : ordre réel `guard` -> `Env` -> `open` ; sous `TINY_WAE_OFFLINE=1` un href
+    `https://` est refusé avant toute ouverture.
+  - O4 : chacun des 5 noms d'option n'apparaît **qu'une fois** dans `src/`, `justfile`,
+    `docs/` hors `docs/backlog/`.
+  - O5 : `just check` **vert sur `develop` après merge** — **281 tests** (276 au départ, +5).
+
+- **Écarts par rapport à la fiche** :
+  1. **Périmètre du grep O4** : `docs/backlog/` est exclu. La fiche `perf-01.md` cite
+     elle-même les 5 valeurs dans son tableau D1 ; sans cette exclusion le critère serait
+     structurellement infaisable dès que la fiche existe, et une fiche livrée n'est jamais
+     supprimée. Documenté dans le test.
+  2. **O3 n'asserte pas une séquence stricte** : `rasterio.open` est décoré en interne
+     (`ensure_env_with_credentials`) et pousse un second `Env` imbriqué. L'assertion porte
+     sur les premières occurrences, pour ne pas dépendre d'un détail d'implémentation de
+     rasterio.
+
+- **Constat annexe utile** : en sabotant `_guard_href`, l'agent a provoqué une vraie
+  résolution DNS — ce qui confirme que `--disable-socket` de pytest **ne couvre pas GDAL**.
+  La garde `TINY_WAE_OFFLINE` n'est donc pas redondante avec le harnais de test.
+
+- **Non testé** (inchangé) : le gain de performance n'est protégé par aucun test — il est
+  mesuré en campagne, et rien ne signalerait une régression. Aucune mesure sous
+  cwltool/PID-FLOW, qui est pourtant le cas d'usage motivant la fiche.
+  `CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif` reste un pari si le catalogue change d'extension.
+
+- **Commit(s)** : `7e9f61d` (implémentation), merge `--no-ff` sur `develop`.
+- **Date** : 2026-08-23
