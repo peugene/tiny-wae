@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>data-01</b></nav><h1>[data-01] Un asset inaccessible ne fait plus perdre la fenêtre entière <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : robustesse</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="../fait/l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>data-01</b></nav><h1>[data-01] Un asset inaccessible ne fait plus perdre la fenêtre entière <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Priorité</b> : <span class="prio-P1">P1</span><br><b>Catégorie</b> : robustesse</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l0-02.1.html"><code>l0-02.1</code></a> Port StacSource + contrat Acquisition + enveloppe JSON + implémentation earth-search <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#data-01-un-asset-inaccessible-ne-fait-plus-perdre-la-fenetre-entiere">[data-01] — Un asset inaccessible ne fait plus perdre la fenêtre entière</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -93,6 +93,14 @@ sortie du run. Cinq items sur 14 967 ont suffi à faire sortir une campagne de 6
   <code>S2A_31UCT_20240123</code>, <code>S2B_31TGJ_20241204</code>, <code>S2A_36RYS_20240901</code>, <code>S2A_19KEQ_20240123</code>,
   <code>S2B_31TFJ_20241204</code> — les dates se répètent d'un site à l'autre, ce qui confirme un
   défaut de <strong>catalogue</strong>, pas de site.</li>
+<li>⭐ <strong>La portée est plus large que le backfill — constaté le 2026-08-23 en exécution.</strong>
+  <code>report --check-completeness</code> échoue sur le MÊME défaut, avec le même item
+  (<code>S2B_31TGJ_20241204_0_L2A</code>), et sort en exit 1. Or ce contrôle est <strong>un critère de recette
+  du Lot 0</strong> (checklist de <code>l0-04.H</code>) : tant que ce défaut est là, la recette est
+  inexécutable. Le chemin d'appel est identique — <code>cli/report.py:95</code> -&gt; <code>search()</code> -&gt;
+  <code>build_envelope</code> (l. 232) -&gt; <code>parse_item</code> (l. 169) — donc le correctif de cette fiche le
+  couvre <strong>sans travail supplémentaire</strong>. À vérifier après merge en rejouant la commande
+  réelle, pas seulement les tests.</li>
 <li>⚠ <strong>Une identité comptable protège l'enveloppe</strong> (<code>core/envelope.py</code>, l. 59-78) :
   <code>found_stac == skipped_scene_cloud + off_tile + found_tile</code>, <strong>et</strong>
   <code>found_tile == len(items)</code>. Toute violation lève <code>ConservationError</code>. Un item écarté sans
@@ -227,10 +235,64 @@ sortie du run. Cinq items sur 14 967 ont suffi à faire sortir une campagne de 6
 </ul>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : [chiffres obtenus, y compris défavorables]</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../fait/l0-01.html">[l0-01] [CHAPEAU] Socle configuration — sites, settings, CLI →</a></div><p class="gen">Généré le 23/08/2026 08:12 — le .md fait foi.</p></article></body></html>
+<li>
+<p><strong>Ce qui a été fait</strong> : <code>skipped_asset_scheme</code> ajouté à <code>ENVELOPE_COUNTERS</code> et à
+  l'identité comptable ; <code>AssetSchemeError(StacSourceError)</code> <strong>dédiée</strong> levée par
+  <code>parse_item</code> et rattrapée <strong>spécifiquement</strong> par <code>build_envelope</code>, qui compte, loggue en
+  WARNING et poursuit. <code>_with_read_tolerant_defaults</code> en <strong>liste blanche</strong> d'une seule clé,
+  appliquée uniquement dans <code>aggregate_counters</code> : <code>write_run</code> reste strict (D6).</p>
+</li>
+<li>
+<p><strong>Verdict de l'oracle</strong> : O1 à O9 <strong>tous verts</strong>. <code>just check</code> vert sur <code>develop</code> après
+  merge — <strong>293 tests</strong> (281 après <code>perf-01</code>, +12).</p>
+</li>
+<li>
+<p>⭐ <strong>Vérifié sur les DONNÉES RÉELLES, pas seulement en test</strong> (ce que l'agent ne pouvait
+  pas faire, son corpus étant hors dépôt) :
+  1. <code>report</code> relit les <strong>1404 <code>run.json</code></strong> de la campagne, qui ne portent pas la clé neuve :
+     <strong>exit 0</strong>, 25 sites. Le risque n°1 de la fiche est levé sur les vraies données.
+  2. <code>report --check-completeness --sites A01,C07,A03 --from 2022-09-01 --to 2026-08-23</code>,
+     la commande qui <strong>échouait</strong> avant : elle <strong>aboutit</strong> désormais, les 2 items <code>s3://</code>
+     rencontrés sont écartés avec un WARNING nommant l'item et l'asset, et le contrôle va
+     à son terme sur les 3 sites.</p>
+</li>
+<li>
+<p>⚠ <strong>Ce que ce contrôle réel a révélé, et qui n'était pas dans la fiche</strong> : la complétude
+  ressort <strong>ROUGE sur A01 (7 manquants) et A03 (8 manquants)</strong>, C07 à 0 écart. Ce ne sont
+  pas des régressions : ce sont <strong>les items des fenêtres perdues par la campagne</strong> du
+  2026-08-23, que cette fiche ne rattrape pas (dit dans son « non testé »).
+  <strong>Le cas d'A03 mesure exactement le coût du défaut corrigé</strong> : l'item fautif
+  (<code>S2A_31UCT_20240123</code>) était sur la tuile <strong>31UCT</strong>, alors que la tuile de référence du
+  site est <strong>31UDT</strong>. Il aurait donc été écarté en <code>off_tile</code> sans jamais être ingéré — mais
+  comme il faisait échouer le parsing <strong>avant</strong> le filtrage, il a emporté <strong>8 items
+  parfaitement valides</strong>. Un item qui ne comptait pas a fait perdre huit items qui
+  comptaient.</p>
+</li>
+<li>
+<p><strong>Écarts de périmètre, déclarés par l'agent et acceptés</strong> :
+  1. <strong><code>adapters/ingestion.py</code></strong> (mécanique, sévère) : <code>_run_ingestion</code> recopiait 4 clés à
+     la main ; sans correctif, <code>write_run</code> aurait levé <code>ConservationError</code> sur <strong>chaque</strong>
+     run. Corrigé en <code>**envelope_counters, **status_counts</code>.
+  2. <strong><code>core/report.py</code></strong> (mécanique, <strong>trouvé par l'agent</strong>) : <code>check_conservation</code> est une
+     <strong>TROISIÈME</strong> copie de l'identité comptable, que l'ancrage de la fiche n'avait pas
+     recensée — il n'en citait que deux. Sans elle, <code>report</code> aurait rendu
+     <code>conservation: ROUGE</code> à tort sur tout site ayant un item écarté, c'est-à-dire un faux
+     positif sur l'instrument de recette du projet.
+  3. <strong><code>cli/backfill.py</code>, <code>cli/ingest.py</code>, <code>cli/search.py</code></strong> (⚠ <strong>opportunistes, assumés
+     comme tels par l'agent</strong>) : ajout du compteur aux lignes STDERR, dans l'esprit de D5.
+     Rien ne l'imposait. Celui de <code>cli/ingest.py</code> a provoqué une cascade dans
+     <code>tests/test_vocabulary.py</code> — un effet que l'agent s'est infligé lui-même, et qu'il a
+     signalé plutôt que de le noyer.
+  4. Six fichiers de tests touchés mécaniquement : leurs helpers construisent des
+     <code>Envelope</code>/<code>Run</code> littéraux, dont <code>__post_init__</code> exige désormais 5 clés.</p>
+</li>
+<li>
+<p><strong>Non vérifié</strong> : les 5 fenêtres perdues ne sont <strong>pas</strong> rattrapées (un backfill ciblé
+  reste à lancer) ; aucun autre schéma d'href (<code>ftp://</code>, <code>gs://</code>) n'est traité.</p>
+</li>
+<li>
+<p><strong>Commit(s)</strong> : <code>01d6cd2</code> (implémentation), merge <code>--no-ff</code> sur <code>develop</code>.</p>
+</li>
+<li><strong>Date</strong> : 2026-08-23</li>
+</ul><div class="prevnext"><span></span><a href="l0-01.html">[l0-01] [CHAPEAU] Socle configuration — sites, settings, CLI →</a></div><p class="gen">Généré le 23/08/2026 09:53 — le .md fait foi.</p></article></body></html>

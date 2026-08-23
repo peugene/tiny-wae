@@ -145,9 +145,54 @@ sortie du run. Cinq items sur 14 967 ont suffi à faire sortir une campagne de 6
 
 ## Résumé de réalisation
 
-*(à remplir avant de déplacer la fiche dans `fait/`)*
+- **Ce qui a été fait** : `skipped_asset_scheme` ajouté à `ENVELOPE_COUNTERS` et à
+  l'identité comptable ; `AssetSchemeError(StacSourceError)` **dédiée** levée par
+  `parse_item` et rattrapée **spécifiquement** par `build_envelope`, qui compte, loggue en
+  WARNING et poursuit. `_with_read_tolerant_defaults` en **liste blanche** d'une seule clé,
+  appliquée uniquement dans `aggregate_counters` : `write_run` reste strict (D6).
 
-- **Ce qui a été fait** : …
-- **Verdict de l'oracle** : [chiffres obtenus, y compris défavorables]
-- **Commit(s)** : …
-- **Date** : AAAA-MM-JJ
+- **Verdict de l'oracle** : O1 à O9 **tous verts**. `just check` vert sur `develop` après
+  merge — **293 tests** (281 après `perf-01`, +12).
+
+- ⭐ **Vérifié sur les DONNÉES RÉELLES, pas seulement en test** (ce que l'agent ne pouvait
+  pas faire, son corpus étant hors dépôt) :
+  1. `report` relit les **1404 `run.json`** de la campagne, qui ne portent pas la clé neuve :
+     **exit 0**, 25 sites. Le risque n°1 de la fiche est levé sur les vraies données.
+  2. `report --check-completeness --sites A01,C07,A03 --from 2022-09-01 --to 2026-08-23`,
+     la commande qui **échouait** avant : elle **aboutit** désormais, les 2 items `s3://`
+     rencontrés sont écartés avec un WARNING nommant l'item et l'asset, et le contrôle va
+     à son terme sur les 3 sites.
+
+- ⚠ **Ce que ce contrôle réel a révélé, et qui n'était pas dans la fiche** : la complétude
+  ressort **ROUGE sur A01 (7 manquants) et A03 (8 manquants)**, C07 à 0 écart. Ce ne sont
+  pas des régressions : ce sont **les items des fenêtres perdues par la campagne** du
+  2026-08-23, que cette fiche ne rattrape pas (dit dans son « non testé »).
+  **Le cas d'A03 mesure exactement le coût du défaut corrigé** : l'item fautif
+  (`S2A_31UCT_20240123`) était sur la tuile **31UCT**, alors que la tuile de référence du
+  site est **31UDT**. Il aurait donc été écarté en `off_tile` sans jamais être ingéré — mais
+  comme il faisait échouer le parsing **avant** le filtrage, il a emporté **8 items
+  parfaitement valides**. Un item qui ne comptait pas a fait perdre huit items qui
+  comptaient.
+
+- **Écarts de périmètre, déclarés par l'agent et acceptés** :
+  1. **`adapters/ingestion.py`** (mécanique, sévère) : `_run_ingestion` recopiait 4 clés à
+     la main ; sans correctif, `write_run` aurait levé `ConservationError` sur **chaque**
+     run. Corrigé en `**envelope_counters, **status_counts`.
+  2. **`core/report.py`** (mécanique, **trouvé par l'agent**) : `check_conservation` est une
+     **TROISIÈME** copie de l'identité comptable, que l'ancrage de la fiche n'avait pas
+     recensée — il n'en citait que deux. Sans elle, `report` aurait rendu
+     `conservation: ROUGE` à tort sur tout site ayant un item écarté, c'est-à-dire un faux
+     positif sur l'instrument de recette du projet.
+  3. **`cli/backfill.py`, `cli/ingest.py`, `cli/search.py`** (⚠ **opportunistes, assumés
+     comme tels par l'agent**) : ajout du compteur aux lignes STDERR, dans l'esprit de D5.
+     Rien ne l'imposait. Celui de `cli/ingest.py` a provoqué une cascade dans
+     `tests/test_vocabulary.py` — un effet que l'agent s'est infligé lui-même, et qu'il a
+     signalé plutôt que de le noyer.
+  4. Six fichiers de tests touchés mécaniquement : leurs helpers construisent des
+     `Envelope`/`Run` littéraux, dont `__post_init__` exige désormais 5 clés.
+
+- **Non vérifié** : les 5 fenêtres perdues ne sont **pas** rattrapées (un backfill ciblé
+  reste à lancer) ; aucun autre schéma d'href (`ftp://`, `gs://`) n'est traité.
+
+- **Commit(s)** : `01d6cd2` (implémentation), merge `--no-ff` sur `develop`.
+- **Date** : 2026-08-23
