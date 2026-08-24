@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.3</b></nav><h1>[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-033-le-backfill-des-embeddings">[l1-03.3] — Le backfill des embeddings</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Passer les 25 sites en une commande, avec un pool de workers, une reprise naturelle et une
+interruption qui ne laisse rien de cassé. C'est l'outil qui produira réellement le corpus de
+vecteurs pour <code>l1-05</code>.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/cli/embed_backfill.py</code>.</p>
+<p>⚠ <strong>Lire <code>cli/backfill.py</code> du Lot 0 avant d'écrire</strong> — le patron existe : pool, isolation
+par site, distinction entre échec métier et amont injoignable, compteurs agrégés. Ici c'est
+plus simple : pas de réseau, donc pas de cas « injoignable ».</p>
+<p>Interface :</p>
+<pre><code>just run embed-backfill --model clay-v1.5 [--sites A01,B09] [--workers N] [--from …] [--to …]
+</code></pre>
+<p>Points d'attention :</p>
+<ul>
+<li>⭐ <strong>Le parallélisme sur CPU n'est pas gratuit ici.</strong> Contrairement au backfill du Lot 0,
+  qui attendait le réseau, celui-ci est <strong>limité par le calcul</strong> : N workers se disputent
+  les mêmes cœurs, et chaque worker peut lui-même lancer plusieurs threads BLAS.
+  <strong>Sur-paralléliser peut ralentir.</strong> Le défaut doit être <strong>prudent</strong> (workers = 1 ou 2), et
+  la mesure du bon réglage appartient à <code>l1-04.3</code> — cette fiche fournit le levier, pas sa
+  valeur.</li>
+<li><strong>L'isolation par site</strong> reste la bonne granularité : un site en échec n'empêche pas les
+  autres.</li>
+<li><strong>La reprise est naturelle</strong> : l'idempotence de <code>l1-03.2</code> fait qu'un relancement saute ce
+  qui existe. Aucun fichier d'état à maintenir.</li>
+<li><strong>Interruption (SIGINT)</strong> : sortie non nulle, et <strong>tous les vecteurs écrits restent
+  relisibles</strong> — c'est l'écriture atomique de <code>l1-03.1</code> qui le garantit.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : la campagne réelle elle-même (elle sera lancée par <code>l1-05.3</code>) · les
+mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l1-04.3</code>).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>cli/embed_backfill.py</code> livré, découvert automatiquement.</li>
+<li>[ ] Défaut de workers <strong>prudent</strong>, réglable, documenté comme « à calibrer par <code>l1-04.3</code> ».</li>
+<li>[ ] Compteurs agrégés + par site, avec dénominateurs.</li>
+<li>[ ] <code>tests/test_cli_embed_backfill.py</code> — sur le <strong>double</strong>, fixtures de <code>l1-01.4</code>.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Backfill sur les fixtures (2 sites), <code>--workers 1</code> puis <code>--workers 4</code>, double</td>
+<td><strong>même ensemble <code>(item_id, statut)</code></strong> dans les deux cas — déterminisme du pool. Compteurs agrégés identiques</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Un site en échec injecté sur 2</td>
+<td>l'autre site <strong>complet</strong>, exit <strong>1</strong>, le site fautif <strong>nommé</strong> en STDERR</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Run double</td>
+<td>2e passage : <code>embedded == 0</code>, tout en <code>skipped</code>, <strong>aucune écriture</strong></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>SIGINT pendant un run (double ralenti artificiellement)</td>
+<td>exit ≠ 0 ; <strong>100 % des vecteurs présents sont relisibles</strong> (<code>read_vector</code> OK sur tous) ; aucun <code>.npy</code> tronqué</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Invariant de conservation agrégé</td>
+<td>boucle sur la somme des sites</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : le débit réel et le nombre optimal de workers (<code>l1-04.3</code>) ·
+le comportement sur 5 793 chips — la campagne appartient à <code>l1-05.3</code> · la mémoire.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>Ne pas transposer aveuglément le backfill du Lot 0.</strong> Là-bas, 6 workers étaient bons
+parce que le goulot était le réseau. Ici le goulot est le CPU, et un modèle PyTorch utilise
+déjà plusieurs threads : <strong>6 workers × N threads = contention</strong>. C'est un piège classique et
+il se mesure, il ne se devine pas.</p>
+<p>⚠ <strong>Politique de test</strong> : tout se teste sur le double. Le test d'interruption (O4) est celui
+qui a le plus de valeur — ne pas le sacrifier au profit de tests de compteurs, qui sont plus
+faciles à écrire et attrapent beaucoup moins.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-03.2.html">← [l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage</a><a href="l1-03.4.html">[l1-03.4] Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

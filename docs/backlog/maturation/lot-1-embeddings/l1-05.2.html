@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.2</b></nav><h1>[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-052-deux-fois-le-meme-chip-deux-fois-le-meme-vecteur">[l1-05.2] — Deux fois le même chip, deux fois le même vecteur ?</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Établir dans quelles conditions un embedding est <strong>reproductible</strong>. C'est ce dont dépend
+l'idempotence de <code>l1-03.2</code> — et, plus loin, la validité de toute comparaison de vecteurs au
+Lot 2.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>scripts/bench_determinism.py</code>.</p>
+<p>⭐ <strong>La formulation a été corrigée pendant le cadrage, et la nuance compte</strong> :</p>
+<ul>
+<li><strong>À configuration fixée</strong> — même modèle, même nombre de threads BLAS, même entrée —
+  l'identité est <strong>exigée</strong>. C'est ce que l'idempotence suppose : un vecteur resservi doit
+  être celui qu'on aurait recalculé.</li>
+<li><strong>Entre configurations de threads</strong>, l'écart est <strong>mesuré, pas exigé nul</strong>. <code>l1-04.3</code> fait
+  précisément varier ce paramètre pour mesurer le passage à l'échelle : exiger le bit à bit
+  partout contredirait ce levier.</li>
+</ul>
+<p>Et ce second chiffre est <strong>utile en soi</strong> : s'il n'est pas nul, cela signifie qu'au Lot 2 on
+ne pourra pas comparer sans précaution des vecteurs calculés à des moments différents, sur
+des machines réglées différemment. Mieux vaut le savoir maintenant.</p>
+<p>Ce que le script mesure, sur ≥ 20 chips et <strong>pour les deux modèles</strong> :</p>
+<ol>
+<li>deux passages, threads figés → <strong>égalité bit à bit</strong> attendue ;</li>
+<li>passages à 1, 2, 4, 8 threads → <strong>distance cosinus</strong> au vecteur de référence, médiane et
+   <strong>minimum</strong> ;</li>
+<li>deux processus <strong>distincts</strong>, mêmes réglages → même question. ⚠ C'est un cas différent du
+   premier : l'ordre d'allocation mémoire et l'initialisation des bibliothèques natives
+   peuvent changer d'un processus à l'autre.</li>
+</ol>
+<p><strong>Hors périmètre</strong> : la quantification (<code>l1-04.4</code>, qui a sa propre mesure de fidélité) · les
+performances · toute vérité terrain.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>scripts/bench_determinism.py</code> livré, sortie JSON, lançable par <code>just script</code>.</li>
+<li>[ ] Les 3 cas mesurés, pour les 2 modèles.</li>
+<li>[ ] La graine et le nombre de threads sont <strong>écrits dans le JSON</strong> — sans eux la mesure
+      n'est pas reproductible.</li>
+<li>[ ] <strong>Si l'égalité bit à bit n'est pas atteinte à configuration fixée</strong> : la fiche le dit,
+      publie l'écart, et propose une tolérance chiffrée. Elle ne la <strong>fixe pas après coup en
+      la calant sur la valeur observée</strong> — elle documente et laisse <code>l1-06.H</code> trancher.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>⭐ Deux passages, <strong>même processus</strong>, threads figés, ≥ 20 chips</td>
+<td><strong>égalité bit à bit sur 100 %</strong> des chips (<code>array_equal</code>). Si non : écart publié + raison recherchée</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Deux <strong>processus distincts</strong>, mêmes réglages</td>
+<td>même critère, <strong>résultat publié séparément</strong> de O1 — c'est un cas différent</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Balayage de threads (1, 2, 4, 8)</td>
+<td>distance cosinus au vecteur de référence : <strong>médiane ET minimum</strong> publiés. ⚠ Le minimum compte plus : c'est le pire chip qui décidera</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Un chip <strong>volontairement modifié</strong> d'un pixel</td>
+<td>vecteur <strong>différent</strong> — témoin négatif. Sans lui, un adapter qui rendrait une constante passerait O1, O2 et O3</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>JSON de sortie</td>
+<td>contient graine, threads, versions de torch et du paquet, <code>model_id</code>, nombre de chips</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la reproductibilité sur <strong>une autre machine</strong> — hors de
+portée et explicitement hors périmètre du POC · l'effet de la version de torch dans le temps ·
+la quantification.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>O4 est le garde-fou le plus important de la fiche.</strong> Trois critères d'égalité et aucun
+témoin négatif, c'est exactement la configuration où un bug qui renvoie toujours le même
+vecteur passe au vert.</p>
+<p>⚠ <strong>Politique de test</strong> : script de mesure, <strong>aucun test unitaire</strong>. La vérification, c'est
+la mesure elle-même.</p>
+<p>Pistes : <code>torch.use_deterministic_algorithms(True)</code> et <code>torch.set_num_threads(N)</code> sont les
+deux leviers habituels ; le premier peut lever sur certains opérateurs — si c'est le cas,
+le dire plutôt que de le contourner silencieusement.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Bit à bit, même processus</strong> : …</li>
+<li><strong>Bit à bit, processus distincts</strong> : …</li>
+<li><strong>Écart entre threads</strong> : <em>(cosinus médian · minimum)</em></li>
+<li><strong>Tolérance proposée, s'il y a lieu</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-05.1.html">← [l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site</a><a href="l1-05.3.html">[l1-05.3] Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>

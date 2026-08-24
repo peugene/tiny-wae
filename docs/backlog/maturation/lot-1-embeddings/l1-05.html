@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-05</b></nav><h1>[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-05-chapeau-le-signal-existe-t-il">[l1-05] — CHAPEAU : le signal existe-t-il ?</a><ul>
+<li><a href="#contexte">Contexte</a></li>
+<li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
+<li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
+<li><a href="#sous-taches">Sous-tâches</a></li>
+<li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong></p>
+</blockquote>
+<h2 id="contexte">Contexte</h2>
+<p>⭐ <strong>Sans ce chapeau, le banc n'aurait pas de numérateur.</strong> Puisqu'il n'y a pas d'achat
+matériel, le critère de choix d'un modèle n'est plus « le meilleur » mais <strong>le plus de
+pouvoir discriminant par seconde de CPU</strong>. Mesurer le débit sans mesurer la discrimination
+reviendrait à optimiser la vitesse d'un système qui ne distingue rien.</p>
+<p>Ce chapeau répond à deux questions, dans cet ordre de gravité :</p>
+<ol>
+<li><strong>Les embeddings distinguent-ils les sites entre eux ?</strong> — le minimum vital. Si les
+   vecteurs de la mine d'Escondida et de l'aéroport de Riyad se ressemblent, rien de ce qui
+   suit n'a de sens.</li>
+<li>⭐ <strong>Un vecteur unique sur 26 km² porte-t-il un changement local ?</strong> — la vraie question
+   du POC, et celle qu'on ne peut pas trancher par l'expertise. Une halle de 200 m sur un
+   chantier, c'est <strong>0,15 % de la scène</strong>. Si le signal se noie, le Lot 2 mesurerait de la
+   dérive saisonnière et rien d'autre.</li>
+</ol>
+<h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
+<ol>
+<li><strong>Aucune vérité terrain n'est requise.</strong> La séparabilité inter-sites se mesure sur les
+   étiquettes qu'on a déjà — le <code>site_id</code>. C'est ce qui rend ce chapeau faisable en POC.</li>
+<li>⭐ <strong>La question de la sensibilité se tranche par la trajectoire témoin</strong> (<code>l1-05.4</code>) :
+   <strong>A02 Hinkley Point C</strong> — quatre ans de chantier EPR massif — contre <strong>C08 Bouconne</strong>, la
+   forêt retenue comme zone témoin lors de l'arbitrage G10. Si l'unité « un vecteur par
+   chip » porte le signal, A02 doit s'éloigner de son point de départ <strong>nettement plus</strong> que
+   C08. <strong>C'est le rôle d'une zone témoin, et c'est pour ça qu'elle a été choisie.</strong></li>
+<li><strong>On ne compare JAMAIS un vecteur Clay à un vecteur TerraMind.</strong> Un embedding de classe
+   et une moyenne de patchs ne vivent pas dans le même espace. Chaque modèle se compare
+   <strong>à lui-même</strong> dans le temps ; les deux modèles se comparent par leurs <strong>scores</strong>, pas
+   par leurs vecteurs. C'est le contresens le plus facile à commettre au Lot 2.</li>
+<li><strong>Déterminisme exigé à configuration fixée, mesuré entre configurations.</strong> <code>l1-04.3</code> fait
+   varier les threads BLAS : exiger le bit à bit partout contredirait ce levier.</li>
+</ol>
+<h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
+<p>Les <strong>métriques</strong> se testent (elles sont pures, sur vecteurs synthétiques : <code>l1-05.1</code>). Les
+<strong>campagnes</strong> ne se testent pas, elles se mesurent et se publient. Aucun test sur des valeurs
+d'embedding réelles.</p>
+<h2 id="sous-taches">Sous-tâches</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-05.1</code></td>
+<td>Métriques pures — cosinus, séparabilité intra/inter</td>
+<td>S</td>
+</tr>
+<tr>
+<td><code>l1-05.2</code></td>
+<td>Déterminisme — identité à configuration fixée, écart entre threads mesuré</td>
+<td>S</td>
+</tr>
+<tr>
+<td><code>l1-05.3</code></td>
+<td>Campagne de séparabilité sur le corpus réel</td>
+<td>M</td>
+</tr>
+<tr>
+<td><code>l1-05.4</code></td>
+<td>⭐ Trajectoire témoin — chantier lourd contre zone stable</td>
+<td>M</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
+<p>Toute détection de changement opérationnelle (Lot 2) · tout seuil d'alerte · toute
+classification supervisée · l'arbitrage final (<code>l1-06.H</code>).</p><div class="prevnext"><a href="l1-04.html">← [l1-04] [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet</a><a href="l1-06.H.html">[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>

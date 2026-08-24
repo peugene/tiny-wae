@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.1] Core embedding — spec de bandes, ordre normatif, normalisation radiométrique</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-011-core-embedding-pur-zero-io">[l1-01.1] — Core embedding (pur, zéro I/O)</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Poser la logique pure de préparation d'une entrée de modèle : <strong>quelles bandes, dans quel
+ordre, et comment passer du uint16 stocké à la réflectance attendue par un GFM</strong>. Testable à
+sec, en millisecondes, sans aucun fichier ni modèle.</p>
+<p>C'est la fiche qui fixe l'<strong>énumération normative</strong> de l'ordre des bandes : elle n'existera
+qu'ici, et les deux adapters du chapeau <code>l1-02</code> y renverront au lieu de la recopier.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/core/embedding.py</code> — module <strong>pur</strong> (zéro I/O, zéro framework, pas de torch).</p>
+<p>À livrer :</p>
+<ul>
+<li>⭐ <code>BAND_ORDER_EMBED: tuple[str, ...]</code> — <strong>l'ordre normatif des 10 bandes</strong>. Il combine
+  les 4 bandes 10 m et les 6 bandes 20 m ; l'ordre exact est celui de la spec Clay v1.5, à
+  relever et à écrire en commentaire avec sa source. Les constantes <code>BAND_ORDER_10M</code> /
+  <code>BAND_ORDER_20M</code> existent déjà dans <code>core/bands.py</code> (Lot 0) — <strong>les importer, ne pas les
+  redéfinir</strong>.</li>
+<li><code>EmbeddingSpec</code> — dataclass gelée décrivant l'entrée attendue d'un modèle :
+  <code>bands</code> · <code>size_px</code> · <code>resolution_m</code> · <code>tiling</code> (voir ci-dessous) · <code>dtype</code>.</li>
+<li>⭐ <code>tiling: Literal["whole_chip", "tiles"]</code> — <strong>la stratégie de découpage est un champ de
+  la spec</strong>, pas une hypothèse enfouie ailleurs. Décision du chapeau : le Lot 1 produit
+  <code>whole_chip</code> en 20 m ; <code>tiles</code> existe dans le type mais <strong>n'est pas implémenté ici</strong>
+  (<code>NotImplementedError</code> explicite). C'est ce qui rend le choix réversible.</li>
+<li><code>spec_hash(spec) -&gt; str</code> — signature canonique de la spec, sur le modèle de <code>grid_hash</code>
+  (<code>adapters/manifests.py</code>, Lot 0). ⚠ <strong>Insensible au type numérique</strong> : <code>256</code> et <code>256.0</code>
+  doivent donner le même hash (le piège O3bis de <code>l0-03.2</code>, relu depuis un YAML). Elle
+  entrera dans la clé d'idempotence en <code>l1-03.1</code>.</li>
+<li><code>to_reflectance(array, scale, offset, boa_offset_applied) -&gt; array</code> — conversion pure.
+  Les <code>scale</code>/<code>offset</code> viennent <strong>du manifeste, par asset</strong> (arbitrage n°1 du Lot 0), jamais
+  d'une constante. <code>boa_offset_applied</code> dit si l'offset a déjà été appliqué à l'écriture :
+  ⚠ <strong>l'appliquer deux fois décale toute la radiométrie de −0,1</strong>, silencieusement.</li>
+<li><code>validate_spec(spec, available_bands)</code> — erreur typée nommant <strong>la bande manquante</strong> si la
+  spec demande une bande absente du chip.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : toute lecture de fichier (<code>l1-01.2</code>), tout modèle (<code>l1-02</code>), toute
+mesure (<code>l1-04</code>).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>core/embedding.py</code> livré, importé par personne d'autre pour l'instant, <code>mypy --strict</code> vert.</li>
+<li>[ ] <code>BAND_ORDER_EMBED</code> défini <strong>une seule fois</strong>, avec la source de l'ordre en commentaire.</li>
+<li>[ ] <code>EmbeddingSpec</code> gelée (<code>frozen=True</code>), <code>tiling</code> présent, <code>"tiles"</code> levant explicitement.</li>
+<li>[ ] <code>spec_hash</code> stable au type numérique.</li>
+<li>[ ] <code>to_reflectance</code> gère le double offset.</li>
+<li>[ ] <code>tests/test_embedding.py</code> — <strong>entrées littérales, aucun fichier</strong>.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>BAND_ORDER_EMBED</code> contient exactement les 10 bandes de <code>BAND_ORDER_10M</code> + <code>BAND_ORDER_20M</code>, sans doublon ni oubli</td>
+<td>égalité d'ensembles vérifiée dans le test, <strong>par import</strong> des constantes du Lot 0 — pas par une liste recopiée</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><code>spec_hash</code> sur deux specs identiques dont l'une a <code>size_px=256</code> (int) et l'autre <code>256.0</code> (float)</td>
+<td><strong>même hash</strong> ; et une spec dont le <code>tiling</code> diffère donne un hash <strong>différent</strong> — les deux sens testés</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>to_reflectance</code> sur un tableau littéral, <code>scale=0.0001</code>, <code>offset=-0.1</code></td>
+<td>valeurs attendues au 1e-6 près ; avec <code>boa_offset_applied=True</code>, l'offset <strong>n'est pas</strong> ré-appliqué (deux cas, résultats distincts)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>validate_spec</code> avec une bande absente</td>
+<td>erreur typée dont le message <strong>nomme la bande</strong> (assertion littérale sur la chaîne)</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>EmbeddingSpec(tiling="tiles")</code> passée à la fonction de découpage</td>
+<td><code>NotImplementedError</code> explicite, pas un comportement silencieux</td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la lecture réelle des rasters (<code>l1-01.2</code>) · la justesse de
+l'ordre de bandes <strong>vis-à-vis de Clay</strong> — elle sera confrontée au modèle réel en <code>l1-02.1</code>,
+et c'est là que l'erreur apparaîtrait · toute valeur d'embedding.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>L'ordre des bandes est le genre de détail qui casse un modèle <strong>sans lever d'erreur</strong> :
+un GFM nourri de bandes permutées produit des vecteurs plausibles et faux. C'est pourquoi
+l'ordre est normatif ici et confronté au modèle réel en <code>l1-02.1</code> — deux fiches, deux
+niveaux de garantie.</p>
+<p>⚠ <strong>Politique de test du lot</strong> : cette fiche est du pur, donc bien testée — mais ~1 ligne de
+test par ligne de source, pas plus. Pas de test paramétré à 40 cas là où 3 suffisent.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><span></span><a href="l1-01.2.html">[l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters →</a></div><p class="gen">Généré le 23/08/2026 14:58 — le .md fait foi.</p></article></body></html>

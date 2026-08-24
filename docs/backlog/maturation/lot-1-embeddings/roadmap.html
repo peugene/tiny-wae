@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap — Lot 1 : Banc d&#x27;embeddings GFM (v2, indicative)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Roadmap — Lot 1 : Banc d&#x27;embeddings GFM (v2, indicative)</h1><p>Avant revue — rien n&#x27;est figé. Le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-1-banc-dembeddings-gfm-v1-indicative-avant-revue">Roadmap — Lot 1 : Banc d'embeddings GFM (v1, INDICATIVE — avant revue)</h1>
+<p><strong>Date</strong> : 23/08/2026 · <strong>Auteur</strong> : architecte/PO · <strong>Statut</strong> : v1 posée avant revue
+adversariale. <strong>Rien n'est figé ici</strong> : les efforts, le découpage et les arêtes du graphe
+sont des propositions. La roadmap ne devient figée qu'après revue, et les fiches ne
+descendent en <code>a-faire/</code> qu'après.</p>
+<p><strong>Source du lot</strong> : <a href="../../../lots/lot-1-embeddings.md"><code>docs/lots/lot-1-embeddings.md</code></a>.</p>
+<hr />
+<h2 id="1-ce-que-ce-lot-doit-trancher">1. Ce que ce lot doit trancher</h2>
+<p>Pas un achat — <strong>un périmètre</strong>. Combien de chips, de sites et de mois sont embeddables sur
+la machine existante, et quels leviers permettent d'en embedder plus avant de renoncer.</p>
+<p>Deux conséquences qui traversent tout le chantier :</p>
+<ul>
+<li>le critère de comparaison des modèles est <strong>le pouvoir discriminant par seconde de CPU</strong>,
+  pas le débit seul ni la qualité seule — d'où O3 qui porte les deux ;</li>
+<li>le banc doit <strong>mesurer des leviers</strong>, pas seulement constater une lenteur. Quatre sont
+  identifiés (I/O, résolution d'entrée, batch/threads, quantification) ; chacun a sa fiche,
+  chacun rend un chiffre ou une raison motivée de ne pas conclure.</li>
+</ul>
+<h2 id="2-decisions-actees-ne-pas-rouvrir">2. Décisions actées (ne pas rouvrir)</h2>
+<ul>
+<li><strong>Modèles</strong> : Clay v1.5 et <strong>TerraMind small</strong> (repli <code>tiny</code> si le CPU ne suit pas ;
+  pas <code>base</code> — on cherche si l'approche tient, pas deux points de benchmark).
+  <strong>Licence TerraMind : Apache 2.0</strong>, vérifiée sur la carte du modèle le 23/08/2026.</li>
+<li><strong>CPU seul.</strong> Pas de GPU sur la machine, <strong>pas d'achat prévu</strong> — le lot décide d'un
+  périmètre, pas d'une dépense.</li>
+<li><strong>Stockage fichier.</strong> pgvector ouvre le Lot 2, il n'entre pas ici.</li>
+<li><strong>Corpus</strong> : <code>D:\datas\tiny-wae</code>, local — 5 793 chips, 9 873 manifestes.</li>
+<li><strong>Aucune détection de changement</strong>, aucun entraînement.</li>
+</ul>
+<h3 id="2bis-les-quatre-questions-de-cadrage-tranchees-le-2308-philippe">2bis. Les quatre questions de cadrage, TRANCHÉES le 23/08 (Philippe)</h3>
+<p><strong>a. Unité d'embedding → UN vecteur par chip, entrée montée en 20 m.</strong>
+Les 10 bandes vivent sur deux grilles : 4 à 10 m (512²) et 6 à 20 m (256²). Tout ramener à
+20 m donne un tenseur 256×256×10, soit <strong>exactement une tuile Clay</strong> — le montage le moins
+cher coïncide avec l'unité annoncée depuis le début. Tout monter à 10 m donnerait 512×512,
+soit <strong>4 tuiles Clay</strong> et 4× le calcul.
+⚠ <strong>Le vrai risque n'est pas la localisation, c'est la sensibilité</strong> : un vecteur unique
+couvre 26 km² ; une halle de 200 m, c'est 0,15 % de la scène. Si le signal se noie, on
+mesurera de la dérive saisonnière et rien d'autre. <strong>Ce doute est levé par la mesure, pas
+par l'expertise</strong> → fiche <code>l1-05.4</code>. Et <code>l1-04.3</code> <strong>chiffre le coût de la variante 4 tuiles
+sur un échantillon</strong>, sans la produire en masse.
+⭐ <strong>Couture architecturale</strong> : la stratégie de découpage est un <strong>champ de la spec</strong>, pas
+une hypothèse enfouie dans l'adapter, et le <code>spec_hash</code> entre dans la clé d'idempotence.
+Produire l'autre variante plus tard <strong>n'invalide rien</strong> — ça ajoute des vecteurs à côté.
+Changer d'avis coûte du CPU, pas une refonte.</p>
+<p><strong>b. Masque SCL → PAS de masque. Seuil d'entrée à 10 %. Tout consigner.</strong>
+Mesuré sur les 9 873 manifestes (grandeur exacte : un manifeste par <code>item_id</code>, donc immunisée
+au défaut <code>rep-01</code> qui touche les agrégats de compteurs) :</p>
+<table>
+<thead>
+<tr>
+<th><code>cloud_pct</code> des chips ingérés</th>
+<th>valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>médiane · p75 · p90</td>
+<td><strong>0,0 %</strong> · 3,3 % · 14,8 %</td>
+</tr>
+<tr>
+<td>≤ 1 %</td>
+<td>3 788 chips (65 %)</td>
+</tr>
+<tr>
+<td>≤ 10 %</td>
+<td>4 959 chips (<strong>86 %</strong>)</td>
+</tr>
+<tr>
+<td>entre 20 et 30 %</td>
+<td>356 chips (6 %)</td>
+</tr>
+</tbody>
+</table>
+<p>Le seuil d'ingestion à 30 % est une porte large que presque personne ne franchit :
+<strong>masquer des pixels serait un outil lourd pour un chip sur sept</strong>, et remplacer des pixels
+présente aux GFM une distribution qu'ils n'ont jamais vue. On serre donc le filtre à
+l'entrée de l'embedding — <code>embed_cloud_pct_max: 10</code> <strong>dans <code>settings.yaml</code>, pas une
+constante</strong> — et on écrit <code>cloud_pct</code> + le résumé SCL dans le compagnon de chaque vecteur,
+pour que le Lot 2 puisse pondérer quand il aura le contexte.
+⚠ Le coût n'est pas le nombre de chips mais la <strong>couverture temporelle</strong>, très inégale :
+B08 et B07 tombent à ~25 mois couverts sur 48. À surveiller en <code>l1-05.3</code>.</p>
+<p><strong>c. TerraMind → variante <code>small</code>.</strong> Cf. §2. Deux pièges relevés sur la carte du modèle,
+à lever par <code>l1-02.2</code> <strong>avant</strong> d'écrire du code : (1) l'exemple de référence est en
+<strong>224×224</strong> quand notre chip fait 256 — nourrir Clay en 256 et TerraMind en 224 comparerait
+des embeddings d'<strong>emprises différentes</strong> (5 120 m contre 4 480 m), ce qui invaliderait la
+séparabilité ; vérifier si TerraMind accepte 256, sinon recadrer les deux et le documenter ;
+(2) TerraMind rend <strong>196 embeddings de patch (768-d)</strong>, pas un vecteur — l'agrégation est à
+la charge de l'adapter (cf. §4bis).</p>
+<p><strong>d. Déterminisme → exigé à CONFIGURATION FIXÉE, mesuré entre configurations.</strong>
+Formulation corrigée en cours de cadrage : <code>l1-04.3</code> fait <strong>varier</strong> le nombre de threads
+BLAS pour mesurer le passage à l'échelle — exiger le bit à bit sur tout le banc
+contredirait ce levier. Donc : même modèle + mêmes threads + même entrée → <strong>identité
+exacte</strong> (c'est ce dont l'idempotence a besoin) ; et <strong>l'écart entre nombres de threads est
+MESURÉ, pas exigé nul</strong>. Ce chiffre est utile en soi : s'il n'est pas nul, le Lot 2 ne
+devra pas comparer des vecteurs calculés à des moments différents sans le savoir.</p>
+<h2 id="3-politique-de-test-du-lot-proportionnee-cest-un-poc">3. ⭐ Politique de test du lot — proportionnée, c'est un POC</h2>
+<p><strong>Constat mesuré sur le Lot 0</strong> : <strong>8 413 lignes de tests pour 4 074 lignes de source,
+ratio 2,07×</strong> ; <code>test_contact_sheet.py</code> fait <strong>5,8×</strong> son module ; <code>test_logging.py</code> pèse
+659 lignes pour du journal, qui n'est pas le produit. Le mot « mutation » apparaît dans
+<strong>26 fichiers</strong>. <strong>Décision Philippe du 23/08 : ne pas reproduire ce travers.</strong></p>
+<p>⚠ <strong>Ce que ce constat dit, et ce qu'il ne dit pas.</strong> Le problème n'est pas le volume : c'est
+<strong>ce qui a été testé</strong>. 659 lignes sur le journal, de la machinerie de mutation permanente
+là où une vérification ponctuelle suffisait. Un module difficile mérite tous les tests qu'il
+faut — le ratio n'est pas un objectif à atteindre par le bas.</p>
+<p>Règles du Lot 1 :</p>
+<ol>
+<li><strong>Le <code>core/</code> pur est là où les tests rendent le plus</strong> — normalisation radiométrique,
+   spec de bandes, métriques de séparabilité : c'est là que se cachent les vraies erreurs de
+   calcul, et ça se teste à sec en millisecondes. Les adapters et les CLIs se testent aussi,
+   mais sur leurs <strong>invariants</strong> (conservation, idempotence, codes de sortie), pas sur leurs
+   détails.</li>
+<li><strong>UN seul smoke</strong> traversant la chaîne réelle sur 2-3 chips fixtures. Il remplace une
+   dizaine de tests d'intégration.</li>
+<li><strong>Aucun test sur les valeurs d'embedding.</strong> On n'asserte pas 1024 flottants. Ce qui se
+   teste : la <strong>forme</strong> (dimension, dtype, absence de NaN) et le <strong>déterminisme</strong>.</li>
+<li>⭐ <strong>Vérification par mutation ≠ test de mutation.</strong> Casser une garde une fois pour voir
+   si elle mord est un <strong>geste ponctuel, consigné en une ligne de prose</strong> dans le Résumé de
+   réalisation. En faire une machinerie permanente coûte plus cher que ce qu'elle protège.
+   <em>Corollaire appliqué à la garde réseau : on ne la teste pas, on met le </em><em>smoke sous la
+   garde</em><em> — elle est alors exercée à chaque <code>just check</code>, gratuitement.</em></li>
+<li><strong>Aucun test dont l'oracle est « ça ne plante pas ».</strong> Un test doit pouvoir devenir
+   rouge pour une raison qu'on sait nommer.</li>
+</ol>
+<p>⚠ <strong>Pas de quota, ni plancher ni plafond.</strong> Ces règles disent <em>ce qui</em> mérite d'être testé,
+jamais <em>combien</em> de tests ou de lignes écrire. Un module retors mérite dix tests, un module
+trivial en mérite un — c'est le jugement de l'implémenteur, pas une cible chiffrée. Le
+travers du Lot 0 n'était pas le volume en soi, c'était de tester ce qui ne le méritait pas.</p>
+<h2 id="4-graphe-5-chapeaux-20-sous-taches-agent-1-fiche-humaine">4. Graphe (5 chapeaux · 20 sous-tâches agent · 1 fiche humaine)</h2>
+<p>⭐ <strong>Grain du graphe (règle E-c du Lot 0, inchangée)</strong> : seules les fiches <strong>dispatchables</strong>
+ordonnent le run. Un chapeau a <code>depends_on: []</code> et n'ordonne rien. Une fiche <strong>humaine</strong>
+porte un <code>depends_on</code> et bloque volontairement ses dépendants. Un <code>depends_on</code> est satisfait
+<strong>quand la fiche visée est en <code>fait/</code></strong>.</p>
+<p>⭐ <strong>Calibre</strong> : une fiche = <strong>une session d'agent Sonnet, effort medium</strong>, sans question à
+poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <code>a-faire/</code>.</p>
+<h3 id="o1-socle-dembedding-chapeau-l1-01">O1 — Socle d'embedding · chapeau <code>l1-01</code></h3>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+<th><code>depends_on</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-01.1</code></td>
+<td><code>core/embedding.py</code> — spec de bandes, ordre, <strong>normalisation radiométrique</strong> depuis les <code>scale</code>/<code>offset</code> du manifeste. Pur, zéro I/O</td>
+<td>S</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>l1-01.2</code></td>
+<td><code>adapters/chip_loader.py</code> — assemble le tenseur 10 bandes depuis <code>chip.tif</code> (4×512²) <strong>et</strong> <code>chip_20m.tif</code> (6×256²), rééchantillonnage explicite</td>
+<td>M</td>
+<td><code>l1-01.1</code></td>
+</tr>
+<tr>
+<td><code>l1-01.3</code></td>
+<td>Port <code>EmbeddingModel</code> (Protocol) + double de test substituable + registre <code>model_id → adapter</code></td>
+<td>S</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>l1-01.4</code></td>
+<td>Corpus de <strong>fixtures d'embedding</strong> : N chips réels gelés, hors réseau — le pendant de <code>l0-03.5</code></td>
+<td>S</td>
+<td><code>l1-01.2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="o2-modeles-execution-chapeaux-l1-02-l1-03">O2 — Modèles &amp; exécution · chapeaux <code>l1-02</code>, <code>l1-03</code></h3>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+<th><code>depends_on</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-02.1</code></td>
+<td>Adapter <strong>Clay v1.5</strong> — poids, spec 10 bandes, sortie 1024-d</td>
+<td>M</td>
+<td><code>l1-01.2</code>, <code>l1-01.3</code></td>
+</tr>
+<tr>
+<td><code>l1-02.2</code></td>
+<td>Adapter <strong>TerraMind</strong> (via TerraTorch, variante à fixer) — <strong>relever et consigner la licence</strong></td>
+<td>M</td>
+<td><code>l1-01.2</code>, <code>l1-01.3</code></td>
+</tr>
+<tr>
+<td><code>l1-02.3</code></td>
+<td><strong>Garde de contrat</strong> : poids résolus depuis un cache local, JAMAIS de téléchargement au run ; recette de pré-chargement séparée</td>
+<td>S</td>
+<td><code>l1-02.1</code></td>
+</tr>
+<tr>
+<td><code>l1-02.4</code></td>
+<td><strong>Substituabilité prouvée</strong> : le même code consomme les deux adapters, sans branche chez l'appelant</td>
+<td>S</td>
+<td><code>l1-02.1</code>, <code>l1-02.2</code></td>
+</tr>
+<tr>
+<td><code>l1-03.1</code></td>
+<td>Format de stockage des vecteurs + <strong>clé d'idempotence</strong> (<code>grid_hash</code> + <code>model_id</code> + <code>spec_hash</code>)</td>
+<td>S</td>
+<td><code>l1-01.3</code></td>
+</tr>
+<tr>
+<td><code>l1-03.2</code></td>
+<td>CLI <strong><code>embed</code></strong> — un site, une fenêtre. Idempotence, compteurs, codes de sortie du chapeau <code>l0-01</code></td>
+<td>M</td>
+<td><code>l1-03.1</code>, <code>l1-02.1</code></td>
+</tr>
+<tr>
+<td><code>l1-03.3</code></td>
+<td>CLI <strong><code>embed-backfill</code></strong> — pool, reprise, interruption propre (patron de <code>l0-04.1</code>)</td>
+<td>M</td>
+<td><code>l1-03.2</code></td>
+</tr>
+<tr>
+<td><code>l1-03.4</code></td>
+<td><strong>Smoke <code>embed</code></strong> dans le gate — replay sur fixtures, hors ligne</td>
+<td>S</td>
+<td><code>l1-03.2</code>, <code>l1-01.4</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="o3-banc-qualite-chapeaux-l1-04-l1-05">O3 — Banc &amp; qualité · chapeaux <code>l1-04</code>, <code>l1-05</code></h3>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+<th><code>depends_on</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-04.1</code></td>
+<td><strong>Instrumentation</strong> : chargement / forward / écriture chronométrés SÉPARÉMENT, RAM crête, sortie JSON</td>
+<td>M</td>
+<td><code>l1-03.2</code></td>
+</tr>
+<tr>
+<td><code>l1-04.2</code></td>
+<td><strong>Levier I/O</strong> : drvfs (<code>/mnt/d</code>) vs ext4 local, même échantillon, écart chiffré</td>
+<td>S</td>
+<td><code>l1-04.1</code></td>
+</tr>
+<tr>
+<td><code>l1-04.3</code></td>
+<td><strong>Leviers modèle</strong> : entrée 20 m seule vs 10+20 m · taille de batch · threads BLAS</td>
+<td>M</td>
+<td><code>l1-04.1</code></td>
+</tr>
+<tr>
+<td><code>l1-04.4</code></td>
+<td><strong>Levier quantification</strong> : int8 / ONNX — mesuré, <strong>ou déclaré non concluant avec sa raison</strong></td>
+<td>M</td>
+<td><code>l1-04.1</code>, <code>l1-02.2</code></td>
+</tr>
+<tr>
+<td><code>l1-04.5</code></td>
+<td><strong>Rapport de banc</strong> : tableau comparatif + extrapolation chiffrée sur 5 793 chips ET sur une journée d'incrémental</td>
+<td>M</td>
+<td><code>l1-04.2</code>, <code>l1-04.3</code>, <code>l1-04.4</code>, <code>l1-02.4</code></td>
+</tr>
+<tr>
+<td><code>l1-05.1</code></td>
+<td><strong>Métriques pures</strong> (cosinus, silhouette intra/inter) sur vecteurs synthétiques — testables à sec</td>
+<td>S</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>l1-05.2</code></td>
+<td><strong>Déterminisme</strong> : identité exacte à configuration fixée · écart entre nombres de threads <strong>mesuré</strong></td>
+<td>S</td>
+<td><code>l1-03.2</code></td>
+</tr>
+<tr>
+<td><code>l1-05.3</code></td>
+<td><strong>Campagne séparabilité</strong> sur le corpus réel, rapport par modèle</td>
+<td>M</td>
+<td><code>l1-05.1</code>, <code>l1-03.3</code></td>
+</tr>
+<tr>
+<td><code>l1-05.4</code></td>
+<td>⭐ <strong>Trajectoire témoin</strong> : A02 Hinkley Point C (chantier lourd, 48 mois) contre C08 Bouconne (zone témoin) — l'unité « un vecteur par chip » porte-t-elle le signal ? Et la corrélation embedding ↔ <code>cloud_pct</code> sur le site stable</td>
+<td>M</td>
+<td><code>l1-05.3</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="o4-decision-l1-06h">O4 — Décision · <code>l1-06.H</code></h3>
+<table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+<th><code>depends_on</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-06.H</code></td>
+<td>⛔ <strong>HUMAIN</strong> — arbitrage du périmètre embeddable au vu du banc, de la séparabilité et de la trajectoire témoin</td>
+<td>H</td>
+<td><code>l1-04.5</code>, <code>l1-05.4</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="niveaux-topologiques-derives-des-depends_on-ci-dessus">Niveaux topologiques (dérivés des <code>depends_on</code> ci-dessus)</h3>
+<pre><code>N0  l1-01.1 · l1-01.3 · l1-05.1
+N1  l1-01.2 · l1-03.1
+N2  l1-01.4 · l1-02.1 · l1-02.2
+N3  l1-02.3 · l1-02.4 · l1-03.2
+N4  l1-03.3 · l1-03.4 · l1-04.1 · l1-05.2
+N5  l1-04.2 · l1-04.3 · l1-04.4 · l1-05.3
+N6  l1-04.5 · l1-05.4
+N7  ⛔ l1-06.H
+</code></pre>
+<p><strong>Profondeur 8, largeur moyenne 2,6.</strong> Un seul gate humain, en feuille — <strong>les 21 fiches
+agent s'enchaînent sans intervention</strong>. Feuilles : <code>l1-02.3</code>, <code>l1-03.4</code>, <code>l1-06.H</code> — les deux
+premières sont des garde-fous terminaux, c'est légitime, mais à relire en revue.</p>
+<h3 id="4bis-ce-que-le-port-doit-absorber">4bis. Ce que le port doit absorber</h3>
+<p>Les deux modèles n'ont <strong>pas le même contrat de sortie</strong> : Clay rend <strong>un vecteur</strong> (son
+embedding de classe), TerraMind rend <strong>196 embeddings de patch</strong> à agréger soi-même. Le port
+<code>EmbeddingModel</code> promet « <strong>un vecteur par chip</strong> » ; chaque adapter est responsable de le
+produire — Clay prend son CLS, TerraMind moyenne ses patchs. <strong>L'appelant ne voit pas la
+différence.</strong></p>
+<p>⚠ À écrire dans la fiche plutôt qu'à laisser découvrir en revue : comparer un embedding CLS
+à une moyenne de patchs <strong>n'est pas une comparaison parfaitement équitable</strong> au sens
+scientifique. C'est en revanche ce qu'on utiliserait en production, donc la bonne comparaison
+<strong>pour nous</strong>. De même, TerraMind est <strong>multimodal</strong> et sera utilisé en mono-modalité S2 :
+s'il discrimine moins bien que Clay, cela ne prouvera pas qu'il est moins bon — seulement
+qu'on l'utilise à moitié.</p>
+<h2 id="5-pieges-identifies-a-mesurer-pas-a-supposer">5. Pièges identifiés (à mesurer, pas à supposer)</h2>
+<ol>
+<li><strong>Le chargement peut dominer le forward.</strong> Deux rasters, deux résolutions, un
+   rééchantillonnage : si les trois temps ne sont pas séparés, on attribuera au GFM un coût
+   qui est celui de l'I/O. C'est la raison d'être de <code>l1-04.1</code>, et elle précède tous les
+   leviers.</li>
+<li><strong>drvfs.</strong> ~16 Gio à lire à travers un montage Windows. Le Lot 0 a déjà payé cette taxe.</li>
+<li><strong>Le chiffre publié par Clay (~20 embeddings/s) vient d'AWS</strong>, pas d'un CPU de poste. Il
+   ne doit apparaître nulle part comme référence de comparaison.</li>
+<li><strong>Un oracle de déterminisme fixé après la mesure ne prouve rien.</strong> La tolérance se fixe en
+   amont (question ouverte n°4).</li>
+<li><strong>Le poids des modèles ne doit jamais se télécharger au run</strong> — sinon le gate devient
+   dépendant du réseau et le banc mesure la bande passante. Garde vérifiée par mutation.</li>
+<li><strong>Zones partagées</strong> : <code>pyproject.toml</code> → <code>l1-01.1</code> seule (dépendances pré-posées, patron
+   du Lot 0) · <code>justfile</code> → <code>l1-02.3</code> (pré-chargement) puis <code>l1-03.4</code> (smoke) ·
+   <code>tests/fixtures/</code> → <code>l1-01.4</code> seule.</li>
+</ol>
+<h2 id="6-ce-qui-nest-pas-dans-ce-lot">6. Ce qui n'est PAS dans ce lot</h2>
+<p>pgvector et l'indexation (Lot 2) · la détection de changement (Lot 2) · l'entraînement ou le
+fine-tuning (hors POC) · le GPU (pas de matériel) · Sentinel-1, la fusion multimodale, le
+recalage sub-pixel.</p></article></body></html>

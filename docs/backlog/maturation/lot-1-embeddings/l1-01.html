@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-01</b></nav><h1>[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-01-chapeau-socle-dembedding">[l1-01] — CHAPEAU : Socle d'embedding</a><ul>
+<li><a href="#contexte">Contexte</a></li>
+<li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
+<li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
+<li><a href="#sous-taches">Sous-tâches</a></li>
+<li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Elle porte le contexte et les décisions
+communes une seule fois, pour que chaque sous-tâche reste courte et implémentable par un
+agent d'effort medium. Le chapeau passe en <code>fait/</code> quand toutes ses sous-tâches y sont.</p>
+</blockquote>
+<h2 id="contexte">Contexte</h2>
+<p>Le Lot 0 a produit <strong>5 793 chips</strong> sur 25 sites et 48 mois. Ce chapeau pose ce qui permet de
+transformer un chip en <strong>tenseur d'entrée de modèle</strong>, et le <strong>port</strong> derrière lequel les
+deux adapters du chapeau <code>l1-02</code> viendront se brancher. Aucun modèle n'est chargé ici :
+tout ce qui suit est vérifiable sans poids, hors ligne, en millisecondes.</p>
+<p><strong>La difficulté est dans la donnée, pas dans le modèle.</strong> Un chip n'est pas un raster, c'en
+est <strong>deux</strong>, à deux résolutions :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Taille</th>
+<th>Bandes</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chip.tif</code></td>
+<td>512×512</td>
+<td><strong>4</strong> à 10 m : <code>blue</code>, <code>green</code>, <code>red</code>, <code>nir</code></td>
+<td>uint16</td>
+</tr>
+<tr>
+<td><code>chip_20m.tif</code></td>
+<td>256×256</td>
+<td><strong>6</strong> à 20 m : <code>rededge1/2/3</code>, <code>nir08</code>, <code>swir16</code>, <code>swir22</code></td>
+<td>uint16</td>
+</tr>
+<tr>
+<td><code>scl.tif</code></td>
+<td>256×256</td>
+<td>masque de classification</td>
+<td>uint8</td>
+</tr>
+</tbody>
+</table></div>
+<p>Les 10 bandes de la spec Clay sont donc <strong>réparties sur deux grilles</strong>. Les assembler
+demande un rééchantillonnage, et ce rééchantillonnage a un coût qui sera chronométré
+séparément du modèle en <code>l1-04.1</code> — sinon on attribuera au GFM un coût qui est celui de l'I/O.</p>
+<h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
+<ol>
+<li>⭐ <strong>Une acquisition → UN vecteur.</strong> L'entrée est montée en <strong>20 m</strong> : un tenseur
+   <code>256×256×10</code>, soit exactement une tuile Clay. C'est le montage le moins cher <strong>et</strong>
+   l'unité annoncée depuis le début du POC. La variante 10 m (512×512 → 4 tuiles) n'est pas
+   produite ; son <strong>coût</strong> est chiffré sur échantillon par <code>l1-04.3</code>.</li>
+<li>⭐ <strong>La stratégie de découpage est un CHAMP DE LA SPEC</strong>, jamais une hypothèse enfouie
+   dans un adapter. C'est ce qui rend la décision n°1 réversible : produire l'autre variante
+   plus tard <strong>ajoute</strong> des vecteurs à côté des existants au lieu de les invalider.</li>
+<li><strong>Normalisation radiométrique depuis le manifeste, jamais en dur.</strong> Chaque asset porte
+   son <code>scale</code>/<code>offset</code> (arbitrage n°1 du Lot 0) ; <code>boa_offset_applied</code> dit si l'offset a
+   déjà été appliqué à l'écriture. La réflectance se dérive de ces valeurs, <strong>par bande</strong>.</li>
+<li><strong>Pas de masque SCL à l'entrée du modèle.</strong> Les GFM sont entraînés sur des images
+   réelles ; remplacer des pixels leur présente une distribution qu'ils n'ont jamais vue.
+   Le filtrage se fait <strong>en amont, au niveau du chip</strong> (<code>embed_cloud_pct_max</code>, cf. <code>l1-03.2</code>),
+   et le <code>cloud_pct</code> est <strong>consigné</strong> à côté du vecteur pour que le Lot 2 puisse pondérer.</li>
+<li><strong>L'ordre des bandes est normatif et n'existe qu'à UN endroit</strong> — <code>core/embedding.py</code>.
+   Aucune autre fiche ne le recopie ; les adapters y renvoient.</li>
+</ol>
+<h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
+<p>Ici : tests unitaires sur le pur (<code>l1-01.1</code>), tests de forme sur le chargeur (<code>l1-01.2</code>).
+<strong>Aucun test dont l'oracle est « ça ne plante pas ».</strong> Les vérifications ponctuelles se
+consignent en prose dans le Résumé de réalisation. <strong>Pas de quota</strong> : c'est la nature du
+code qui dit combien de tests il mérite.</p>
+<h2 id="sous-taches">Sous-tâches</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Fiche</th>
+<th>Objet</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l1-01.1</code></td>
+<td><code>core/embedding.py</code> — spec de bandes, ordre, normalisation. Pur</td>
+<td>S</td>
+</tr>
+<tr>
+<td><code>l1-01.2</code></td>
+<td><code>adapters/chip_loader.py</code> — le tenseur 10 bandes depuis les deux rasters</td>
+<td>M</td>
+</tr>
+<tr>
+<td><code>l1-01.3</code></td>
+<td>Port <code>EmbeddingModel</code> + registre <code>model_id → adapter</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td><code>l1-01.4</code></td>
+<td>Corpus de fixtures d'embedding</td>
+<td>S</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
+<p>Le chargement des poids et l'exécution d'un modèle (<code>l1-02</code>) · le CLI et le stockage
+(<code>l1-03</code>) · toute mesure de performance (<code>l1-04</code>) · toute métrique de qualité (<code>l1-05</code>).</p><div class="prevnext"><span></span><a href="l1-02.html">[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.4</b></nav><h1>[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-024-la-substituabilite-prouvee">[l1-02.4] — La substituabilité, prouvée</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Prouver que le port de <code>l1-01.3</code> tient sa promesse : <strong>la même fonction produit un vecteur
+avec Clay et avec TerraMind, sans branche conditionnelle chez l'appelant.</strong></p>
+<p>C'est un critère de sortie du Lot 1, et c'est aussi ce qui rend le banc comparatif honnête :
+si l'appelant devait connaître le modèle, on ne comparerait plus deux modèles mais deux
+chemins de code.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>tests/test_model_substitution.py</code> — plus, si nécessaire, un petit correctif dans les
+adapters pour lever une divergence constatée.</p>
+<p>⚠ <strong>Leçon <code>out-01</code> du Lot 0</strong> : la substituabilité à un <code>Protocol</code> <strong>n'est pas vérifiée par
+un test d'exécution</strong>. Un double qui « marche » peut violer le contrat statique. C'est
+<code>mypy --strict</code> qui est l'oracle principal ici — le test d'exécution ne fait que confirmer
+que les deux vecteurs sortent.</p>
+<p>Ce qu'il faut écrire :</p>
+<ul>
+<li><strong>une seule</strong> fonction de consommation, annotée <code>EmbeddingModel</code>, sans <code>isinstance</code>, sans
+  <code>cast</code>, sans <code>type: ignore</code> ;</li>
+<li>elle est appelée avec les <strong>trois</strong> implémentations : <code>FakeEmbeddingModel</code>, Clay, TerraMind ;</li>
+<li>⭐ vérification que <strong>les dimensions diffèrent</strong> (1024 contre 768) et que le code
+  d'appel <strong>ne s'en soucie pas</strong> — c'est le cœur de la démonstration : un appelant qui
+  supposerait une dimension fixe serait rouge ici.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : toute comparaison de <strong>qualité</strong> entre les deux (<code>l1-05</code>) · toute
+mesure de temps (<code>l1-04</code>).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] Une fonction de consommation unique, annotée, sans branche par modèle.</li>
+<li>[ ] Les trois implémentations passent par elle.</li>
+<li>[ ] <code>mypy --strict</code> vert <strong>sans aucun <code>cast</code> ni <code>type: ignore</code></strong> dans le chemin.</li>
+<li>[ ] Le registre <code>resolve_model</code> connaît les trois <code>model_id</code>.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>⭐ <code>mypy --strict</code> sur le module de consommation</td>
+<td><strong>vert, zéro <code>cast</code>, zéro <code>type: ignore</code></strong> — grep sur le fichier pour le prouver mécaniquement</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>La même fonction, appelée avec les 3 implémentations, sur la même fixture</td>
+<td>3 vecteurs float32 sans NaN ; <strong>dimensions 1024 · 768 · celle du double</strong> — et <strong>aucune branche par <code>model_id</code></strong> dans la fonction (vérifié par lecture, consigné)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>resolve_model</code> sur les 3 identifiants</td>
+<td>rend la bonne implémentation ; un id inconnu lève en listant les 3</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la comparabilité <strong>sémantique</strong> des deux vecteurs — un CLS
+et une moyenne de patchs ne vivent pas dans le même espace, on ne les compare <strong>jamais entre
+eux</strong>, seulement chacun à lui-même au fil du temps. C'est écrit ici parce que c'est le
+contresens le plus facile à commettre au Lot 2.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>Cette fiche est courte <strong>et</strong> elle est un critère de sortie du lot : c'est normal. Sa valeur
+n'est pas dans le volume de code mais dans le fait qu'elle rende <strong>rouge</strong> un port qui
+fuirait — par exemple si un adapter exposait une méthode que l'autre n'a pas et qu'un
+appelant s'était mis à l'utiliser.</p>
+<p>⚠ <strong>Politique de test</strong> : pas de test paramétré sur des matrices de combinaisons de modèles
+et d'options — la démonstration tient dans un chemin unique parcouru par trois
+implémentations.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-02.3.html">← [l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde</a><span></span></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

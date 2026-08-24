@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-04.1] Instrumentation du banc — chargement, forward et écriture chronométrés séparément</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.1</b></nav><h1>[l1-04.1] Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-041-linstrumentation">[l1-04.1] — L'instrumentation</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Mesurer où passe le temps d'un embedding, <strong>phase par phase</strong>, et la mémoire crête. C'est la
+fondation des quatre fiches suivantes : sans elle, tous les leviers seraient mesurés à
+travers un total qui mélange l'I/O et le calcul.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/cli/bench.py</code> + <code>src/tiny_wae/adapters/bench_probe.py</code>.</p>
+<p>⭐ <strong>La séparation des trois phases est le cœur de la fiche</strong> :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Ce qu'elle couvre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>load</code></td>
+<td>lecture des deux rasters, rééchantillonnage 2×2, normalisation → tenseur prêt</td>
+</tr>
+<tr>
+<td><code>forward</code></td>
+<td>passage dans le modèle → vecteur</td>
+</tr>
+<tr>
+<td><code>write</code></td>
+<td>écriture du <code>.npy</code> et du compagnon</td>
+</tr>
+</tbody>
+</table></div>
+<p>L'instrumentation <strong>enveloppe</strong> le code existant (<code>l1-01.2</code>, adapters, <code>l1-03.1</code>) — elle
+<strong>ne le modifie pas</strong>. Un décorateur, un gestionnaire de contexte, peu importe : le code de
+production ne doit pas se remplir de chronomètres.</p>
+<p>À mesurer par chip, et à agréger : temps par phase (médiane et p90, pas seulement la
+moyenne — une moyenne masque les à-coups du système de fichiers), <strong>RAM crête du processus</strong>,
+octets lus.</p>
+<p>Interface :</p>
+<pre><code>just run bench --model clay-v1.5 --site A01 --n 50 [--out bench.json]
+</code></pre>
+<ul>
+<li><code>--n</code> : nombre de chips, pour que le banc reste court ;</li>
+<li>⭐ <strong>une phase de chauffe</strong> (2-3 chips exclus des statistiques) : le premier passage
+  d'un modèle PyTorch inclut des allocations et des optimisations qui ne se reproduisent
+  pas. Les inclure fausserait la médiane vers le haut.</li>
+</ul>
+<p>Sortie : <strong>JSON</strong>, jamais des logs à relire à l'œil.</p>
+<p><strong>Hors périmètre</strong> : tout levier (<code>l1-04.2</code> à <code>.4</code>) · le rapport comparatif (<code>l1-04.5</code>) ·
+toute qualité.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>cli/bench.py</code> livré, découvert automatiquement, sortie JSON.</li>
+<li>[ ] Trois phases chronométrées <strong>séparément</strong>, médiane <strong>et</strong> p90.</li>
+<li>[ ] RAM crête du processus mesurée.</li>
+<li>[ ] Chauffe exclue des statistiques, nombre de chips de chauffe <strong>écrit dans le JSON</strong>.</li>
+<li>[ ] Le code de production n'a <strong>pas</strong> été modifié pour l'instrumentation.</li>
+<li>[ ] <code>tests/test_bench.py</code> — <strong>court</strong>.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>⭐ <strong>L'instrumentation compte ce qu'elle prétend compter</strong> : un double qui <strong>dort 100 ms</strong> dans la phase <code>forward</code></td>
+<td>le JSON attribue ~100 ms à <code>forward</code> et <strong>quasi rien</strong> aux deux autres. C'est le seul test qui prouve que la séparation n'est pas décorative</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Somme des trois phases contre temps total mesuré de bout en bout</td>
+<td>écart <strong>&lt; 5 %</strong> — sinon du temps se perd hors instrumentation et les leviers seront mesurés à travers un trou</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Run avec <code>--n 10</code> sur le double</td>
+<td>JSON complet : 3 phases × (médiane, p90), RAM crête, nombre de chips, chauffe, <code>model_id</code>, <code>spec_hash</code></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Deux runs identiques sur le double</td>
+<td>les <strong>champs de contexte</strong> sont identiques ; les temps varient — <strong>aucun seuil sur les temps</strong>, c'est une mesure, pas une assertion</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code></td>
+<td>vert. ⚠ <strong><code>bench</code> n'entre PAS dans le gate</strong> — c'est un outil de mesure, il se lance à la main</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : toute valeur de temps réelle (elles sont <strong>publiées</strong>, pas
+assertées) · les leviers · la représentativité de <code>--n 50</code> sur 5 793 chips — c'est justement
+ce que l'extrapolation de <code>l1-04.5</code> devra assumer et déclarer.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>Pourquoi la médiane ET le p90.</strong> Sur un montage drvfs, quelques lectures très lentes
+suffisent à décaler une moyenne. La médiane dit le cas courant, le p90 dit ce qu'on subit
+régulièrement. Publier les deux évite une extrapolation trop optimiste ou trop pessimiste.</p>
+<p>⚠ <strong>Politique de test</strong> : O1 et O2 sont les deux tests qui portent quelque chose — ils
+prouvent que l'instrumentation ne ment pas. Le reste relève de la forme du JSON.</p>
+<p>Pistes : <code>time.perf_counter</code> suffit ; pour la RAM crête, <code>resource.getrusage</code> (Linux/WSL2)
+ou <code>tracemalloc</code> — au choix, à condition de dire lequel dans le JSON, parce qu'ils ne
+mesurent pas la même chose.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Premières mesures observées</strong> <em>(indicatives, non contractuelles)</em> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><span></span><a href="l1-04.2.html">[l1-04.2] Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

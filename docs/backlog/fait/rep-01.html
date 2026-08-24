@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>rep-01 — Trois defauts d&#x27;affichage de report</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[rep-01] Trois défauts d&#x27;affichage de report : ratio faussé par les relances, O1 non vérifiable, mauvaise classe SCL mise en avant</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,7 +45,32 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><h1>rep-01 — Trois defauts d&#x27;affichage de report</h1><p>Généré le 23/08/2026 depuis rep-01.md — le .md fait foi.</p></div></div><article><h1 id="rep-01-le-ratio-publie-par-report-est-fausse-par-les-relances">[rep-01] — Le ratio publié par <code>report</code> est faussé par les relances</h1>
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>rep-01</b></nav><h1>[rep-01] Trois défauts d&#x27;affichage de report : ratio faussé par les relances, O1 non vérifiable, mauvaise classe SCL mise en avant <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : rapport</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="data-01.html"><code>data-01</code></a> Un asset inaccessible ne fait plus perdre la fenêtre entière <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#rep-01-le-ratio-publie-par-report-est-fausse-par-les-relances">[rep-01] — Le ratio publié par report est faussé par les relances</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#constat-mesure-compte-rendu-pas-un-oracle">Constat mesuré (compte-rendu, PAS un oracle)</a></li>
+<li><a href="#ancrage-dans-le-code-reel-verifie-le-2026-08-23-head-189b0cb-reverifie-au">⚠ Ancrage dans le code réel (vérifié le 2026-08-23, HEAD 189b0cb ; **revérifié au</a></li>
+<li><a href="#decisions-actees">⭐ Décisions actées</a></li>
+<li><a href="#fichiers-touches">Fichiers touchés</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#verdict-doracle-chiffre">Verdict d'oracle chiffré</a></li>
+<li><a href="#verification-sur-le-corpus-reel-au-dela-de-loracle-avant-merge">⭐ Vérification sur le CORPUS RÉEL (au-delà de l'oracle, avant merge)</a></li>
+<li><a href="#decisions-prises-en-cours-de-route">Décisions prises en cours de route</a></li>
+<li><a href="#gate">Gate</a></li>
+<li><a href="#non-fait">Non fait</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
 <blockquote>
 <p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
 Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
@@ -74,7 +99,7 @@ c'est sa présentation qui est fausse, d'où l'effort S et l'absence de caractè
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <h3 id="constat-mesure-compte-rendu-pas-un-oracle">Constat mesuré (compte-rendu, PAS un oracle)</h3>
 <p>Sur le rapport de la campagne 25×48 régénéré le 2026-08-23 :</p>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Site</th>
@@ -107,7 +132,7 @@ c'est sa présentation qui est fausse, d'où l'effort S et l'absence de caractè
 <td>15e</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>Le site présenté comme le pire du parc ne l'est pas, et le meilleur site du parc est publié
 au milieu du classement. Les sites intacts sont ceux qui n'ont jamais été relancés — le
 défaut est donc <strong>invisible tant qu'on ne relance rien</strong>, ce qui explique qu'il ait passé
@@ -254,7 +279,7 @@ modifié.</p>
 <p><strong>Faite le 2026-08-23</strong> — agent Sonnet medium en worktree isolé (HEAD vérifié <code>7496d14</code>),
 commit <code>88c0733</code>, mergé en <code>c78cd8b</code>. <strong>305 tests</strong> (+5 neufs, +1 assertion corrigée).</p>
 <h3 id="verdict-doracle-chiffre">Verdict d'oracle chiffré</h3>
-<table>
+<div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Oracle</th>
@@ -294,7 +319,7 @@ commit <code>88c0733</code>, mergé en <code>c78cd8b</code>. <strong>305 tests</
 <td>classes 3 et 11 rendues, classe 2 absente, titre dérivé du mapping</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="verification-sur-le-corpus-reel-au-dela-de-loracle-avant-merge">⭐ Vérification sur le CORPUS RÉEL (au-delà de l'oracle, avant merge)</h3>
 <p>Le code corrigé a été exécuté sur les 9 873 manifestes de la campagne du 23/08 (sortie hors
 <code>data_root</code>, corpus non modifié). Trois faits :</p>
@@ -336,4 +361,4 @@ Le fichier n'étant dans aucun commit, la CI ne le voit pas.</p>
 <h3 id="non-fait">Non fait</h3>
 <p>Le <code>report.md</code> du <code>data_root</code> n'a <strong>pas</strong> été régénéré — la vérification a écrit ailleurs
 pour ne pas toucher au corpus. Il porte donc encore l'ancien classement jusqu'à la prochaine
-exécution de <code>report</code>.</p></article></body></html>
+exécution de <code>report</code>.</p><div class="prevnext"><a href="perf-01.html">← [perf-01] Réglages GDAL pour la lecture des COG distants</a><span></span></div><p class="gen">Généré le 23/08/2026 15:32 — le .md fait foi.</p></article></body></html>

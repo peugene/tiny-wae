@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fiche Lot 1 — Banc d&#x27;embeddings GFM sur CPU</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+
+.wrap{max-width:1000px;margin:0 auto;padding:26px 16px 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:18px 20px;
+box-shadow:0 1px 3px rgba(20,40,60,.06);display:flex;flex-direction:column;
+transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 6px 18px rgba(20,40,60,.12);transform:translateY(-2px)}
+.card h2{margin:0 0 8px;font-size:1.08em;line-height:1.35}
+.card h2 a{color:#1d4d66;text-decoration:none}.card h2 a:hover{color:#2c6e91}
+.card .excerpt{color:#5c6b76;font-size:.9em;flex:1;margin:10px 0 14px}
+.card .foot{display:flex;justify-content:space-between;font-size:.82em;color:#5c6b76}
+.counters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}
+.counter{background:#fff;border:1px solid #e3e9ee;border-radius:10px;padding:10px 18px;
+min-width:110px}
+.counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
+.roadmap{margin-top:38px}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog</a> › <a href="index.html">📚 Lots</a> › <b>lot-1-embeddings</b></nav><h1>Fiche Lot 1 — Banc d&#x27;embeddings GFM sur CPU <span class="badge" style="background:#8b7bd8">Maturation</span></h1><p><b>Projet</b> : tiny-wae — POC Earth Intelligence perso<br><b>Statut</b> : maturation — ouvert le 23/08/2026 après la recette du Lot 0 (GO Philippe)<br><b>Date</b> : 23/08/2026. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-1-embeddings/</code></p></div></div><article><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#fiche-lot-1-banc-dembeddings-gfm-sur-cpu">Fiche Lot 1 — Banc d'embeddings GFM sur CPU</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#perimetre">Périmètre</a></li>
+<li><a href="#decisions-structurantes-actees">Décisions structurantes actées</a></li>
+<li><a href="#faits-releves-a-verifier-par-les-fiches-pas-a-croire-sur-parole">Faits relevés (à vérifier par les fiches, pas à croire sur parole)</a></li>
+<li><a href="#livrables">Livrables</a></li>
+<li><a href="#criteres-de-sortie">Critères de sortie</a></li>
+<li><a href="#questions-ouvertes-a-trancher-avant-descente-en-fiches">Questions ouvertes (à trancher avant descente en fiches)</a></li>
+<li><a href="#declinaison-en-backlog">Déclinaison en backlog</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<p>Poser la colonne vertébrale technique du POC — <strong>un embedding par site et par acquisition</strong> —
+et mesurer ce que la machine actuelle permet d'en faire. Le lot livre deux adapters de modèles
+de fondation géospatiaux, un CLI d'embedding idempotent, un banc de mesure instrumenté, et un
+premier signal de qualité. Il se conclut par un arbitrage humain de périmètre.</p>
+<h2 id="objectif">Objectif</h2>
+<p>Le Lot 0 a produit <strong>5 793 chips</strong> sur 25 sites et 48 mois (15,95 Gio). Ces chips ne sont
+pour l'instant que des images. Le Lot 1 les transforme en <strong>vecteurs</strong> : c'est ce qui rend
+possible, aux lots suivants, la détection de changement (dérive d'embeddings), la recherche
+par similarité et l'interrogation en langage naturel.</p>
+<p>⭐ <strong>Ce que ce lot doit trancher a changé de nature.</strong> La feuille de route disait « le banc
+décide de l'achat matériel ». <strong>Décision Philippe du 23/08 : il n'y aura pas d'achat, on fait
+avec la machine existante.</strong> Le banc ne décide donc plus d'une dépense, il décide d'un
+<strong>périmètre</strong> : combien de chips, de sites et de mois sont embeddables dans le temps
+disponible, et quels leviers permettent d'en embedder plus avant de renoncer à quoi que ce
+soit.</p>
+<p><strong>Corollaire, qui oriente tout le lot</strong> : le critère de choix d'un modèle n'est plus « le
+meilleur » mais <strong>le plus de pouvoir discriminant par seconde de CPU</strong>. Un banc qui ne
+mesurerait que le débit n'aurait pas de numérateur — c'est pourquoi la séparabilité entre en
+O3, et non au Lot 2.</p>
+<h2 id="perimetre">Périmètre</h2>
+<p><strong>Dans le lot</strong> :</p>
+<ul>
+<li>un <strong>contrat d'entrée</strong> commun aux modèles : ordre des bandes, normalisation radiométrique
+  (les <code>scale</code>/<code>offset</code> par asset sont au manifeste depuis l'arbitrage n°1 du Lot 0),
+  assemblage du tenseur depuis les <strong>deux</strong> rasters ;</li>
+<li>deux <strong>adapters</strong> derrière un port unique : <strong>Clay v1.5</strong> et <strong>TerraMind</strong> ;</li>
+<li>un <strong>CLI <code>embed</code></strong> idempotent et son backfill, sur le modèle des CLIs du Lot 0 ;</li>
+<li>un <strong>stockage fichier</strong> des vecteurs (pas de base) ;</li>
+<li>un <strong>banc instrumenté</strong> : chargement / forward / écriture chronométrés séparément, RAM
+  crête, et quatre leviers chiffrés ;</li>
+<li>un <strong>signal de qualité</strong> : séparabilité inter-sites, stabilité et déterminisme.</li>
+</ul>
+<p><strong>Hors lot</strong> (explicite — c'est ce qui protège du glissement) :</p>
+<ul>
+<li><strong>pgvector</strong> et toute indexation : c'est l'index de recherche, il ouvre le Lot 2. Le banc
+  écrit dans des fichiers, ce qui suffit à mesurer et à alimenter la suite ;</li>
+<li><strong>toute détection de changement</strong> — Lot 2 ;</li>
+<li><strong>tout entraînement ou fine-tuning</strong> — hors périmètre du POC entier ;</li>
+<li><strong>le GPU</strong> : la machine n'en a pas, le banc mesure ce qui existe ;</li>
+<li><strong>Sentinel-1</strong>, la fusion multimodale, le recalage sub-pixel.</li>
+</ul>
+<h2 id="decisions-structurantes-actees">Décisions structurantes actées</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Décision</th>
+<th>Choix</th>
+<th>Motif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modèles au banc</td>
+<td><strong>Clay v1.5 + TerraMind</strong></td>
+<td>Deux points suffisent à comparer, et ils sont complémentaires : les 10 bandes du Lot 0 ont été choisies à la spec de Clay (décision D-b) ; TerraMind est le modèle IBM/ESA, directement dans l'esprit du CCTP. Un banc à un seul modèle ne compare rien</td>
+</tr>
+<tr>
+<td>Ce que le banc mesure</td>
+<td><strong>Débit + RAM + séparabilité</strong></td>
+<td>Sans signal de qualité, on optimiserait le débit d'un modèle dont les embeddings ne discriminent peut-être rien</td>
+</tr>
+<tr>
+<td>Matériel</td>
+<td><strong>CPU seul</strong></td>
+<td>Pas de GPU sur la machine, et <strong>pas d'achat prévu</strong></td>
+</tr>
+<tr>
+<td>Décision de fin de lot</td>
+<td><strong>Périmètre embeddable</strong>, pas achat</td>
+<td>Conséquence directe de la décision ci-dessus</td>
+</tr>
+<tr>
+<td>Stockage des vecteurs</td>
+<td><strong>Fichiers</strong>, pas de base</td>
+<td>pgvector est l'index du Lot 2 ; l'y mettre ici gonflerait le lot sans rien mesurer de plus</td>
+</tr>
+<tr>
+<td>Corpus de mesure</td>
+<td><code>D:\datas\tiny-wae</code> — <strong>local, pas le NAS</strong></td>
+<td>Le confondant réseau disparaît. Reste celui du montage Windows, mesuré en O2</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="faits-releves-a-verifier-par-les-fiches-pas-a-croire-sur-parole">Faits relevés (à vérifier par les fiches, pas à croire sur parole)</h2>
+<ul>
+<li><strong>Le corpus</strong> : 5 793 chips, 9 873 manifestes, ~2,9 Mo par acquisition.</li>
+<li><strong>Deux rasters par acquisition, à deux résolutions</strong> : <code>chip.tif</code> (512×512, <strong>4 bandes</strong>
+  10 m, uint16, <strong>non compressé</strong>) et <code>chip_20m.tif</code> (256×256, <strong>6 bandes</strong> 20 m). Les 10
+  bandes de la spec Clay sont donc réparties sur deux fichiers, à deux grilles différentes :
+  <strong>assembler le tenseur d'entrée coûte une double lecture plus un rééchantillonnage.</strong></li>
+<li><strong>Clay v1.5</strong> : embeddings <strong>1024 dimensions</strong>, spec à <strong>10 bandes</strong> Sentinel-2, tuiles
+  256×256, patch d'attention 8×8. ⚠ Le chiffre de ~20 embeddings/s publié par Clay a été
+  obtenu <strong>sur AWS</strong>, pas sur un CPU de poste — il ne vaut que comme ordre de grandeur d'un
+  plafond, jamais comme référence de comparaison.</li>
+<li><strong>TerraMind</strong> : modèle multimodal IBM / ESA / Jülich, intégré à <strong>TerraTorch</strong>, décliné en
+  variantes ; les variantes <strong>tiny/small</strong> sont celles que les auteurs recommandent pour
+  l'exécution locale et l'inférence rapide. <strong>La licence est à relever et à consigner par la
+  fiche d'adapter</strong> — elle conditionne l'usage.</li>
+<li><strong>Le montage <code>/mnt/d</code> de WSL2 passe par drvfs.</strong> Le Lot 0 a déjà mesuré ce que cette couche
+  coûte (<code>just install</code> y recopiait 696 Mo faute de liens durs). Une passe complète, c'est
+  <strong>~16 Gio à lire à travers elle</strong> : à chiffrer avant d'accuser le CPU.</li>
+</ul>
+<h2 id="livrables">Livrables</h2>
+<ul>
+<li><code>core/embedding.py</code> — spec de bandes et normalisation, pur, testable à sec.</li>
+<li><code>adapters/chip_loader.py</code> — le tenseur d'entrée, depuis les deux rasters.</li>
+<li><code>adapters/embed_clay.py</code>, <code>adapters/embed_terramind.py</code> — derrière un port unique.</li>
+<li><code>cli/embed.py</code>, <code>cli/embed_backfill.py</code> — orchestrables, I/O explicites.</li>
+<li>Un <strong>rapport de banc</strong> comparatif, avec extrapolation chiffrée au corpus et au run quotidien.</li>
+<li>Un <strong>rapport de séparabilité</strong> par modèle.</li>
+<li>Un corpus de fixtures d'embedding, et un smoke <code>embed</code> dans le gate.</li>
+</ul>
+<h2 id="criteres-de-sortie">Critères de sortie</h2>
+<p>Le lot est fini quand ces cinq points sont vrais, chiffres à l'appui :</p>
+<ol>
+<li><strong>Substituabilité prouvée</strong> : le même code produit un vecteur avec Clay et avec TerraMind,
+   sans branche conditionnelle chez l'appelant — vérifié par un test, pas par relecture.</li>
+<li><strong>Idempotence</strong> : deux passes d'<code>embed</code> sur le même chip et le même modèle ne recalculent
+   rien la seconde fois, et le vecteur est identique (déterminisme mesuré, tolérance déclarée
+   si elle n'est pas nulle).</li>
+<li><strong>Aucun accès réseau au run</strong> : les poids sont résolus depuis un cache local ; la garde
+   est vérifiée par mutation, comme celle du Lot 0.</li>
+<li><strong>Le banc publie une extrapolation chiffrée</strong> : chips par heure et par modèle, RAM crête,
+   et ce que ça donne sur 5 793 chips <strong>et</strong> sur une journée d'incrémental — avec le
+   dénominateur et le cas défavorable.</li>
+<li><strong>Le banc publie un pouvoir discriminant</strong> par modèle, mesuré sur le corpus réel, et le
+   rapport discrimination / seconde qui permet de trancher.</li>
+</ol>
+<p>⚠ Un critère de sortie qu'on ne peut pas rendre <strong>rouge</strong> n'en est pas un : chaque oracle du
+chantier doit être exercé dans les deux sens.</p>
+<h2 id="questions-ouvertes-a-trancher-avant-descente-en-fiches">Questions ouvertes (à trancher avant descente en fiches)</h2>
+<ol>
+<li><strong>Quelle unité embedder ?</strong> Le chip entier (5 120 m) donne un vecteur par acquisition —
+   c'est la colonne vertébrale annoncée. Mais Clay travaille sur des tuiles de 256×256 : à 10 m
+   le chip en fait quatre, à 20 m une seule. Un vecteur par chip, ou un par tuile agrégé
+   ensuite ? <strong>Ça change le nombre de vecteurs, le coût, et la finesse de détection du Lot 2.</strong></li>
+<li><strong>Que fait-on du masque SCL à l'entrée du modèle ?</strong> Neutraliser les pixels nuageux, ou
+   laisser le modèle les voir ? La seconde option est plus simple et plus fidèle à
+   l'entraînement des GFM ; la première réduit le bruit. À trancher, pas à découvrir.</li>
+<li><strong>Quelle variante de TerraMind ?</strong> Les auteurs recommandent tiny/small en local. À fixer
+   avant la fiche d'adapter, sinon l'oracle n'a pas de référence.</li>
+<li><strong>Quelle tolérance de déterminisme ?</strong> Bit à bit est l'idéal, mais le multi-threading BLAS
+   peut introduire des écarts. Fixer un seuil <strong>avant</strong> de mesurer, sinon on le fixera après
+   coup à la valeur observée — ce qui ne prouve rien.</li>
+</ol>
+<h2 id="declinaison-en-backlog">Déclinaison en backlog</h2>
+<p>Chantier <code>docs/backlog/maturation/lot-1-embeddings/</code> — <strong>5 chapeaux · 20 sous-tâches ·
+1 fiche humaine</strong>, en quatre phases :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Objet</th>
+<th>Chapeaux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>O1</strong></td>
+<td>Socle : contrat d'entrée, chargement, port, fixtures</td>
+<td><code>l1-01</code></td>
+</tr>
+<tr>
+<td><strong>O2</strong></td>
+<td>Modèles et exécution : adapters, CLI, stockage</td>
+<td><code>l1-02</code>, <code>l1-03</code></td>
+</tr>
+<tr>
+<td><strong>O3</strong></td>
+<td>Mesure : banc instrumenté, leviers, séparabilité</td>
+<td><code>l1-04</code>, <code>l1-05</code></td>
+</tr>
+<tr>
+<td><strong>O4</strong></td>
+<td>Décision : arbitrage humain du périmètre</td>
+<td><code>l1-06.H</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>La roadmap détaillée et le graphe de dépendances vivent dans <code>_roadmap.md</code> du chantier. Ce
+document reste la <strong>source de vérité du lotissement</strong> ; les fiches en sont la déclinaison
+opérationnelle.</p><div class="prevnext"><a href="lot-0-sites.html">← Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a><span></span></div><p class="gen">Généré le 23/08/2026 14:05 depuis lot-1-embeddings.md — le .md fait foi.</p></article></body></html>

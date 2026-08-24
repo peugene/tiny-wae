@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.3] Port EmbeddingModel + registre model_id → adapter</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.3</b></nav><h1>[l1-01.3] Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-013-le-port-derriere-lequel-les-modeles-se-branchent">[l1-01.3] — Le port derrière lequel les modèles se branchent</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Définir le <strong>contrat</strong> que Clay et TerraMind devront respecter, et le registre qui résout un
+<code>model_id</code> en implémentation. Sans ce port, chaque appelant connaîtrait les particularités de
+chaque modèle — et il y en a, précisément là où on ne les attend pas.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/core/embedding_port.py</code> (le Protocol, pur) et
+<code>src/tiny_wae/adapters/model_registry.py</code> (la résolution <code>model_id → adapter</code>).</p>
+<p>⭐ <strong>La raison d'être du port, en une phrase</strong> : les deux modèles n'ont <strong>pas le même
+contrat de sortie</strong>. Clay rend <strong>un vecteur</strong> (son embedding de classe) ; TerraMind rend
+<strong>196 embeddings de patch de 768 dimensions</strong> qu'il faut agréger. Le port promet
+<strong>« un vecteur par chip »</strong> et chaque adapter est responsable de le produire — Clay prend
+son CLS, TerraMind moyenne ses patchs. <strong>L'appelant ne voit pas la différence.</strong></p>
+<p>À livrer :</p>
+<ul>
+<li><code>EmbeddingModel</code> — <code>Protocol</code> (pas une classe de base) exposant :</li>
+<li><code>model_id: str</code> — identifiant stable, entre dans la clé d'idempotence ;</li>
+<li><code>spec: EmbeddingSpec</code> — ce que le modèle attend en entrée (<code>l1-01.1</code>) ;</li>
+<li><code>dim: int</code> — dimension du vecteur produit ;</li>
+<li><code>embed(tensor) -&gt; np.ndarray</code> — <strong>un vecteur <code>(dim,)</code> float32</strong>, pas une matrice.</li>
+<li><code>FakeEmbeddingModel</code> — double de test <strong>substituable</strong>, déterministe (hash de l'entrée →
+  vecteur), sans aucune dépendance à torch. Il permet à <code>l1-03.x</code> d'avancer <strong>avant</strong> que le
+  moindre poids soit téléchargé.</li>
+<li><code>resolve_model(model_id) -&gt; EmbeddingModel</code> — registre. Un <code>model_id</code> inconnu lève une
+  erreur typée <strong>listant les identifiants disponibles</strong>.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : aucun modèle réel (<code>l1-02</code>), aucun chargement de poids, aucun torch.
+Cette fiche doit rester importable sans que torch soit installé.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>core/embedding_port.py</code> et <code>adapters/model_registry.py</code> livrés, <code>mypy --strict</code> vert.</li>
+<li>[ ] <code>EmbeddingModel</code> est un <code>Protocol</code> ; <code>FakeEmbeddingModel</code> le satisfait <strong>sans en hériter</strong>.</li>
+<li>[ ] Le registre connaît au moins le double ; les deux vrais modèles s'y ajouteront en <code>l1-02</code>.</li>
+<li>[ ] <code>tests/test_embedding_port.py</code> — court.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><strong>Substituabilité statique</strong> : une fonction annotée <code>EmbeddingModel</code> reçoit <code>FakeEmbeddingModel</code></td>
+<td><code>mypy --strict</code> vert <strong>sans <code>cast</code> ni <code>type: ignore</code></strong>. ⚠ C'est <code>mypy</code> qui est l'oracle ici, pas un test d'exécution — c'est précisément la leçon de <code>out-01</code> (Lot 0)</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><code>FakeEmbeddingModel.embed</code> sur la même entrée, deux appels</td>
+<td>vecteur <strong>identique</strong>, forme <code>(dim,)</code>, dtype float32</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>resolve_model("inconnu")</code></td>
+<td>erreur typée dont le message <strong>liste les ids disponibles</strong> (assertion littérale)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Import du module</td>
+<td>réussit <strong>sans torch installé</strong> — vérifié une fois à la main, consigné en prose</td>
+</tr>
+<tr>
+<td>O5</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : tout comportement de modèle réel · la pertinence de
+l'agrégation choisie par chaque adapter (<code>l1-02</code>).</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>Le double n'est pas une commodité de test : c'est ce qui <strong>découple le chapeau <code>l1-03</code></strong> du
+chapeau <code>l1-02</code>. Le CLI <code>embed</code>, son stockage et son idempotence peuvent être écrits et
+vérifiés entièrement avec le double — donc <strong>sans réseau, sans poids, en millisecondes</strong>.
+C'est le même patron que <code>FixtureSource</code> au Lot 0.</p>
+<p>⚠ <strong>Politique de test</strong> : le vrai filet ici est <code>mypy</code>, pas pytest — le port est un contrat
+statique. Les tests d'exécution ne font que confirmer que le double se comporte comme prévu.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-01.2.html">← [l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters</a><a href="l1-01.4.html">[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-06.H</b></nav><h1>[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O4<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-06h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l1-06.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
+<li><a href="#objet">Objet</a></li>
+<li><a href="#ce-que-tu-auras-sous-les-yeux">Ce que tu auras sous les yeux</a></li>
+<li><a href="#les-decisions-a-prendre">Les décisions à prendre</a></li>
+<li><a href="#checklist">Checklist</a></li>
+<li><a href="#oracle-recette">Oracle / recette</a></li>
+<li><a href="#ce-que-cette-fiche-ne-decide-pas">Ce que cette fiche ne décide PAS</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p><strong>Cette fiche est réalisée par Philippe.</strong> Aucun agent IA ne doit la prendre, l'implémenter
+ni la déplacer en son nom. Elle est la feuille du graphe : rien ne l'attend, mais elle
+<strong>clôt le lot</strong>.</p>
+</blockquote>
+<h2 id="objet">Objet</h2>
+<p>Le Lot 1 ne décidait pas d'un achat matériel — <strong>décision du 23/08 : il n'y en aura pas.</strong>
+Il décidait d'un <strong>périmètre</strong>. Cette fiche est le moment où tu tranches, au vu de deux
+rapports et non d'une intuition.</p>
+<h2 id="ce-que-tu-auras-sous-les-yeux">Ce que tu auras sous les yeux</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Ce qu'il te dit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/bench-report.md</code> (<code>l1-04.5</code>)</td>
+<td>temps par phase et par modèle · RAM · <strong>le run quotidien</strong> · la reprise complète · les 4 leviers chiffrés</td>
+</tr>
+<tr>
+<td><code>data/similarity-report.md</code> (<code>l1-05.3</code>)</td>
+<td>les embeddings distinguent-ils les 25 sites · le pire site</td>
+</tr>
+<tr>
+<td><code>data/trajectory-report.md</code> (<code>l1-05.4</code>)</td>
+<td>⭐ <strong>un vecteur par chip porte-t-il un changement local</strong> · la corrélation aux nuages sur la zone témoin</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="les-decisions-a-prendre">Les décisions à prendre</h2>
+<ol>
+<li>⭐ <strong>Quel modèle retenir pour la suite.</strong> Le critère n'est pas la vitesse ni la qualité
+   seules, mais le <strong>pouvoir discriminant par seconde de CPU</strong> — la marge de séparabilité
+   rapportée au temps par chip. Les deux rapports te donnent numérateur et dénominateur.</li>
+<li><strong>Quel périmètre embedder.</strong> Les 5 793 chips ? Les ~4 959 qui passent le filtre à 10 % ?
+   Un sous-ensemble de sites ? Un sous-échantillonnage temporel — une acquisition claire par
+   mois plutôt que toutes ? <strong>C'est le run quotidien qui commande</strong>, pas la reprise : six
+   heures une fois, c'est une nuit ; trente minutes par jour pour dix chips, c'est un système
+   qui ne vit pas.</li>
+<li><strong>Quels leviers activer.</strong> Copie locale du corpus si <code>l1-04.2</code> montre un gain · réglage
+   batch/threads/workers de <code>l1-04.3</code> · quantification si <code>l1-04.4</code> a conclu <strong>et</strong> que la
+   fidélité tient.</li>
+<li>⭐ <strong>Si le verdict de <code>l1-05.4</code> est négatif ou douteux</strong> — l'unité « un vecteur par chip »
+   ne porte pas le signal — trancher entre : passer à la variante <strong>4 tuiles</strong> (dont
+   <code>l1-04.3</code> a chiffré le coût), réduire le périmètre pour se l'offrir, ou <strong>rouvrir le
+   cadrage du Lot 2</strong>. C'est la décision la plus lourde de la fiche, et c'est pour la rendre
+   possible <strong>avant</strong> le Lot 2 que <code>l1-05.4</code> existe.</li>
+<li><strong>Si la corrélation aux nuages dépasse 0,5</strong> sur la zone témoin : le seuil de 10 % ne
+   suffit pas. Le resserrer, ou revenir sur la décision de ne pas masquer.</li>
+</ol>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>[ ] Lire les trois rapports.</li>
+<li>[ ] Trancher les points 1 à 5 ci-dessus.</li>
+<li>[ ] Écrire les décisions dans <code>docs/lots/lot-1-embeddings.md</code> (§ à créer, comme le §7 du
+      Lot 0) — <strong>c'est la fiche de lot qui fait foi</strong>, pas cette fiche-ci.</li>
+<li>[ ] Mettre à jour <code>settings.yaml</code> si un réglage change (seuil de nuage, workers, threads).</li>
+<li>[ ] Prononcer la <strong>recette du Lot 1</strong> ou lister ce qui manque.</li>
+<li>[ ] Déplacer cette fiche en <code>fait/</code> avec deux lignes de résumé.</li>
+</ul>
+<h2 id="oracle-recette">Oracle / recette</h2>
+<p>Cette fiche n'a pas d'oracle mécanique : <strong>c'est un jugement humain, et c'est voulu.</strong> Ce qui
+est vérifiable, c'est qu'il s'appuie sur des chiffres publiés et non sur une impression — les
+trois rapports existent, ils portent leurs dénominateurs et leurs « non mesuré ».</p>
+<p>⚠ <strong>Le seul verdict qu'aucun agent ne doit rendre à ta place</strong> : décider qu'un résultat
+décevant est « suffisant ». Si la séparabilité est basse ou la dérive témoin ambiguë, le
+constat doit rester tel qu'il est mesuré.</p>
+<h2 id="ce-que-cette-fiche-ne-decide-pas">Ce que cette fiche ne décide PAS</h2>
+<p>L'architecture du Lot 2 · le choix d'un index vectoriel (pgvector est acté, mais son
+dimensionnement dépendra du périmètre que tu arbitres ici) · l'achat de matériel, écarté.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir par Philippe avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Modèle retenu</strong> : …</li>
+<li><strong>Périmètre embeddable arbitré</strong> : …</li>
+<li><strong>Leviers activés</strong> : …</li>
+<li><strong>Verdict sur l'unité d'embedding</strong> : …</li>
+<li><strong>Recette du Lot 1</strong> : <em>(prononcée / ce qui manque)</em></li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-05.html">← [l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin</a><span></span></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>

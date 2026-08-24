@@ -61,7 +61,7 @@ transition:box-shadow .15s,transform .15s}
 min-width:110px}
 .counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
 .roadmap{margin-top:38px}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog du projet</a></nav><h1>tiny-wae — feuille de route</h1><p>1 lot(s) — le .md fait foi, cette page est dérivée.</p></div></div><div class="wrap"><div class="counters"><div class="counter"><b style="color:#15803d">1</b><span>Validé</span></div></div><div class="cards"><div class="card"><h2><a href="lot-0-sites.html">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a></h2><div><span class="badge" style="background:#15803d">Validé</span></div><p class="excerpt">Mettre en place la plomberie données : sélection de 25 sites, récupération automatisée des vignettes (chips) Sentinel-2 L2A sur 48 mois glissants, masquage nuages, stockage NAS, puis ingestion…</p><div class="foot"><span>20/08/2026</span><span>lot-0-sites.md</span></div></div></div><article class="roadmap">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog du projet</a></nav><h1>tiny-wae — feuille de route</h1><p>2 lot(s) — le .md fait foi, cette page est dérivée.</p></div></div><div class="wrap"><div class="counters"><div class="counter"><b style="color:#15803d">1</b><span>Livré</span></div><div class="counter"><b style="color:#8b7bd8">1</b><span>Maturation</span></div></div><div class="cards"><div class="card"><h2><a href="lot-0-sites.html">Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a></h2><div><span class="badge" style="background:#15803d">Livré</span></div><p class="excerpt">Mettre en place la plomberie données : sélection de 25 sites, récupération automatisée des vignettes (chips) Sentinel-2 L2A sur 48 mois glissants, masquage nuages, stockage NAS, puis ingestion…</p><div class="foot"><span>20/08/2026</span><span>lot-0-sites.md</span></div></div><div class="card"><h2><a href="lot-1-embeddings.html">Fiche Lot 1 — Banc d&#x27;embeddings GFM sur CPU</a></h2><div><span class="badge" style="background:#8b7bd8">Maturation</span></div><p class="excerpt">Poser la colonne vertébrale technique du POC — un embedding par site et par acquisition — et mesurer ce que la machine actuelle permet d&#x27;en faire. Le lot livre deux adapters de modèles de fondation…</p><div class="foot"><span>23/08/2026. Déclinaison opérationnelle :</span><span>lot-1-embeddings.md</span></div></div></div><article class="roadmap">
 <hr />
 <h2 id="vision">Vision</h2>
 <p>Système de surveillance de sites par imagerie Sentinel-2 : des opérateurs surveillent des
@@ -83,14 +83,14 @@ similarité et interrogation NL en découlent. Projet perso.</p>
 <tr>
 <td><strong>Lot 0</strong></td>
 <td>Ingestion Sentinel-2 — 25 sites, 48 mois, puis incrémental quotidien, CLIs orchestrables CWL</td>
-<td><strong>Chantier en maturation</strong></td>
+<td><strong>Recette prononcée le 23/08/2026</strong> — 5 793 chips, 15,95 Gio</td>
 <td><code>docs/backlog/maturation/lot-0-ingestion/</code> + <a href="lot-0-sites.md">lot-0-sites.md</a></td>
 </tr>
 <tr>
 <td><strong>Lot 1</strong></td>
-<td>Banc d'embeddings GFM sur CPU (TerraMind/Clay…) — le banc décide de l'achat matériel, pas l'inverse</td>
-<td>À ouvrir après recette Lot 0</td>
-<td>—</td>
+<td>Banc d'embeddings GFM sur CPU (Clay v1.5 + TerraMind) — le banc décide du <strong>périmètre embeddable</strong></td>
+<td><strong>Chantier en maturation</strong></td>
+<td><code>docs/backlog/maturation/lot-1-embeddings/</code> + <a href="lot-1-embeddings.md">lot-1-embeddings.md</a></td>
 </tr>
 <tr>
 <td><strong>Lot 2</strong></td>
@@ -118,11 +118,18 @@ sont figés avant implémentation.</p>
 <h2 id="decisions-structurantes-actees-rappel">Décisions structurantes actées (rappel)</h2>
 <ul>
 <li>POC 100 % Python · stack pixi/ruff/mypy/pytest/typer (cf. <code>_tools_python/reco-stack-python.md</code>)</li>
-<li>Budget zéro : PC dev + NAS ; achat matériel éventuel décidé par les mesures du Lot 1</li>
+<li>Budget zéro : PC dev + NAS. ⭐ <strong>Décision du 23/08/2026 : pas d'achat matériel</strong> — on fait
+  avec la machine existante. Le Lot 1 ne décide donc pas d'une dépense mais du <strong>périmètre
+  embeddable</strong>, et mesure les leviers qui permettent de l'élargir</li>
 <li>Hors périmètre POC : entraînement de modèles, Sentinel-1 (V2), multi-utilisateurs, temps réel</li>
 <li>Données : politique Copernicus « free, full and open » — mention « Contains modified
   Copernicus Sentinel data » en cas de publication</li>
 </ul>
 <h2 id="convention-documentaire">Convention documentaire</h2>
-<p>Les <code>.md</code> de ce dossier sont la source (canal agents) ; les <code>.html</code> sont générés
-(<code>just md2html &lt;src&gt; &lt;dest&gt; "Titre"</code>) pour lecture humaine. Ne pas éditer les <code>.html</code>.</p></article><p class="gen">Généré le 22/08/2026 09:35 — ne pas éditer (écrasé).</p></div></body></html>
+<p>Les <code>.md</code> de ce dossier sont la source (canal agents) ; les <code>.html</code> sont générés pour lecture
+humaine. Ne pas éditer les <code>.html</code>.</p>
+<p>⚠ <strong>Une fiche de lot se régénère par <code>just lots</code>, JAMAIS par <code>just md2html</code>.</strong> La page
+produite par <code>md2html</code> s'ouvre normalement — elle a juste perdu sa pastille d'état, son fil
+d'Ariane et son précédent/suivant, ce qui ne se voit qu'en comparant. C'est arrivé deux fois.
+<code>just lots</code> régénère l'index <strong>et</strong> toutes les fiches d'un coup ; seul ce <code>README.md</code> passe
+légitimement par <code>md2html</code>, puisqu'il est rendu dans le corps de l'index.</p></article><p class="gen">Généré le 23/08/2026 14:05 — ne pas éditer (écrasé).</p></div></body></html>

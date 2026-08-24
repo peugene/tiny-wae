@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.2] Adapter TerraMind small — agrégation des patchs, emprise identique à Clay</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.2</b></nav><h1>[l1-02.2] Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-022-adapter-terramind-small">[l1-02.2] — Adapter TerraMind small</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#les-deux-verifications-a-faire-avant-decrire-du-code">⚠ Les deux vérifications à faire AVANT d'écrire du code</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Brancher TerraMind 1.0 small derrière le même port : un chip en entrée, <strong>un vecteur</strong> en
+sortie — alors que le modèle rend nativement <strong>196 embeddings de patch</strong>. C'est l'adapter
+qui porte l'asymétrie, pas l'appelant.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/adapters/embed_terramind.py</code> + inscription au registre.</p>
+<p>Relevé sur la carte du modèle le 23/08/2026 (à revérifier, c'est le premier geste) :</p>
+<pre><code class="language-python">from terratorch import BACKBONE_REGISTRY
+
+model = BACKBONE_REGISTRY.build(&quot;terramind_v1_small&quot;, pretrained=True, modalities=[&quot;S2L2A&quot;])
+output = model({&quot;S2L2A&quot;: tensor})  # B, 12, 224, 224
+output.shape  # B, 196, 768
+</code></pre>
+<ul>
+<li><strong>Licence Apache 2.0</strong> — vérifiée sur la carte du modèle ; à reconfirmer et consigner.</li>
+<li><code>bands={'S2L2A': [...]}</code> permet de déclarer un <strong>sous-ensemble</strong> de bandes : nos 10 sur
+  les 12 attendues. Le modèle sait gérer les modalités manquantes.</li>
+<li><code>merge_method</code> propose <code>mean</code>, <code>max</code>, <code>concat</code>, <code>dict</code>, <code>None</code>. <strong>Retenu : <code>mean</code></strong> — la
+  moyenne des patchs est l'agrégation la plus neutre et la plus proche d'un embedding global.
+  Toute autre valeur doit être justifiée dans le Résumé.</li>
+</ul>
+<h3 id="les-deux-verifications-a-faire-avant-decrire-du-code">⚠ Les deux vérifications à faire AVANT d'écrire du code</h3>
+<ol>
+<li>⭐ <strong>La taille d'entrée.</strong> L'exemple de référence est en <strong>224×224</strong>, notre chip en
+   <strong>256×256</strong>. Nourrir Clay en 256 et TerraMind en 224 comparerait des embeddings de
+   <strong>5 120 m contre 4 480 m</strong> — la séparabilité mesurée en <code>l1-05</code> ne voudrait plus rien
+   dire. Vérifier si le modèle accepte 256 (les ViT interpolent souvent leurs embeddings de
+   position). <strong>Si oui</strong> : même emprise pour les deux, rien à faire. <strong>Si non</strong> : recadrer
+   les <strong>deux</strong> modèles à 224 — ce qui impose de revenir sur la spec de <code>l1-02.1</code> — et
+   l'écrire dans le Résumé comme une décision, pas comme un détail.</li>
+<li><strong>La normalisation attendue.</strong> La documentation mentionne des statistiques de
+   pré-entraînement. À relever, pas à supposer : une normalisation fausse produit des
+   vecteurs plausibles et faux.</li>
+</ol>
+<p><strong>Hors périmètre</strong> : le mode « Thinking in Modalities » · toute utilisation multimodale
+(nous n'avons pas de Sentinel-1) · le fine-tuning · les mesures (<code>l1-04</code>, <code>l1-05</code>).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>adapters/embed_terramind.py</code> livré, inscrit au registre, <code>mypy --strict</code> vert.</li>
+<li>[ ] <strong>Licence reconfirmée</strong> et consignée.</li>
+<li>[ ] <strong>Verdict écrit sur la taille d'entrée</strong> (256 accepté ou recadrage à 224 des deux modèles).</li>
+<li>[ ] Agrégation <code>mean</code> des 196 patchs → vecteur <code>(768,)</code>.</li>
+<li>[ ] <code>tests/test_embed_terramind.py</code> — <strong>court</strong>, symétrique de celui de Clay.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>embed</code> sur la fixture claire de <code>l1-01.4</code></td>
+<td>vecteur <code>(768,)</code> float32, <strong>aucun NaN ni inf</strong></td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Deux appels sur la <strong>même</strong> entrée, threads figés</td>
+<td>vecteurs <strong>identiques</strong></td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>embed</code> sur deux fixtures différentes</td>
+<td>vecteurs <strong>distincts</strong> (témoin négatif)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>⭐ <strong>Emprise au sol</strong> : la spec de cet adapter et celle de <code>l1-02.1</code></td>
+<td><strong>même <code>size_px</code> × <code>resolution_m</code></strong> — assertion mécanique dans le test, la seule qui protège de la comparaison faussée</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Sortie brute du modèle <strong>avant</strong> agrégation</td>
+<td>forme <code>(1, 196, 768)</code> — vérifie qu'on agrège bien ce qu'on croit, et pas déjà un vecteur</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>Résolution des poids, cache vidé</td>
+<td>échec franc nommant le modèle — vérifié <strong>une fois à la main</strong>, consigné en une ligne</td>
+</tr>
+<tr>
+<td>O7</td>
+<td><code>just check</code></td>
+<td>vert, <strong>hors ligne</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : les valeurs du vecteur · la qualité comparée à Clay
+(<code>l1-05</code>) · le débit (<code>l1-04</code>) · le comportement multimodal, hors périmètre.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>196 tokens contre 1024 pour Clay.</strong> Sur CPU, TerraMind small pourrait être plusieurs
+fois plus rapide par image, indépendamment du nombre de paramètres. Si c'est le cas, ne pas
+en conclure trop vite : <code>l1-05</code> dira si cette vitesse se paie en pouvoir discriminant.</p>
+<p>⚠ <strong>Honnêteté à porter dans le Résumé</strong> : TerraMind est multimodal et nous l'utilisons en
+mono-modalité. S'il discrimine moins bien que Clay, cela ne prouve pas qu'il est moins bon —
+seulement qu'on l'utilise à moitié.</p>
+<p><code>terratorch</code> devient une dépendance du projet : elle s'ajoute au contrat du paquet <strong>et</strong>
+côté pixi, en une seule fiche — ne pas la disperser (leçon <code>24680d1</code> du Lot 0 : une wheel au
+contrat incomplet s'installe puis meurt à l'import chez le consommateur).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Licence reconfirmée</strong> : …</li>
+<li><strong>Taille d'entrée</strong> : <em>(256 accepté ? sinon décision de recadrage)</em></li>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-02.1.html">← [l1-02.1] Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d</a><a href="l1-02.3.html">[l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde →</a></div><p class="gen">Généré le 23/08/2026 15:34 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-05.4] Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ?</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.4</b></nav><h1>[l1-05.4] Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-06.H.html"><code>l1-06.H</code></a> [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-054-la-question-que-le-poc-doit-trancher">[l1-05.4] — La question que le POC doit trancher</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>⭐ <strong>Répondre par la mesure à la seule question que l'expertise ne peut pas trancher : un
+vecteur unique couvrant 26 km² porte-t-il un changement local ?</strong></p>
+<p>Une nouvelle halle de 200 m sur un chantier, c'est <strong>0,15 % de la scène</strong>. Si le signal se
+noie, le Lot 2 mesurerait de la dérive saisonnière et rien d'autre — et on ne le découvrirait
+qu'après l'avoir construit.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/cli/trajectory_report.py</code> → <code>data/trajectory-report.md</code>.</p>
+<p>⭐ <strong>Le dispositif existe déjà dans le corpus, et il a été choisi pour ça.</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Ce qu'il est</th>
+<th>Ce qu'on en attend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A02</strong> Hinkley Point C</td>
+<td>chantier EPR <strong>massif</strong>, terrassement puis génie civil, sur les 48 mois</td>
+<td>la trajectoire doit <strong>s'éloigner</strong> de son point de départ, franchement et durablement</td>
+</tr>
+<tr>
+<td><strong>C08</strong> Bouconne</td>
+<td>forêt, <strong>zone témoin</strong> retenue lors de l'arbitrage G10</td>
+<td>la trajectoire doit <strong>osciller</strong> autour de son origine — saisons, rien d'autre</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ce que la fiche calcule, avec <code>trajectory_drift</code> de <code>l1-05.1</code>, <strong>pour chaque modèle</strong> :</p>
+<ol>
+<li>la <strong>dérive</strong> de chaque site dans le temps, référencée au premier vecteur ;</li>
+<li>⭐ le <strong>rapport de dérive</strong> A02 / C08 en fin de période — le chiffre qui décide ;</li>
+<li>la <strong>corrélation dérive ↔ <code>cloud_pct</code></strong> sur C08. ⚠ <strong>C'est le contrôle négatif du choix
+   de ne pas masquer les nuages</strong> : si la trajectoire du site stable suit la couverture
+   nuageuse, alors les embeddings encodent la météo et le seuil de 10 % ne suffit pas ;</li>
+<li>la même chose pour <strong>tous les sites</strong>, en annexe — A02 et C08 sont les deux témoins, mais
+   la distribution complète situe leur cas.</li>
+</ol>
+<p><strong>Hors périmètre</strong> : toute détection opérationnelle, tout seuil d'alerte, toute datation
+d'événement (Lot 2) · la variante 4 tuiles, dont seul le <strong>coût</strong> est chiffré, par <code>l1-04.3</code>.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>cli/trajectory_report.py</code> livré, <code>data/trajectory-report.md</code> produit.</li>
+<li>[ ] Dérives de A02 et C08 tracées dans le temps, <strong>pour les deux modèles</strong>.</li>
+<li>[ ] Rapport de dérive publié.</li>
+<li>[ ] Corrélation dérive ↔ <code>cloud_pct</code> sur C08 publiée.</li>
+<li>[ ] ⭐ <strong>Un verdict écrit en toutes lettres</strong> sur la viabilité de l'unité « un vecteur par
+      chip », avec ses réserves.</li>
+<li>[ ] <code>tests/test_trajectory_report.py</code> — court, sur vecteurs de fixture.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>⭐ <strong>Rapport de dérive</strong> A02 / C08 en fin de période, par modèle</td>
+<td><strong>&gt; 2</strong> sur au moins un des deux modèles pour que l'unité soit déclarée <strong>viable</strong>. Entre 1 et 2 : <strong>douteuse</strong>, la fiche le dit. ≤ 1 : <strong>non viable</strong>, et c'est un résultat majeur qu'il faut annoncer sans le maquiller</td>
+</tr>
+<tr>
+<td>O2</td>
+<td><strong>Témoin négatif</strong> : la dérive de C08 contre celle de <strong>deux autres sites stables</strong> du corpus (à choisir parmi ceux sans chantier connu)</td>
+<td>C08 n'est pas un cas particulier — sa dérive est du même ordre. Sinon, le témoin est mal choisi et la conclusion de O1 ne tient pas</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>⭐ <strong>Corrélation dérive ↔ <code>cloud_pct</code> sur C08</strong></td>
+<td>coefficient <strong>publié</strong>. ⚠ Si **</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Monotonie de la dérive de A02</td>
+<td>tendance croissante sur la période, <strong>testée statistiquement</strong> (une corrélation avec le temps suffit — pas besoin de plus pour un POC)</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>Annexe : dérive de tous les sites</td>
+<td>présente ; les 3 sites de plus forte et de plus faible dérive <strong>nommés</strong></td>
+</tr>
+<tr>
+<td>O6</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la <strong>datation</strong> du changement (quand exactement la halle
+est-elle apparue) — Lot 2 · la capacité à distinguer deux types de changement · le
+comportement de l'unité 4 tuiles, non produite.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>Le piège de la lecture.</strong> Une dérive forte sur A02 <strong>ne prouve pas</strong> que le modèle voit
+le chantier : elle prouve que quelque chose change. Le contrôle, c'est C08 — et O2 vérifie
+que C08 lui-même n'est pas atypique. Sans ces deux garde-fous, on lirait dans les courbes ce
+qu'on espère y voir.</p>
+<p>⚠ <strong>Cette fiche a le droit de rendre un verdict négatif</strong>, et c'est même sa valeur
+principale. Un « l'unité par chip ne porte pas le signal » livré ici coûte quelques heures de
+CPU ; le même constat au milieu du Lot 2 coûterait le Lot 2.</p>
+<p>⚠ <strong>Politique de test</strong> : le rapport se teste sur des vecteurs de fixture ; la campagne
+elle-même ne se teste pas, elle se mesure et se publie.</p>
+<p>Piste de lecture : tracer les courbes en PNG à côté du rapport aide énormément à l'arbitrage
+de <code>l1-06.H</code> — <code>matplotlib</code> n'est pas au contrat, mais <code>pillow</code> l'est déjà et le
+<code>contact_sheet</code> du Lot 0 montre qu'un rendu simple suffit. <strong>Arbitrer avant d'ajouter une
+dépendance.</strong></p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Rapport de dérive A02 / C08</strong> : <em>(par modèle)</em></li>
+<li><strong>Corrélation dérive ↔ cloud_pct sur C08</strong> : …</li>
+<li><strong>Verdict sur l'unité « un vecteur par chip »</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-05.3.html">← [l1-05.3] Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel</a><span></span></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>

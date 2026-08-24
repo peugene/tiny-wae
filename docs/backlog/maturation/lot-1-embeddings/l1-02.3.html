@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.3</b></nav><h1>[l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-023-la-garde-reseau-des-poids">[l1-02.3] — La garde réseau des poids</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Empêcher tout téléchargement de poids <strong>pendant un run</strong>. La carte du modèle TerraMind
+l'annonce noir sur blanc : <em>« The weights are automatically downloaded from Hugging Face »</em>.
+C'est précisément ce qu'on interdit.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><strong>Pourquoi ça compte, dans l'ordre de gravité :</strong></p>
+<ol>
+<li>⭐ <strong>Un téléchargement au milieu d'un run chronométré fausse la mesure, et ça ne se voit
+   pas.</strong> Le banc rapporterait « 45 s par chip » au lieu de 3, on incriminerait le CPU, et
+   le Lot 1 conclurait à un périmètre embeddable faux.</li>
+<li><strong>Chaque worktree d'agent retéléchargerait.</strong> Le Lot 0 a établi que les environnements ne
+   se partagent pas entre worktrees. Trois agents en parallèle, trois téléchargements.</li>
+<li><strong>Le gate deviendrait dépendant du réseau</strong> — <code>just check</code> échouerait hors connexion.</li>
+</ol>
+<p>À livrer, trois pièces :</p>
+<ul>
+<li><strong>Le cache local.</strong> <code>HF_HOME</code> (ou <code>HF_HUB_CACHE</code>) pointé vers un répertoire <strong>du projet</strong>,
+  gitignoré — par exemple <code>models/</code> — au lieu de <code>~/.cache/huggingface</code>. Tout atterrit au
+  même endroit, partagé par les worktrees, visible, effaçable.</li>
+<li><strong>La recette de pré-chargement.</strong> <code>just fetch-models</code> : la <strong>seule</strong> commande du projet
+  autorisée à faire du réseau pour les poids. Lancée une fois, à la main. Même esprit que
+  <code>just db</code> — de la préparation d'infrastructure, <strong>hors du gate</strong>.</li>
+<li><strong>La garde.</strong> Au run, <code>HF_HUB_OFFLINE=1</code> est posé par le code lui-même. La bibliothèque
+  refuse alors le réseau et lève si les poids manquent ; on rattrape l'erreur pour la
+  réécrire en clair : <em>« poids <code>&lt;model_id&gt;</code> absents du cache — lance <code>just fetch-models</code> »</em>.</li>
+</ul>
+<p>⭐ <strong>Ce qu'on ne fait PAS : un test dédié à la garde.</strong> Vider un cache, capturer une
+exception, restaurer l'état — c'est de la machinerie qui coûte plus cher que ce qu'elle
+protège. <strong>On met le smoke SOUS la garde</strong> : <code>scripts/smoke.py</code> (fiche <code>l1-03.4</code>) tourne avec
+<code>HF_HUB_OFFLINE=1</code> posé. Si quelqu'un retire la garde ou casse le chemin du cache, le smoke
+tombe — à chaque <code>just check</code>, gratuitement, sans une ligne de test dédiée.</p>
+<p>C'est le pendant exact de <code>TINY_WAE_OFFLINE</code> posé par le smoke du Lot 0 (<code>l0-03.7</code>) : la
+même idée, appliquée aux poids au lieu des rasters.</p>
+<p><strong>Hors périmètre</strong> : la garde rasterio/GDAL du Lot 0, qui reste en place et couvre un autre
+chemin · toute mesure.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>HF_HOME</code> (ou équivalent) résolu depuis la configuration, jamais en dur.</li>
+<li>[ ] <code>models/</code> ajouté au <code>.gitignore</code>.</li>
+<li>[ ] <code>just fetch-models</code> livrée, documentée dans le README, <strong>hors de <code>just check</code></strong>.</li>
+<li>[ ] La garde pose <code>HF_HUB_OFFLINE=1</code> et rattrape l'erreur en message actionnable.</li>
+<li>[ ] Le smoke tourne <strong>sous la garde</strong> (coordination avec <code>l1-03.4</code>).</li>
+<li>[ ] README : une ligne dans le démarrage — « <code>just fetch-models</code> avant le premier <code>just check</code> ».</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just check</code> sur une machine dont le cache est <strong>peuplé</strong>, réseau coupé</td>
+<td><strong>vert</strong></td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Cache vidé (ou <code>HF_HOME</code> pointé sur un dossier vide), un <code>embed</code> lancé</td>
+<td>échec <strong>immédiat</strong>, message nommant <strong>le <code>model_id</code></strong> ET <strong><code>just fetch-models</code></strong> (assertion littérale sur les deux chaînes). Vérifié <strong>une fois à la main</strong>, consigné en une ligne de prose</td>
+</tr>
+<tr>
+<td>O3</td>
+<td><code>just fetch-models</code> sur cache vide, avec réseau</td>
+<td>les poids des deux modèles arrivent dans <code>models/</code>, <strong>taille totale mesurée et publiée</strong> dans le Résumé</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Aucune recette du gate ne fait de réseau</td>
+<td><code>just check</code> ne contient ni <code>fetch-models</code> ni équivalent — vérification par lecture du justfile</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : le comportement en cas de cache <strong>partiellement</strong> peuplé
+(un modèle présent, l'autre non) — cas déclaré non couvert, il produira l'erreur de O2 pour
+le modèle manquant · les quotas Hugging Face.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>Politique de test du lot</strong> : O2 est une <strong>vérification ponctuelle</strong>, pas un test
+permanent. Casser une garde une fois pour voir si elle mord est un geste qu'on consigne en
+prose ; en faire une machinerie est exactement le travers relevé sur le Lot 0
+(8 413 lignes de test pour 4 074 de source).</p>
+<p>Le volume des poids est à publier : c'est une donnée d'exploitation utile (place disque, et
+temps de préparation d'un worktree d'agent).</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Taille des poids en cache</strong> : …</li>
+<li><strong>Vérification de la garde (O2)</strong> : <em>(une ligne : ce qui a été cassé, ce qui s'est passé)</em></li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-02.2.html">← [l1-02.2] Adapter TerraMind small — agrégation des patchs, emprise identique à Clay</a><a href="l1-02.4.html">[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
