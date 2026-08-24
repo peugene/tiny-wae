@@ -137,6 +137,22 @@ tourne », pas que l'équivalence tenait encore.*
 règle « les décisions se prennent en amont ». Le réflexe correct reste de produire une
 fiche — même courte — **avant** d'implémenter la contrainte qui vient d'arriver.
 
+### ⚠ Une fiche n'est pas inerte pour le gate
+
+`ruff format` traite les blocs ```` ```python ```` **à l'intérieur des Markdown** (depuis
+ruff 0.16). Une fiche de backlog mal formatée rend donc `just lint` **rouge**, y compris
+pour quelqu'un qui n'a pas touché une ligne de code.
+
+*Cas vécu : l'instance architecte rédigeait des fiches dans `docs/backlog/` pendant que
+l'équipe d'implémentation travaillait dans `src/` — zones d'écriture disjointes, donc réputées
+sans conflit. Le gate de l'équipe est passé au rouge à cause d'un extrait de documentation
+d'API recopié avec des apostrophes simples.*
+
+**Parade** : formater le bloc comme du code du projet — `ruff format <fiche.md>` sait le
+faire — ou ne pas taguer le bloc `python` quand c'est un pseudo-code indicatif. Corollaire
+pour le pilotage multi-instances : **la séparation des zones ne protège pas du gate**, seul
+le gate protège du gate. Qui écrit une fiche la passe au linter comme le reste.
+
 ### Critère « Prêt à faire » (passage `maturation/` → `a-faire/`)
 
 Objectif : **une fiche en `a-faire/` doit être implémentable par un agent (effort medium) sans
@@ -263,7 +279,10 @@ statut lisible **dans** la fiche, et un ordre de lecture.
   courant, ces fiches sont d'abord de la prose — l'en-tête `**Statut** : …` / `**Date** : …`.
   Le texte libre est normalisé par mot-clé vers un badge coloré (Maturation · En cours ·
   Validé · Livré · Abandonné · Obsolète) ; un statut non reconnu reste **affiché tel quel**
-  en gris plutôt que d'être perdu.
+  en gris plutôt que d'être perdu. « **recette prononcée** » et « **recetté** » comptent
+  pour *Livré* et sont testés **avant** « validé » : un statut de fin de lot énonce souvent
+  les deux, et c'est le plus fort qui doit gagner. ⚠ « en recette » ne matche pas — le motif
+  porte sur l'acte accompli.
 - `README.md` n'est pas un lot : c'est la feuille de route elle-même, rendue **dans le corps
   de l'index** — une seule page à ouvrir pour avoir la vue d'ensemble ET les cartes.
 - Produit `index.html` (compteurs par état, cartes avec badge/extrait/date) et une page par
@@ -271,9 +290,15 @@ statut lisible **dans** la fiche, et un ordre de lecture.
 - **Navigation croisée** : l'index des lots pointe vers le dashboard du backlog, et le
   dashboard pointe vers la feuille de route dès qu'elle est générée.
 
-⚠ Sans cette commande, un dossier de lots rendu fiche par fiche (`md2html`) redevient un tas
-de pages orphelines : pas d'entrée, pas d'état visible, aucune navigation. C'est exactement
-ce qui s'est produit sur un projet du kit avant l'ajout de `lots`.
+⚠ **Une fiche de lot se régénère TOUJOURS par `just lots`, jamais par `just md2html`.** Sans
+cette commande, un dossier de lots rendu fiche par fiche redevient un tas de pages
+orphelines : pas d'entrée, pas d'état visible, aucune navigation. Le piège est que la page
+produite par `md2html` **s'ouvre normalement** — elle a juste perdu sa pastille, son fil
+d'Ariane et son précédent/suivant, ce qui ne se voit qu'en comparant. *Cas vécu deux fois :
+une première au moment où le dossier n'avait pas encore de générateur, une seconde en
+régénérant une fiche après mise à jour de son statut.* D'où le garde-fou : `md2html` **avertit**
+quand sa source est une fiche de `lots/` (il ne refuse pas — le `README.md` du dossier, lui,
+passe légitimement par `md2html` puisqu'il est rendu dans le corps de l'index).
 
 ## ⚠ `maturation/` est une zone PARTAGÉE
 

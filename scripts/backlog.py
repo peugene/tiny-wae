@@ -694,6 +694,12 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 
 
 def cmd_md2html(src: Path, dest: Path, title: str, banner: str) -> int:
+    # Garde-fou : une fiche de lot rendue par md2html perd sa pastille d'état, son fil
+    # d'Ariane et sa navigation — le résultat s'ouvre normalement, donc l'erreur passe
+    # inaperçue. Cas vécu : une fiche de lot régénérée ainsi après une mise à jour.
+    if src.parent.name == "lots" and src.name != LOT_INTRO:
+        print(f"⚠ {src} est une fiche de LOT : utiliser `lots` (façade : `just lots`),")
+        print("  pas `md2html` — sinon pastille, breadcrumb et précédent/suivant sautent.")
     text = src.read_text(encoding="utf-8")
     _, body_md = parse_frontmatter(text)
     body = markdown.Markdown(extensions=MD_EXT).convert(body_md)
@@ -723,6 +729,11 @@ def cmd_md2html(src: Path, dest: Path, title: str, banner: str) -> int:
 LOT_STATUSES: list[tuple[str, str, str]] = [
     ("abandonn", "Abandonné", "#b91c1c"),
     ("obsol", "Obsolète", "#6b7280"),
+    # « recette prononcée » AVANT « validé » : un statut de fin de lot énonce souvent les
+    # deux (« recette prononcée… validé le … »), et c'est le plus fort qui doit gagner.
+    # ⚠ « en recette » ne doit PAS matcher — d'où le motif sur l'acte accompli seulement.
+    ("recette prononc", "Livré", "#15803d"),
+    ("recetté", "Livré", "#15803d"),
     ("livr", "Livré", "#15803d"),
     ("valid", "Validé", "#15803d"),
     ("en cours", "En cours", "#1d4ed8"),
