@@ -42,11 +42,25 @@ def _pyproject() -> dict[str, object]:
 
 
 def _dependances_declarees() -> set[str]:
-    """Noms normalisés de `[project.dependencies]`."""
+    """Noms normalisés de `[project.dependencies]` ET de `[project.optional-dependencies]`.
+
+    ⭐ Extension l1-00 : torch/claymodel/terratorch/huggingface_hub vivent dans l'extra
+    `models`, jamais dans `[project.dependencies]` (la wheel du worker PID-FLOW reste
+    légère). Sans cette extension, `import claymodel` (arrivée en l1-02.1) rendrait ce test
+    ROUGE — il balaie `src/` en entier et ne connaissait jusqu'ici que la table de base.
+    Un extra reste un engagement de contrat PEP 621 : qui installe `pip install .[models]`
+    doit obtenir tout ce qu'importe le code sous cet extra, au même titre que la base.
+    """
     projet = _pyproject()["project"]
     assert isinstance(projet, dict)
     declarees: set[str] = set()
-    for specifier in projet["dependencies"]:
+    specifiers = list(projet["dependencies"])
+    optionnelles = projet.get("optional-dependencies")
+    if optionnelles:
+        assert isinstance(optionnelles, dict)
+        for liste in optionnelles.values():
+            specifiers.extend(liste)
+    for specifier in specifiers:
         trouve = _NOM_DISTRIBUTION.match(str(specifier))
         assert trouve is not None, f"specifier illisible : {specifier!r}"
         declarees.add(_normalise(trouve.group(1)))

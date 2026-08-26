@@ -43,3 +43,15 @@ backfill_workers: 6
 # Taille des chips (pixels), par résolution native des bandes.
 chip_px_10m: 512
 chip_px_20m: 256
+
+# ── Inférence (lot 1 — banc d'embeddings) ───────────────────────────────────────────────
+# Racine du cache Hugging Face des poids d'inférence — HORS de l'arbre du dépôt, PARTAGÉE
+# entre worktrees (chaque worktree se recrée son propre venv, mais pas ses Go de poids).
+# Expansée au chargement (adapters/config_io._PATH_FIELDS) : un `~` non expansé fabriquerait
+# un répertoire littéralement nommé `~` dans le CWD. Surcharge : TINY_WAE_HF_HOME.
+hf_home: "~/.cache/tiny-wae/models"
+# Part maximale (%) d'embeddings routés vers un fournisseur cloud plutôt que calculés en
+# local — borné [0, 100] comme les autres pourcentages de ce fichier.
+embed_cloud_pct_max: 10
+# Parallélisme des workers d'embedding (même famille que backfill_workers ci-dessus).
+embed_workers: 4

@@ -38,12 +38,41 @@ dependencies = [
 [project.scripts]
 tiny-wae = "tiny_wae.__main__:app"
 
+# ⭐ Extra `models` (l1-00) : dépendances d'INFÉRENCE (lourdes), PAS dans
+# [project.dependencies] — la wheel du worker PID-FLOW reste légère (précédent httpx,
+# ci-dessus). `deptry` lit bien les extras (vérifié en revue), pas de configuration à
+# inventer. pixi crée automatiquement une feature `models` à partir de cet extra (sondé
+# 26/08 : `pixi info` rend `Features: models, default` sans rien déclarer côté
+# `[tool.pixi.feature.models.*]`) — c'est ELLE qu'on active dans
+# `[tool.pixi.environments]` ci-dessous.
+# `claymodel` : révision épinglée sur le HEAD de `main` relevé le 26/08 (le dépôt ne publie
+# pas de tag de version). `terratorch` : v1.2.11 (revue v3). Les deux tirent `timm` en
+# transitif — c'est lui qui télécharge le teacher SAM au premier `ClayMAE()` (cf. Contexte).
+[project.optional-dependencies]
+models = [
+    "torch",
+    "terratorch==1.2.11",
+    "huggingface_hub",
+    "claymodel @ git+https://github.com/Clay-foundation/model.git@f14e698f3c237cabf8d28dec669a362d66625381",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/tiny_wae"]
+
+# ⚠ `claymodel` (extra `models`, ci-dessus) est une référence directe PEP 508
+# (`@ git+...`) : hatchling refuse par défaut de construire une wheel qui en dépend
+# (sondé le 26/08, dans cette configuration exacte : sans cette ligne, `ValueError:
+# Dependency #1 of option 'models' … cannot be a direct reference unless
+# 'tool.hatch.metadata.allow-direct-references' is set to 'true'`, donc `just install`
+# échoue). Avec elle, la wheel se construit et la référence git reste CONFINÉE à l'extra
+# (`Requires-Dist: claymodel @ git+… ; extra == 'models'`) — qui n'installe pas `models`
+# n'hérite d'aucune dépendance git.
+[tool.hatch.metadata]
+allow-direct-references = true
 
 # ── pixi ────────────────────────────────────────────────────────────────────────
 # (`[tool.pixi.workspace]` : pixi récent ; sur un pixi plus ancien, renommer en
@@ -90,8 +119,19 @@ cwltool = "*"
 # du contrat du paquet). Ce que ni ruff ni mypy ne regardent.
 deptry = "*"
 
+# ⭐ Feature `bench` (l1-00, pré-posée pour `l1-04.4`) : `onnxruntime` se déclare CÔTÉ PIXI
+# SEULEMENT, jamais en extra PEP 621. Il n'est importé que depuis `scripts/bench_quant.py`,
+# or `just deptry` = `deptry src` (justfile) : un script n'y est JAMAIS scanné, donc un
+# extra PEP 621 le ferait signaler DEP002 à perpétuité. Même précédent que `markdown`/
+# `httpx` du Lot 0 : dépendance de DEV déclarée côté pixi, hors du regard de deptry.
+[tool.pixi.feature.bench.dependencies]
+onnxruntime = "*"
+
 [tool.pixi.environments]
-default = { features = ["dev"], solve-group = "default" }
+# `models` : feature auto-créée par pixi depuis [project.optional-dependencies.models]
+# (sondé le 26/08 — cf. commentaire à sa déclaration). `solve-group` CONSERVÉ tel quel :
+# le retirer perdrait le groupe de résolution sans que rien ne le signale.
+default = { features = ["dev", "models"], solve-group = "default" }
 
 # ── outillage ───────────────────────────────────────────────────────────────────
 [tool.ruff]
@@ -136,6 +176,22 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 # `smoke.py` SEUL : `assert` y est le mécanisme de vérification assumé (17 occurrences —
 # c'est la nature d'un script de contrôle), pas une négligence.
 "scripts/smoke.py" = ["S101"]
+# Scripts de BANC (l1-00, revue v4 B1) : dans un script de contrôle, `assert` EST le
+# mécanisme de vérification assumé — même justification que `smoke.py` ci-dessus. Cible
+# les cinq scripts de banc du lot (l1-04.2, l1-04.3a/b, l1-04.4, l1-05.2) et EUX SEULS —
+# `check_cache.py` et `fetch_models.py` n'assertent rien, ils restent tenus comme `src/`.
+"scripts/bench_*.py" = ["S101"]
+
+[tool.deptry.per_rule_ignores]
+# ⭐ l1-00 déclare torch/claymodel/terratorch/huggingface_hub AVANT que le moindre code de
+# src/ ne les importe (les adapters arrivent en l1-02.x, le chemin commun de résolution en
+# l1-02.3) — sans cette garde, `just deptry` serait ROUGE au commit de CETTE fiche (sondé
+# le 26/08). La garde est CIBLÉE : un import non déclaré reste attrapé (DEP003), on ne
+# suspend qu'UNE règle sur QUATRE noms.
+# ⛔ TEMPORAIRE, propriétaire du retrait NOMMÉ : `l1-02.3`, la première fiche où les
+# quatre paquets sont réellement importés depuis src/. Sans propriétaire, cet ignore
+# survivrait au lot et masquerait les vraies dépendances mortes.
+DEP002 = ["torch", "claymodel", "terratorch", "huggingface_hub"]
 
 [tool.mypy]
 # Strict sur NOTRE code, pragmatique sur l'écosystème (libs géospatiales mal typées).

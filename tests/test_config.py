@@ -167,3 +167,62 @@ def test_settings_invalid_percentage_rejected(tmp_path: Path) -> None:
     )
     with pytest.raises(Exception, match="cloud_pct_max"):
         load_settings(path, env={"TINY_WAE_CLOUD_PCT_MAX": "150"})
+
+
+# ── O5 (l1-00) — expansion de hf_home ───────────────────────────────────────────────────
+# Un `~` non expansé n'est pas une erreur : c'est un répertoire littéralement nommé `~`
+# créé dans le CWD. Chaque worktree se fabriquerait alors son propre cache et
+# re-téléchargerait plusieurs Go — la propriété que l1-07/O4 doit garantir. Sans ce test,
+# le défaut ne se voit qu'à travers l1-07, trop tard et au mauvais endroit.
+
+
+def test_o5_hf_home_expanded_absolute_regardless_of_cwd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """O5 : hf_home expansé rend le MÊME chemin absolu, depuis deux CWD différents."""
+    home = str(Path.home())
+    repo_root = Path(__file__).resolve().parent.parent
+    settings_path_abs = (repo_root / SETTINGS_PATH).resolve()
+
+    monkeypatch.chdir(tmp_path)
+    settings_from_tmp = load_settings(settings_path_abs, env={})
+
+    monkeypatch.chdir(repo_root)
+    settings_from_repo_root = load_settings(SETTINGS_PATH, env={})
+
+    assert settings_from_tmp.hf_home == settings_from_repo_root.hf_home
+    assert Path(settings_from_tmp.hf_home).is_absolute()
+    assert not settings_from_tmp.hf_home.startswith("~")
+    assert settings_from_tmp.hf_home.startswith(home)
+
+
+def test_o5_hf_home_relative_after_expansion_is_a_named_configuration_error(
+    tmp_path: Path,
+) -> None:
+    """Témoin négatif O5 : un hf_home relatif (pas de `~`) lève une erreur nommant la clé."""
+    path = tmp_path / "settings.yaml"
+    path.write_text(
+        yaml.safe_dump({"stac_url": "https://x", "stac_collection": "c", "hf_home": "./models"}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ConfigError, match="hf_home"):
+        load_settings(path, env={})
+
+
+def test_o5_hf_home_env_override_is_also_expanded(tmp_path: Path) -> None:
+    """La surcharge TINY_WAE_HF_HOME passe par la même expansion que le défaut YAML."""
+    settings = load_settings(SETTINGS_PATH, env={"TINY_WAE_HF_HOME": "~/.cache/x"})
+    assert Path(settings.hf_home).is_absolute()
+    assert not settings.hf_home.startswith("~")
+
+
+def test_embed_cloud_pct_max_and_embed_workers_defaults_and_bounds() -> None:
+    """Les deux autres clés pré-posées (l1-00) : défauts livrés, puis bornes vérifiées."""
+    settings = load_settings(SETTINGS_PATH, env={})
+    assert settings.embed_cloud_pct_max == 10
+    assert settings.embed_workers == 4
+
+    with pytest.raises(Exception, match="embed_cloud_pct_max"):
+        load_settings(SETTINGS_PATH, env={"TINY_WAE_EMBED_CLOUD_PCT_MAX": "150"})
+    with pytest.raises(Exception, match="embed_workers"):
+        load_settings(SETTINGS_PATH, env={"TINY_WAE_EMBED_WORKERS": "0"})

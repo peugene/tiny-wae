@@ -70,6 +70,16 @@ review-sites *args:
 smoke:
     pixi run python scripts/smoke.py
 
+# télécharge les 3 artefacts de poids d'inférence (l1-00), révisions épinglées — SEULE
+# commande du projet autorisée à faire du réseau pour des poids. Hors de `just check`.
+fetch-models:
+    pixi run python scripts/fetch_models.py
+
+# vérifie que les 3 artefacts sont présents et conformes (sha256+taille), sans rien
+# télécharger ni instancier (l1-00) — diagnostic rapide avant un run qui en dépend.
+check-cache:
+    pixi run python scripts/check_cache.py
+
 # tableau de bord du backlog (ne pas éditer etat.html à la main)
 dashboard:
     pixi run python scripts/backlog.py dashboard --project "tiny-wae"

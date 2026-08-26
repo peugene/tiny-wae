@@ -46,6 +46,14 @@ class Settings:
     backfill_workers: int = 6
     chip_px_10m: int = 512
     chip_px_20m: int = 256
+    # ⭐ Trois clés pré-posées par l1-00 pour le lot 1 (banc d'embeddings) — l1-03.2 et
+    # l1-03.3 les CONSOMMENT sans plus jamais écrire sur settings.yaml.
+    # `hf_home` : racine du cache Hugging Face des poids d'inférence, expansée au
+    # chargement par `adapters/config_io._PATH_FIELDS` (jamais telle quelle : un `~` non
+    # expansé fabriquerait un répertoire littéralement nommé `~` dans le CWD).
+    hf_home: str = "~/.cache/tiny-wae/models"
+    embed_cloud_pct_max: int = 10
+    embed_workers: int = 4
 
     def validate(self) -> None:
         """Vérifie les bornes de pourcentage et la présence d'au moins une clé d'asset."""
@@ -54,6 +62,7 @@ class Settings:
             ("scene_cloud_max", self.scene_cloud_max),
             ("invalid_pct_max", self.invalid_pct_max),
             ("chip_nodata_pct_max", self.chip_nodata_pct_max),
+            ("embed_cloud_pct_max", self.embed_cloud_pct_max),
         ):
             if not (0 <= value <= 100):
                 raise SettingsValidationError(f"settings.{field_name}={value} hors bornes [0, 100]")
@@ -70,6 +79,7 @@ class Settings:
             "backfill_workers",
             "chip_px_10m",
             "chip_px_20m",
+            "embed_workers",
         ):
             value = getattr(self, positive_field)
             if value <= 0:
