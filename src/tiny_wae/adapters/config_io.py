@@ -39,8 +39,14 @@ _INT_FIELDS = frozenset(
         "backfill_workers",
         "chip_px_10m",
         "chip_px_20m",
+        "embed_cloud_pct_max",
+        "embed_workers",
     }
 )
+# ⭐ Champs de Settings dont le type est un chemin de FICHIER SYSTÈME (pas un chemin de
+# données comme `data_root`, relatif et interne au projet) — expansés au chargement
+# (l1-00). Patron symétrique de `_INT_FIELDS`, sur le même principe.
+_PATH_FIELDS = frozenset({"hf_home"})
 
 
 class ConfigError(ValueError):
@@ -59,6 +65,25 @@ def _coerce_env_value(field_name: str, raw: str) -> Any:
     if field_name in _LIST_FIELDS:
         return tuple(item.strip() for item in raw.split(",") if item.strip())
     return raw
+
+
+def _expand_path_field(field_name: str, raw_value: str) -> str:
+    """Étend `~` dans une valeur de chemin, puis EXIGE un résultat absolu.
+
+    Règle stricte (revue v4, arbitrage tranché) : `expanduser()` seul, JAMAIS de
+    `resolve()` de rattrapage — `resolve()` sur un chemin relatif l'ancre au CWD, ce qui
+    est le même bug avec un autre visage. Un chemin encore relatif après expansion est
+    une FAUTE de configuration : elle se signale nommément, elle ne se répare pas en
+    silence (sans quoi chaque worktree se fabrique son propre cache, littéralement
+    nommé `~`, et re-télécharge plusieurs Go).
+    """
+    expanded = Path(raw_value).expanduser()
+    if not expanded.is_absolute():
+        raise ConfigError(
+            f"settings.{field_name}={raw_value!r} : chemin relatif après expansion "
+            "(un chemin de cache doit être absolu — vérifier l'écriture, ex. '~/...')"
+        )
+    return str(expanded)
 
 
 def load_settings(
@@ -90,6 +115,22 @@ def load_settings(
     unknown = set(raw) - known_fields
     if unknown:
         raise ConfigError(f"{path} : champ(s) inconnu(s) {sorted(unknown)}")
+
+    # ⭐ APRÈS la surcharge d'environnement, AVANT `Settings(**raw)` (settings.py est
+    # `frozen=True` : rien ne se mute après construction) — cet emplacement, et lui seul,
+    # couvre d'un coup la valeur YAML ET la surcharge d'environnement. Le poser dans
+    # `_coerce_env_value` ne couvrirait QUE l'env, laissant passer le défaut versionné
+    # (`~/.cache/tiny-wae/models`) non expansé — le cas nominal, exactement le bug visé.
+    # ⚠ Le DÉFAUT du dataclass doit être expansé lui aussi (relecture avant merge) : la
+    # version précédente ne traitait que les clés PRÉSENTES dans `raw`, si bien qu'un
+    # `settings.yaml` sans `hf_home` rendait `~/.cache/tiny-wae/models` tel quel — le bug
+    # exact que cette garde ferme. Une garde qui ne couvre pas son propre défaut n'en est
+    # pas une.
+    path_defaults = {f.name: f.default for f in fields(Settings) if f.name in _PATH_FIELDS}
+    for field_name in _PATH_FIELDS:
+        value = raw.get(field_name)
+        source = path_defaults[field_name] if value is None else value
+        raw[field_name] = _expand_path_field(field_name, str(source))
 
     try:
         settings = Settings(**raw)

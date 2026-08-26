@@ -43,3 +43,22 @@ backfill_workers: 6
 # Taille des chips (pixels), par résolution native des bandes.
 chip_px_10m: 512
 chip_px_20m: 256
+
+# ── Inférence (lot 1 — banc d'embeddings) ───────────────────────────────────────────────
+# Racine du cache Hugging Face des poids d'inférence — HORS de l'arbre du dépôt, PARTAGÉE
+# entre worktrees (chaque worktree se recrée son propre venv, mais pas ses Go de poids).
+# Expansée au chargement (adapters/config_io._PATH_FIELDS) : un `~` non expansé fabriquerait
+# un répertoire littéralement nommé `~` dans le CWD. Surcharge : TINY_WAE_HF_HOME.
+hf_home: "~/.cache/tiny-wae/models"
+# Couverture NUAGEUSE maximale (%) d'un chip pour qu'il soit embeddé — `cloud` ici, c'est
+# le nuage, jamais le cloud computing : le lot 1 calcule sur CPU local, sans fournisseur
+# externe. Au-dessus du seuil, le chip est écarté et compté en `skipped_cloud` (l1-03.2).
+# Justification chiffrée : sur les 5 793 chips ingérés, la médiane du cloud_pct est 0,0 %
+# et 86 % passent sous 10 % — masquer des pixels serait un outil lourd pour un chip sur
+# sept. Borné [0, 100]. Surcharge : TINY_WAE_EMBED_CLOUD_PCT_MAX.
+embed_cloud_pct_max: 10
+# Parallélisme du backfill d'embeddings (l1-03.3). ⚠ Défaut PRUDENT à 1, et surtout PAS
+# calqué sur `backfill_workers: 6` ci-dessus : là-bas le goulot est le RÉSEAU, ici c'est le
+# CPU, et un modèle PyTorch lance déjà plusieurs threads BLAS — sur-paralléliser RALENTIT.
+# La bonne valeur se mesure (l1-04.3b), elle ne se devine pas.
+embed_workers: 1
