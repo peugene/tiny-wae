@@ -47,7 +47,7 @@ quand toutes ses sous-tâches y sont.
   **sa propre fiche**, code contre elle, et livre quelque chose de cohérent — donc `just check`
   est **vert**. Lint, types, tests et smoke vérifient que le code est conforme à *une* spec ;
   **aucun** ne vérifie que c'est la **bonne**.
-  - Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
+- Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
   sans attendre ma validation.**
 
 ## 2. Pour CHAQUE fiche
