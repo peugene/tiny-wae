@@ -45,11 +45,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#d8a657">À faire</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#5aa7d8">En cours</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../a-faire/l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-011-core-embedding-pur-zero-io">[l1-01.1] — Core embedding (pur, zéro I/O)</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-aa2579c">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD aa2579c)</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -108,6 +111,46 @@ la spec d'entrée et sa signature d'idempotence. Testable à sec, sans fichier n
   (revue K-02b — Clay et TerraMind consomment du <strong>DN z-scoré</strong> avec leurs propres stats).
   Elle sert aux bornes de plausibilité et à rien d'autre ; le chemin des modèles ne la
   traverse pas.</p>
+<h3 id="ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-aa2579c">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD <code>aa2579c</code>)</h3>
+<p><strong>Vérifié mécaniquement</strong></p>
+<ul>
+<li><code>core/bands.py</code> — <code>BAND_ORDER_10M = ("blue", "green", "red", "nir")</code> et
+  <code>BAND_ORDER_20M = ("rededge1", "rededge2", "rededge3", "nir08", "swir16", "swir22")</code>.
+  <strong>Leur union est exactement l'ensemble des 10 bandes</strong> de <code>BAND_ORDER_EMBED</code> — exécuté,
+  pas supposé. C'est ce que O1b doit asserter, et il est vérifiable ici et maintenant.</li>
+<li>⭐ <strong>Le piège de <code>nir</code> est RÉEL, mesuré</strong> : dans <code>BAND_ORDER_10M + BAND_ORDER_20M</code>, <code>nir</code>
+  est en <strong>4ᵉ</strong> position ; dans l'ordre Clay écrit dans cette fiche, il est en <strong>7ᵉ</strong>.
+  Concaténer les constantes du Lot 0 produirait donc bien des vecteurs plausibles et faux.</li>
+<li><code>src/tiny_wae/core/embedding.py</code> <strong>n'existe pas</strong> — création. Aucun <code>to_reflectance</code> nulle
+  part dans <code>src/</code> — création également.</li>
+</ul>
+<p><strong>Le patron de hash canonique existe déjà, et il répond DÉJÀ au piège d'O2</strong></p>
+<p><code>adapters/manifests.py:136-170</code> — <code>grid_hash</code> construit une chaîne canonique
+<code>"|"</code>-séparée puis la passe à <code>hashlib.sha256</code>, et <strong>normalise les valeurs numériques par
+<code>int()</code></strong> avec ce commentaire : « O3bis : <code>699960</code> et <code>699960.0</code> donnent le MÊME hash —
+sinon une relecture YAML déclenche une ré-ingestion fantôme de tout le parc ».
+⭐ <strong>C'est littéralement le mécanisme que <code>spec_hash</code> doit reprendre pour son
+<code>size_px=256</code> contre <code>256.0</code>.</strong> Ne pas réinventer : lire cette fonction, en copier la
+forme (chaîne canonique explicite + normalisation de type + sha256), pas la fonction.
+Elle montre aussi le geste utile de rendre les ordres de bandes <strong>paramétrables</strong> pour
+pouvoir tester sans dépendre de l'état du module importé.</p>
+<p><strong>⚠ Ce que l'ancrage NE PEUT PAS vérifier, et c'est important de le dire</strong></p>
+<p>L'ordre normatif écrit dans cette fiche vient de <code>configs/metadata.yaml</code> du dépôt Clay,
+relevé par les revues v1 et v3 à la source. <strong>Il n'est pas contre-vérifiable depuis cet
+environnement</strong> : le paquet <code>claymodel</code> installé (1.5.0) ne contient <strong>aucun fichier
+<code>.yaml</code></strong> et pas une seule occurrence de <code>rededge</code> — le YAML de configuration n'est pas
+packagé dans la distribution.
+Ce que cette fiche peut donc prouver mécaniquement, c'est <strong>O1b</strong> (l'ensemble, contre les
+constantes du Lot 0) et la <strong>stabilité</strong> d'O1a (le tuple gelé dans le test rougit à toute
+permutation). L'exactitude de l'ordre lui-même reste adossée aux deux revues — et son
+témoin réel arrivera en <code>l1-02.1</code>, quand un vrai forward Clay tournera.</p>
+<p>⛔ <strong>Conséquence HORS PÉRIMÈTRE de cette fiche, à ne pas traiter ici</strong> : <code>l1-02.1</code> prévoit
+de « embarquer le YAML <strong>ou le résoudre depuis le paquet</strong> ». La seconde branche est
+<strong>impossible</strong> — vérifié. Et <code>claymodel/module.py:19</code> pose <code>metadata_path="configs/metadata.yaml"</code>,
+un chemin <strong>relatif au CWD</strong>, ouvert directement sans repli (<code>module.py:31</code> :
+<code>Box(yaml.safe_load(open(metadata_path)))</code>). Le fichier devra donc être embarqué dans le
+dépôt, il porte aussi les stats de normalisation de <code>l1-02.1</code>, et <strong>aucune fiche ne s'en
+déclare propriétaire</strong>. Une fiche différée est ouverte pour ça.</p>
 <p><strong>Hors périmètre</strong> : lecture de fichiers (<code>l1-01.2</code>) · stats de normalisation des modèles
 (chaque adapter porte les siennes) · tout modèle.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -178,4 +221,4 @@ d'embedding.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-01.2.html">[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) →</a></div><p class="gen">Généré le 26/08/2026 19:41 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-01.2.html">[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) →</a></div><p class="gen">Généré le 26/08/2026 19:47 — le .md fait foi.</p></article></body></html>
