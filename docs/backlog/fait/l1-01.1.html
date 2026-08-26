@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#5aa7d8">En cours</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../a-faire/l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../a-faire/l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#d8a657">À faire</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-011-core-embedding-pur-zero-io">[l1-01.1] — Core embedding (pur, zéro I/O)</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -56,7 +56,15 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
-<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#ce-qui-a-ete-livre">Ce qui a été livré</a></li>
+<li><a href="#verdict-des-oracles">Verdict des oracles</a></li>
+<li><a href="#un-point-tranche-par-limplementeur-et-il-a-eu-raison">Un point tranché par l'implémenteur, et il a eu raison</a></li>
+<li><a href="#un-ecart-signale-volontairement-non-corrige">⚠ Un écart signalé, volontairement NON corrigé</a></li>
+<li><a href="#ce-que-cette-fiche-ne-prouve-pas-et-il-faut-le-dire">Ce que cette fiche ne prouve pas, et il faut le dire</a></li>
+<li><a href="#commits">Commits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -155,10 +163,10 @@ déclare propriétaire</strong>. Une fiche différée est ouverte pour ça.</p>
 (chaque adapter porte les siennes) · tout modèle.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>core/embedding.py</code> livré, <code>mypy --strict</code> vert.</li>
-<li>[ ] <code>BAND_ORDER_EMBED</code> égal au tuple ci-dessus, source citée en commentaire.</li>
-<li>[ ] <code>validate_spec</code> lève sur <code>tiles</code>, nomme les bandes manquantes.</li>
-<li>[ ] <code>tests/test_embedding.py</code> — entrées littérales, aucun fichier.</li>
+<li>[x] <code>core/embedding.py</code> livré, <code>mypy --strict</code> vert.</li>
+<li>[x] <code>BAND_ORDER_EMBED</code> égal au tuple ci-dessus, source citée en commentaire.</li>
+<li>[x] <code>validate_spec</code> lève sur <code>tiles</code>, nomme les bandes manquantes.</li>
+<li>[x] <code>tests/test_embedding.py</code> — entrées littérales, aucun fichier.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -215,10 +223,96 @@ d'embedding.</p>
 Éviter le test paramétré massif ; les six oracles ci-dessus couvrent ce qui casse.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<p><strong>Fait le 26/08/2026</strong> — agent Sonnet medium en worktree isolé (26 min), relu et validé par
+l'orchestrateur. <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> : <strong>317 tests</strong>, mypy strict
+sur 77 fichiers, deptry, smoke et cwl verts.</p>
+<h3 id="ce-qui-a-ete-livre">Ce qui a été livré</h3>
+<p><code>src/tiny_wae/core/embedding.py</code> (121 lignes) et <code>tests/test_embedding.py</code> (111 lignes) —
+<strong>ratio tests/source de 0,92x</strong>. La politique de test du lot tient : 7 tests, <strong>un par
+oracle</strong>, chacun documentant en une ligne ce qu'il attrape que les autres n'attrapent pas.
+Aucun test paramétré, aucune machinerie de mutation. <em>(Rappel : le Lot 0 était à 2,07x.)</em></p>
+<h3 id="verdict-des-oracles">Verdict des oracles</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1a</td>
+<td>✅</td>
+<td><code>BAND_ORDER_EMBED</code> = le tuple Clay gelé dans le test, <strong>égalité ordonnée</strong></td>
+</tr>
+<tr>
+<td>O1b</td>
+<td>✅</td>
+<td>même ensemble que <code>set(BAND_ORDER_10M) | set(BAND_ORDER_20M)</code> — 10 bandes</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td><code>size_px=256</code> et <code>256.0</code> → même hash ; <code>tiling</code> ou <code>normalization</code> différents → hash différent. <strong>Les deux sens, dans deux tests distincts</strong></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td><code>to_reflectance(1234.0, 0.0001, -0.1)</code> : <strong>0,0234</strong> avec <code>boa_offset_applied</code>, <strong>0,1234</strong> sans — distincts, au 1e-6</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td>bande absente → <code>MissingBandError</code> nommant littéralement <code>"not_a_band"</code></td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td><code>tiling="tiles"</code> → <code>NotImplementedError</code></td>
+</tr>
+<tr>
+<td>O6</td>
+<td>✅</td>
+<td><code>just check</code> vert (worktree <strong>et</strong> <code>develop</code> après merge)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Aucun oracle laissé « non exécuté ». Dénominateur : 317/317 tests.</p>
+<h3 id="un-point-tranche-par-limplementeur-et-il-a-eu-raison">Un point tranché par l'implémenteur, et il a eu raison</h3>
+<p>⭐ <strong><code>resolution_m</code> n'est PAS normalisée par <code>int()</code>.</strong> Le patron <code>grid_hash</code> du Lot 0
+normalise ses origines par <code>int()</code>, et l'ancrage renvoyait à ce patron — mais l'appliquer
+tel quel ici ferait <strong>collisionner 10,0 m et 10,5 m</strong> après troncature, c'est-à-dire deux
+specs distinctes sous le même hash. L'agent a donc normalisé <code>size_px</code> par <code>int()</code>
+(l'exigence littérale d'O2) et <code>resolution_m</code> par un format flottant canonique
+(<code>f"{x:.6f}"</code>). C'est le bon arbitrage : il respecte l'esprit du patron sans importer un
+défaut que le Lot 0 n'avait pas, puisque ses origines sont des entiers par construction.</p>
+<h3 id="un-ecart-signale-volontairement-non-corrige">⚠ Un écart signalé, volontairement NON corrigé</h3>
+<p><code>to_reflectance</code> prend un paramètre nommé <code>array</code> typé <strong><code>float</code></strong> — donc un scalaire, pas
+un <code>np.ndarray</code>. Le nom vient de la fiche elle-même, l'agent y est <strong>conforme</strong>.
+Mais l'usage annoncé (« bornes de plausibilité ») porte sur des chips, donc sur des
+tableaux : <code>mypy --strict</code> refuserait <code>to_reflectance(chip.pixels, ...)</code> chez un appelant.</p>
+<p><strong>Non corrigé, et c'est délibéré</strong> : aucun appelant n'existe (la fiche dit explicitement
+que « le chemin des modèles ne la traverse pas »), et changer une signature sur une
+supposition d'usage futur, c'est de la sur-anticipation. ⚠ <strong>Si <code>l1-01.2</code> en a besoin sur un
+tableau, elle rencontrera un fichier hors de son périmètre</strong> (<code>core/embedding.py</code> appartient
+à cette fiche, close) : c'est à ce moment-là que l'orchestrateur devra trancher, avec un
+besoin réel sous les yeux plutôt qu'une hypothèse.</p>
+<h3 id="ce-que-cette-fiche-ne-prouve-pas-et-il-faut-le-dire">Ce que cette fiche ne prouve pas, et il faut le dire</h3>
+<p>⭐ <strong>L'ordre des bandes lui-même n'est pas vérifié.</strong> O1a compare la constante à un tuple
+gelé dans le test : il garantit la <strong>stabilité</strong> (toute permutation rougit), jamais
+l'<strong>exactitude</strong>. O1b vérifie l'<em>ensemble</em>, pas l'<em>ordre</em>. La source — <code>band_order</code> de
+<code>configs/metadata.yaml</code> — n'est pas contre-vérifiable ici : le paquet <code>claymodel</code> installé
+ne contient aucun <code>.yaml</code>. Le module le dit lui-même en commentaire, à côté de la constante.
+→ C'est l'objet de la fiche différée <strong><code>l1-08</code></strong>, et son témoin réel arrivera en <code>l1-02.1</code>.</p>
+<p>Également non testé : le lookup par nom dans un vrai vecteur <code>waves</code>/<code>mean</code>/<code>std</code>
+(<code>l1-02.1</code>) · <code>validate_spec</code> avec plusieurs bandes manquantes — seule la première est
+nommée, le cas multiple n'est pas couvert et c'est assumé.</p>
+<h3 id="commits">Commits</h3>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : …</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-01.2.html">[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) →</a></div><p class="gen">Généré le 26/08/2026 19:47 — le .md fait foi.</p></article></body></html>
+<li><code>4b14e67</code> — <code>feat(l1-01): core embedding — ordre normatif des bandes Clay, spec, spec_hash</code>
+  <em>(⚠ coquille « oraces » pour « oracles » dans le corps du message — signalée par l'agent,
+  non corrigée : la règle du projet interdit l'<code>amend</code>.)</em></li>
+<li>merge <code>--no-ff</code> sur <code>develop</code></li>
+</ul>
+<p><strong>Date</strong> : 2026-08-26</p><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-01.2.html">[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) →</a></div><p class="gen">Généré le 26/08/2026 20:24 — le .md fait foi.</p></article></body></html>
