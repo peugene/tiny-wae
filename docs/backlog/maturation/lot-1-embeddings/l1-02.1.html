@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.1] Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.1] Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,11 +45,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.1</b></nav><h1>[l1-02.1] Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.1</b></nav><h1>[l1-02.1] Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-00.html"><code>l1-00</code></a> Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-07.html"><code>l1-07</code></a> Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-021-adapter-clay-v15">[l1-02.1] — Adapter Clay v1.5</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#la-recette-verifiee-au-code-source-24082026-suivre-ne-pas-redecouvrir">La recette, vérifiée au code source (24/08/2026) — suivre, ne pas redécouvrir</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -60,41 +63,71 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-02, F-1, F-3, F-8, E-23) : la recette complète est écrite
+ci-dessous — la revue a consommé l'inconnu à ta place. <strong>La doc publique de Clay n'est
+pas exécutable telle quelle ; la source qui fait foi est <code>claymodel/model.py</code> et le
+tutoriel embeddings.</strong>
+<strong>Révisée post-revue v3</strong> (V-01, V-17, E-19, A-3) : dépend désormais de <code>l1-07</code> — c'est
+<strong>ce test-ci</strong> qui charge le premier vrai modèle dans <code>just test</code>, bien avant le smoke ; et
+l'oracle temporel O6 était <strong>faux</strong>, démontré au code source de Clay.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Brancher Clay v1.5 derrière le port <code>EmbeddingModel</code> : un chip en entrée, <strong>un vecteur
-1024-d</strong> en sortie. C'est le modèle de référence du lot — les 10 bandes du Lot 0 ont été
-choisies à sa spécification (décision D-b).</p>
+<p>Brancher Clay v1.5 derrière le port : un <code>ChipTensor</code> en entrée, un vecteur <strong>(1024,)</strong> en
+sortie — le CLS de l'encodeur.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
-<p><code>src/tiny_wae/adapters/embed_clay.py</code> + inscription au registre de <code>l1-01.3</code>.</p>
-<p><strong>Premier geste de la fiche, avant toute ligne de code</strong> : relever la <strong>licence</strong> du modèle
-et des poids, et l'écrire dans le Résumé. Si elle interdit l'usage envisagé, la fiche
-s'arrête là et le signale — mieux vaut le savoir à la première heure qu'à la dernière.</p>
-<p>À livrer :</p>
-<ul>
-<li>l'adapter satisfaisant <code>EmbeddingModel</code> : <code>model_id="clay-v1.5"</code>, <code>dim=1024</code>, <code>spec</code>
-  déclarant 10 bandes / 256 px / 20 m / <code>tiling="whole_chip"</code> ;</li>
-<li>⚠ <strong>la confrontation de l'ordre des bandes</strong> : <code>BAND_ORDER_EMBED</code> (<code>l1-01.1</code>) doit
-  correspondre à l'ordre réellement attendu par Clay. <strong>Un GFM nourri de bandes permutées
-  produit des vecteurs plausibles et faux, sans lever d'erreur.</strong> L'ordre attendu est relevé
-  sur la documentation officielle, cité en commentaire avec sa source, et confronté à la
-  constante — si les deux divergent, <strong>c'est la constante qu'on corrige</strong>, pas l'adapter ;</li>
-<li>la <strong>normalisation attendue par le modèle</strong> (statistiques de pré-entraînement) si elle
-  diffère de la simple réflectance — à relever, pas à supposer ;</li>
-<li>l'extraction du <strong>vecteur de classe</strong> en sortie d'encodeur ;</li>
-<li>résolution des poids <strong>depuis le cache local uniquement</strong> (contrat posé par <code>l1-02.3</code> ;
-  si <code>l1-02.3</code> n'est pas encore livrée, poser la variable d'environnement ici et le signaler).</li>
-</ul>
-<p><strong>Hors périmètre</strong> : tout fine-tuning · la variante 10 m / 4 tuiles · toute mesure de temps
-(<code>l1-04.1</code>) · toute métrique de qualité (<code>l1-05</code>).</p>
+<p><code>src/tiny_wae/adapters/embed_clay.py</code> — l'entrée du registre existe déjà (<code>l1-01.3</code>),
+tu n'écris QUE ce fichier et son test.</p>
+<h3 id="la-recette-verifiee-au-code-source-24082026-suivre-ne-pas-redecouvrir">La recette, vérifiée au code source (24/08/2026) — suivre, ne pas redécouvrir</h3>
+<ol>
+<li><strong>Chargement</strong> : ckpt via <code>hf_hub_download("made-with-clay/Clay", "v1.5/clay-v1.5.ckpt")</code>
+   (cache <code>l1-00</code>), puis <code>ClayMAEModule.load_from_checkpoint(ckpt, model_size="large",
+   mask_ratio=0.0, shuffle=False, metadata_path=&lt;chemin ABSOLU du metadata.yaml embarqué&gt;)</code>.
+   - ⚠ <strong><code>mask_ratio=0.0</code> est LE point critique</strong> : le défaut est <strong>0.75 et s'applique en
+     inférence</strong> (<code>mask_out</code> inconditionnel) — sans cet argument, l'embedding ne voit que le
+     quart bas de l'image et tous les tests passent quand même.
+     ⚠ <strong>Précision revue v3 (A-3)</strong> : le tutoriel pose en réalité <strong>quatre</strong> arguments —
+     <code>mask_ratio=0.0</code>, <code>shuffle=False</code>, plus <code>dolls=[16, 32, 64, 128, 256, 768, 1024]</code> et
+     <code>doll_weights=[1]*7</code>. Comme les kwargs de <code>load_from_checkpoint</code> <strong>priment</strong> sur les
+     hyperparamètres restaurés du ckpt, omettre <code>dolls</code>/<code>doll_weights</code> n'est neutre que si
+     le ckpt v1.5 porte les mêmes valeurs : <strong>le vérifier après chargement et le consigner</strong>,
+     plutôt que de le supposer.
+   - ⚠ <code>metadata_path</code> : le défaut est relatif au CWD — embarquer le YAML (ou le résoudre
+     depuis le paquet) et passer un chemin absolu, sinon le CLI casse selon d'où on le lance.
+   - ⚠ <code>save_hyperparameters()</code> restaure les hyperparamètres du ckpt : vérifier APRÈS
+     chargement que <code>model.model.encoder.mask_ratio == 0.0</code> (assertion dans l'adapter).</li>
+<li><strong>Normalisation</strong> : z-score sur <strong>DN</strong> — <code>(pixels - mean) / std</code>, stats de
+   <code>metadata.yaml</code> (<code>sentinel-2-l2a</code>, blue: mean 1105., std 1809.), <strong>lookup par nom</strong>
+   depuis <code>BAND_ORDER_EMBED</code>. Pas de réflectance.</li>
+<li><strong>Datacube</strong> : <code>{"pixels": …, "time": [B,4], "latlon": [B,4], "gsd": tensor(20.0),
+   "waves": …}</code> — time et latlon encodés <strong>comme dans le tutoriel embeddings</strong>
+   (sin/cos de la semaine et de l'heure ; sin/cos de lat/lon) depuis <code>chip.datetime</code> et
+   <code>chip.lat/lon</code> ; <strong><code>gsd=20</code></strong> (le metadata dit 10, notre tenseur est à 20 — lui mentir
+   fausserait l'encodage de position) ; <code>waves</code> en <strong>µm</strong> (l'unité du code d'entraînement),
+   lookup par nom.
+   ⭐ <strong>Fait vérifié au code source (revue v3, V-17) — conséquence lourde pour le Lot 2</strong> :
+   <code>time</code> vaut exactement <code>np.hstack((week_norm, hour_norm))</code> (<code>claymodel/datamodule.py</code>,
+   confirmé par le tutoriel : « <code>time: batch x 4</code> — horizontally stacked <code>week_norm</code> &amp;
+   <code>hour_norm</code> »). <strong>Ni l'année, ni aucune époque absolue n'entre dans le modèle.</strong> Ce n'est
+   donc pas la date qui est encodée, c'est la <strong>phase saisonnière</strong> : deux acquisitions à un
+   an d'écart, à la même semaine, sont <strong>indiscernables</strong> pour le modèle sur ce canal — et
+   deux dates de saisons différentes sont écartées par construction, ce qui est exactement
+   le confondant que <code>l1-05.4</code> cherche à isoler. À consigner au Résumé.</li>
+<li><strong>Sortie</strong> : <code>out = encoder(datacube)</code> → tuple ; CLS = <code>out[0][:, 0, :]</code> → <code>(1024,)</code>
+   float32.</li>
+<li>⚠ L'import de <code>claymodel</code> exécute <code>torch.set_float32_matmul_precision("medium")</code> au
+   niveau module — le consigner dans le Résumé (le banc lancera un processus par modèle).</li>
+</ol>
+<p><strong>Hors périmètre</strong> : fine-tuning · variante tuiles · mesures · la garde offline (<code>l1-02.3</code> —
+mais résoudre les poids via <code>hf_hub_download</code> local, jamais d'URL directe).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>adapters/embed_clay.py</code> livré, inscrit au registre, <code>mypy --strict</code> vert.</li>
-<li>[ ] <strong>Licence relevée et consignée</strong> dans le Résumé, avec sa source.</li>
-<li>[ ] L'ordre de bandes attendu par Clay est <strong>cité en commentaire avec sa source</strong>.</li>
-<li>[ ] Un chip fixture produit un vecteur <code>(1024,)</code> float32.</li>
-<li>[ ] <code>tests/test_embed_clay.py</code> — <strong>court</strong> : forme, dtype, absence de NaN, déterminisme.</li>
+<li>[ ] <code>adapters/embed_clay.py</code> livré, <code>mypy --strict</code> vert.</li>
+<li>[ ] Assertion post-chargement <code>mask_ratio == 0.0</code> <strong>et</strong> contrôle de <code>dolls</code>/<code>doll_weights</code>
+      dans l'adapter.</li>
+<li>[ ] Assertion <code>unmsk_patch.shape[1] == 1025</code> <strong>dans l'adapter</strong>, exercée par un témoin.</li>
+<li>[ ] Stats et waves construits par lookup par nom depuis <code>BAND_ORDER_EMBED</code>.</li>
+<li>[ ] <code>tests/test_embed_clay.py</code> — forme, déterminisme, témoins.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -109,53 +142,65 @@ s'arrête là et le signale — mieux vaut le savoir à la première heure qu'à
 <tr>
 <td>O1</td>
 <td><code>embed</code> sur la fixture claire de <code>l1-01.4</code></td>
-<td>vecteur de forme <strong><code>(1024,)</code></strong>, dtype <strong>float32</strong>, <strong>aucun NaN ni inf</strong></td>
+<td>vecteur <code>(1024,)</code> float32, aucun NaN ni inf</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Deux appels consécutifs sur la <strong>même</strong> entrée, threads BLAS figés</td>
-<td>vecteurs <strong>identiques</strong> (<code>array_equal</code>) — c'est ce dont l'idempotence de <code>l1-03.2</code> dépend</td>
+<td>Deux appels, même <code>ChipTensor</code>, threads figés</td>
+<td>vecteurs <strong>identiques</strong></td>
 </tr>
 <tr>
 <td>O3</td>
-<td><code>embed</code> sur deux fixtures <strong>différentes</strong></td>
-<td>vecteurs <strong>distincts</strong> — témoin négatif : sans lui, un adapter qui renverrait une constante passerait O1 et O2</td>
+<td>Deux fixtures différentes</td>
+<td>vecteurs <strong>distincts</strong> (témoin négatif)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Ordre des bandes</td>
-<td>la constante <code>BAND_ORDER_EMBED</code> <strong>égale</strong> l'ordre documenté par Clay — vérification <strong>manuelle</strong>, consignée en prose dans le Résumé avec le lien de la source. Pas de test automatique : la source est un document, pas une API</td>
+<td>⭐ <strong>Le masque est bien désactivé</strong> : nombre de tokens traversant l'encodeur, <code>unmsk_patch.shape[1] == 1025</code> (1024 patchs + CLS — valeur re-vérifiée à la source). ⚠ Cette grandeur est <strong>interne à l'encodeur</strong> : elle n'est pas atteignable depuis le port, qui ne rend qu'un <code>(1024,)</code>. L'assertion vit donc <strong>dans l'adapter</strong>, sur le tenseur intermédiaire</td>
+<td>assertion dans l'adapter + <strong>témoin</strong> : un test qui monkeypatche <code>mask_ratio</code> à 0.75 doit faire <strong>lever</strong> l'adapter (avec le masque, ce serait 257). Sans ce témoin, l'assertion est du code jamais exercé</td>
 </tr>
 <tr>
 <td>O5</td>
-<td>Résolution des poids, cache vidé</td>
-<td>échec <strong>franc et explicite</strong> nommant le modèle manquant — <strong>pas</strong> un téléchargement silencieux. Vérifié <strong>une fois à la main</strong>, consigné en une ligne</td>
+<td>⭐ <strong>Témoin spatial</strong> : la même fixture avec un quadrant mis à zéro</td>
+<td>vecteur <strong>différent</strong> — prouve que le modèle voit toute l'image (avec le masque par défaut, le quadrant haut-gauche est jeté et ce témoin échoue)</td>
 </tr>
 <tr>
-<td>O6</td>
+<td>O6a</td>
+<td>Même chip, <code>datetime</code> décalé d'<strong>un an jour pour jour</strong>, dates <strong>gelées dans le test</strong> de façon à tomber sur la même semaine ISO</td>
+<td>vecteurs <strong>identiques</strong>. ⭐ C'est le constat, pas un objectif : l'encodage temporel de Clay ne porte pas l'année (voir §3). Le fait est <strong>consigné pour le Lot 2</strong> — une dérive d'embeddings ne peut pas confondre « un an plus tard » avec « un changement », mais elle confond structurellement deux dates de même saison</td>
+</tr>
+<tr>
+<td>O6b</td>
+<td>Même chip, <code>datetime</code> décalé d'<strong>environ six mois</strong> (p. ex. semaine 31 → semaine 5)</td>
+<td>vecteurs <strong>différents</strong> — c'est <strong>ce</strong> témoin qui prouve que la date entre réellement dans le modèle. <em>(L'ancien O6, « +1 an → différents », était faux : il ne pouvait qu'échouer, ou passer par accident sur un basculement de semaine ISO.)</em></td>
+</tr>
+<tr>
+<td>O7</td>
+<td><code>import adapters.model_registry</code> sans appeler Clay</td>
+<td><code>"torch" not in sys.modules</code> (garde d'import paresseux, O4 de <code>l1-01.3</code> toujours vert)</td>
+</tr>
+<tr>
+<td>O8</td>
 <td><code>just check</code></td>
-<td>vert, <strong>hors ligne</strong></td>
+<td>vert, hors ligne (cache peuplé)</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : les valeurs du vecteur (on n'asserte pas 1024 flottants) ·
-la qualité des embeddings (<code>l1-05</code>) · le débit (<code>l1-04.1</code>) · le comportement sur les 5 793
-chips — seulement sur les fixtures.</p>
+<p><strong>Non testé par cette fiche</strong> : les valeurs du vecteur · la qualité (<code>l1-05</code>) · le débit
+(<code>l1-04</code>) · le hash du fichier de poids, consigné en prose au Résumé.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>⚠ <strong>Clay travaille avec un patch d'attention de 8×8</strong> : à 256×256, cela fait <strong>1024 tokens</strong>.
-C'est 5,2× plus que TerraMind small. Ne pas s'étonner si cet adapter est nettement plus lent
-— c'est précisément ce que <code>l1-04</code> doit chiffrer, pas un défaut d'implémentation.</p>
-<p>⚠ <strong>Politique de test du lot</strong> : le déterminisme (O2) et le témoin négatif (O3) sont les deux
-oracles qui portent quelque chose ici ; le reste relève de la forme. Ne pas chercher à
-couvrir les valeurs du modèle — c'est le contraire d'un test utile.</p>
+<p>⚠ Clay-large : ~302 M de paramètres d'encodeur. Chaque forward CPU coûtera cher — c'est
+attendu, ne pas « optimiser » ici, le banc mesurera.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Licence relevée</strong> : <em>(licence · source · date)</em></li>
-<li><strong>Ordre de bandes confronté</strong> : <em>(source · verdict)</em></li>
+<li><strong>Hash du ckpt + du teacher</strong> : …</li>
+<li><strong>Précision matmul après import</strong> : …</li>
+<li><strong><code>dolls</code> / <code>doll_weights</code> du ckpt</strong> : <em>(conformes au tutoriel ? passés explicitement ?)</em></li>
+<li><strong>Encodage temporel confirmé</strong> : <em>(semaine + heure seulement — conséquence Lot 2)</em></li>
 <li><strong>Ce qui a été fait</strong> : …</li>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-02.2.html">[l1-02.2] Adapter TerraMind small — agrégation des patchs, emprise identique à Clay →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="l1-02.2.html">[l1-02.2] Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-05.3.H] [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.3.H</b></nav><h1>[l1-05.3.H] [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-053h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l1-05.3.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
+<li><a href="#objet">Objet</a></li>
+<li><a href="#checklist-philippe">Checklist Philippe</a></li>
+<li><a href="#ce-que-cette-fiche-ne-decide-pas">Ce que cette fiche ne décide pas</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p><strong>Cette fiche est réalisée par Philippe.</strong> Le <code>depends_on</code> des fiches aval met le run en
+pause tant qu'elle n'est pas en <code>fait/</code> — c'est voulu, comme <code>l0-04.H</code> au Lot 0.
+<strong>Issue de la scission de <code>l1-05.3</code></strong> (revue E-2 : « une fiche qui contient le mot "nuit"
+n'est pas une fiche d'agent »).
+<strong>Révisée post-revue v3</strong> (D-18/S-6, E-7, D-7) : l'arête vers <code>l1-04.3a</code> est <strong>retirée</strong> —
+la campagne consomme le réglage threads/workers de <code>l1-04.3b</code>, jamais le facteur 4-tuiles
+ni le batch de <code>l1-04.3a</code> (qui n'a d'ailleurs aucune surface d'application). L'arête vers
+<code>l1-03.3</code> devient explicite : c'est <code>embed-backfill</code> que la campagne lance.</p>
+</blockquote>
+<h2 id="objet">Objet</h2>
+<p>Produire le corpus de vecteurs réel — <strong>en deux temps</strong>, pour ne pas payer le plein tarif
+sur une extrapolation jamais confrontée (arbitrage B de la revue).</p>
+<h2 id="checklist-philippe">Checklist Philippe</h2>
+<p><strong>Temps 1 — le sous-échantillon (~30-60 min de CPU)</strong></p>
+<ul>
+<li>[ ] Lancer <code>embed-backfill</code> sur un sous-échantillon : <strong>une acquisition claire par site et
+      par trimestre</strong> (~400 chips), pour les <strong>deux</strong> modèles, au réglage recommandé par
+      <code>l1-04.3b</code>.</li>
+<li>[ ] Confronter la durée réelle à l'extrapolation naïve (temps/chip × 400) : si l'écart
+      dépasse ~2×, <strong>s'arrêter et comprendre avant la campagne complète</strong> — c'est le
+      garde-fou contre une nuit perdue.</li>
+<li>[ ] Lancer <code>similarity-report</code> (<code>l1-05.3a</code>) sur ce sous-échantillon, <strong>avec <code>--out
+      similarity-report-sample.{md,json}</code></strong> : premier verdict de séparabilité contre la
+      baseline. ⚠ Sans <code>--out</code>, cette exécution et celle du temps 2 écriraient <strong>le même
+      fichier</strong>, et le verdict du sous-échantillon — celui qui a servi à décider de payer
+      la nuit — serait écrasé sans trace (revue v3, D-17).
+      S'il est catastrophique (silhouette ≈ 0 sur les DEUX modèles), inutile de payer la
+      suite — consigner et passer directement l'info à <code>l1-06.H</code>.</li>
+</ul>
+<p><strong>Temps 2 — le corpus complet (la nuit)</strong></p>
+<ul>
+<li>[ ] Lancer <code>embed-backfill</code> complet (~4 959 chips au seuil de 10 %), les deux modèles —
+      la reprise est naturelle, un SIGINT ne casse rien, relancer complète.</li>
+<li>[ ] ⭐ <strong>Embedder AUSSI C08 ET C02 sans filtre de nuage</strong> (<code>--cloud-max 100 --sites C08,C02</code>) :
+      c'est la matière du contrôle de corrélation de <code>l1-05.4</code>/O3 (revue K-14 — mesuré sur la
+      plage tronquée à 10 %, le contrôle ne peut pas se déclencher).
+      ⚠ <strong>C08 seul ne suffit pas</strong> (revue v4, m4) : il n'a que <strong>14 chips au-dessus de 10 %</strong>,
+      et à n = 14 le <code>r</code> critique vaut ≈ 0,53 — le seuil acté de 0,5 se franchirait par
+      hasard. C02 en apporte <strong>21</strong> de plus ; à n = 35, le <code>r</code> critique tombe à ≈ 0,34.
+      Coût : ~21 chips supplémentaires, quelques minutes.</li>
+<li>[ ] <strong>Confirmer ou remplacer le second site témoin</strong> de <code>l1-05.4</code>/O2 — il est désormais
+      <strong>nommé au chapeau <code>l1-05</code></strong>, comme le premier (C02 Toulouse-Blagnac). Le remplacer
+      est permis, mais <strong>avec un motif écrit</strong> ; ce qui ne l'est plus, c'est de le choisir
+      ici en regardant les données (revue v3, D-7 : K-16 n'avait été appliqué qu'à moitié).</li>
+<li>[ ] Regénérer <code>similarity-report</code> sur le corpus complet (chemin par défaut).</li>
+<li>[ ] ⭐ <strong>Produire <code>docs/lots/lot-1/campaign.json</code></strong> — durées réelles par modèle (temps 1
+      et 2), périmètre effectivement embeddé, réglage utilisé, coût de la passe baseline.
+      C'est <code>l1-04.5</code> qui le lit pour confronter l'extrapolation à la réalité : de la prose
+      ne suffit pas, le rapport de banc doit rester régénérable (revue v3, E-7).</li>
+<li>[ ] Déplacer cette fiche en <code>fait/</code> avec le résumé chiffré.</li>
+</ul>
+<h2 id="ce-que-cette-fiche-ne-decide-pas">Ce que cette fiche ne décide pas</h2>
+<p>La viabilité de l'unité d'embedding (<code>l1-05.4</code> la mesure, <code>l1-06.H</code> la tranche) · le choix
+du modèle · tout seuil.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir par Philippe avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Durées réelles</strong> : <em>(sous-échantillon · complet, par modèle)</em></li>
+<li><strong>Écart aux extrapolations</strong> : …</li>
+<li><strong>Second site témoin</strong> : <em>(confirmé / remplacé — et si remplacé, pourquoi)</em></li>
+<li><strong><code>campaign.json</code> produit</strong> : <em>(oui/non)</em></li>
+<li><strong>Coût de la passe baseline</strong> : …</li>
+<li><strong>Incidents</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-05.3a.html">← [l1-05.3a] CLI similarity-report — séparabilité, baseline triviale, témoin mécanique</a><a href="l1-05.4.html">[l1-05.4] Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

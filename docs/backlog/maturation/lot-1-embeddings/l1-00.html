@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-00] Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-00</b></nav><h1>[l1-00] Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-07.html"><code>l1-07</code></a> Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-00-le-socle-tout-ce-qui-sinstalle-en-un-seul-endroit">[l1-00] — Le socle : tout ce qui s'installe, en un seul endroit</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+Fiche issue de la revue v1 (clusters K-03, K-04, K-09) : elle est <strong>propriétaire unique</strong>
+de <code>pyproject.toml</code>, <code>pixi.lock</code>, <code>.gitignore</code> et <code>config/settings.yaml</code> pour ce lot —
+aucune autre fiche n'y touche. C'est ce qui rend <code>l1-02.1</code> et <code>l1-02.2</code> parallélisables.
+<strong>Révisée post-revue v3</strong> (V-02, V-03, V-10, V-12, V-24, V-28, V-29, A-2) : effort relevé
+à <strong>M</strong> — elle porte le lock, une dépendance git, l'emplacement du cache et deux pièges de
+test dormants.
+<strong>Révisée post-revue v4</strong> (B1, M1) : elle pré-pose désormais <strong>trois</strong> choses dans
+<code>pyproject.toml</code> — la feature <code>bench</code>, l'exemption <code>S101</code> des scripts de banc, et
+<code>allow-direct-references</code> — et le mécanisme d'expansion de <code>~</code> est <strong>nommé</strong> au lieu d'être
+supposé. ⭐ <strong>C'est la fiche à livrer avant toutes les autres</strong> : le bloquant de la revue v4
+et son majeur le plus vicieux vivent tous les deux ici.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Poser les dépendances d'inférence, le cache local des poids et la recette de téléchargement,
+AVANT que la moindre fiche de modèle parte. Trois artefacts de poids sont concernés, et ils
+passent tous par <strong>un seul mécanisme</strong> — c'est ce qui rend la garde réseau unique.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><strong>Faits vérifiés en revue (24-25/08/2026, code source des dépôts) — ne pas re-découvrir :</strong></p>
+<ul>
+<li><strong>Clay v1.5</strong> : le checkpoint est sur Hugging Face — repo <code>made-with-clay/Clay</code>, fichier
+  <code>v1.5/clay-v1.5.ckpt</code>, <strong>licence apache-2.0</strong> (relevée sur l'API HF). Le quickstart
+  officiel propose un <code>wget</code> : <strong>ne pas le suivre</strong> — passer par
+  <code>hf_hub_download(repo_id="made-with-clay/Clay", filename="v1.5/clay-v1.5.ckpt", revision=…)</code>,
+  ce qui met le ckpt sous <code>HF_HOME</code> et donc sous la garde <code>HF_HUB_OFFLINE</code>.</li>
+<li><strong>Clay télécharge un SECOND modèle à la construction</strong> : <code>ClayMAE.__init__</code> fait
+  <code>timm.create_model("samvit_base_patch16.sa1b", pretrained=True)</code> — le teacher,
+  <strong>89,7 M params</strong> (~360 Mo), gelé et inutile en inférence mais instancié quand même.
+  timm passe par <code>huggingface_hub</code> : le pré-charger le met sous la même garde.</li>
+<li><strong>TerraMind small</strong> : poids via TerraTorch (<code>hf_hub_download</code> dans
+  <code>terramind_register.py</code>), repo <code>ibm-esa-geospatial/TerraMind-1.0-small</code>, Apache 2.0.</li>
+<li><strong><code>claymodel</code> ne s'installe que par git</strong> : <code>claymodel @ git+https://github.com/Clay-foundation/model.git</code>
+  (référence directe PEP 508) — à épingler sur un commit précis, relevé à l'implémentation.</li>
+<li><strong><code>terratorch</code> est lourd</strong> (lightning, torchgeo, diffusers, albumentations, timm…) :
+  il va dans une <strong>feature pixi dédiée <code>[tool.pixi.feature.models]</code></strong>, pas dans le cœur —
+  et sa version est épinglée (v1.2.11 au moment de la revue).</li>
+<li><code>HF_HOME</code> est la variable <strong>racine</strong> ; <code>HF_HUB_CACHE</code> vaut <code>$HF_HOME/hub</code> et ne couvre que
+  les repos — c'est bien <code>HF_HOME</code> qu'on pose.</li>
+</ul>
+<p>À livrer :</p>
+<ol>
+<li><code>pyproject.toml</code> — ⭐ <strong>le mécanisme est tranché (revue v2 M1, amendé par la v3 V-03)</strong> :
+   torch, claymodel et terratorch vont dans un <strong>extra PEP 621
+   <code>[project.optional-dependencies] models</code></strong>, PAS dans <code>[project.dependencies]</code> — la wheel
+   du worker PID-FLOW reste légère (précédent httpx, retiré du contrat pour la même raison),
+   et <code>deptry</code> <strong>lit bien les extras</strong> (vérifié en revue : le mécanisme tient, pas de
+   configuration deptry à inventer).
+   ⚠ <strong><code>hatchling</code> refuse les références directes par défaut — SONDÉ le 26/08, dans la
+   configuration exacte de cette fiche</strong> (extra <code>models</code> + <code>claymodel @ git+…@&lt;commit&gt;</code>) :
+   - <strong>sans</strong> <code>[tool.hatch.metadata] allow-direct-references = true</code> →
+     <code>ValueError: Dependency #1 of option 'models' of field 'project.optional-dependencies'
+     cannot be a direct reference unless field 'tool.hatch.metadata.allow-direct-references'
+     is set to 'true'</code> — le build échoue, donc <code>just install</code> aussi ;
+   - <strong>avec</strong> → la wheel se construit, et la référence git est <strong>confinée à l'extra</strong> :
+     <code>Requires-Dist: claymodel @ git+… ; extra == 'models'</code>, la ligne de base restant propre.
+     C'est la preuve que la décision « la wheel du worker reste légère » tient : qui installe
+     sans l'extra n'hérite d'aucune dépendance git.</li>
+</ol>
+<p><strong>C'est la voie retenue</strong> — <em>pas</em> la déclaration en
+   <code>[tool.pixi.feature.models.pypi-dependencies]</code>, qui contournerait hatchling mais
+   sortirait <code>claymodel</code> du PEP 621 : <code>deptry</code> (qui est <strong>dans le gate</strong>) ne le verrait plus
+   et lèverait un DEP001 sur l'import de <code>embed_clay.py</code>.
+   ⚠ <strong>A-2 — piège de test dormant</strong> : <code>tests/test_packaging.py</code> exige que <strong>tout</strong> ce que
+   déclare <code>[tool.pixi.dependencies]</code> (hors <code>python</code>) figure aussi au contrat de la wheel.
+   <strong>torch, claymodel et terratorch vont donc dans <code>[tool.pixi.feature.models.*]</code>, jamais
+   dans la table de base</strong> — sinon il faut gonfler le contrat, ce que la décision ci-dessus
+   interdit.
+   ⚠ <strong>V-12 — second piège, celui-là actif</strong> : <code>test_packaging.py</code> ne lit aujourd'hui que
+   <code>[project.dependencies]</code> et balaie <strong>tout</strong> <code>src/</code> ; à la livraison de <code>l1-02.1</code>,
+   <code>import claymodel</code> le rendra <strong>rouge</strong>. Cette fiche <strong>étend <code>test_packaging.py</code> aux
+   <code>optional-dependencies</code></strong> — décision à écrire dans le test lui-même, en commentaire.
+   <code>huggingface_hub</code> doit y être <strong>déclaré</strong> : il n'apparaît nulle part aujourd'hui.
+   Enfin, <code>[tool.pixi.environments]</code> : <code>default = { features = ["dev", "models"] }</code> — pixi
+   crée la feature <em>depuis</em> l'extra, mais ne l'ajoute pas seul à l'environnement.
+   Une <strong>feature <code>bench</code></strong> est pré-posée dans le même geste (<code>onnxruntime</code>, consommée par
+   <code>l1-04.4</code>) : le patron « table pré-posée » évite une seconde écriture concurrente sur
+   <code>pyproject.toml</code>. <code>pixi.lock</code> régénéré.
+   ⚠ <strong><code>onnxruntime</code> se déclare côté pixi UNIQUEMENT, pas en extra PEP 621</strong> : il n'est
+   importé que depuis <code>scripts/bench_quant.py</code>, or <code>just deptry</code> = <code>deptry src</code> — le script
+   ne sera <strong>jamais</strong> scanné, donc un extra PEP 621 le ferait signaler <code>DEP002</code> <strong>à
+   perpétuité</strong>. C'est exactement le précédent du Lot 0, écrit dans le <code>justfile</code> : « les
+   dépendances de <code>scripts/</code> (markdown…) sont des dépendances de DEV déclarées côté pixi,
+   que deptry ne lit pas ».</p>
+<p>⭐ ⚠ <strong>Quatrième pré-position, sans laquelle CETTE fiche livre un gate rouge — sondé le
+   26/08.</strong> <code>deptry</code> signale toute dépendance <strong>déclarée mais non importée</strong> :
+   <code>DEP002 '&lt;paquet&gt;' defined as a dependency but not used in the codebase</code>. Or <code>l1-00</code>
+   déclare torch, claymodel, terratorch et <code>huggingface_hub</code> <strong>avant</strong> que le moindre code
+   ne les importe — les adapters arrivent en <code>l1-02.x</code>, le chemin commun de résolution en
+   <code>l1-02.3</code>. Au commit de cette fiche, <code>just deptry</code> serait donc <strong>rouge</strong>, ce que le
+   critère « Prêt à faire » interdit explicitement (« une fiche ne doit JAMAIS différer à
+   une fiche ultérieure la correction d'un <code>just check</code> qu'elle casse elle-même »).
+   À poser, avec son commentaire de justification :</p>
+<p><code>[tool.deptry.per_rule_ignores]
+   DEP002 = ["torch", "claymodel", "terratorch", "huggingface_hub"]</code></p>
+<p>⭐ <strong>La garde est ciblée, vérifié dans les deux sens</strong> : avec elle <code>deptry</code> est vert sur
+   le paquet ignoré, <strong>et</strong> un import non déclaré reste attrapé (<code>DEP003</code>). On n'aveugle pas
+   l'outil, on suspend une seule règle sur quatre noms.
+   ⛔ <strong>Ce bloc est TEMPORAIRE et son retrait a un propriétaire : <code>l1-02.3</code></strong> — la première
+   fiche où les quatre paquets sont réellement importés depuis <code>src/</code>. Elle en porte la
+   ligne en DoD. Sans ce propriétaire nommé, l'ignore survit au lot et masque les vraies
+   dépendances mortes.
+   ⭐ <strong>Troisième pré-position, dans le même fichier et pour la même raison — l'exemption
+   <code>S101</code> des scripts de banc</strong> (revue v4, B1). <code>[tool.ruff.lint.per-file-ignores]</code> n'exempte
+   aujourd'hui <code>S101</code> que pour <code>"tests/**"</code> et <strong><code>"scripts/smoke.py"</code>, nommément</strong>
+   (<code>pyproject.toml:133-138</code>) ; <code>"scripts/**"</code> n'a que <code>T201</code>. Or <strong>cinq oracles du lot
+   exigent la vérification <em>dans</em> le script</strong> — <code>l1-04.2</code>/O1, <code>l1-04.3a</code>/O3, <code>l1-04.3b</code>/O3,
+   <code>l1-04.4</code>/O3 (« vérifié dans le script, pas supposé ») et <code>l1-05.2</code>/O1 (« assertion
+   DURE ») : un <code>assert</code> y déclenche <code>S101</code>, donc <code>just lint</code> rouge, donc <code>just check</code> rouge.
+   Ajouter <strong><code>"scripts/bench_*.py" = ["S101"]</code></strong> — les cinq scripts de banc et eux seuls
+   (<code>check_cache.py</code> et <code>fetch_models.py</code> n'assertent rien) — avec le <strong>même commentaire de
+   justification</strong> que celui de <code>smoke.py</code> : dans un script de contrôle, <code>assert</code> <em>est</em> le
+   mécanisme de vérification assumé.
+   ⚠ Le faire <strong>ici et maintenant</strong> : sans cette ligne, chaque fiche de banc découvre le
+   rouge en fin de course et n'a que de mauvaises issues — semer des <code># noqa: S101</code> (bruit
+   permanent), ou éditer <code>pyproject.toml</code>, <strong>dont cette fiche est propriétaire exclusif</strong> et
+   qui sera close depuis longtemps.
+2. <code>.gitignore</code> : rien à ajouter pour les poids — ⭐ <strong>le cache ne vit plus dans l'arbre</strong>
+   (voir point 3). Vérifier seulement que <code>models/</code> n'y traîne pas si le répertoire a été
+   créé par une expérimentation.
+3. ⭐ <strong><code>config/settings.yaml</code> — emplacement du cache, tranché en revue v3 (V-02)</strong> :
+   <code>hf_home: "~/.cache/tiny-wae/models"</code>, <strong>expansé au chargement</strong>.</p>
+<p>⚠ ⭐ <strong>Le mécanisme d'expansion doit être NOMMÉ, et il n'existe pas encore</strong> (revue v4,
+   M1). <code>core/settings.py</code> déclare tous ses chemins en <strong><code>str</code></strong> (<code>data_root: str = "./data"</code>)
+   et <code>adapters/config_io.py</code> ne connaît que <code>_INT_FIELDS</code> et <code>_LIST_FIELDS</code> : le Lot 0
+   n'a jamais eu de champ-chemin à expanser, il n'offre <strong>aucun patron à copier</strong>. À livrer :
+   un <strong><code>_PATH_FIELDS</code></strong> dans <code>config_io</code>, symétrique de <code>_INT_FIELDS</code>, appliqué au
+   chargement <strong>et</strong> à la surcharge par environnement.
+   Règle exacte — c'est ici que la revue v4 et moi divergeons, et la version stricte est
+   retenue : <strong><code>expanduser()</code>, puis ERREUR si le résultat n'est pas absolu.</strong> Pas de
+   <code>resolve()</code> de rattrapage : <code>resolve()</code> sur un chemin relatif l'ancre au CWD, ce qui est
+   le même bug avec un autre visage. Un <code>hf_home</code> relatif est une <strong>faute de configuration</strong>,
+   elle se signale, elle ne se répare pas en silence.
+   ⚠ <strong>Pourquoi ce détail mérite un oracle</strong> : <code>Path("~/.cache/…")</code> non expansé n'est pas
+   une erreur — c'est un répertoire <strong>littéralement nommé <code>~</code></strong> créé dans le CWD. Chaque
+   worktree s'y fabrique alors son propre cache et re-télécharge plusieurs Go, c'est-à-dire
+   exactement la propriété que <code>l1-07</code>/O4 doit garantir. O4 tomberait, mais <strong>après</strong> le mal
+   et en désignant <code>l1-07</code> alors que la cause est ici.</p>
+<p>Motif du choix d'emplacement : les poids sont relus <strong>à chaque démarrage de
+   processus</strong>, et trois fiches chronomètrent précisément ces démarrages (<code>l1-04.1</code>/<code>setup_s</code>,
+   <code>l1-05.2</code> qui lance deux processus, <code>l1-04.3b</code> un par configuration) — un cache sur
+   <code>/mnt/d</code> injecterait la taxe drvfs dans ces mesures, celle-là même que <code>l1-04.2</code> existe
+   pour isoler ; et le cache HF s'adresse par symlinks, que drvfs ne supporte pas
+   (duplication des blobs, ~2× le volume écrit à travers le montage).
+   <code>TINY_WAE_HF_HOME</code> reste la <strong>surcharge</strong> (mécanisme <code>config_io.load_settings</code> déjà en
+   place) — <strong>jamais un <code>.env</code></strong>, qui est gitignoré et que rien ne lit.
+   ⭐ <strong>Cette fiche pré-pose les trois clés du lot</strong> — <code>hf_home</code>, <code>embed_cloud_pct_max</code> (10)
+   et <code>embed_workers</code> — pour que <code>l1-03.2</code> et <code>l1-03.3</code> ne fassent que <strong>consommer</strong>, sans
+   écriture concurrente sur <code>settings.yaml</code>. Deux points d'ancrage à respecter :
+   <code>config_io._INT_FIELDS</code> doit recevoir <code>embed_cloud_pct_max</code> et <code>embed_workers</code> (sinon la
+   surcharge par variable d'environnement rend une <strong>chaîne</strong>), et <code>Settings.validate()</code>
+   doit borner <code>embed_cloud_pct_max</code> dans <code>[0, 100]</code> — sur un <code>str</code>, la comparaison lèverait
+   un <code>TypeError</code> illisible.
+4. <code>scripts/fetch_models.py</code> + recette <strong><code>just fetch-models</code></strong> : télécharge les <strong>3</strong>
+   artefacts via <code>huggingface_hub</code>, <strong>sur révisions épinglées</strong>, publie leurs tailles et
+   leurs <strong>sha256</strong>. La <strong>seule</strong> commande du projet autorisée à faire du réseau pour des
+   poids. Hors de <code>just check</code>.
+5. ⭐ <code>scripts/check_cache.py</code> — <strong>versionné, pas jetable</strong> : vérifie que les 3 artefacts
+   sont présents et conformes (sha256 et taille), <strong>sans rien charger ni instancier</strong>, et
+   sort en erreur nommant l'artefact manquant et <code>just fetch-models</code>. C'est le consommateur
+   qui rend les oracles de <code>l1-07</code> falsifiables, et le seul autre script autorisé à parler à
+   <code>huggingface_hub</code> en dehors de <code>fetch_models.py</code>.
+6. <strong>Verdict 256 consigné</strong> : TerraMind accepte 256×256 (interpolation des pos-emb,
+   vérifiée dans <code>encoder_embeddings.py</code>) → <strong>256 tokens</strong>. Les deux modèles travaillent en
+   256 ; aucune fiche ne parle plus de 224. ⚠ Ce verdict n'a <strong>pas</strong> d'oracle ici : son
+   témoin mécanique est <code>l1-02.2</code>/O5, qui asserte la forme réelle de la sortie. Le dire
+   explicitement plutôt que de laisser croire que la fiche le prouve.</p>
+<p><strong>Hors périmètre</strong> : tout code d'adapter (<code>l1-02.x</code>) · la garde <code>HF_HUB_OFFLINE</code> au run
+(<code>l1-02.3</code>) · le smoke · la CI et les worktrees (<code>l1-07</code>).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] <code>just install</code> vert avec la feature <code>models</code> (<code>allow-direct-references</code> posé) ;
+      <code>just check</code> vert, <strong>deptry compris</strong>, et <code>test_packaging.py</code> étendu aux extras.</li>
+<li>[ ] <code>just fetch-models</code> télécharge les 3 artefacts, <strong>tailles et sha256 publiés</strong>.</li>
+<li>[ ] <code>scripts/check_cache.py</code> livré et vert sur cache peuplé.</li>
+<li>[ ] <code>pixi.lock</code> régénéré et versionné ; <code>default = {features = ["dev","models"]}</code>.</li>
+<li>[ ] <code>settings.yaml</code> porte les 3 clés ; <code>_INT_FIELDS</code>, <strong><code>_PATH_FIELDS</code></strong> et <code>validate()</code>
+      mis à jour ; <code>hf_home</code> relatif → <strong>erreur nommée</strong>, jamais un <code>resolve()</code> silencieux.</li>
+<li>[ ] <code>per-file-ignores</code> : <code>"scripts/bench_*.py" = ["S101"]</code>, avec sa justification.</li>
+<li>[ ] <code>[tool.hatch.metadata] allow-direct-references = true</code>.</li>
+<li>[ ] <code>[tool.deptry.per_rule_ignores] DEP002</code> posé sur les 4 paquets, avec le commentaire
+      qui <strong>nomme <code>l1-02.3</code> comme propriétaire du retrait</strong>.</li>
+<li>[ ] <code>onnxruntime</code> déclaré <strong>côté pixi seulement</strong> (feature <code>bench</code>), jamais en extra PEP 621.</li>
+<li>[ ] Les <strong>révisions épinglées</strong> (commit claymodel, révisions des 3 repos HF, version
+      terratorch, version torch) sont consignées au Résumé — <code>l1-07</code> en dérive sa clé de cache.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td><code>just fetch-models</code> sur cache vide, réseau actif</td>
+<td>les 3 artefacts présents sous <code>hf_home</code>, <strong>3 tailles et 3 sha256 publiés</strong> dans la sortie</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>⭐ <code>python scripts/check_cache.py</code> sur le cache peuplé, puis avec <code>HF_HOME</code> pointé sur un <strong>tmpdir vide</strong></td>
+<td><strong>vert</strong> puis <strong>rouge</strong> — et le vert asserte les <strong>sha256</strong>, pas la seule existence des chemins. <em>(Un <code>local_files_only=True</code> qui rend un chemin sans rien lire passerait un test d'existence : c'est la faille que cet oracle ferme.)</em></td>
+</tr>
+<tr>
+<td>O3a</td>
+<td><code>deptry</code> au commit de cette fiche</td>
+<td><strong>vert</strong>, grâce au <code>per_rule_ignores DEP002</code> posé ci-dessus. ⚠ Sans lui il serait <strong>rouge</strong> : les 4 paquets sont déclarés et aucun n'est encore importé (sondé le 26/08)</td>
+</tr>
+<tr>
+<td>O3b</td>
+<td>Témoin négatif : un import non déclaré ajouté temporairement dans <code>src/</code></td>
+<td><code>deptry</code> <strong>rouge</strong> (<code>DEP003</code>) — c'est ce qui prouve que la garde DEP002 n'aveugle pas l'outil, seulement une règle sur quatre noms. Sans ce témoin, O3a est vert par inertie</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Coût d'installation : delta de <code>just install</code> (secondes + Mo) avec la feature <code>models</code></td>
+<td><strong>mesuré et publié</strong>, et <strong>qualifié</strong> : au-delà de ~3 min ou ~2 Go par worktree, le consigner comme contrainte de dispatch dans le Résumé (c'est <code>_roadmap.md</code> §4 qui en tirera la règle)</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>⭐ <strong>Expansion de <code>hf_home</code></strong> : <code>load_settings()</code> appelé depuis <strong>deux CWD différents</strong> (<code>tmp_path</code> puis la racine du dépôt)</td>
+<td><strong>le même chemin absolu</strong> les deux fois, et il commence par le home réel — pas par <code>~</code>, pas par le CWD. Témoin négatif dans la foulée : <code>hf_home: "./models"</code> (relatif) → <strong>erreur de configuration nommant la clé</strong>. Sans ces deux cas, le défaut ne se voit qu'à travers <code>l1-07</code>/O4, trop tard et au mauvais endroit</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>⭐ <strong>Exemption <code>S101</code></strong> : un <code>assert</code> déposé dans un fichier <code>scripts/bench_probe_tmp.py</code> jetable</td>
+<td><code>ruff check</code> <strong>vert</strong> ; le même <code>assert</code> dans <code>scripts/fetch_models.py</code> → <strong><code>S101</code></strong>. Les deux sens : l'exemption doit couvrir les bancs <strong>et rien d'autre</strong></td>
+</tr>
+<tr>
+<td>O7</td>
+<td><code>just check</code> complet</td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : le comportement de la garde au run réel (<code>l1-02.3</code>) · le
+contenu des poids (les adapters) · le verdict 256 (témoin chez <code>l1-02.2</code>/O5) · le
+comportement du cache Actions (<code>l1-07</code>).</p>
+<p>⚠ <strong>Formulation à ne pas reprendre</strong> : « <code>fetch-models</code> ne télécharge rien au second
+passage » <strong>n'est pas</strong> « aucune requête ». Sans <code>local_files_only=True</code>, <code>hf_hub_download</code>
+émet une requête HEAD de vérification d'etag même sur cache chaud. Dire ce qu'on mesure :
+« aucun octet de poids transféré », et vérifier séparément le « zéro requête » par un run
+sous <code>HF_HUB_OFFLINE=1</code>.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ Le teacher timm est du poids mort en inférence (~360 Mo) mais <strong>non contournable sans
+patcher claymodel</strong> — on le télécharge, on le consigne, on ne patche pas : c'est un POC.</p>
+<p>Deux points à contrôler à l'implémentation, sans en faire des exigences : <code>TIMM_USE_OLD_CACHE</code>
+(si la version de timm résolue par pixi utilise encore l'ancien emplacement de cache, il
+échapperait à <code>HF_HOME</code>) et la ventilation <code>hub/</code> vs <code>xet/</code> dans les tailles publiées.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Révisions épinglées</strong> : <em>(claymodel@commit · révisions des 3 repos HF · terratorch · torch)</em></li>
+<li><strong>Tailles et sha256 des 3 artefacts</strong> : …</li>
+<li><strong>Delta d'install de la feature models</strong> : <em>(secondes, Mo, et qualification)</em></li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><span></span><a href="l1-01.html">[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port →</a></div><p class="gen">Généré le 26/08/2026 16:21 — le .md fait foi.</p></article></body></html>

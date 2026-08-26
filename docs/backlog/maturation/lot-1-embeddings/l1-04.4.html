@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.4</b></nav><h1>[l1-04.4] Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.4</b></nav><h1>[l1-04.4] Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-044-le-levier-de-dernier-recours">[l1-04.4] — Le levier de dernier recours</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,8 +60,17 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-10, D-15) : le plancher de fidélité est FIGÉ maintenant, et
+l'arbitrage ONNX est tranché (Philippe) : autorisé comme MESURE JETABLE — onnxruntime
+peut s'installer dans l'environnement de mesure, il n'entre PAS au contrat du paquet.
+<strong>Révisée post-revue v3</strong> (C-2, D-9, E-24, V-09) : « distance cosinus » résiduel dans le
+corps, contredisant son propre oracle ; la dépendance <code>onnxruntime</code> ne peut pas être
+ajoutée ici (<code>pyproject.toml</code> appartient à <code>l1-00</code>) ; <code>reason</code> « non vide » était
+cheatable.</p>
 </blockquote>
+<p>⛔ <strong>Fiche de mesure CPU — ne se dispatche JAMAIS en parallèle</strong> d'une autre fiche de banc
+(<code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-05.2</code>) ni d'aucune charge CPU concurrente.</p>
 <h2 id="objectif">Objectif</h2>
 <p>Mesurer si la quantification en entiers 8 bits, ou l'export vers un moteur d'inférence
 spécialisé, change significativement le débit sur CPU — <strong>et à quel prix sur les vecteurs
@@ -76,18 +85,26 @@ ne pas essayer et de le regretter au Lot 2.</p>
 <li><strong>Quantification dynamique PyTorch</strong> (<code>torch.ao.quantization.quantize_dynamic</code>) sur les
    couches linéaires. C'est le geste le moins invasif : quelques lignes, pas d'export, pas
    de dépendance nouvelle.</li>
-<li><strong>Export ONNX + ONNX Runtime.</strong> Plus prometteur en débit, mais ajoute une dépendance
-   lourde et un format intermédiaire. ⚠ <strong>Ne pas l'entreprendre si la piste 1 suffit à
-   trancher</strong> — c'est un POC.</li>
+<li><strong>Export ONNX + ONNX Runtime</strong> — autorisé (arbitrage Philippe) comme mesure jetable :
+   onnxruntime <strong>ne s'ajoute PAS ici</strong>. ⭐ <code>pyproject.toml</code> appartient exclusivement à
+   <code>l1-00</code> pour tout le lot, qui <strong>pré-pose une feature <code>bench</code></strong> à cet effet (revue v3,
+   D-9/S-7) : cette fiche l'<strong>utilise</strong>, elle ne l'écrit pas — sinon deux fiches modifient
+   le même fichier et le patron « table pré-posée » qui protège le lot tombe. Le paquet
+   livré reste <strong>inchangé</strong> : <code>deptry</code> reste l'arbitre.
+   ⚠ Ne pas l'entreprendre si la piste 1 suffit à trancher.</li>
 </ol>
 <p>⭐ <strong>Ce levier a une contrepartie que les autres n'ont pas : il change les vecteurs.</strong> Un
 gain de vitesse qui dégrade la séparabilité ne vaut rien. La fiche doit donc mesurer les
 <strong>deux côtés</strong> :</p>
 <ul>
-<li>le <strong>débit</strong> (phase <code>forward</code>, protocole de <code>l1-04.1</code>) ;</li>
-<li>la <strong>fidélité</strong> : distance cosinus entre le vecteur quantifié et le vecteur de référence,
-  sur le même échantillon. C'est la seule métrique de qualité de ce chapeau, et elle est là
-  parce que sans elle le levier n'est pas interprétable.</li>
+<li>le <strong>débit</strong> (phase <code>forward</code>, protocole et échantillon gelé de <code>l1-04.1</code>) ;</li>
+<li>la <strong>fidélité</strong> : ⭐ <strong>similarité cosinus</strong> entre le vecteur quantifié et le vecteur de
+  référence, sur le même échantillon — <strong>une similarité, qui vaut 1 quand les vecteurs
+  coïncident</strong>, conformément à la convention du chapeau <code>l1-05</code> et à l'oracle O2 ci-dessous.
+  <em>(Le corps de cette fiche disait « distance » jusqu'à la revue v3 alors que son oracle
+  disait « similarité » : avec un plancher à 0,999, l'interprétation inverse rendrait le
+  critère absurde.)</em> C'est la seule métrique de qualité de ce chapeau, et elle est là parce
+  que sans elle le levier n'est pas interprétable.</li>
 </ul>
 <p><strong>Hors périmètre</strong> : la quantification statique avec calibration (trop lourde pour un POC) ·
 le pruning · toute réécriture du modèle · le verdict final sur l'usage de la quantification,
@@ -99,8 +116,8 @@ qui appartient à <code>l1-06.H</code>.</p>
 <li>[ ] <strong>Si non concluant</strong> : la raison est écrite explicitement — opérateur non supporté,
       gain nul, dépendance disproportionnée. Une fiche « non concluante » sans raison n'est
       pas terminée.</li>
-<li>[ ] Aucune dépendance ajoutée au contrat du paquet <strong>sans arbitrage écrit</strong> (règle
-      <code>_tools</code> : proposer avant d'ajouter une dépendance non triviale).</li>
+<li>[ ] <code>deptry</code> vert : onnxruntime dans la feature <code>bench</code> (pré-posée par <code>l1-00</code>), absent
+      du contrat du paquet. <strong>Aucune écriture dans <code>pyproject.toml</code> par cette fiche.</strong></li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -119,28 +136,33 @@ qui appartient à <code>l1-06.H</code>.</p>
 </tr>
 <tr>
 <td>O2</td>
-<td>⭐ <strong>Fidélité</strong> : cosinus(vecteur quantifié, vecteur de référence) sur ≥ 20 chips</td>
-<td>médiane <strong>et</strong> minimum publiés. ⚠ Le minimum compte plus que la médiane : c'est le pire chip qui décidera</td>
+<td>⭐ <strong>Fidélité</strong> : similarité cosinus (quantifié, référence) sur <strong>l'échantillon gelé de <code>l1-04.1</code></strong></td>
+<td>médiane et <strong>minimum</strong> publiés (le minimum d'une similarité EST le pire cas). ⭐ <strong>Plancher FIGÉ (revue E-10)</strong> : min ≥ <strong>0,999</strong> → quantification retenable · <strong>0,99–0,999</strong> → douteuse, remontée à <code>l1-06.H</code> · <strong>&lt; 0,99</strong> → écartée, le gain de débit n'est pas examiné</td>
 </tr>
 <tr>
 <td>O3</td>
-<td>Le même échantillon d'<code>item_id</code> sert aux deux mesures</td>
+<td>Le même échantillon d'<code>item_id</code> — celui de <code>l1-04.1</code> — sert aux deux mesures</td>
 <td>ensembles identiques, vérifié</td>
+</tr>
+<tr>
+<td>O3b</td>
+<td>Stabilité</td>
+<td><code>l1-04.1::stability</code> sur 3 passes du débit, CV et verdict publiés (la fiche n'en avait aucune, alors qu'elle conclut sur un facteur)</td>
 </tr>
 <tr>
 <td>O4</td>
 <td>Cas « non concluant »</td>
-<td>si la piste échoue, le JSON porte <code>status: "inconclusive"</code> <strong>et</strong> un champ <code>reason</code> non vide. Vérifié en relisant la sortie, pas par un test</td>
+<td>le JSON porte <code>status: "inconclusive"</code> <strong>et</strong> un <code>reason</code> qui <strong>nomme un objet mesurable</strong> : l'opérateur non supporté (avec son nom), le facteur de débit mesuré et jugé insuffisant (avec sa valeur), ou la dépendance écartée et pourquoi. ⚠ « non vide » ne suffit pas : « ça n'a pas marché » satisferait le critère sans rien apprendre à <code>l1-06.H</code> (revue v3, E-24)</td>
 </tr>
 <tr>
 <td>O5</td>
-<td>Dépendances</td>
-<td><code>deptry</code> reste vert : rien n'a été ajouté au contrat sans y être déclaré</td>
+<td>Dépendances — ⚠ <strong>contrôle de non-régression, PAS un contrôle de placement</strong></td>
+<td><code>deptry</code> vert <strong>et</strong> <code>test_packaging.py</code> vert : le contrat de la wheel n'a pas bougé. ⚠ <strong>Dire ce que cet oracle ne fait pas</strong> (revue v4, m1) : <code>just deptry</code> = <code>deptry src</code> (le justfile explique pourquoi : « <code>scripts/</code> n'est pas dans la wheel ») et <code>test_packaging.py</code> ne balaie que <code>_SRC</code> — <strong><code>scripts/bench_quant.py</code> n'est vu par ni l'un ni l'autre</strong>. L'oracle serait donc vert même si <code>onnxruntime</code> n'était déclaré nulle part. Il est <strong>non discriminant sur le placement</strong>, et c'est assumé : le placement se vérifie en lisant <code>pyproject.toml</code>, ce qui relève de <code>l1-00</code></td>
 </tr>
 </tbody>
 </table></div>
 <p><strong>Non testé par cette fiche</strong> : l'effet de la quantification sur la <strong>séparabilité réelle</strong>
-entre sites — c'est <code>l1-05.3</code> qui la mesure, et seulement si <code>l1-06.H</code> décide de retenir la
+entre sites — c'est la campagne (<code>l1-05.3.H</code> + <code>l1-05.3a</code>) qui la mesure, et seulement si <code>l1-06.H</code> décide de retenir la
 quantification · la quantification de TerraMind si celle de Clay suffit à conclure.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
 <p>⚠ <strong>Le piège du gain apparent.</strong> Une quantification qui accélère de 2× en dégradant le
@@ -148,6 +170,10 @@ cosinus à 0,95 est une fausse bonne affaire : au Lot 2, la détection de change
 justement sur des écarts fins entre vecteurs voisins. Un bruit de quantification du même
 ordre que le signal recherché rendrait la détection aveugle. <strong>D'où le minimum, pas la
 médiane.</strong></p>
+<p>⚠ ⭐ <strong>« Pas de test » ne veut PAS dire « hors du filet »</strong> (revue v4, m2) : <code>pyproject.toml:146</code>
+pose <code>files = ["src", "tests", "scripts"]</code> — <strong><code>mypy --strict</code> couvre <code>scripts/</code></strong>, ce script
+compris. <em>(Et <code>assert</code> y est permis : <code>l1-00</code> pré-pose l'exemption <code>S101</code> pour
+<code>scripts/bench_*.py</code>.)</em></p>
 <p>⚠ <strong>Politique de test</strong> : script de mesure, aucun test unitaire. Et surtout : <strong>ne pas
 transformer cette fiche en chantier d'optimisation.</strong> Deux pistes, un verdict, on passe.</p>
 <hr />
@@ -160,4 +186,4 @@ transformer cette fiche en chantier d'optimisation.</strong> Deux pistes, un ver
 <li><strong>Si non concluant, pourquoi</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-04.3.html">← [l1-04.3] Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers</a><a href="l1-04.5.html">[l1-04.5] Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-04.3b.html">← [l1-04.3b] Leviers modèle 2/2 — threads BLAS et contention des workers</a><a href="l1-04.5.html">[l1-04.5] Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

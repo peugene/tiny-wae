@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.1</b></nav><h1>[l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.1</b></nav><h1>[l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-031-ou-vivent-les-vecteurs-et-comment-on-sait-quils-sont-a-jour">[l1-03.1] — Où vivent les vecteurs, et comment on sait qu'ils sont à jour</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,16 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-20, C-10, C-12, S-13) : le spec_hash entre dans le NOM du
+fichier ; le compagnon devient LA définition unique (<code>VectorMeta</code>) ; plus aucune
+dépendance — ce module ne consomme que des chaînes, il part en N0.
+<strong>Révisée post-revue v3</strong> (V-15, A-1, S-9) : ajout de <code>list_vectors</code> (les lecteurs
+n'avaient aucun moyen de sélectionner une spec), <code>torch_version</code> lu <strong>sans importer
+torch</strong>, et <code>scl_summary</code> défini <strong>ici</strong> — cette fiche est N0, <code>l1-01.2</code> est N1.
+<strong>Révisée post-revue v4</strong> (M2, M5) : l'atomicité portait sur chaque fichier et jamais sur
+la <strong>paire</strong> <code>.npy</code> + <code>.json</code> ; et la forme de <code>scl_summary</code> contredisait l'oracle de la
+fiche censée s'y conformer.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Définir le format d'écriture d'un vecteur et de son compagnon, et la <strong>clé d'idempotence</strong>
@@ -68,7 +77,10 @@ qui permettra à <code>l1-03.2</code> de ne rien recalculer inutilement.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <p><code>src/tiny_wae/adapters/vectors.py</code>.</p>
 <p><strong>Emplacement retenu</strong> : à côté du chip, comme les manifestes du Lot 0 —
-<code>&lt;data_root&gt;/&lt;site&gt;/&lt;item_id&gt;/embeddings/&lt;model_id&gt;.npy</code> et <code>&lt;model_id&gt;.json</code>. Motif : le
+<code>&lt;data_root&gt;/&lt;site&gt;/&lt;item_id&gt;/embeddings/&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.npy</code> et le compagnon
+<code>.json</code> au même nom. ⭐ Le <code>spec_hash</code> dans le NOM : une nouvelle variante de spec écrit À
+CÔTÉ, jamais par-dessus — c'est le mécanisme qui rend la décision « un vecteur par chip »
+réversible (promesse du chapeau <code>l1-01</code>). Motif de l'emplacement : le
 Lot 0 a démontré que ranger les artefacts <strong>par item</strong> rend l'intégrité vérifiable
 répertoire par répertoire, sans index global à maintenir.</p>
 <p>⚠ <strong>Le corpus vit sur <code>D:\datas\tiny-wae</code>, hors dépôt.</strong> Les vecteurs y seront écrits aussi :
@@ -76,23 +88,85 @@ prévoir que <code>data_root</code> soit configurable (il l'est déjà, Lot 0) e
 <code>./data</code> par défaut</strong> depuis un test.</p>
 <p>À livrer :</p>
 <ul>
-<li><code>write_vector(dir, model_id, vector, meta)</code> — écriture <strong>atomique</strong> (fichier temporaire
-  puis <code>Path.replace</code>), comme <code>write_manifest</code> du Lot 0. Un run interrompu ne doit pas
-  laisser un <code>.npy</code> tronqué qui serait relu comme valide.</li>
-<li><code>read_vector(dir, model_id) -&gt; Vector | None</code> — <code>None</code> si absent, erreur typée si corrompu.</li>
+<li>⭐ <code>write_vector(dir, vector, meta)</code> — écriture <strong>atomique</strong> (fichier temporaire puis
+  <code>Path.replace</code>), comme <code>write_manifest</code> du Lot 0 (<code>adapters/manifests.py:184-203</code> — et
+  reprendre son nom de temporaire, qui porte <strong>PID et identifiant de thread</strong> : la collision
+  a été rencontrée en vrai sous le <code>ThreadPoolExecutor</code> du Lot 0).
+  ⭐ ⚠ <strong>Mais un vecteur, c'est DEUX fichiers, et l'atomicité de chacun ne rend pas la paire
+  atomique</strong> (revue v4, M2). Ordre et sémantique, tranchés ici :
+  1. le <strong><code>.npy</code> s'écrit d'abord</strong>, atomiquement ;
+  2. le <strong><code>.json</code> s'écrit en dernier, et c'est LUI le marqueur de complétude</strong> ;
+  3. <code>list_vectors</code> <strong>globe les <code>.json</code></strong> et en dérive le chemin du <code>.npy</code> — jamais
+     l'inverse ; <code>read_vector</code> s'ancre sur la même règle ;
+  4. un <strong><code>.npy</code> sans compagnon est un déchet</strong> : invisible, ignoré, jamais une erreur.
+  <em>(Le patron vient du Lot 0 : <code>list_for_site</code> — <code>adapters/manifests.py:241-247</code> — ne globe
+  que les fichiers nommés exactement <code>manifest.json</code>, ce qui rend temporaires et résidus
+  structurellement invisibles. On transpose, on n'invente pas.)</em>
+  Motif : trois fiches aval supposent l'indissociabilité sans que rien ne la garantisse —
+  <code>l1-03.3</code>/O4 (SIGINT : « <code>read_vector</code> réussit sur ≥ 2 vecteurs, aucun temporaire
+  visible » — c'est exactement l'interruption <strong>entre</strong> les deux écritures), l'invariant de
+  <code>l1-05.3a</code>, et la sélection de <code>l1-04.5</code>/<code>l1-05.4</code>. Et le contrat de <code>read_vector</code>
+  (« <code>None</code> si absent, erreur typée si corrompu ») ne couvrait pas le cas : un <code>.npy</code>
+  orphelin n'est <strong>ni absent ni corrompu</strong>.
+  ⚠ <strong>Signature corrigée en revue v3 (V-15)</strong> : <code>model_id</code> <strong>disparaît</strong> des arguments —
+  <code>meta</code> le porte déjà, ainsi que le <code>spec_hash</code>. C'est de <code>meta</code> que le nom de fichier se
+  dérive, à un seul endroit. Passer <code>model_id</code> séparément ouvrait la porte à un fichier
+  nommé d'après un modèle et décrit par un autre.</li>
+<li><code>read_vector(dir, model_id, spec_hash) -&gt; Vector | None</code> — ⭐ <strong>le <code>spec_hash</code> est dans la
+  signature</strong> (revue v2, M2) : le nom de fichier le porte, deux variantes de spec peuvent
+  coexister, un glob « un seul match » casserait le scénario O5 de <code>l1-03.2</code>. <code>None</code> si
+  absent, erreur typée si corrompu.</li>
+<li>⭐ <code>list_vectors(dir) -&gt; list[VectorMeta]</code> — <strong>manquait, et il manquait à trois fiches</strong>
+  (revue v3, V-15). <code>l1-05.3a</code>, <code>l1-05.4</code> et <code>l1-04.5</code> lisent « les vecteurs présents dans
+  <code>data_root</code> » sans aucun moyen de dire <strong>lesquels</strong> : or <code>l1-03.2</code>/O5 <strong>exige</strong> que deux
+  specs coexistent. Sans sélection explicite, un rapport de séparabilité mélangerait
+  silencieusement deux espaces vectoriels — le vecteur le plus court chemin vers un
+  résultat faux et plausible. Signature avec filtres optionnels
+  <code>model_id</code> / <code>spec_hash</code>, et <strong>c'est aux lecteurs de choisir</strong>, jamais au hasard du glob.</li>
 <li>⭐ <code>embedding_key(grid_hash, model_id, spec_hash) -&gt; str</code> — la clé d'idempotence.
   <strong>Les trois composantes, pas deux.</strong> Elle est écrite dans le compagnon ; <code>l1-03.2</code>
   comparera la clé stockée à la clé courante pour décider de recalculer ou de sauter.</li>
-<li>Le <strong>compagnon JSON</strong> : <code>item_id</code>, <code>site_id</code>, <code>datetime</code>, <code>cloud_pct</code>, résumé SCL,
-  <code>model_id</code>, <code>dim</code>, <code>spec_hash</code>, <code>grid_hash</code>, <code>embedding_key</code>, version du paquet,
-  horodatage. C'est le contexte dont le Lot 2 aura besoin.</li>
+<li>⭐ <strong><code>VectorMeta</code></strong> — dataclass gelée, LA définition unique du compagnon (les autres
+  fiches renvoient ici) : <code>item_id</code>, <code>site_id</code>, <code>datetime</code>, <code>cloud_pct</code>, <code>scl_summary</code>,
+  <code>model_id</code>, <code>dim</code>, <code>spec_hash</code>, <code>grid_hash</code>, <code>embedding_key</code>, <strong><code>blas_threads</code></strong>,
+  <strong><code>torch_version</code></strong>, version du paquet, horodatage.
+  Les deux champs de configuration viennent de la revue v1 (C-12) : sans eux, le Lot 2
+  comparerait des vecteurs calculés sous des réglages différents sans le savoir. Ils ne
+  font PAS partie de la clé d'idempotence (arbitrage : les y mettre invaliderait les
+  vecteurs à chaque changement de machine).
+  ⚠ <strong><code>torch_version</code> se lit par <code>importlib.metadata.version("torch")</code>, JAMAIS par
+  <code>import torch</code></strong> (revue v3, A-1 — collision entre deux corrections). Cette fiche est
+  <strong>N0</strong> : elle s'écrit avant que torch soit installé (<code>l1-00</code>), et un <code>import torch</code> au
+  niveau module rendrait <strong>rouge</strong> la garde d'import paresseux (<code>l1-01.3</code>/O4, qui asserte
+  <code>"torch" not in sys.modules</code> après <code>import tiny_wae.__main__</code>). Repli <code>None</code> si le paquet
+  est absent — le champ est informatif, pas structurant.</li>
+<li>⭐ <strong><code>scl_summary</code> — le format est défini ICI</strong> (revue v3, S-9 : cette fiche est N0,
+  <code>l1-01.2</code> est N1 ; l'amont ne peut pas renvoyer à l'aval). ⭐ <strong>Forme tranchée en revue v4
+  (M5) — imbriquée, pas plate</strong> :</li>
 </ul>
+<p><code>{"classes": {"&lt;nom_classe&gt;": &lt;fraction&gt;, ...}, "valid_pct": 98.0}</code></p>
+<ul>
+<li><code>classes</code> : les classes SCL du manifeste (<code>Manifest.scl_class_counts</code>, Lot 0) converties
+    en <strong>fractions</strong>, dont la somme vaut <strong>≈ 1</strong> ;</li>
+<li><code>valid_pct</code> : un <strong>pourcentage 0-100</strong>, comme son nom l'indique — et comme <code>cloud_pct</code>
+    du Lot 0, qui est déjà un pourcentage (relevé sur le corpus : max 26,1 sur C08). Une
+    seule convention d'unité dans tout le projet.</li>
+</ul>
+<p>⚠ <strong>Pourquoi imbriqué</strong> : la forme plate mettait <code>valid_pct</code> dans le même dict que les
+  fractions, donc <code>sum(values())</code> valait <code>≈ 1 + valid_pct</code> — et l'oracle O6 de <code>l1-01.2</code>,
+  qui exige « somme ≈ 1 », <strong>rougissait sur une implémentation conforme</strong>. L'imbrication
+  rend la somme vérifiable sans convention implicite. <code>l1-01.2</code> s'y conforme.</p>
 <p><strong>Hors périmètre</strong> : le CLI (<code>l1-03.2</code>) · toute base de données · tout index global.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] <code>adapters/vectors.py</code> livré, <code>mypy --strict</code> vert.</li>
 <li>[ ] Écriture atomique, relecture, erreur typée sur fichier corrompu.</li>
+<li>[ ] <strong>Le <code>.json</code> écrit en dernier fait foi</strong> ; <code>list_vectors</code> globe les <code>.json</code> ; un <code>.npy</code>
+      orphelin est invisible.</li>
+<li>[ ] <code>scl_summary</code> au format imbriqué, <code>valid_pct</code> en pourcentage.</li>
 <li>[ ] <code>embedding_key</code> combine les trois composantes.</li>
+<li>[ ] <code>list_vectors</code> livré, avec filtres <code>model_id</code> / <code>spec_hash</code>.</li>
+<li>[ ] <strong>Aucun <code>import torch</code></strong> dans le module — <code>importlib.metadata</code> seulement.</li>
 <li>[ ] <code>tests/test_vectors.py</code> — court.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
@@ -121,12 +195,27 @@ prévoir que <code>data_root</code> soit configurable (il l'est déjà, Lot 0) e
 <td><code>read_vector</code> <strong>ne le voit pas</strong> ; pas de vecteur fantôme</td>
 </tr>
 <tr>
+<td>O3b</td>
+<td>⭐ <strong>Paire incomplète</strong> : un <code>.npy</code> valide déposé à la main <strong>sans</strong> son <code>.json</code></td>
+<td><code>list_vectors</code> ne le rend <strong>pas</strong>, <code>read_vector</code> rend <strong><code>None</code></strong> — un déchet, pas une erreur. Et le témoin inverse : la paire complète est bien vue. C'est le scénario d'un SIGINT entre les deux écritures, celui que <code>l1-03.3</code>/O4 provoque pour de bon</td>
+</tr>
+<tr>
 <td>O4</td>
 <td><code>.npy</code> tronqué à la main</td>
 <td>erreur <strong>typée</strong>, pas un tableau silencieusement faux</td>
 </tr>
 <tr>
 <td>O5</td>
+<td>⭐ <code>list_vectors</code> sur un répertoire contenant <strong>deux specs du même modèle</strong> et un autre modèle</td>
+<td>sans filtre : les 3 ; avec <code>spec_hash=</code> : <strong>exactement 1</strong>, et c'est le bon. Témoin dans les deux sens — c'est ce qui protège les rapports de <code>l1-05</code> d'un mélange d'espaces vectoriels</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>⭐ <code>import tiny_wae.adapters.vectors</code> dans un <strong>sous-processus frais</strong></td>
+<td><code>"torch" not in sys.modules</code> — la garde d'import paresseux vaut aussi pour ce module, qui est tenté de lire une version de torch</td>
+</tr>
+<tr>
+<td>O7</td>
 <td><code>just check</code></td>
 <td>vert</td>
 </tr>
@@ -151,4 +240,4 @@ il fera la conversion, ce n'est pas le travail de ce lot.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

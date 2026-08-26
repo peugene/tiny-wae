@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-05.3a] CLI similarity-report — séparabilité, baseline triviale, témoin mécanique</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.3a</b></nav><h1>[l1-05.3a] CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-053a-loutil-de-la-separabilite">[l1-05.3a] — L'outil de la séparabilité</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#les-invariants-refaits-revue-v3-e-3">⭐ Les invariants, refaits (revue v3, E-3)</a></li>
+</ul>
+</li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Issue de la scission de <code>l1-05.3</code></strong> (revue E-2/D-11 : la campagne n'est pas une session
+d'agent) — cette fiche livre l'OUTIL, entièrement vérifiable sur fixtures ; l'exécution
+réelle appartient à <code>l1-05.3.H</code>.
+<strong>Révisée post-revue v3</strong> (S-12, V-08, V-11, V-15, V-19, E-17, D-17, S-15) : ⭐ <strong>la
+dépendance descend de <code>l1-03.3</code> à <code>l1-03.1</code></strong> — cette fiche ne consomme que le <strong>format</strong>
+des vecteurs, pas le backfill : elle se teste sur vecteurs fabriqués, et rien dans son
+code n'a besoin qu'un corpus existe. Elle passe de N4 à N1, ce qui désengorge d'autant le
+niveau le plus chargé du graphe.</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Livrer le CLI qui, sur un corpus de vecteurs, mesure si les embeddings <strong>distinguent les
+sites</strong> — avec la baseline qui rend le score interprétable et le témoin qui prouve que la
+métrique ne ment pas.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>src/tiny_wae/cli/similarity_report.py</code> → <strong><code>docs/lots/lot-1/similarity-report.md</code></strong>
+<strong>et <code>.json</code></strong> (versionnés — jamais <code>data/</code>, revue K-07).</p>
+<p>⭐ <strong>Zone d'écriture</strong> : <code>docs/lots/lot-1/</code> est ouverte à l'équipe <strong>en création</strong> par
+décision Philippe du 25/08. C'est cette fiche qui <strong>crée le répertoire</strong> ; <code>l1-04.5</code> et
+<code>l1-05.4</code> y déposeront ensuite leurs rapports.</p>
+<p>⭐ <strong>Double sortie, <code>.md</code> ET <code>.json</code></strong> (revue v3, S-4/E-7) : <code>l1-04.5</code> calcule le <strong>ratio
+discrimination / seconde</strong> en divisant la marge de séparabilité par le temps par chip. Si
+la marge ne vit que dans un tableau Markdown, ce ratio se calcule à la main — le rapport de
+banc cesse d'être régénérable. Le <code>.json</code> porte, par modèle : marge, silhouette, baseline,
+verdict, effectifs, pire site.</p>
+<p>⭐ <strong>Sélection explicite des vecteurs</strong> (revue v3, V-15) : le CLI prend <code>--model</code> et
+<code>--spec-hash</code> et passe par <code>l1-03.1::list_vectors</code>. <strong>Jamais « tous les vecteurs présents
+dans <code>data_root</code> »</strong> : <code>l1-03.2</code>/O5 exige que deux specs coexistent sur disque, et mélanger
+deux espaces vectoriels produirait un score plausible et faux. La spec agrégée est
+<strong>nommée dans le rapport</strong> ; si plusieurs sont présentes et qu'aucune n'est demandée, le
+CLI <strong>échoue en les listant</strong>, il n'en choisit pas une.</p>
+<p>⭐ <strong>Filtre nuage par défaut</strong> (revue v3, D-5/C-4) : le rapport ne retient que les vecteurs
+dont le <code>cloud_pct</code> du compagnon est <strong>≤ <code>embed_cloud_pct_max</code></strong>. Motif : la campagne
+<code>l1-05.3.H</code> embeddera délibérément le site témoin C08 <strong>sans filtre</strong> pour <code>l1-05.4</code> ; sans
+ce filtre à la lecture, la séparabilité comparerait des populations différentes selon les
+sites, et l'invariant ci-dessous rougirait sur des données parfaitement légitimes.
+<code>--no-cloud-filter</code> existe pour <code>l1-05.4</code>, qui est le seul cas à lever la règle.</p>
+<p>Ce que fait le CLI, par modèle :</p>
+<ol>
+<li>relit les vecteurs sélectionnés et leurs compagnons (<code>VectorMeta</code>), groupe par <code>site_id</code> ;</li>
+<li>calcule marge (intra − inter) et silhouette (<code>l1-05.1</code>) ;</li>
+<li>⭐ <strong>calcule la baseline triviale</strong> (revue E-6) : le même score sur un vecteur de
+   <strong>20 nombres</strong> — moyenne + écart-type par bande. Un GFM qui ne bat pas la baseline
+   n'apporte rien, quel que soit son score absolu — c'est la baseline, pas le 0,2, qui dit
+   si l'embedding a de la valeur.
+   ⚠ <strong>Deux contraintes que la revue v3 a levées</strong> (E-17) : la baseline se calcule <strong>depuis
+   les chips</strong>, alors que les tests de cette fiche tournent sur des <strong>vecteurs fabriqués</strong>
+   derrière lesquels il n'y a aucun chip ; et sur corpus complet, elle impose une <strong>seconde
+   lecture de ~16 Gio</strong> qui n'est budgétée nulle part. D'où : <code>--no-baseline</code> (défaut en
+   test, la baseline est alors marquée « non calculée » dans les deux sorties), et <strong>coût
+   de la passe baseline mesuré et publié</strong> lors de la campagne ;</li>
+<li>⭐ <strong>témoin mécanique</strong> : les mêmes vecteurs avec <code>site_id</code> mélangés → marge et
+   silhouette ≈ 0 (quantifié : |marge| &lt; 0,1, |silhouette| &lt; 0,05 — revue E-35) ;</li>
+<li>publie la distribution <strong>par site</strong> — ⭐ groupes très inégaux : <strong>63 à 579 chips
+   <code>ingested</code></strong> (médiane 219), <strong>49 à 563 après le filtre à 10 %</strong> (médiane 178), recomptés
+   sur les 9 873 manifestes le 26/08 — le pire site nommé, et les <strong>invariants de
+   complétude</strong> (voir ci-dessous).</li>
+</ol>
+<h3 id="les-invariants-refaits-revue-v3-e-3">⭐ Les invariants, refaits (revue v3, E-3)</h3>
+<p>L'invariant à cinq termes de la version précédente <strong>ne pouvait pas rougir</strong> : ses deux
+membres étaient lus du <strong>même endroit</strong> — le disque. Retirer un fichier de vecteur
+décrémentait <code>embedded</code> <em>et</em> le nombre de fichiers : l'égalité tenait. Un témoin qu'on ne
+peut pas rendre rouge n'est pas un témoin.</p>
+<p>Deux invariants, <strong>avec deux sources distinctes</strong> :</p>
+<ul>
+<li><code>vecteurs_sur_disque == len(list_vectors(...))</code> — trivial, sert de compteur ;</li>
+<li>⭐ <code>manifestes_éligibles == vecteurs_trouvés + failed_missing + unexplained_missing</code>, où
+  <strong><code>manifestes_éligibles</code> est recalculé depuis les manifestes du Lot 0</strong> (statut
+  <code>ingested</code>, dans la fenêtre, <code>cloud_pct</code> sous le seuil) et où les deux listes sont des
+  <strong>listes d'<code>item_id</code> nommés</strong>, jamais des soustractions de compteurs. C'est ce qui rend le
+  contrôle falsifiable : retirer un vecteur fait grandir une liste d'un élément <strong>nommé</strong>,
+  et le rapport le montre.</li>
+</ul>
+<p>⭐ <strong>Pourquoi DEUX listes et pas une</strong> (revue v4, M3) : <code>l1-03.2</code> dépose un <code>.error.json</code>
+à côté de tout item en échec. Un tel item est éligible, il n'a pas de vecteur — et il
+<strong>porte sa propre explication à côté</strong>. Avec une liste unique, il tomberait parmi les
+« inexpliqués » et le contrôle crierait dès le premier échec, c'est-à-dire tout le temps.</p>
+<ul>
+<li><strong><code>failed_missing</code></strong> — un <code>.error.json</code> est présent : incident <strong>connu</strong>, avec sa cause ;</li>
+<li><strong><code>unexplained_missing</code></strong> — rien du tout : c'est le <strong>vrai</strong> signal.</li>
+</ul>
+<p>⚠ La revue v3 avait raison de refaire cet invariant (« un témoin qu'on ne peut pas rendre
+rouge n'en est pas un ») ; il lui manquait le pendant, et il vaut d'être écrit : <strong>un témoin
+qui rougit tout le temps n'en est pas un non plus.</strong> Un contrôle qui crie sans raison finit
+ignoré, et c'est le jour où il crie à raison qu'on ne le regarde plus.</p>
+<p><strong>Hors périmètre</strong> : lancer la campagne réelle (<code>l1-05.3.H</code>) · les trajectoires
+(<code>l1-05.4</code>) · tout chronométrage (le rapport de banc s'en charge).</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] CLI livré, découvert automatiquement ; <strong>double sortie <code>.md</code> + <code>.json</code></strong> sous
+      <code>docs/lots/lot-1/</code>, chemin réglable par <code>--out</code>, <strong>plus la vue <code>.html</code></strong> du <code>.md</code>
+      (<code>just md2html</code>).</li>
+<li>[ ] Sélection <code>--model</code> / <code>--spec-hash</code> obligatoire dès qu'il y a ambiguïté.</li>
+<li>[ ] Filtre nuage par défaut ; <code>--no-cloud-filter</code> disponible ; <code>--no-baseline</code> disponible.</li>
+<li>[ ] Les deux invariants, avec <code>unexplained_missing</code> <strong>nommé</strong> et non dérivé.</li>
+<li>[ ] <strong>Fixtures de vecteurs</strong> : cette fiche est <strong>propriétaire</strong> de
+      <code>tests/fixtures/vectors/</code> (revue v3, S-15 — le répertoire n'avait aucun propriétaire).
+      Vecteurs <strong>fabriqués</strong>, jamais issus d'un modèle réel.</li>
+<li>[ ] <code>tests/test_similarity_report.py</code> — sur ces fixtures.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Vecteurs de fixture à <strong>structure connue</strong> (2 groupes bien séparés + du bruit)</td>
+<td>marge et silhouette <strong>recalculables à la main</strong>, valeurs littérales dans le test</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>⭐ Témoin : labels mélangés sur les mêmes fixtures</td>
+<td><strong>|marge| &lt; 0,1 et |silhouette| &lt; 0,05</strong> — le rapport l'affiche comme contrôle</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>⭐ Complétude, <strong>dans les deux sens</strong> : (a) corpus de fixture cohérent · (b) un vecteur retiré à la main</td>
+<td>(a) <code>unexplained_missing</code> <strong>vide</strong> — témoin positif, absent de la version précédente · (b) <code>unexplained_missing</code> contient <strong>exactement l'<code>item_id</code> retiré, nommé</strong>. Le second cas doit être <strong>rouge dans le rapport</strong>, pas une ligne de plus dans un tableau</td>
+</tr>
+<tr>
+<td>O3b</td>
+<td>⭐ <strong>Les deux listes ne se confondent pas</strong> : un item sans vecteur <strong>mais avec un <code>.error.json</code></strong></td>
+<td>il tombe dans <strong><code>failed_missing</code></strong>, et <strong><code>unexplained_missing</code> reste vide</strong>. Témoin inverse : le même item sans <code>.error.json</code> bascule dans <code>unexplained_missing</code>. Sans ce couple, le contrôle crie dès le premier échec de la campagne et devient du bruit</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Distribution par site</td>
+<td>présente, pire site nommé avec score et effectif</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>⭐ <strong>Qualification contre le seuil acté</strong> (revue v3, E-5 — il n'apparaissait dans aucune table d'oracle) : sur trois jeux de fixtures construits pour cela</td>
+<td>trois états rendus : <strong><code>retenu</code></strong> (silhouette &gt; 0,2 <strong>et</strong> &gt; baseline) · <strong><code>douteux</code></strong> (l'un des deux seulement) · <strong><code>insuffisant</code></strong> (aucun des deux). Le rapport <strong>qualifie</strong>, il ne bloque pas — le verdict appartient à <code>l1-06.H</code></td>
+</tr>
+<tr>
+<td>O6</td>
+<td>⭐ Sélection : <code>data_root</code> contenant <strong>deux specs</strong></td>
+<td>sans <code>--spec-hash</code> : <strong>échec</strong> listant les specs présentes ; avec : n'agrège que la bonne, et la <strong>nomme</strong> dans les deux sorties</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>Filtre nuage</td>
+<td>un vecteur au-dessus du seuil est <strong>exclu</strong> par défaut, <strong>inclus</strong> avec <code>--no-cloud-filter</code> — les deux sens</td>
+</tr>
+<tr>
+<td>O8</td>
+<td><code>.md</code> et <code>.json</code> d'une même exécution</td>
+<td><strong>mêmes chiffres</strong> : la marge du JSON est celle du tableau Markdown (assertion croisée)</td>
+</tr>
+<tr>
+<td>O9</td>
+<td><code>just check</code></td>
+<td>vert, hors ligne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : les scores réels (campagne, <code>l1-05.3.H</code>) · la comparaison
+inter-modèles autrement que par scores · le <strong>coût</strong> de la passe baseline sur corpus
+complet, qui ne se mesure qu'à la campagne.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Ce qui a été fait</strong> : …</li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-05.2.html">← [l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré</a><a href="l1-05.3.H.html">[l1-05.3.H] [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

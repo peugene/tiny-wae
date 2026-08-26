@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.4</b></nav><h1>[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.4</b></nav><h1>[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-024-la-substituabilite-prouvee">[l1-02.4] — La substituabilité, prouvée</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,8 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-33 : O2 mécanisé ; dimensions corrigées 384).</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Prouver que le port de <code>l1-01.3</code> tient sa promesse : <strong>la même fonction produit un vecteur
@@ -80,9 +81,12 @@ que les deux vecteurs sortent.</p>
 <li><strong>une seule</strong> fonction de consommation, annotée <code>EmbeddingModel</code>, sans <code>isinstance</code>, sans
   <code>cast</code>, sans <code>type: ignore</code> ;</li>
 <li>elle est appelée avec les <strong>trois</strong> implémentations : <code>FakeEmbeddingModel</code>, Clay, TerraMind ;</li>
-<li>⭐ vérification que <strong>les dimensions diffèrent</strong> (1024 contre 768) et que le code
-  d'appel <strong>ne s'en soucie pas</strong> — c'est le cœur de la démonstration : un appelant qui
-  supposerait une dimension fixe serait rouge ici.</li>
+<li>⭐ vérification que <strong>les dimensions diffèrent</strong> — <strong>1024 (Clay) contre 384 (TerraMind)</strong>,
+  cf. la table du chapeau <code>l1-02</code> — et que le code d'appel <strong>ne s'en soucie pas</strong> : c'est le
+  cœur de la démonstration, un appelant qui supposerait une dimension fixe serait rouge ici.
+  <em>(Le « 768 » qui figurait ici jusqu'à la revue v3 venait de la carte HF de TerraMind, qui
+  est fausse — le code source dit 384. Corrigé en O2 dès la v1, le corps de la fiche avait
+  survécu : c'est exactement le motif « l'implémenteur lit le corps avant l'oracle ».)</em></li>
 </ul>
 <p><strong>Hors périmètre</strong> : toute comparaison de <strong>qualité</strong> entre les deux (<code>l1-05</code>) · toute
 mesure de temps (<code>l1-04</code>).</p>
@@ -106,12 +110,12 @@ mesure de temps (<code>l1-04</code>).</p>
 <tr>
 <td>O1</td>
 <td>⭐ <code>mypy --strict</code> sur le module de consommation</td>
-<td><strong>vert, zéro <code>cast</code>, zéro <code>type: ignore</code></strong> — grep sur le fichier pour le prouver mécaniquement</td>
+<td><strong>vert, zéro <code>cast</code>, zéro <code>type: ignore</code></strong> — grep sur le fichier pour le prouver mécaniquement. ⚠ <strong>Portée de l'interdiction, précisée en revue v3 (A-13)</strong> : elle vise <strong>le consommateur</strong>, pas les adapters. <code>pyproject.toml</code> pose <code>ignore_missing_imports = true</code>, donc torch, claymodel et terratorch rendent <code>Any</code> : <code>--strict</code> ne mord pas à l'intérieur des adapters, et convertir la sortie du modèle par <code>np.asarray(...)</code> <strong>à la frontière</strong> y est la bonne pratique, pas une entorse</td>
 </tr>
 <tr>
 <td>O2</td>
 <td>La même fonction, appelée avec les 3 implémentations, sur la même fixture</td>
-<td>3 vecteurs float32 sans NaN ; <strong>dimensions 1024 · 768 · celle du double</strong> — et <strong>aucune branche par <code>model_id</code></strong> dans la fonction (vérifié par lecture, consigné)</td>
+<td>3 vecteurs float32 sans NaN ; <strong>dimensions 1024 · 384 · celle du double</strong> — et <strong>aucune branche par modèle</strong> : grep mécanique sur la fonction, aucune occurrence de <code>model_id ==</code>, <code>isinstance(</code>, ni <code>clay|terramind</code> (insensible à la casse)</td>
 </tr>
 <tr>
 <td>O3</td>
@@ -145,4 +149,4 @@ implémentations.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-02.3.html">← [l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde</a><span></span></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-02.3.html">← [l1-02.3] Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables</a><span></span></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

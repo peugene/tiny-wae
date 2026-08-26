@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.3</b></nav><h1>[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.3</b></nav><h1>[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-033-le-backfill-des-embeddings">[l1-03.3] — Le backfill des embeddings</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,12 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-14, E-15, E-30, S-18) : O1 et O4 réécrits — l'un était
+impossible par idempotence, l'autre satisfaisable à vide ; clé de settings dédiée.
+<strong>Révisée post-revue v3</strong> (V-21, V-10) : le <strong>type de pool</strong> est désormais écrit — il
+détermine si le levier « threads » de <code>l1-04.3b</code> mesure quelque chose ; la clé de settings
+est pré-posée par <code>l1-00</code>.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Passer les 25 sites en une commande, avec un pool de workers, une reprise naturelle et une
@@ -72,7 +77,7 @@ vecteurs pour <code>l1-05</code>.</p>
 par site, distinction entre échec métier et amont injoignable, compteurs agrégés. Ici c'est
 plus simple : pas de réseau, donc pas de cas « injoignable ».</p>
 <p>Interface :</p>
-<pre><code>just run embed-backfill --model clay-v1.5 [--sites A01,B09] [--workers N] [--from …] [--to …]
+<pre><code>just run embed-backfill --model clay-v1.5 [--sites A01,B09] [--workers N] [--cloud-max N] [--from …] [--to …]
 </code></pre>
 <p>Points d'attention :</p>
 <ul>
@@ -80,21 +85,38 @@ plus simple : pas de réseau, donc pas de cas « injoignable ».</p>
   qui attendait le réseau, celui-ci est <strong>limité par le calcul</strong> : N workers se disputent
   les mêmes cœurs, et chaque worker peut lui-même lancer plusieurs threads BLAS.
   <strong>Sur-paralléliser peut ralentir.</strong> Le défaut doit être <strong>prudent</strong> (workers = 1 ou 2), et
-  la mesure du bon réglage appartient à <code>l1-04.3</code> — cette fiche fournit le levier, pas sa
+  la mesure du bon réglage appartient à <code>l1-04.3b</code> — cette fiche fournit le levier, pas sa
   valeur.</li>
+<li>⭐ <strong>Type de pool : <code>ThreadPoolExecutor</code>, tranché ici</strong> (revue v3, V-21). Le patron du
+  Lot 0 (<code>adapters/backfill.py</code>) en est un, et cette fiche le reprend — la fiche ne le
+  disait nulle part, ce qui laissait planer une ambiguïté lourde de conséquences :
+  avec des <strong>threads</strong>, <code>torch.set_num_threads</code> est process-global et s'applique bien aux
+  workers ; avec des <strong>processus</strong>, il ne s'hériterait pas et le levier « threads » de
+  <code>l1-04.3b</code> mesurerait autre chose que ce qu'il croit. Le dire une fois évite d'avoir à
+  le déduire. <em>(Si un pool de processus devenait nécessaire pour contourner le GIL, ce
+  serait une décision de <code>l1-04.3b</code>, prise sur mesure, et elle imposerait de propager
+  <code>OMP_NUM_THREADS</code>/<code>MKL_NUM_THREADS</code> par l'environnement.)</em></li>
 <li><strong>L'isolation par site</strong> reste la bonne granularité : un site en échec n'empêche pas les
   autres.</li>
 <li><strong>La reprise est naturelle</strong> : l'idempotence de <code>l1-03.2</code> fait qu'un relancement saute ce
   qui existe. Aucun fichier d'état à maintenir.</li>
+<li>⭐ <strong>Clé de settings DÉDIÉE : <code>embed_workers</code></strong> (défaut 1) — surtout pas
+  <code>backfill_workers</code>, qui existe déjà (Lot 0, défaut 6, calibré pour un goulot RÉSEAU) :
+  réutiliser la clé dégraderait l'ingestion par effet de bord silencieux (revue S-18).
+  ⚠ La clé est <strong>pré-posée par <code>l1-00</code></strong> dans <code>settings.yaml</code> et dans
+  <code>config_io._INT_FIELDS</code> : cette fiche la <strong>consomme</strong>, elle n'écrit pas dans ces fichiers
+  (revue v3, V-10 — c'est ce qui supprime l'écriture concurrente sur la configuration).</li>
 <li><strong>Interruption (SIGINT)</strong> : sortie non nulle, et <strong>tous les vecteurs écrits restent
   relisibles</strong> — c'est l'écriture atomique de <code>l1-03.1</code> qui le garantit.</li>
 </ul>
-<p><strong>Hors périmètre</strong> : la campagne réelle elle-même (elle sera lancée par <code>l1-05.3</code>) · les
-mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l1-04.3</code>).</p>
+<p><strong>Hors périmètre</strong> : la campagne réelle elle-même (<code>l1-05.3.H</code>, geste humain) · les
+mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l1-04.3b</code>).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] <code>cli/embed_backfill.py</code> livré, découvert automatiquement.</li>
-<li>[ ] Défaut de workers <strong>prudent</strong>, réglable, documenté comme « à calibrer par <code>l1-04.3</code> ».</li>
+<li>[ ] Défaut de workers <strong>prudent</strong>, réglable, documenté comme « à calibrer par <code>l1-04.3b</code> ».</li>
+<li>[ ] Le pool est un <code>ThreadPoolExecutor</code>, et le commentaire dit <strong>pourquoi</strong> (héritage du
+      réglage de threads BLAS).</li>
 <li>[ ] Compteurs agrégés + par site, avec dénominateurs.</li>
 <li>[ ] <code>tests/test_cli_embed_backfill.py</code> — sur le <strong>double</strong>, fixtures de <code>l1-01.4</code>.</li>
 </ul>
@@ -110,8 +132,8 @@ mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l
 <tbody>
 <tr>
 <td>O1</td>
-<td>Backfill sur les fixtures (2 sites), <code>--workers 1</code> puis <code>--workers 4</code>, double</td>
-<td><strong>même ensemble <code>(item_id, statut)</code></strong> dans les deux cas — déterminisme du pool. Compteurs agrégés identiques</td>
+<td>⭐ Backfill sur les fixtures (2 sites), exécuté dans <strong>deux répertoires de sortie vierges et distincts</strong>, <code>--workers 1</code> puis <code>--workers 4</code>, double</td>
+<td>même ensemble <code>(item_id, statut)</code>, compteurs agrégés identiques, <strong>et vecteurs identiques au bit près entre les deux répertoires</strong> — c'est cette dernière assertion qui prouve que le pool n'introduit rien. ⚠ Revue E-14 : comparer deux runs dans le MÊME répertoire est impossible — l'idempotence rend le 2ᵉ <code>skipped</code></td>
 </tr>
 <tr>
 <td>O2</td>
@@ -120,13 +142,13 @@ mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l
 </tr>
 <tr>
 <td>O3</td>
-<td>Run double</td>
-<td>2e passage : <code>embedded == 0</code>, tout en <code>skipped</code>, <strong>aucune écriture</strong></td>
+<td>Idempotence</td>
+<td><strong>renvoi</strong> : testée en <code>l1-03.2</code>/O2, non retestée ici (revue E-30)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>SIGINT pendant un run (double ralenti artificiellement)</td>
-<td>exit ≠ 0 ; <strong>100 % des vecteurs présents sont relisibles</strong> (<code>read_vector</code> OK sur tous) ; aucun <code>.npy</code> tronqué</td>
+<td>⭐ SIGINT envoyé <strong>après qu'au moins 2 vecteurs ont été écrits</strong> (le double signale sa progression, le test attend ce jalon)</td>
+<td>exit ≠ 0 ; <code>read_vector</code> réussit sur <strong>≥ 2</strong> vecteurs ; aucun temporaire visible ; <strong>et une relance sans <code>--force</code> reprend et complète le reste</strong> — la reprise est la moitié du critère. ⚠ Revue E-15 : sans le jalon, un SIGINT avant toute écriture satisfaisait l'oracle à vide (0/0 = 100 %)</td>
 </tr>
 <tr>
 <td>O5</td>
@@ -140,8 +162,8 @@ mesures de débit (<code>l1-04</code>) · le choix du nombre de workers (<code>l
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : le débit réel et le nombre optimal de workers (<code>l1-04.3</code>) ·
-le comportement sur 5 793 chips — la campagne appartient à <code>l1-05.3</code> · la mémoire.</p>
+<p><strong>Non testé par cette fiche</strong> : le débit réel et le nombre optimal de workers (<code>l1-04.3b</code>) ·
+le comportement sur 5 793 chips — la campagne appartient à <code>l1-05.3.H</code> · la mémoire.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
 <p>⚠ <strong>Ne pas transposer aveuglément le backfill du Lot 0.</strong> Là-bas, 6 workers étaient bons
 parce que le goulot était le réseau. Ici le goulot est le CPU, et un modèle PyTorch utilise
@@ -158,4 +180,4 @@ faciles à écrire et attrapent beaucoup moins.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-03.2.html">← [l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage</a><a href="l1-03.4.html">[l1-03.4] Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-03.2.html">← [l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage</a><a href="l1-03.4.html">[l1-03.4] Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

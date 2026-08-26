@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-06.H</b></nav><h1>[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O4<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-06.H</b></nav><h1>[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : H<br><b>Catégorie</b> : humain<br><b>Phase</b> : O4<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="warn">⛔ <b>Fiche humaine</b> — ne pas dispatcher à un agent : elle est réalisée par un humain, et bloque volontairement ses dépendants.</div><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-06h-fiche-humaine-ne-pas-dispatcher-a-un-agent">[l1-06.H] — ⛔ FICHE HUMAINE — NE PAS DISPATCHER À UN AGENT</a><ul>
 <li><a href="#objet">Objet</a></li>
@@ -70,6 +70,7 @@ ni la déplacer en son nom. Elle est la feuille du graphe : rien ne l'attend, ma
 Il décidait d'un <strong>périmètre</strong>. Cette fiche est le moment où tu tranches, au vu de deux
 rapports et non d'une intuition.</p>
 <h2 id="ce-que-tu-auras-sous-les-yeux">Ce que tu auras sous les yeux</h2>
+<p><em>(Les trois rapports ont aussi leur vue <code>.html</code> à côté du <code>.md</code> — ajoutée en revue v4.)</em></p>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -79,16 +80,28 @@ rapports et non d'une intuition.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>data/bench-report.md</code> (<code>l1-04.5</code>)</td>
-<td>temps par phase et par modèle · RAM · <strong>le run quotidien</strong> · la reprise complète · les 4 leviers chiffrés</td>
+<td><code>docs/lots/lot-1/bench-report.md</code> (<code>l1-04.5</code>)</td>
+<td>temps par phase et par modèle · RAM · <strong>le run quotidien</strong> · la reprise · les leviers · ⭐ <strong>le ratio discrimination/seconde</strong></td>
 </tr>
 <tr>
-<td><code>data/similarity-report.md</code> (<code>l1-05.3</code>)</td>
-<td>les embeddings distinguent-ils les 25 sites · le pire site</td>
+<td><code>docs/lots/lot-1/similarity-report.{md,json}</code> (<code>l1-05.3a</code>)</td>
+<td>séparabilité contre <strong>baseline triviale</strong> · le pire site · la spec agrégée, nommée</td>
 </tr>
 <tr>
-<td><code>data/trajectory-report.md</code> (<code>l1-05.4</code>)</td>
-<td>⭐ <strong>un vecteur par chip porte-t-il un changement local</strong> · la corrélation aux nuages sur la zone témoin</td>
+<td><code>docs/lots/lot-1/similarity-report-sample.{md,json}</code></td>
+<td>le <strong>premier</strong> verdict, celui du sous-échantillon — conservé, plus écrasé</td>
+</tr>
+<tr>
+<td><code>docs/lots/lot-1/trajectory-report.md</code> (<code>l1-05.4</code>)</td>
+<td>⭐ <strong>un vecteur par chip porte-t-il un changement local</strong> · corrélation aux nuages (plage complète) · corrélation à la <strong>phase saisonnière</strong></td>
+</tr>
+<tr>
+<td><code>docs/lots/lot-1/campaign.json</code> (<code>l1-05.3.H</code>)</td>
+<td>durées réelles, périmètre embeddé, réglages — la source de la confrontation d'extrapolation</td>
+</tr>
+<tr>
+<td>le JSON de <code>l1-05.2</code></td>
+<td>déterminisme : bit à bit, écart entre threads, et <strong><code>determinism_violated</code></strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -103,20 +116,43 @@ rapports et non d'une intuition.</p>
    heures une fois, c'est une nuit ; trente minutes par jour pour dix chips, c'est un système
    qui ne vit pas.</li>
 <li><strong>Quels leviers activer.</strong> Copie locale du corpus si <code>l1-04.2</code> montre un gain · réglage
-   batch/threads/workers de <code>l1-04.3</code> · quantification si <code>l1-04.4</code> a conclu <strong>et</strong> que la
-   fidélité tient.</li>
+   threads/workers de <code>l1-04.3b</code> · quantification si <code>l1-04.4</code> a conclu <strong>et</strong> que la
+   fidélité tient — c'est-à-dire <strong>similarité minimale ≥ 0,999</strong> (le seuil est acté, le
+   citer plutôt que d'écrire « si elle tient », qui n'engage à rien) · <strong>exposer ou non
+   l'option <code>--batch</code></strong>, si <code>l1-04.3a</code> a mesuré un gain : aucun CLI ne l'expose aujourd'hui,
+   et l'ajouter est une décision, pas un ajustement.</li>
 <li>⭐ <strong>Si le verdict de <code>l1-05.4</code> est négatif ou douteux</strong> — l'unité « un vecteur par chip »
    ne porte pas le signal — trancher entre : passer à la variante <strong>4 tuiles</strong> (dont
-   <code>l1-04.3</code> a chiffré le coût), réduire le périmètre pour se l'offrir, ou <strong>rouvrir le
+   <code>l1-04.3a</code> a chiffré le coût), réduire le périmètre pour se l'offrir, ou <strong>rouvrir le
    cadrage du Lot 2</strong>. C'est la décision la plus lourde de la fiche, et c'est pour la rendre
    possible <strong>avant</strong> le Lot 2 que <code>l1-05.4</code> existe.</li>
-<li><strong>Si la corrélation aux nuages dépasse 0,5</strong> sur la zone témoin : le seuil de 10 % ne
-   suffit pas. Le resserrer, ou revenir sur la décision de ne pas masquer.</li>
+<li><strong>Si <code>|r| &gt; 0,5</code></strong> entre la dérive et <code>cloud_pct</code> sur les zones témoins (C08 <strong>et</strong> C02),
+   mesuré sur la <strong>plage complète</strong> (<code>l1-05.4</code>/O3 — un <code>r</code> négatif fort compte autant) : le
+   seuil de 10 % ne suffit pas. Le resserrer, ou revenir sur la décision de ne pas masquer.
+   ⚠ <strong>Regarder d'abord le <code>n</code></strong> : si le rapport dit <strong>non concluant</strong> (moins de 25 points
+   au-dessus de 10 %), il n'y a <strong>rien à trancher ici</strong> — le contrôle n'a pas eu lieu. Ne
+   pas lire un <code>r</code> calculé sur une poignée de points comme un signal : à n = 14, le seuil de
+   0,5 est en dessous du <code>r</code> critique à 5 %, il se franchit par accident (revue v4, m4).</li>
+<li>⭐ <strong>La tolérance de déterminisme</strong> (revue C-13, précisée v3) : <code>l1-05.2</code> publie un état
+   parmi trois — <code>identical</code>, <code>negligible</code>, <code>significant</code> — <strong>sans seuil de passage</strong>,
+   parce que ce seuil n'a jamais été arbitré et n'a pas à l'être par une fiche d'agent.
+   ⛔ <strong>Si son JSON porte <code>determinism_violated: true</code></strong>, ce point devient <strong>bloquant pour
+   la recette</strong> : la sémantique d'idempotence de <code>l1-03.2</code> repose sur l'identité, et il faut
+   soit fixer une tolérance explicite, soit acter que l'idempotence resservira des vecteurs
+   non reproductibles.</li>
+<li><strong>Le repli <code>tiny</code></strong> (revue C-23) : si même TerraMind small ne tient pas le run quotidien,
+   décider de mesurer <code>terramind_v1_tiny</code> — ou d'accepter un périmètre réduit.</li>
+<li>⭐ <strong>Si <code>l1-03.4</code> a basculé le smoke sur le double</strong> (son Résumé le dit) : le gate
+   n'exerce plus la garde réseau en permanence, elle n'est plus couverte que par un test
+   dédié. Statuer — l'accepter et le consigner comme dette, ou exiger le retour à un modèle
+   réel avec le budget de temps que ça suppose. <em>(Aucune arête ne relie <code>l1-03.4</code> à cette
+   fiche : la bascule est conditionnelle, et une dépendance permanente pour un cas qui peut
+   ne jamais survenir figerait le graphe pour rien — revue v3, S-11.)</em></li>
 </ol>
 <h2 id="checklist">Checklist</h2>
 <ul>
-<li>[ ] Lire les trois rapports.</li>
-<li>[ ] Trancher les points 1 à 5 ci-dessus.</li>
+<li>[ ] Lire les trois rapports, <code>campaign.json</code> et le JSON de déterminisme.</li>
+<li>[ ] Trancher les points 1 à 8 ci-dessus.</li>
 <li>[ ] Écrire les décisions dans <code>docs/lots/lot-1-embeddings.md</code> (§ à créer, comme le §7 du
       Lot 0) — <strong>c'est la fiche de lot qui fait foi</strong>, pas cette fiche-ci.</li>
 <li>[ ] Mettre à jour <code>settings.yaml</code> si un réglage change (seuil de nuage, workers, threads).</li>
@@ -141,6 +177,8 @@ dimensionnement dépendra du périmètre que tu arbitres ici) · l'achat de mat�
 <li><strong>Périmètre embeddable arbitré</strong> : …</li>
 <li><strong>Leviers activés</strong> : …</li>
 <li><strong>Verdict sur l'unité d'embedding</strong> : …</li>
+<li><strong>Tolérance de déterminisme retenue</strong> : …</li>
+<li><strong>Garde réseau : le smoke exerce-t-il un modèle réel ?</strong> : …</li>
 <li><strong>Recette du Lot 1</strong> : <em>(prononcée / ce qui manque)</em></li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-05.html">← [l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin</a><span></span></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-05.html">← [l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin</a><a href="l1-07.html">[l1-07] Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

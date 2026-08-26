@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.4</b></nav><h1>[l1-03.4] Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.4</b></nav><h1>[l1-03.4] Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-034-le-smoke-du-lot-1">[l1-03.4] — Le smoke du Lot 1</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,18 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-10, C-14, C-15) : la garde est posée par le CODE DE
+PRODUCTION (<code>l1-02.3</code>), pas par ce script — sinon la retirer du code ne ferait plus
+tomber le smoke, et tout le mécanisme s'annulerait. L'échappatoire « bascule sur le
+double » est désormais conditionnée.
+<strong>Révisée post-revue v4</strong> (M6, m2) : la correction de V-23 ne tenait qu'à <strong>moitié</strong> — le
+module <code>smoke.py</code> est exécuté à la <strong>collecte</strong> pytest, donc l'import de l'adapter doit
+être paresseux, sans quoi le coût est payé à chaque <code>just test</code>.
+<strong>Révisée post-revue v3</strong> (V-01, V-23, C-18, D-14, E-25) : l'arête directe vers <code>l1-07</code>
+est <strong>retirée</strong> — non parce qu'elle était fausse, mais parce qu'elle est devenue
+<strong>transitive</strong> : <code>l1-07</code> est passée devant <code>l1-02.1</code>, dont ce smoke dépend par <code>l1-02.3</code>.
+Le gate avec poids existe donc nécessairement avant cette fiche.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p><strong>Un seul</strong> smoke pour tout le lot : il traverse la chaîne réelle — chargement du chip,
@@ -69,13 +80,48 @@ remplace une dizaine de tests d'intégration.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <p><code>scripts/smoke.py</code> — <strong>le fichier existe déjà</strong> (Lot 0). Cette fiche y <strong>ajoute</strong> une étape,
 elle ne le réécrit pas. Le smoke d'ingestion reste en place.</p>
-<p>⭐ <strong>Le smoke tourne SOUS la garde réseau des poids</strong> (<code>HF_HUB_OFFLINE=1</code>, cf. <code>l1-02.3</code>).
-C'est la décision de méthode du lot : <strong>on ne teste pas la garde, on met le smoke dessous.</strong>
-Si quelqu'un retire la garde ou casse le chemin du cache, le smoke tombe — à chaque
-<code>just check</code>, gratuitement, sans une seule ligne de test dédiée.</p>
-<p>Ce que fait l'étape ajoutée, sur <strong>2 fixtures</strong> de <code>l1-01.4</code> :</p>
+<p>⚠ ⭐ <strong><code>tests/test_smoke.py</code> est AUSSI au périmètre de cette fiche</strong> (revue v3, V-23 —
+trouvé par l'angle d'ancrage, invisible des cinq autres). Ce test du Lot 0 importe
+<code>scripts/smoke.py</code> et appelle <strong><code>smoke.main()</code> sous pytest</strong>
+(<code>test_main_replay_exit_code_zero</code>). Conséquence mécanique si on l'ignore : l'étape
+« modèle réel » ajoutée ici serait payée <strong>deux fois</strong> par <code>just check</code> — une fois dans
+<code>just test</code>, une fois dans <code>just smoke</code> — et la règle de budget des 30 s ci-dessous, écrite
+pour <code>just smoke</code>, ne protégerait que la moitié du coût. Premier geste, au choix de
+l'implémenteur : exposer l'étape embed en <strong>fonction séparée</strong> que <code>main()</code> appelle et que
+le test n'appelle pas, ou <strong>restreindre</strong> le test aux étapes du Lot 0.</p>
+<p>⭐ ⚠ <strong>Et ce geste ne suffit PAS seul — la seconde moitié</strong> (revue v4, M6).
+<code>tests/test_smoke.py:46</code> fait, <strong>au niveau module</strong> :</p>
+<pre><code>smoke = _load_smoke_module()
+</code></pre>
+<p>Autrement dit <code>scripts/smoke.py</code> est chargé et <strong>exécuté à la collecte pytest</strong>, avant tout
+test. Si l'import de l'adapter reste <strong>en tête de fichier</strong> — comme le sont tous les imports
+de <code>smoke.py</code> aujourd'hui, et comme c'est le style dominant du dépôt — terratorch (lightning,
+timm, diffusers, torchgeo) est importé <strong>à chaque collecte</strong> : y compris pour un simple
+<code>just test</code>, y compris pour un <code>-k</code> d'une seule fonction. Le budget des 30 s serait alors
+calculé sur un coût qu'on paie de toute façon.</p>
+<p>→ <strong>L'import de l'adapter est PARESSEUX, dans le corps de la fonction d'étape.</strong> Le lot
+connaît déjà ce geste et l'a oraclé deux fois (<code>l1-01.3</code>/O4, <code>l1-03.1</code>/O6) ; il fallait
+l'écrire ici aussi. Les deux moitiés — fonction séparée <strong>et</strong> import paresseux — sont des
+gestes <strong>conscients</strong>, écrits au Résumé.</p>
+<p>⚠ <strong>Piège documentaire à corriger dans le même geste</strong> (revue v4, m2) : la docstring de
+<code>tests/test_smoke.py:5</code> affirme que mypy ne couvre pas <code>scripts/</code> (« <code>pyproject.toml</code> :
+<code>files = ["src"]</code> »). <strong>C'est périmé</strong> — <code>pyproject.toml:146</code> dit
+<code>files = ["src", "tests", "scripts"]</code> depuis <code>out-01</code>. Le commentaire se trouve exactement
+sur le chemin que cette fiche demande de lire : le corriger.</p>
+<p>⭐ <strong>Le smoke tourne SOUS la garde réseau des poids — posée par le code de production
+(<code>l1-02.3</code>), PAS par ce script.</strong> Le script ne touche pas à <code>HF_HUB_OFFLINE</code> : il appelle
+la chaîne réelle, et c'est elle qui se protège. Si quelqu'un retire la garde du code ou
+casse le chemin du cache, le smoke tombe — à chaque <code>just check</code>, gratuitement, sans une
+seule ligne de test dédiée. (Le smoke du Lot 0 continue, lui, de poser <code>TINY_WAE_OFFLINE</code>
+pour le chemin GDAL — deux gardes, deux propriétaires, c'est normal.)</p>
+<p>Ce que fait l'étape ajoutée, sur <strong>N fixtures</strong> de <code>l1-01.4</code> (N = 2 par défaut, <strong>1 si le
+budget de temps l'impose</strong> — voir Notes ; le <strong>N effectivement retenu est publié</strong> au
+Résumé, et l'oracle O1 s'y réfère plutôt qu'à un nombre gelé) :</p>
 <ol>
-<li>charge le tenseur, embedde avec <strong>un vrai modèle</strong> (Clay par défaut), écrit le vecteur ;</li>
+<li>charge le tenseur, embedde avec <strong>un vrai modèle</strong> — ⭐ <strong>TerraMind small par défaut</strong>,
+   pas Clay (revue v3, E-25 : les Notes recommandaient déjà TerraMind comme premier réflexe
+   en cas de dépassement du budget, pendant que le corps imposait Clay ; on tranche pour le
+   modèle rapide dès le départ, c'est un contrôle de bon fonctionnement, pas une mesure) ;</li>
 <li>relance : vérifie que <strong>rien n'est recalculé</strong> ;</li>
 <li>écrit tout dans un <code>TemporaryDirectory</code> — <strong>jamais</strong> dans <code>./data</code> ni dans le corpus.</li>
 </ol>
@@ -84,7 +130,11 @@ fonctionnement, pas un banc. Les chronomètres sont en <code>l1-04.1</code>.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] <code>scripts/smoke.py</code> étendu, l'étape Lot 0 <strong>intacte</strong>.</li>
-<li>[ ] <code>HF_HUB_OFFLINE=1</code> posé par le script, restauré en sortie (patron <code>TINY_WAE_OFFLINE</code> du Lot 0).</li>
+<li>[ ] <code>tests/test_smoke.py</code> traité <strong>sur les deux plans</strong> : l'étape embed n'est pas payée
+      deux fois par <code>just check</code>, <strong>et</strong> l'import de l'adapter est paresseux — mécanismes
+      retenus écrits au Résumé.</li>
+<li>[ ] Docstring de <code>tests/test_smoke.py</code> corrigée (mypy couvre bien <code>scripts/</code>).</li>
+<li>[ ] Le script ne pose PAS <code>HF_HUB_OFFLINE</code> (grep) — la garde vit dans le code de production.</li>
 <li>[ ] Sorties dans un répertoire temporaire.</li>
 <li>[ ] <code>just check</code> inclut toujours <code>just smoke</code> — rien à changer au justfile.</li>
 <li>[ ] Durée de l'étape mesurée et publiée dans le Résumé (elle entre dans le temps du gate).</li>
@@ -102,12 +152,12 @@ fonctionnement, pas un banc. Les chronomètres sont en <code>l1-04.1</code>.</p>
 <tr>
 <td>O1</td>
 <td><code>just smoke</code>, machine <strong>hors ligne</strong>, cache peuplé</td>
-<td><strong>vert</strong> ; 2 vecteurs écrits, formes et dtypes attendus, aucun NaN</td>
+<td><strong>vert</strong> ; <strong>N vecteurs écrits</strong> (N = le nombre de fixtures effectivement retenu, publié au Résumé — pas un nombre gelé qui contredirait la règle de budget), formes et dtypes attendus, aucun NaN</td>
 </tr>
 <tr>
 <td>O2</td>
 <td>Second passage dans le même répertoire</td>
-<td><strong>0 recalcul</strong>, vecteurs identiques au bit près</td>
+<td><strong>0 recalcul</strong></td>
 </tr>
 <tr>
 <td>O3</td>
@@ -116,8 +166,8 @@ fonctionnement, pas un banc. Les chronomètres sont en <code>l1-04.1</code>.</p>
 </tr>
 <tr>
 <td>O4</td>
-<td>⭐ Garde réseau : cache vidé, smoke relancé</td>
-<td><strong>rouge</strong>, message nommant le modèle et <code>just fetch-models</code> — <strong>aucune requête émise</strong>. Vérifié <strong>une fois à la main</strong>, consigné en une ligne de prose</td>
+<td>⭐ Garde réseau : <code>HF_HOME</code> <strong>pointé sur un répertoire temporaire vide</strong>, smoke relancé</td>
+<td><strong>rouge</strong>, message nommant le modèle et <code>just fetch-models</code> — <strong>aucune requête émise</strong>. Vérifié <strong>une fois à la main</strong>, consigné en une ligne de prose. ⛔ <strong>Ne JAMAIS vider le cache réel</strong> (revue v3, D-14/E-14) : depuis la décision V-02, il vit sous <code>~/.cache/tiny-wae/models</code> et il est <strong>partagé par tous les worktrees</strong> — un <code>rm</code> coûterait un re-téléchargement de plusieurs Go à tout le monde. Repointer la variable donne le même témoin, sans le dommage</td>
 </tr>
 <tr>
 <td>O5</td>
@@ -126,6 +176,16 @@ fonctionnement, pas un banc. Les chronomètres sont en <code>l1-04.1</code>.</p>
 </tr>
 <tr>
 <td>O6</td>
+<td>⭐ <strong>Import paresseux</strong> : dans un <strong>sous-processus frais</strong>, charger <code>scripts/smoke.py</code> comme le fait <code>tests/test_smoke.py</code> (par chemin, sans appeler <code>main()</code>), puis assertion</td>
+<td><strong><code>"torch" not in sys.modules</code></strong> et <strong><code>"terratorch" not in sys.modules</code></strong>. C'est le témoin de la seconde moitié de M6 : sans lui, la collecte pytest paie l'import du modèle à chaque <code>just test</code>, et personne ne le voit</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>⭐ Budget : durée de <code>just test</code> <strong>avant et après</strong> cette fiche</td>
+<td>l'écart est <strong>publié</strong>. Si <code>just test</code> a pris plus de quelques secondes, l'import paresseux n'est pas en place — le chiffre le dit plus sûrement qu'une relecture</td>
+</tr>
+<tr>
+<td>O8</td>
 <td><code>just check</code> complet</td>
 <td>vert, hors ligne</td>
 </tr>
@@ -135,10 +195,21 @@ fonctionnement, pas un banc. Les chronomètres sont en <code>l1-04.1</code>.</p>
 comportement avec TerraMind — le smoke n'utilise <strong>qu'un</strong> modèle, pour rester rapide ; c'est
 un choix assumé et déclaré.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>⚠ <strong>Attention au temps du gate.</strong> Un modèle réel sur 2 chips peut coûter plusieurs secondes,
-et <code>just check</code> est lancé à chaque fiche par chaque agent. Si l'étape dépasse <strong>~30 s</strong>, le
-signaler dans le Résumé : il faudra soit réduire à une fixture, soit basculer le smoke sur le
-double et déplacer le modèle réel hors du gate. <strong>Mesurer avant de décider.</strong></p>
+<p>⚠ <strong>Attention au temps du gate</strong> — décision PRISE EN AMONT (revue C-15/E-26), plus rien à
+arbitrer en cours de fiche. La cascade, dans l'ordre, <strong>budget mesuré sur le total payé par
+<code>just check</code></strong> (donc en comptant <code>tests/test_smoke.py</code> s'il rejoue l'étape) :</p>
+<ol>
+<li>TerraMind small, 2 fixtures — le point de départ ;</li>
+<li>si &gt; <strong>30 s</strong> : réduire d'office à <strong>1 fixture</strong> ;</li>
+<li>si ENCORE &gt; 30 s : basculer sur le double est autorisé <strong>uniquement</strong> en écrivant en
+   remplacement un test dédié à la garde (cache vide → erreur nommée) <strong>et</strong> en portant la
+   bascule au <strong>Résumé de cette fiche</strong> — c'est lui que <code>l1-06.H</code> (point 8) consulte, car
+   la bascule supprime l'exercice permanent de la garde. ⚠ <strong>Pas d'arête</strong> vers <code>l1-06.H</code>
+   pour autant (revue v3, S-11) : une contrainte <strong>conditionnelle</strong> ne se grave pas en
+   dépendance permanente du graphe.</li>
+</ol>
+<p><em>(Clay-large reste utilisable si le budget le permet et qu'on préfère exercer le modèle
+principal — c'est un choix d'implémenteur, à consigner.)</em></p>
 <p>⚠ <strong>Politique de test</strong> : le smoke <em>est</em> le test. Ne pas lui ajouter une suite de tests
 unitaires qui vérifieraient qu'il fait ce qu'il fait.</p>
 <hr />
@@ -146,8 +217,13 @@ unitaires qui vérifieraient qu'il fait ce qu'il fait.</p>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
 <li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Durée de l'étape embed</strong> : …</li>
+<li><strong>Modèle et N de fixtures retenus</strong> : …</li>
+<li><strong>Durée de l'étape embed</strong> : <em>(dans <code>just smoke</code>, et le total payé par <code>just check</code>)</em></li>
+<li><strong>Traitement de <code>tests/test_smoke.py</code></strong> : <em>(fonction séparée ou test restreint — ET import
+  paresseux de l'adapter, les deux)</em></li>
+<li><strong>Durée de <code>just test</code> avant / après</strong> : …</li>
+<li><strong>⛔ Bascule sur le double ?</strong> : <em>(oui/non — si oui, <code>l1-06.H</code> point 8 doit statuer)</em></li>
 <li><strong>Vérification de la garde (O4)</strong> : <em>(une ligne)</em></li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-03.3.html">← [l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre</a><span></span></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-03.3.html">← [l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre</a><span></span></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

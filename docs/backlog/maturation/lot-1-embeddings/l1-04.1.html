@@ -45,11 +45,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.1</b></nav><h1>[l1-04.1] Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.1</b></nav><h1>[l1-04.1] Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-041-linstrumentation">[l1-04.1] — L'instrumentation</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#deux-biens-communs-definis-ici-revue-v3-v-09-d-10">⭐ Deux biens communs, définis ICI (revue v3, V-09 / D-10)</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -60,7 +63,12 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-20 : le « total » d'O2 est défini).
+<strong>Révisée post-revue v3</strong> (V-09, D-10) : cette fiche devient <strong>propriétaire de deux biens
+communs</strong> aux quatre fiches de levier — le <strong>protocole de stabilité</strong> et l'<strong>échantillon
+de banc</strong>. Ils étaient jusqu'ici « partagés » entre sœurs, sans arête pour le garantir et
+avec un périmètre faux.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Mesurer où passe le temps d'un embedding, <strong>phase par phase</strong>, et la mémoire crête. C'est la
@@ -107,7 +115,27 @@ octets lus.</p>
   pas. Les inclure fausserait la médiane vers le haut.</li>
 </ul>
 <p>Sortie : <strong>JSON</strong>, jamais des logs à relire à l'œil.</p>
-<p><strong>Hors périmètre</strong> : tout levier (<code>l1-04.2</code> à <code>.4</code>) · le rapport comparatif (<code>l1-04.5</code>) ·
+<h3 id="deux-biens-communs-definis-ici-revue-v3-v-09-d-10">⭐ Deux biens communs, définis ICI (revue v3, V-09 / D-10)</h3>
+<p><code>l1-04.1</code> est l'<strong>ancêtre commun vérifié</strong> des quatre fiches de levier (<code>l1-04.2</code>,
+<code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-04.4</code>) : c'est le seul endroit où poser ce qu'elles doivent
+partager. Jusqu'à la revue v3, <code>l1-04.3a</code> renvoyait à « le protocole de <code>l1-04.3b</code>,
+partagé » — sans arête entre elles, et en attribuant à <code>l1-04.2</code> et <code>l1-04.4</code> un protocole
+qu'elles n'avaient pas.</p>
+<ol>
+<li><strong>Protocole de stabilité</strong> — une fonction <code>stability(samples) -&gt; dict</code> dans
+   <code>bench_probe.py</code> : <strong>3 répétitions</strong> de chaque configuration mesurée, médiane + p90, et
+   un <strong>coefficient de variation</strong> publié. Le barème, unique pour tout le lot :
+   CV ≤ 5 % → mesure <strong>stable</strong> · 5–15 % → <strong>bruitée, conclusion prudente</strong> · &gt; 15 % →
+   <strong>non concluante, l'écart mesuré ne se lit pas</strong>. Aucune fiche de levier n'a le droit de
+   conclure sans publier son CV.</li>
+<li><strong>Échantillon de banc</strong> — une <strong>liste d'<code>item_id</code> gelée une seule fois</strong>, écrite dans un
+   fichier versionné (<code>tests/fixtures/bench_sample.json</code> ou équivalent) et <strong>relue</strong> par
+   toutes les fiches de mesure. Les fiches annonçaient jusqu'ici 50, 50, 20, 20 et 20 chips
+   choisis chacune de son côté : des mesures faites sur des populations différentes ne se
+   comparent pas, et c'est pourtant un rapport comparatif qu'on en tire. La taille par
+   défaut (<code>--n</code>) reste réglable ; <strong>l'ordre et la composition ne le sont pas</strong>.</li>
+</ol>
+<p><strong>Hors périmètre</strong> : tout levier (<code>l1-04.2</code>, <code>l1-04.3a/b</code>, <code>l1-04.4</code>) · le rapport comparatif (<code>l1-04.5</code>) ·
 toute qualité.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
@@ -116,6 +144,7 @@ toute qualité.</p>
 <li>[ ] RAM crête du processus mesurée.</li>
 <li>[ ] Chauffe exclue des statistiques, nombre de chips de chauffe <strong>écrit dans le JSON</strong>.</li>
 <li>[ ] Le code de production n'a <strong>pas</strong> été modifié pour l'instrumentation.</li>
+<li>[ ] <code>stability()</code> livrée avec son barème CV, et l'<strong>échantillon de banc gelé</strong> versionné.</li>
 <li>[ ] <code>tests/test_bench.py</code> — <strong>court</strong>.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
@@ -130,13 +159,13 @@ toute qualité.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td>⭐ <strong>L'instrumentation compte ce qu'elle prétend compter</strong> : un double qui <strong>dort 100 ms</strong> dans la phase <code>forward</code></td>
+<td>⭐ <strong>L'instrumentation compte ce qu'elle prétend compter</strong> : le double de <code>l1-01.3</code> réglé avec <code>delay_s=0.1</code> (c'est <strong>cette capacité-là</strong> qu'on consomme, elle est oraclée chez son propriétaire en <code>l1-01.3</code>/O6)</td>
 <td>le JSON attribue ~100 ms à <code>forward</code> et <strong>quasi rien</strong> aux deux autres. C'est le seul test qui prouve que la séparation n'est pas décorative</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Somme des trois phases contre temps total mesuré de bout en bout</td>
-<td>écart <strong>&lt; 5 %</strong> — sinon du temps se perd hors instrumentation et les leviers seront mesurés à travers un trou</td>
+<td>⭐ <strong>Par chip</strong> : <code>t_load + t_forward + t_write</code> contre le temps mural <strong>du haut au bas de l'itération</strong> — chauffe et initialisation du modèle EXCLUES, mesurées à part comme <code>setup_s</code></td>
+<td>résidu médian <strong>&lt; 5 %</strong> du temps par chip ; le résidu est <strong>écrit dans le JSON</strong> (<code>unaccounted_s</code>), pas seulement asserté. ⚠ Revue E-20 : sans cette définition, l'oracle était soit 0 % par construction, soit rouge garanti</td>
 </tr>
 <tr>
 <td>O3</td>
@@ -150,6 +179,16 @@ toute qualité.</p>
 </tr>
 <tr>
 <td>O5</td>
+<td>⭐ <code>stability()</code> sur trois séries littérales : identiques · dispersées à ~8 % · dispersées à ~30 %</td>
+<td>rend <strong>stable</strong> · <strong>bruitée</strong> · <strong>non concluante</strong>. Trois cas, un par palier : c'est le barème que les quatre fiches de levier appliqueront, il doit être exercé là où il est écrit</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>L'échantillon de banc, relu deux fois</td>
+<td><strong>même liste, même ordre</strong> — et un test qui rougit si le fichier gelé est modifié sans que le Résumé le dise</td>
+</tr>
+<tr>
+<td>O7</td>
 <td><code>just check</code></td>
 <td>vert. ⚠ <strong><code>bench</code> n'entre PAS dans le gate</strong> — c'est un outil de mesure, il se lance à la main</td>
 </tr>
@@ -176,4 +215,4 @@ mesurent pas la même chose.</p>
 <li><strong>Premières mesures observées</strong> <em>(indicatives, non contractuelles)</em> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-04.2.html">[l1-04.2] Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="l1-04.2.html">[l1-04.2] Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

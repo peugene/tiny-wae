@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap — Lot 1 : Banc d&#x27;embeddings GFM (v2, indicative)</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap v5 — Lot 1</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,11 +45,30 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><h1>Roadmap — Lot 1 : Banc d&#x27;embeddings GFM (v2, indicative)</h1><p>Avant revue — rien n&#x27;est figé. Le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-1-banc-dembeddings-gfm-v1-indicative-avant-revue">Roadmap — Lot 1 : Banc d'embeddings GFM (v1, INDICATIVE — avant revue)</h1>
-<p><strong>Date</strong> : 23/08/2026 · <strong>Auteur</strong> : architecte/PO · <strong>Statut</strong> : v1 posée avant revue
-adversariale. <strong>Rien n'est figé ici</strong> : les efforts, le découpage et les arêtes du graphe
-sont des propositions. La roadmap ne devient figée qu'après revue, et les fiches ne
-descendent en <code>a-faire/</code> qu'après.</p>
+</style></head><body><div class="banner"><div class="inner"><h1>Roadmap v5 — Lot 1</h1><p>Généré le 26/08/2026 depuis _roadmap.md — le .md fait foi.</p></div></div><article><h1 id="roadmap-lot-1-banc-dembeddings-gfm-v5-post-revues-v1-a-v4">Roadmap — Lot 1 : Banc d'embeddings GFM (v5, post-revues v1 à v4)</h1>
+<p><strong>Date</strong> : 26/08/2026 · <strong>Auteur</strong> : architecte/PO · <strong>Statut</strong> : <strong>v5, corrigée des 12
+issues de la revue v4</strong> — la revue de l'<strong>équipe d'implémentation</strong>, la première à avoir
+ouvert le code, lancé le linter et <strong>recompté le corpus</strong> (cf. <code>_revue-v4.md</code>). Après la v3
+(32 clusters, 6 angles dont l'ancrage, plus réfutation — <code>_revue-v3.md</code>,
+<code>_revue-v3-refutation.md</code>), la v1 (24 clusters, <code>_revue.md</code>) et la v2 externe (5 findings,
+<code>_revue-v2.md</code> — dont B1, le gate avec poids → fiche <code>l1-07</code>).
+Arbitrages Philippe A-D intégrés, plus les décisions du 25/08 : <strong>zones d'écriture</strong> et
+<strong>pas de seuil de passage sur le déterminisme entre threads</strong>. Les fiches restent en
+maturation jusqu'au GO de descente.</p>
+<p><strong>Ce que la v3 a changé de structurel</strong> : <code>l1-07</code> passe <strong>devant <code>l1-02.1</code></strong> (le gate charge
+des poids dès <code>just test</code>, pas au smoke) · <code>l1-05.3a</code> redescend de <strong>N4 à N1</strong> (elle ne
+consomme que le format des vecteurs) · le <strong>protocole de stabilité</strong> et l'<strong>échantillon de
+banc</strong> remontent chez <code>l1-04.1</code> · les cinq fiches de banc de N4 sont déclarées <strong>non
+parallélisables</strong> · l'oracle temporel de Clay était <strong>faux</strong> (vérifié au code source).</p>
+<p><strong>Ce que la v4 a changé</strong> — rien de structurel, <strong>le graphe est inchangé</strong> ; douze
+corrections locales, toutes nées de la rencontre des fiches avec le <strong>harnais réel</strong> :
+<code>l1-00</code> pré-pose l'exemption <code>S101</code> sans laquelle cinq fiches de banc rendraient <code>just lint</code>
+rouge · l'expansion de <code>~</code> a enfin un mécanisme nommé (<code>_PATH_FIELDS</code>) et un oracle ·
+l'atomicité porte désormais sur la <strong>paire</strong> <code>.npy</code>+<code>.json</code> · <code>scl_summary</code> change de forme
+(son oracle contredisait sa définition) · l'import de l'adapter dans le smoke doit être
+<strong>paresseux</strong> · et <strong>un chiffre était faux</strong> : 63-579 chips par site, pas 43-300.
+⭐ Deux mécanismes du socle sont désormais <strong>sondés, dans les deux sens</strong> : <code>deptry</code> face aux
+extras (revue v4) et <strong><code>hatchling</code> face à la référence git</strong> (sonde PO du 26/08).</p>
 <p><strong>Source du lot</strong> : <a href="../../../lots/lot-1-embeddings.md"><code>docs/lots/lot-1-embeddings.md</code></a>.</p>
 <hr />
 <h2 id="1-ce-que-ce-lot-doit-trancher">1. Ce que ce lot doit trancher</h2>
@@ -65,9 +84,11 @@ la machine existante, et quels leviers permettent d'en embedder plus avant de re
 </ul>
 <h2 id="2-decisions-actees-ne-pas-rouvrir">2. Décisions actées (ne pas rouvrir)</h2>
 <ul>
-<li><strong>Modèles</strong> : Clay v1.5 et <strong>TerraMind small</strong> (repli <code>tiny</code> si le CPU ne suit pas ;
-  pas <code>base</code> — on cherche si l'approche tient, pas deux points de benchmark).
-  <strong>Licence TerraMind : Apache 2.0</strong>, vérifiée sur la carte du modèle le 23/08/2026.</li>
+<li><strong>Modèles</strong> : Clay v1.5 (⚠ de facto <strong>large</strong> — seule variante publiée, ~302 M params
+  d'encodeur) et <strong>TerraMind small</strong> (~21 M ; repli <code>tiny</code> = point d'arbitrage de
+  <code>l1-06.H</code>). ⭐ <strong>L'asymétrie est subie et déclarée</strong> (réfuteur K-01bis) : rapport de coût
+  attendu ~50×, dominé par la taille de modèle autant que par les tokens (1024 contre 256).
+  Licences : <strong>apache-2.0 pour les deux</strong>, vérifiées à la source (API HF + cartes).</li>
 <li><strong>CPU seul.</strong> Pas de GPU sur la machine, <strong>pas d'achat prévu</strong> — le lot décide d'un
   périmètre, pas d'une dépense.</li>
 <li><strong>Stockage fichier.</strong> pgvector ouvre le Lot 2, il n'entre pas ici.</li>
@@ -83,10 +104,13 @@ soit <strong>4 tuiles Clay</strong> et 4× le calcul.
 ⚠ <strong>Le vrai risque n'est pas la localisation, c'est la sensibilité</strong> : un vecteur unique
 couvre 26 km² ; une halle de 200 m, c'est 0,15 % de la scène. Si le signal se noie, on
 mesurera de la dérive saisonnière et rien d'autre. <strong>Ce doute est levé par la mesure, pas
-par l'expertise</strong> → fiche <code>l1-05.4</code>. Et <code>l1-04.3</code> <strong>chiffre le coût de la variante 4 tuiles
-sur un échantillon</strong>, sans la produire en masse.
+par l'expertise</strong> → fiche <code>l1-05.4</code>. Et <code>l1-04.3a</code> <strong>chiffre le coût de la variante 4 tuiles</strong>
+(4 forwards 256² synthétiques contre 1 — jamais un forward 512², qui mesurerait ~16×,
+revue K-11), sans la produire en masse.
 ⭐ <strong>Couture architecturale</strong> : la stratégie de découpage est un <strong>champ de la spec</strong>, pas
-une hypothèse enfouie dans l'adapter, et le <code>spec_hash</code> entre dans la clé d'idempotence.
+une hypothèse enfouie dans l'adapter, et le <code>spec_hash</code> entre dans la clé d'idempotence
+<strong>et dans le nom du fichier</strong> — c'est cette seconde moitié qui rend la variante réversible :
+une nouvelle spec écrit <strong>à côté</strong>, jamais par-dessus (<code>l1-01</code>, <code>l1-03.1</code>).
 Produire l'autre variante plus tard <strong>n'invalide rien</strong> — ça ajoute des vecteurs à côté.
 Changer d'avis coûte du CPU, pas une refonte.</p>
 <p><strong>b. Masque SCL → PAS de masque. Seuil d'entrée à 10 %. Tout consigner.</strong>
@@ -125,21 +149,34 @@ l'entrée de l'embedding — <code>embed_cloud_pct_max: 10</code> <strong>dans <
 constante</strong> — et on écrit <code>cloud_pct</code> + le résumé SCL dans le compagnon de chaque vecteur,
 pour que le Lot 2 puisse pondérer quand il aura le contexte.
 ⚠ Le coût n'est pas le nombre de chips mais la <strong>couverture temporelle</strong>, très inégale :
-B08 et B07 tombent à ~25 mois couverts sur 48. À surveiller en <code>l1-05.3</code>.</p>
-<p><strong>c. TerraMind → variante <code>small</code>.</strong> Cf. §2. Deux pièges relevés sur la carte du modèle,
-à lever par <code>l1-02.2</code> <strong>avant</strong> d'écrire du code : (1) l'exemple de référence est en
-<strong>224×224</strong> quand notre chip fait 256 — nourrir Clay en 256 et TerraMind en 224 comparerait
-des embeddings d'<strong>emprises différentes</strong> (5 120 m contre 4 480 m), ce qui invaliderait la
-séparabilité ; vérifier si TerraMind accepte 256, sinon recadrer les deux et le documenter ;
-(2) TerraMind rend <strong>196 embeddings de patch (768-d)</strong>, pas un vecteur — l'agrégation est à
-la charge de l'adapter (cf. §4bis).</p>
+B08 et B07 tombent à ~25 mois couverts sur 48. À surveiller en <code>l1-05.3a</code>.</p>
+<p><strong>c. TerraMind → variante <code>small</code>, entrée 256 ACTÉE.</strong> La revue a tranché les deux pièges
+à la source : <strong>256×256 est accepté</strong> (pos-emb interpolés → 256 tokens) — la question 224
+n'existe plus, le verdict est consigné par <code>l1-00</code> ; et la sortie est <strong>384-d en liste de
+12 tenseurs</strong> (la carte HF qui annonce <code>(B, 196, 768)</code> est fausse — copier-coller de la
+variante base) : l'agrégation <code>out[-1].mean(dim=1)</code> est écrite dans <code>l1-02.2</code>, car
+<code>merge_method='mean'</code> moyenne les modalités, pas les patchs.</p>
 <p><strong>d. Déterminisme → exigé à CONFIGURATION FIXÉE, mesuré entre configurations.</strong>
-Formulation corrigée en cours de cadrage : <code>l1-04.3</code> fait <strong>varier</strong> le nombre de threads
+Formulation corrigée en cours de cadrage : <code>l1-04.3b</code> fait <strong>varier</strong> le nombre de threads
 BLAS pour mesurer le passage à l'échelle — exiger le bit à bit sur tout le banc
 contredirait ce levier. Donc : même modèle + mêmes threads + même entrée → <strong>identité
 exacte</strong> (c'est ce dont l'idempotence a besoin) ; et <strong>l'écart entre nombres de threads est
 MESURÉ, pas exigé nul</strong>. Ce chiffre est utile en soi : s'il n'est pas nul, le Lot 2 ne
 devra pas comparer des vecteurs calculés à des moments différents sans le savoir.</p>
+<h3 id="2ter-seuils-decisionnels-actes-arbitrage-philippe-revue-c-17k-15">2ter. Seuils décisionnels ACTÉS (arbitrage Philippe, revue C-17/K-15)</h3>
+<ul>
+<li><strong>Séparabilité</strong> : silhouette <strong>&gt; 0,2</strong> sur au moins un modèle, lue <strong>contre la baseline
+  triviale</strong> (moyenne + σ par bande — 20 nombres) publiée à côté : un GFM qui ne bat pas la
+  baseline n'apporte rien, quel que soit son score absolu.</li>
+<li><strong>Trajectoire</strong> : dérive = <code>1 − cosine</code> ; rapport A02/C08 = <strong>médiane des 6 derniers
+  mois</strong> ; <strong>&gt; 2</strong> viable · 1–2 douteux · ≤ 1 non viable.</li>
+<li><strong>Fidélité de quantification</strong> : min de similarité <strong>≥ 0,999</strong> retenable ·
+  0,99–0,999 douteux (remonté) · &lt; 0,99 écarté.</li>
+<li><strong>Corrélation nuage</strong> : |r| &gt; 0,5 <strong>sur la plage complète</strong> (chips à 30 %, filtre
+  d'embedding désactivé pour la mesure — revue K-14) → seuil de 10 % insuffisant, remonté.</li>
+</ul>
+<p>Les fiches <strong>publient et qualifient</strong> contre ces seuils ; seule <code>l1-06.H</code> <strong>prononce</strong> —
+un seuil raté est un résultat majeur, jamais un blocage de run.</p>
 <h2 id="3-politique-de-test-du-lot-proportionnee-cest-un-poc">3. ⭐ Politique de test du lot — proportionnée, c'est un POC</h2>
 <p><strong>Constat mesuré sur le Lot 0</strong> : <strong>8 413 lignes de tests pour 4 074 lignes de source,
 ratio 2,07×</strong> ; <code>test_contact_sheet.py</code> fait <strong>5,8×</strong> son module ; <code>test_logging.py</code> pèse
@@ -172,14 +209,13 @@ faut — le ratio n'est pas un objectif à atteindre par le bas.</p>
 jamais <em>combien</em> de tests ou de lignes écrire. Un module retors mérite dix tests, un module
 trivial en mérite un — c'est le jugement de l'implémenteur, pas une cible chiffrée. Le
 travers du Lot 0 n'était pas le volume en soi, c'était de tester ce qui ne le méritait pas.</p>
-<h2 id="4-graphe-5-chapeaux-20-sous-taches-agent-1-fiche-humaine">4. Graphe (5 chapeaux · 20 sous-tâches agent · 1 fiche humaine)</h2>
-<p>⭐ <strong>Grain du graphe (règle E-c du Lot 0, inchangée)</strong> : seules les fiches <strong>dispatchables</strong>
-ordonnent le run. Un chapeau a <code>depends_on: []</code> et n'ordonne rien. Une fiche <strong>humaine</strong>
-porte un <code>depends_on</code> et bloque volontairement ses dépendants. Un <code>depends_on</code> est satisfait
-<strong>quand la fiche visée est en <code>fait/</code></strong>.</p>
-<p>⭐ <strong>Calibre</strong> : une fiche = <strong>une session d'agent Sonnet, effort medium</strong>, sans question à
-poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <code>a-faire/</code>.</p>
-<h3 id="o1-socle-dembedding-chapeau-l1-01">O1 — Socle d'embedding · chapeau <code>l1-01</code></h3>
+<h2 id="4-graphe-5-chapeaux-24-fiches-agent-2-fiches-humaines-v4-corrige">4. Graphe (5 chapeaux · 24 fiches agent · 2 fiches humaines) — v4, corrigé</h2>
+<p>⭐ Règles inchangées (E-c du Lot 0) : seules les fiches dispatchables ordonnent le run ;
+un chapeau a <code>depends_on: []</code> ; une fiche humaine bloque volontairement ; un <code>depends_on</code>
+est satisfait quand la fiche visée est en <code>fait/</code>. ⚠ <strong>Le dispatch est GLOUTON</strong> : les
+niveaux ne gouvernent rien, seuls les <code>depends_on</code> protègent — c'est pourquoi les revues
+ont ajouté 12 arêtes que « les niveaux qui tombaient juste » masquaient.</p>
+<h3 id="o1-socle-l1-01-les-fiches-a-plat-l1-00-et-l1-07">O1 — Socle · <code>l1-01</code> (+ les fiches à plat <code>l1-00</code> et <code>l1-07</code>)</h3>
 <table>
 <thead>
 <tr>
@@ -191,32 +227,44 @@ poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <c
 </thead>
 <tbody>
 <tr>
+<td><code>l1-00</code></td>
+<td>Socle d'inférence : dépendances, cache <code>~/.cache</code>, fetch-models, check_cache</td>
+<td><strong>M</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>l1-07</code></td>
+<td>⭐ Gate avec poids — cache CI + défaut versionné pour les worktrees</td>
+<td>S</td>
+<td><code>l1-00</code></td>
+</tr>
+<tr>
 <td><code>l1-01.1</code></td>
-<td><code>core/embedding.py</code> — spec de bandes, ordre, <strong>normalisation radiométrique</strong> depuis les <code>scale</code>/<code>offset</code> du manifeste. Pur, zéro I/O</td>
+<td>Ordre normatif (celui de Clay), spec, <code>spec_hash</code>, <code>validate_spec</code></td>
 <td>S</td>
 <td>—</td>
 </tr>
 <tr>
 <td><code>l1-01.2</code></td>
-<td><code>adapters/chip_loader.py</code> — assemble le tenseur 10 bandes depuis <code>chip.tif</code> (4×512²) <strong>et</strong> <code>chip_20m.tif</code> (6×256²), rééchantillonnage explicite</td>
+<td><code>ChipTensor</code> complet (DN, lat/lon, gsd=20, <code>scl_summary</code>)</td>
 <td>M</td>
-<td><code>l1-01.1</code></td>
+<td><code>l1-01.1</code>, <code>l1-01.4</code></td>
 </tr>
 <tr>
 <td><code>l1-01.3</code></td>
-<td>Port <code>EmbeddingModel</code> (Protocol) + double de test substituable + registre <code>model_id → adapter</code></td>
+<td>Port <code>embed(chip)</code> + registre table pré-posée, imports paresseux</td>
 <td>S</td>
-<td>—</td>
+<td><code>l1-01.1</code></td>
 </tr>
 <tr>
 <td><code>l1-01.4</code></td>
-<td>Corpus de <strong>fixtures d'embedding</strong> : N chips réels gelés, hors réseau — le pendant de <code>l0-03.5</code></td>
+<td>4 fixtures réelles gelées</td>
 <td>S</td>
-<td><code>l1-01.2</code></td>
+<td>—</td>
 </tr>
 </tbody>
 </table>
-<h3 id="o2-modeles-execution-chapeaux-l1-02-l1-03">O2 — Modèles &amp; exécution · chapeaux <code>l1-02</code>, <code>l1-03</code></h3>
+<h3 id="o2-modeles-execution-l1-02-l1-03">O2 — Modèles &amp; exécution · <code>l1-02</code>, <code>l1-03</code></h3>
 <table>
 <thead>
 <tr>
@@ -229,55 +277,55 @@ poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <c
 <tbody>
 <tr>
 <td><code>l1-02.1</code></td>
-<td>Adapter <strong>Clay v1.5</strong> — poids, spec 10 bandes, sortie 1024-d</td>
+<td>Adapter Clay (masque 0, datacube, z-score DN, CLS 1024)</td>
 <td>M</td>
-<td><code>l1-01.2</code>, <code>l1-01.3</code></td>
+<td><code>l1-00</code>, <strong><code>l1-07</code></strong>, <code>l1-01.2</code>, <code>l1-01.3</code></td>
 </tr>
 <tr>
 <td><code>l1-02.2</code></td>
-<td>Adapter <strong>TerraMind</strong> (via TerraTorch, variante à fixer) — <strong>relever et consigner la licence</strong></td>
+<td>Adapter TerraMind (384-d, agrégation explicite, table de noms)</td>
 <td>M</td>
-<td><code>l1-01.2</code>, <code>l1-01.3</code></td>
+<td><code>l1-00</code>, <strong><code>l1-07</code></strong>, <code>l1-01.2</code>, <code>l1-01.3</code></td>
 </tr>
 <tr>
 <td><code>l1-02.3</code></td>
-<td><strong>Garde de contrat</strong> : poids résolus depuis un cache local, JAMAIS de téléchargement au run ; recette de pré-chargement séparée</td>
+<td>Garde <code>HF_HUB_OFFLINE</code> posée par le code de production</td>
 <td>S</td>
-<td><code>l1-02.1</code></td>
+<td><code>l1-02.1</code>, <code>l1-02.2</code></td>
 </tr>
 <tr>
 <td><code>l1-02.4</code></td>
-<td><strong>Substituabilité prouvée</strong> : le même code consomme les deux adapters, sans branche chez l'appelant</td>
+<td>Substituabilité (1024/384/double), grep mécanisé</td>
 <td>S</td>
 <td><code>l1-02.1</code>, <code>l1-02.2</code></td>
 </tr>
 <tr>
 <td><code>l1-03.1</code></td>
-<td>Format de stockage des vecteurs + <strong>clé d'idempotence</strong> (<code>grid_hash</code> + <code>model_id</code> + <code>spec_hash</code>)</td>
+<td>Stockage <code>&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.npy</code> + <code>VectorMeta</code> unique</td>
 <td>S</td>
-<td><code>l1-01.3</code></td>
+<td>—</td>
 </tr>
 <tr>
 <td><code>l1-03.2</code></td>
-<td>CLI <strong><code>embed</code></strong> — un site, une fenêtre. Idempotence, compteurs, codes de sortie du chapeau <code>l0-01</code></td>
+<td>CLI <code>embed</code> — idempotence, filtre + précédence, <code>.error.json</code> rejoué</td>
 <td>M</td>
-<td><code>l1-03.1</code>, <code>l1-02.1</code></td>
+<td><strong><code>l1-00</code></strong>, <code>l1-01.2</code>, <code>l1-01.3</code>, <code>l1-01.4</code>, <code>l1-03.1</code></td>
 </tr>
 <tr>
 <td><code>l1-03.3</code></td>
-<td>CLI <strong><code>embed-backfill</code></strong> — pool, reprise, interruption propre (patron de <code>l0-04.1</code>)</td>
+<td>CLI <code>embed-backfill</code> — <code>embed_workers</code>, ThreadPool, SIGINT après jalon</td>
 <td>M</td>
 <td><code>l1-03.2</code></td>
 </tr>
 <tr>
 <td><code>l1-03.4</code></td>
-<td><strong>Smoke <code>embed</code></strong> dans le gate — replay sur fixtures, hors ligne</td>
+<td>Smoke sous la garde + <code>tests/test_smoke.py</code> au périmètre</td>
 <td>S</td>
-<td><code>l1-03.2</code>, <code>l1-01.4</code></td>
+<td><code>l1-03.2</code>, <code>l1-01.4</code>, <code>l1-02.3</code> <em>(l1-07 devenu transitif)</em></td>
 </tr>
 </tbody>
 </table>
-<h3 id="o3-banc-qualite-chapeaux-l1-04-l1-05">O3 — Banc &amp; qualité · chapeaux <code>l1-04</code>, <code>l1-05</code></h3>
+<h3 id="o3-banc-qualite-l1-04-l1-05">O3 — Banc &amp; qualité · <code>l1-04</code>, <code>l1-05</code></h3>
 <table>
 <thead>
 <tr>
@@ -290,57 +338,69 @@ poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <c
 <tbody>
 <tr>
 <td><code>l1-04.1</code></td>
-<td><strong>Instrumentation</strong> : chargement / forward / écriture chronométrés SÉPARÉMENT, RAM crête, sortie JSON</td>
+<td>Instrumentation 3 phases + ⭐ <strong>protocole de stabilité et échantillon gelé</strong></td>
 <td>M</td>
 <td><code>l1-03.2</code></td>
 </tr>
 <tr>
 <td><code>l1-04.2</code></td>
-<td><strong>Levier I/O</strong> : drvfs (<code>/mnt/d</code>) vs ext4 local, même échantillon, écart chiffré</td>
+<td>⛔ Levier I/O drvfs/ext4, alternances lisibles dans le JSON</td>
 <td>S</td>
-<td><code>l1-04.1</code></td>
+<td><code>l1-04.1</code>, <strong><code>l1-02.4</code></strong></td>
 </tr>
 <tr>
-<td><code>l1-04.3</code></td>
-<td><strong>Leviers modèle</strong> : entrée 20 m seule vs 10+20 m · taille de batch · threads BLAS</td>
+<td><code>l1-04.3a</code></td>
+<td>⛔ Levier résolution — <strong>coût absolu</strong>, pas le ratio tautologique — + batch</td>
 <td>M</td>
-<td><code>l1-04.1</code></td>
+<td><code>l1-04.1</code>, <code>l1-02.4</code></td>
+</tr>
+<tr>
+<td><code>l1-04.3b</code></td>
+<td>⛔ Levier threads + contention, threads relevés <strong>depuis un worker</strong></td>
+<td><strong>M</strong></td>
+<td><code>l1-04.1</code>, <code>l1-02.4</code>, <code>l1-03.3</code></td>
 </tr>
 <tr>
 <td><code>l1-04.4</code></td>
-<td><strong>Levier quantification</strong> : int8 / ONNX — mesuré, <strong>ou déclaré non concluant avec sa raison</strong></td>
+<td>⛔ Levier quantification, plancher figé, feature <code>bench</code> <strong>pré-posée</strong></td>
 <td>M</td>
-<td><code>l1-04.1</code>, <code>l1-02.2</code></td>
-</tr>
-<tr>
-<td><code>l1-04.5</code></td>
-<td><strong>Rapport de banc</strong> : tableau comparatif + extrapolation chiffrée sur 5 793 chips ET sur une journée d'incrémental</td>
-<td>M</td>
-<td><code>l1-04.2</code>, <code>l1-04.3</code>, <code>l1-04.4</code>, <code>l1-02.4</code></td>
+<td><code>l1-04.1</code>, <code>l1-02.4</code></td>
 </tr>
 <tr>
 <td><code>l1-05.1</code></td>
-<td><strong>Métriques pures</strong> (cosinus, silhouette intra/inter) sur vecteurs synthétiques — testables à sec</td>
+<td>Métriques pures — silhouette <strong>sur distance 1−cos</strong>, dérive=1−cos</td>
 <td>S</td>
 <td>—</td>
 </tr>
 <tr>
 <td><code>l1-05.2</code></td>
-<td><strong>Déterminisme</strong> : identité exacte à configuration fixée · écart entre nombres de threads <strong>mesuré</strong></td>
+<td>⛔ Déterminisme — rouge <strong>déclaré</strong>, barème 3 états, <code>min_detectable</code></td>
 <td>S</td>
-<td><code>l1-03.2</code></td>
+<td><code>l1-03.2</code>, <code>l1-02.4</code></td>
 </tr>
 <tr>
-<td><code>l1-05.3</code></td>
-<td><strong>Campagne séparabilité</strong> sur le corpus réel, rapport par modèle</td>
+<td><code>l1-05.3a</code></td>
+<td>CLI <code>similarity-report</code> <strong><code>.md</code>+<code>.json</code></strong>, baseline, invariants refaits</td>
 <td>M</td>
-<td><code>l1-05.1</code>, <code>l1-03.3</code></td>
+<td><code>l1-05.1</code>, <strong><code>l1-03.1</code></strong></td>
+</tr>
+<tr>
+<td><code>l1-05.3.H</code></td>
+<td>⛔ Campagne : sous-échantillon (<code>--out</code> distinct), complet, <code>campaign.json</code></td>
+<td>H</td>
+<td><code>l1-05.3a</code>, <code>l1-04.3b</code>, <strong><code>l1-03.3</code></strong></td>
 </tr>
 <tr>
 <td><code>l1-05.4</code></td>
-<td>⭐ <strong>Trajectoire témoin</strong> : A02 Hinkley Point C (chantier lourd, 48 mois) contre C08 Bouconne (zone témoin) — l'unité « un vecteur par chip » porte-t-elle le signal ? Et la corrélation embedding ↔ <code>cloud_pct</code> sur le site stable</td>
+<td>Trajectoires A02/C08, témoins nommés, corrélation plage complète</td>
 <td>M</td>
-<td><code>l1-05.3</code></td>
+<td><code>l1-05.3.H</code></td>
+</tr>
+<tr>
+<td><code>l1-04.5</code></td>
+<td>Rapport : comparatif, extrapolations ×2, <strong>ratio discrimination/s</strong></td>
+<td>M</td>
+<td><code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-04.4</code>, <code>l1-05.3.H</code></td>
 </tr>
 </tbody>
 </table>
@@ -357,53 +417,227 @@ poser. Barème S ≤ 1 session · M ≤ 2-3 · L à scinder · XL interdit en <c
 <tbody>
 <tr>
 <td><code>l1-06.H</code></td>
-<td>⛔ <strong>HUMAIN</strong> — arbitrage du périmètre embeddable au vu du banc, de la séparabilité et de la trajectoire témoin</td>
+<td>⛔ Arbitrage : modèle, périmètre, leviers, unité, nuages, déterminisme, tiny, <strong>garde du smoke</strong></td>
 <td>H</td>
-<td><code>l1-04.5</code>, <code>l1-05.4</code></td>
+<td><code>l1-04.5</code>, <code>l1-05.4</code>, <code>l1-05.2</code></td>
 </tr>
 </tbody>
 </table>
+<p>⚠ <strong><code>l1-05.2</code> peut arriver en rouge, et c'est voulu</strong> : sa clause « pas terminable » créait
+un interblocage (l'arbitre dépend d'elle). Elle se termine désormais en <strong>rouge déclaré</strong>,
+et c'est le point 6 de <code>l1-06.H</code> qui devient bloquant <strong>pour la recette</strong>, pas pour le run.</p>
 <h3 id="niveaux-topologiques-derives-des-depends_on-ci-dessus">Niveaux topologiques (dérivés des <code>depends_on</code> ci-dessus)</h3>
-<pre><code>N0  l1-01.1 · l1-01.3 · l1-05.1
-N1  l1-01.2 · l1-03.1
-N2  l1-01.4 · l1-02.1 · l1-02.2
-N3  l1-02.3 · l1-02.4 · l1-03.2
-N4  l1-03.3 · l1-03.4 · l1-04.1 · l1-05.2
-N5  l1-04.2 · l1-04.3 · l1-04.4 · l1-05.3
+<pre><code>N0  l1-00 · l1-01.1 · l1-01.4 · l1-03.1 · l1-05.1
+N1  l1-01.2 · l1-01.3 · l1-05.3a · l1-07
+N2  l1-02.1 · l1-02.2 · l1-03.2
+N3  l1-02.3 · l1-02.4 · l1-03.3 · l1-04.1
+N4  l1-03.4 · l1-04.2 · l1-04.3a · l1-04.3b · l1-04.4 · l1-05.2
+N5  ⛔ l1-05.3.H
 N6  l1-04.5 · l1-05.4
 N7  ⛔ l1-06.H
 </code></pre>
-<p><strong>Profondeur 8, largeur moyenne 2,6.</strong> Un seul gate humain, en feuille — <strong>les 21 fiches
-agent s'enchaînent sans intervention</strong>. Feuilles : <code>l1-02.3</code>, <code>l1-03.4</code>, <code>l1-06.H</code> — les deux
-premières sont des garde-fous terminaux, c'est légitime, mais à relire en revue.</p>
-<h3 id="4bis-ce-que-le-port-doit-absorber">4bis. Ce que le port doit absorber</h3>
-<p>Les deux modèles n'ont <strong>pas le même contrat de sortie</strong> : Clay rend <strong>un vecteur</strong> (son
-embedding de classe), TerraMind rend <strong>196 embeddings de patch</strong> à agréger soi-même. Le port
-<code>EmbeddingModel</code> promet « <strong>un vecteur par chip</strong> » ; chaque adapter est responsable de le
-produire — Clay prend son CLS, TerraMind moyenne ses patchs. <strong>L'appelant ne voit pas la
-différence.</strong></p>
-<p>⚠ À écrire dans la fiche plutôt qu'à laisser découvrir en revue : comparer un embedding CLS
-à une moyenne de patchs <strong>n'est pas une comparaison parfaitement équitable</strong> au sens
-scientifique. C'est en revanche ce qu'on utiliserait en production, donc la bonne comparaison
-<strong>pour nous</strong>. De même, TerraMind est <strong>multimodal</strong> et sera utilisé en mono-modalité S2 :
-s'il discrimine moins bien que Clay, cela ne prouvera pas qu'il est moins bon — seulement
-qu'on l'utilise à moitié.</p>
-<h2 id="5-pieges-identifies-a-mesurer-pas-a-supposer">5. Pièges identifiés (à mesurer, pas à supposer)</h2>
+<p><strong>Profondeur 8, largeur moyenne 26/8 = 3,25</strong> <em>(recalculé depuis les frontmatters après la
+revue v3 — l'ancien « ~3,1 » était faux)</em>. Deux gates humains — la campagne (N5) et
+l'arbitrage (N7) — comme au Lot 0 (<code>l0-03.H</code>, <code>l0-04.H</code>) : <strong>22 fiches agent s'enchaînent
+sans intervention jusqu'à la campagne</strong>, puis deux fiches agent terminales (<code>l1-04.5</code>,
+<code>l1-05.4</code> — elles sont <strong>après</strong>, pas avant), puis l'arbitrage.</p>
+<p>⚠ <strong>Il n'y a pas « un » chemin critique</strong> (revue v3, S-13/D-12 — le chemin publié
+jusqu'ici passait par une arête <code>l1-02.4 → l1-04.1</code> qui <strong>n'existe pas</strong>, et l'énumération
+exhaustive donne <strong>48</strong> chaînes maximales de longueur 8, pas trois). Ce qui commande le
+calendrier, ce sont les <strong>goulots</strong> :</p>
 <ol>
-<li><strong>Le chargement peut dominer le forward.</strong> Deux rasters, deux résolutions, un
-   rééchantillonnage : si les trois temps ne sont pas séparés, on attribuera au GFM un coût
-   qui est celui de l'I/O. C'est la raison d'être de <code>l1-04.1</code>, et elle précède tous les
-   leviers.</li>
-<li><strong>drvfs.</strong> ~16 Gio à lire à travers un montage Windows. Le Lot 0 a déjà payé cette taxe.</li>
-<li><strong>Le chiffre publié par Clay (~20 embeddings/s) vient d'AWS</strong>, pas d'un CPU de poste. Il
-   ne doit apparaître nulle part comme référence de comparaison.</li>
-<li><strong>Un oracle de déterminisme fixé après la mesure ne prouve rien.</strong> La tolérance se fixe en
-   amont (question ouverte n°4).</li>
-<li><strong>Le poids des modèles ne doit jamais se télécharger au run</strong> — sinon le gate devient
-   dépendant du réseau et le banc mesure la bande passante. Garde vérifiée par mutation.</li>
-<li><strong>Zones partagées</strong> : <code>pyproject.toml</code> → <code>l1-01.1</code> seule (dépendances pré-posées, patron
-   du Lot 0) · <code>justfile</code> → <code>l1-02.3</code> (pré-chargement) puis <code>l1-03.4</code> (smoke) ·
-   <code>tests/fixtures/</code> → <code>l1-01.4</code> seule.</li>
+<li><strong><code>l1-05.3.H</code></strong> (N5, humain) — la campagne : tout N6 l'attend, et elle-même attend que
+   les modèles, le backfill et le réglage de <code>l1-04.3b</code> soient là ;</li>
+<li><strong><code>l1-04.5</code> et <code>l1-05.4</code></strong> (N6) — les deux rapports décisionnels ;</li>
+<li><strong><code>l1-06.H</code></strong> (N7) — l'arbitrage, feuille du graphe.</li>
+</ol>
+<p>⛔ <strong>Règle de dispatch — les cinq fiches de banc de N4 ne se parallélisent pas</strong> (revue v3,
+E-8). <code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-04.4</code> et <code>l1-05.2</code> mesurent toutes du <strong>temps
+CPU</strong> : les lancer ensemble, c'est mesurer la contention qu'on a créée soi-même. Le critère
+habituel de <code>/run</code> (« zones de code disjointes ») ne protège <strong>pas</strong> ici — leurs fichiers
+<em>sont</em> disjoints, et il les déclarerait donc sûres. Trois garde-fous, sans nouvel outillage :</p>
+<ul>
+<li>la règle générale de <code>_tools/CLAUDE.md</code> — <strong>un seul agent d'implémentation à la fois</strong> —
+  suffit si elle est tenue ; ces cinq fiches sont le cas où elle n'est pas négociable ;</li>
+<li>chacune porte un <strong>bandeau ⛔</strong> en tête de fiche ;</li>
+<li>chaque JSON de banc porte un champ <strong><code>concurrent_load</code></strong> : si la règle a été enfreinte,
+  la mesure reste <strong>lisible comme suspecte</strong> au lieu d'être silencieusement fausse.</li>
+</ul>
+<h3 id="4bis-ce-que-le-port-doit-absorber">4bis. Ce que le port doit absorber</h3>
+<p>Clay rend <strong>un CLS 1024-d</strong> ; TerraMind rend <strong>une liste de 12 tenseurs <code>(B, 256, 384)</code></strong>,
+agrégée par l'adapter (<code>out[-1].mean(dim=1)</code>). Le port promet « un vecteur par chip » via
+<code>embed(chip: ChipTensor)</code> — l'appelant ne voit pas la différence. ⚠ Écrit dans les fiches :
+comparer un CLS à une moyenne de patchs n'est pas parfaitement équitable au sens
+scientifique — c'est en revanche ce qu'on utiliserait en production, donc la bonne
+comparaison pour nous ; et TerraMind, multimodal utilisé en mono-modalité S2, part
+handicapé — un score inférieur ne prouverait pas qu'il est moins bon.</p>
+<h2 id="5-pieges-identifies-v2-mesures-ou-verifies-a-la-source">5. Pièges identifiés (v2 — mesurés ou vérifiés à la source)</h2>
+<ol>
+<li><strong>Le chargement peut dominer le forward</strong> — d'où <code>l1-04.1</code> avant tous les leviers.</li>
+<li><strong>drvfs</strong> : ~16 Gio à lire à travers un montage Windows (<code>l1-04.2</code>).</li>
+<li>⚠ <strong>Les documentations publiques des deux modèles sont fausses ou non exécutables</strong>
+   (revue K-01/K-02) : carte HF TerraMind fausse sur la forme de sortie, quickstart Clay
+   non exécutable, masque à 75 % par défaut en inférence. <strong>Les fiches d'adapter portent la
+   recette vérifiée au code source — la suivre, ne pas « corriger » depuis la doc.</strong></li>
+<li><strong>Un oracle de déterminisme ou de fidélité fixé après la mesure ne prouve rien</strong> — tous
+   les seuils sont actés en §2ter.</li>
+<li><strong>Aucun poids ne se télécharge au run</strong> — trois artefacts, une seule garde (<code>l1-00</code>,
+   <code>l1-02.3</code>), le smoke dessous.</li>
+<li><strong>Zones partagées (v3 — table de propriété exclusive)</strong> :</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Fichier / répertoire</th>
+<th>Propriétaire unique</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyproject.toml</code> · <code>pixi.lock</code> · <code>.gitignore</code></td>
+<td><strong><code>l1-00</code></strong></td>
+<td>y compris la feature <code>bench</code> (onnxruntime) que <code>l1-04.4</code> consomme sans l'écrire, et l'extension de <code>test_packaging.py</code> aux extras</td>
+</tr>
+<tr>
+<td><code>config/settings.yaml</code> · <code>config_io._INT_FIELDS</code> <strong>et <code>_PATH_FIELDS</code></strong></td>
+<td><strong><code>l1-00</code></strong></td>
+<td>⭐ <strong>les 3 clés sont PRÉ-POSÉES</strong> (<code>hf_home</code>, <code>embed_cloud_pct_max</code>, <code>embed_workers</code>) ; <code>l1-03.2</code> et <code>l1-03.3</code> <strong>consomment</strong>. Plus d'écriture séquentielle à trois — le patron « table pré-posée », comme pour le registre. <code>_PATH_FIELDS</code> est neuf (revue v4, M1) : le Lot 0 n'avait aucun champ-chemin à expanser</td>
+</tr>
+<tr>
+<td><code>justfile</code></td>
+<td><strong><code>l1-00</code></strong></td>
+<td>recette <code>fetch-models</code>, hors gate</td>
+</tr>
+<tr>
+<td><code>.github/workflows/</code> · <code>.env.example</code></td>
+<td><strong><code>l1-07</code></strong></td>
+<td>zone <strong>actée équipe</strong> le 25/08 (précédent : codeql, Dependabot)</td>
+</tr>
+<tr>
+<td><code>adapters/model_registry.py</code></td>
+<td><strong><code>l1-01.3</code></strong></td>
+<td>table pré-posée à 3 entrées ; les adapters n'écrivent que leur fichier</td>
+</tr>
+<tr>
+<td><code>scripts/smoke.py</code> <strong>et <code>tests/test_smoke.py</code></strong></td>
+<td><strong><code>l1-03.4</code></strong></td>
+<td>⭐ le test était absent de cette table — il rejoue <code>smoke.main()</code> sous pytest (revue v3, A-4)</td>
+</tr>
+<tr>
+<td><code>scripts/check_cache.py</code></td>
+<td><strong><code>l1-00</code></strong></td>
+<td>versionné ; consommateur des oracles de <code>l1-07</code></td>
+</tr>
+<tr>
+<td><code>tests/fixtures/embed/</code></td>
+<td><code>l1-01.4</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/fixtures/vectors/</code></td>
+<td><strong><code>l1-05.3a</code></strong></td>
+<td>vecteurs <strong>fabriqués</strong> — le répertoire n'avait aucun propriétaire (revue v3, S-15)</td>
+</tr>
+<tr>
+<td><code>tests/fixtures/reports/</code></td>
+<td><code>l1-04.5</code></td>
+<td>JSON de fixture des rapports, disjoint du précédent</td>
+</tr>
+<tr>
+<td><code>docs/lots/lot-1/</code></td>
+<td><strong>création par <code>l1-05.3a</code></strong>, dépôts par <code>l1-04.5</code> et <code>l1-05.4</code></td>
+<td>zone <strong>ouverte à l'équipe en création</strong> le 25/08 ; le reste de <code>docs/lots/</code> demeure zone PO</td>
+</tr>
+<tr>
+<td><code>README.md</code> · <code>CLAUDE.md</code></td>
+<td>⛔ <strong>fermés</strong></td>
+<td><code>l1-02.3</code> et <code>l1-07</code> <strong>rédigent</strong> leur ligne au Résumé ; Philippe la reporte</td>
+</tr>
+<tr>
+<td>7. <strong>La contention workers × threads</strong> se mesure (<code>l1-04.3b</code>), ne se devine pas — le 6 du</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Lot 0 était calibré pour un goulot réseau.</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8. ⭐ <strong>Le harnais est le dernier endroit où les fiches cassent</strong> (revue v4). Trois pièges</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>qui ne se voient qu'en exécutant : <code>assert</code> dans <code>scripts/</code> déclenche <strong>S101</strong> (cinq</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>oracles l'exigent — <code>l1-00</code> pré-pose l'exemption) · **<code>mypy --strict</code> couvre</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>scripts/</code>**, « script de mesure » ne dispense de rien · <code>tests/test_smoke.py</code> charge</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>scripts/smoke.py</code> <strong>à la collecte pytest</strong>, donc l'import d'un adapter en tête de</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>fichier se paie à chaque <code>just test</code> (<code>l1-03.4</code> : import paresseux).</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5bis-prerequis-de-dispatch-a-faire-avant-le-premier-agent">5bis. ⛔ Prérequis de dispatch — à faire AVANT le premier agent</h2>
+<p>Quatre gestes, <strong>dans cet ordre</strong>. Aucun n'est optionnel.</p>
+<ol>
+<li>✅ <strong>Zones d'écriture portées dans <code>CLAUDE.md</code></strong> — <em>fait le 26/08</em> (revue v4, M4).
+   <code>CLAUDE.md</code> disait encore « l'équipe d'implémentation écrit dans <code>src/</code>, <code>tests/</code>,
+   <code>scripts/</code> », et il précise de lui-même que <strong>ses instructions priment</strong> : un agent
+   consciencieux — celui qu'on veut — aurait lu la contradiction avec <code>docs/lots/lot-1/</code> et
+   fait ce que la méthode prescrit alors, <strong>signaler plutôt qu'écrire</strong>. Or <code>l1-05.3a</code> est
+   en <strong>N1</strong>. Les quatre exceptions actées : <code>.github/</code>, <code>config/</code>, <code>.env.example</code>, et la
+   <strong>création</strong> sous <code>docs/lots/&lt;lot&gt;/</code> ; <code>README.md</code> et <code>CLAUDE.md</code> restent <strong>fermés</strong>.</li>
+<li>⛔ <strong>COMMITER les fiches — avant la sonde, et c'est le geste qu'on oublie.</strong>
+   Un worktree se crée depuis une <strong>référence git</strong> : il ne contient <strong>jamais</strong> l'arbre de
+   travail. Avec <code>worktree.baseRef: "head"</code> (réglage en place), la base est le <strong>dernier
+   commit local</strong> — pas les fichiers modifiés. Mesuré le 26/08 : <code>HEAD</code> = <code>cfd09cb</code>, le
+   commit d'<strong>ouverture</strong> du chantier, avec <strong>52 fiches modifiées non commitées</strong>. Un agent
+   dispatché dans cet état lirait le Lot 1 sans <code>l1-00</code>, sans <code>l1-07</code>, sans les corrections
+   des revues v3 et v4 — c'est-à-dire l'inverse de ce qu'on vient de faire.
+   ⚠ <strong>Et la sonde ne l'attraperait pas</strong> : elle vérifie que le worktree est sur le HEAD
+   <strong>attendu</strong>, pas que ce HEAD <strong>contient</strong> ce qu'on croit. Les deux contrôles sont
+   complémentaires, dans cet ordre.
+   <em>(Le <code>push</code> n'est nécessaire que si <code>baseRef</code> vaut <code>fresh</code> — la base est alors le ref
+   distant. Avec <code>"head"</code>, commiter suffit.)</em></li>
+<li>⛔ <strong>La sonde de worktree</strong> (<code>CLAUDE.md</code> § « Worktrees d'agents » ; checklist opérationnelle
+   dans <code>.claude/commands/run.md</code>) : un agent trivial en <code>isolation: "worktree"</code> qui rapporte
+   <code>pwd</code> et <code>git rev-parse --short HEAD</code>, comparé au HEAD attendu. 30 secondes en lecture
+   seule ; on ne dispatche pas sans.
+   ⭐ <strong>Pourquoi elle est un prérequis et pas une précaution</strong> : la défaillance qu'elle
+   prévient est <strong>silencieuse et passe le gate</strong>. Un agent sur une base périmée lit une
+   version antérieure de <strong>sa propre fiche</strong>, code contre elle, et livre quelque chose de
+   cohérent — donc <code>just check</code> est <strong>vert</strong>. C'est arrivé au run N0 : code livré amputé
+   d'un champ, gate au vert. Lint, types, tests et smoke vérifient tous que le code est
+   conforme à <em>une</em> spec ; <strong>aucun</strong> ne vérifie que c'est la <strong>bonne</strong>. Et les deux réglages
+   (<code>git remote set-head</code>, <code>worktree.baseRef</code>) sont <strong>invérifiables par lecture</strong> — le
+   second n'est lu qu'au <strong>démarrage de session</strong>, ce qui a déjà fait conclure à tort qu'il
+   était inopérant.</li>
+<li>⭐ <strong><code>l1-00</code> avant tout le reste, seule.</strong> Elle porte le bloquant de la revue v4
+   (exemption <code>S101</code>), son majeur le plus vicieux (expansion de <code>~</code>), la feature <code>models</code>,
+   la feature <code>bench</code> et <code>allow-direct-references</code> : cinq choses dont dépend le vert des
+   autres. ⚠ <strong>Son O4 mesure le coût d'installation de la feature <code>models</code> par worktree</strong> —
+   le Lot 0 payait déjà 1 min 5 s et 696 Mo par worktree (drvfs sans liens durs, recopie
+   intégrale). <strong>Attendre ce chiffre avant de fixer la largeur des vagues suivantes</strong>, pas
+   l'inverse.</li>
 </ol>
 <h2 id="6-ce-qui-nest-pas-dans-ce-lot">6. Ce qui n'est PAS dans ce lot</h2>
 <p>pgvector et l'indexation (Lot 2) · la détection de changement (Lot 2) · l'entraînement ou le

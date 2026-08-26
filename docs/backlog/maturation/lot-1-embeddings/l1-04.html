@@ -45,13 +45,13 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-04</b></nav><h1>[l1-04] [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : XL<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-04</b></nav><h1>[l1-04] [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-04-chapeau-le-banc">[l1-04] — CHAPEAU : le banc</a><ul>
 <li><a href="#contexte">Contexte</a></li>
 <li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
-<li><a href="#ce-quon-sait-deja-et-qui-oriente-les-mesures">Ce qu'on sait déjà, et qui oriente les mesures</a></li>
-<li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
+<li><a href="#ce-quon-sait-deja-revue-v1-denombrements-pas-des-mesures">Ce qu'on sait déjà (revue v1 — dénombrements, pas des mesures)</a></li>
+<li><a href="#politique-de-test-rappel">Politique de test (rappel)</a></li>
 <li><a href="#sous-taches">Sous-tâches</a></li>
 <li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
 </ul>
@@ -60,47 +60,47 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong></p>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Révisée post-revue v1 (scission de
+<code>l1-04.3</code>, rapport réorienté après la campagne).</p>
 </blockquote>
 <h2 id="contexte">Contexte</h2>
-<p>⭐ <strong>Ce chapeau est la raison d'être du lot.</strong> La feuille de route disait « le banc décide de
-l'achat matériel » ; <strong>décision Philippe du 23/08 : il n'y aura pas d'achat</strong>. Le banc décide
-donc d'un <strong>périmètre</strong> : combien de chips, de sites et de mois sont embeddables sur cette
-machine, et <strong>quels leviers permettent d'en embedder plus avant de renoncer à quoi que ce
-soit</strong>.</p>
-<p>C'est la nuance qui distingue ce chapeau d'un simple chronométrage : <strong>un banc qui constate
-une lenteur sans mesurer de levier ne décide rien.</strong></p>
+<p>⭐ Pas d'achat matériel (décision Philippe) : le banc décide d'un <strong>périmètre</strong> — combien de
+chips, de sites, de mois sont embeddables sur cette machine, et quels <strong>leviers</strong> permettent
+d'en embedder plus avant de renoncer. Un banc qui constate une lenteur sans mesurer de
+levier ne décide rien.</p>
 <h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
 <ol>
-<li>⭐ <strong>Chargement, forward et écriture sont chronométrés SÉPARÉMENT.</strong> Un chip, c'est deux
-   rasters à deux résolutions plus un rééchantillonnage : si les trois temps sont confondus,
-   on attribuera au GFM un coût qui est celui de l'I/O, et <strong>tous les leviers mesurés
-   ensuite porteront à faux</strong>. C'est pourquoi <code>l1-04.1</code> précède les quatre autres fiches.</li>
-<li><strong>Quatre leviers, quatre fiches, un chiffre chacun</strong> — ou une raison motivée de ne pas
-   conclure. Un levier « non concluant » documenté vaut mieux qu'un levier passé sous silence.</li>
-<li><strong>Le banc écrit du JSON</strong>, jamais des logs à relire à l'œil. Le rapport (<code>l1-04.5</code>) se
-   dérive de ces fichiers.</li>
-<li><strong>Aucun seuil de succès sur les temps.</strong> Il n'y a pas d'achat à décider, donc pas de
-   seuil à franchir : le banc <strong>publie</strong> et <code>l1-06.H</code> arbitre. Les oracles portent sur la
-   <strong>méthode de mesure</strong>, pas sur les valeurs.</li>
+<li>⭐ <strong>Chargement, forward et écriture chronométrés SÉPARÉMENT</strong> (<code>l1-04.1</code>, qui précède
+   tous les leviers) — sinon on attribue au GFM un coût qui est celui de l'I/O, et tous les
+   leviers portent à faux.</li>
+<li><strong>Chaque levier rend un chiffre ou une raison motivée de ne pas conclure.</strong></li>
+<li><strong>Le banc écrit du JSON</strong> ; le rapport (<code>l1-04.5</code>) agrège, il ne mesure jamais.</li>
+<li><strong>Aucun seuil de succès sur les temps</strong> : le banc publie, <code>l1-06.H</code> arbitre.</li>
+<li>⭐ <strong>Le rapport vient APRÈS la campagne</strong> (revue K-06) : c'est lui qui porte le <strong>ratio
+   discrimination / seconde</strong> — critère de sortie n°5 du lot — et la confrontation durée
+   réelle ↔ extrapolation. Il dépend donc de <code>l1-05.3.H</code>.</li>
+<li><strong>ONNX est autorisé comme mesure jetable</strong> (arbitrage Philippe) : onnxruntime peut être
+   installé dans l'environnement de mesure, mais n'entre PAS au contrat du paquet.</li>
 </ol>
-<h2 id="ce-quon-sait-deja-et-qui-oriente-les-mesures">Ce qu'on sait déjà, et qui oriente les mesures</h2>
+<h2 id="ce-quon-sait-deja-revue-v1-denombrements-pas-des-mesures">Ce qu'on sait déjà (revue v1 — dénombrements, pas des mesures)</h2>
 <ul>
-<li><strong>1024 tokens (Clay) contre 196 (TerraMind small)</strong> — un facteur 5,2 sur la longueur de
-  séquence. Sur CPU c'est probablement le premier facteur de coût, avant le nombre de
-  paramètres.</li>
-<li><strong>Le corpus fait ~16 Gio</strong> et vit sur <code>D:\datas\tiny-wae</code>, atteint depuis WSL2 par
-  <strong>drvfs</strong>. Le Lot 0 a déjà payé cette taxe (<code>just install</code> y recopiait 696 Mo faute de
-  liens durs). Une passe complète, c'est 16 Gio à travers cette couche.</li>
-<li><strong>Chaque acquisition pèse ~2,9 Mo</strong> répartis sur trois fichiers, dont deux à lire.</li>
-<li><strong>Le parallélisme n'est pas gratuit</strong> : le goulot est le calcul, pas le réseau. N workers ×
-  M threads BLAS = contention.</li>
+<li><strong>Clay-large ~302 M params / 1024 tokens contre TerraMind-small ~21 M / 256 tokens</strong> :
+  rapport de coût attendu ~<strong>50×</strong>, dominé par la taille de modèle AUTANT que par les
+  tokens. L'asymétrie est subie (pas d'autre variante Clay v1.5) et déclarée au chapeau
+  <code>l1-02</code>.</li>
+<li>Le corpus (~16 Gio) est lu à travers <strong>drvfs</strong> — taxe déjà mesurée au Lot 0.</li>
+<li>Le parallélisme est une <strong>contention</strong> ici (goulot CPU), pas un multiplicateur.</li>
 </ul>
-<h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
-<p>Un banc <strong>n'a presque pas besoin de tests</strong>. Ce qui doit être testé : que
-l'instrumentation <strong>compte ce qu'elle prétend compter</strong> (une phase artificiellement ralentie
-doit apparaître comme telle) et que le rapport <strong>sait rendre rouge</strong>. Le reste, ce sont des
-<strong>mesures</strong>, pas des assertions : elles se publient, elles ne se vérifient pas par pytest.</p>
+<h2 id="politique-de-test-rappel">Politique de test (rappel)</h2>
+<p>Un banc n'a presque pas besoin de tests : l'instrumentation doit prouver qu'elle <strong>compte ce
+qu'elle prétend compter</strong>, le rapport doit savoir <strong>rendre rouge</strong> un levier non concluant.</p>
+<p>⚠ ⭐ <strong>Deux propriétés du harnais que « script de mesure » ne dispense pas</strong> (revue v4) :
+<strong><code>mypy --strict</code> couvre <code>scripts/</code></strong> (<code>pyproject.toml:146</code> — <code>files = ["src", "tests",
+"scripts"]</code>), donc les cinq scripts de banc s'annotent comme du code de production ; et
+<strong><code>assert</code> y déclenche <code>S101</code></strong> sauf exemption — <code>l1-00</code> la pré-pose pour
+<code>scripts/bench_*.py</code>, ce qui rend exécutables les oracles qui exigent « vérifié <strong>dans</strong> le
+script ». Sans cette ligne, <code>just lint</code> serait rouge sur les cinq fiches.
+Le reste, ce sont des mesures — elles se publient.</p>
 <h2 id="sous-taches">Sous-tâches</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -113,31 +113,36 @@ doit apparaître comme telle) et que le rapport <strong>sait rendre rouge</stron
 <tbody>
 <tr>
 <td><code>l1-04.1</code></td>
-<td>Instrumentation : trois phases séparées, RAM crête, JSON</td>
+<td>Instrumentation : 3 phases, RAM crête, JSON</td>
 <td>M</td>
 </tr>
 <tr>
 <td><code>l1-04.2</code></td>
-<td>Levier <strong>I/O</strong> : drvfs contre ext4</td>
+<td>Levier I/O : drvfs contre ext4</td>
 <td>S</td>
 </tr>
 <tr>
-<td><code>l1-04.3</code></td>
-<td>Leviers <strong>modèle</strong> : résolution, batch, threads, workers</td>
+<td><code>l1-04.3a</code></td>
+<td>Leviers résolution (4 tuiles vs 1) + batch</td>
 <td>M</td>
 </tr>
 <tr>
+<td><code>l1-04.3b</code></td>
+<td>Leviers threads BLAS + contention workers</td>
+<td>S</td>
+</tr>
+<tr>
 <td><code>l1-04.4</code></td>
-<td>Levier <strong>quantification</strong> : int8 / ONNX</td>
+<td>Levier quantification (plancher de fidélité figé)</td>
 <td>M</td>
 </tr>
 <tr>
 <td><code>l1-04.5</code></td>
-<td><strong>Rapport de banc</strong> et extrapolation chiffrée</td>
+<td>Rapport : comparatif, extrapolations, <strong>ratio discrimination/seconde</strong></td>
 <td>M</td>
 </tr>
 </tbody>
 </table></div>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
-<p>Toute métrique de qualité (<code>l1-05</code>) · l'arbitrage final (<code>l1-06.H</code>) · le GPU · toute
-optimisation du code des adapters au-delà des leviers listés — on mesure, on ne réécrit pas.</p><div class="prevnext"><a href="l1-03.html">← [l1-03] [CHAPEAU] CLI embed et stockage fichier des vecteurs</a><a href="l1-05.html">[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+<p>La qualité intrinsèque (<code>l1-05</code>, sauf le ratio final que <code>l1-04.5</code> consomme) · l'arbitrage
+(<code>l1-06.H</code>) · le GPU · toute optimisation du code au-delà des leviers listés.</p><div class="prevnext"><a href="l1-03.html">← [l1-03] [CHAPEAU] CLI embed et stockage fichier des vecteurs</a><a href="l1-05.html">[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

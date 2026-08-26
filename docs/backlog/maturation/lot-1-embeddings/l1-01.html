@@ -45,11 +45,11 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-01</b></nav><h1>[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-01</b></nav><h1>[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-01-chapeau-socle-dembedding">[l1-01] — CHAPEAU : Socle d'embedding</a><ul>
 <li><a href="#contexte">Contexte</a></li>
-<li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
+<li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir-revisees-en-revue-v1">Décisions portées par ce chapeau (ne pas rouvrir — révisées en revue v1)</a></li>
 <li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
 <li><a href="#sous-taches">Sous-tâches</a></li>
 <li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
@@ -59,74 +59,38 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Elle porte le contexte et les décisions
-communes une seule fois, pour que chaque sous-tâche reste courte et implémentable par un
-agent d'effort medium. Le chapeau passe en <code>fait/</code> quand toutes ses sous-tâches y sont.</p>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Révisée post-revue v1.</p>
 </blockquote>
 <h2 id="contexte">Contexte</h2>
-<p>Le Lot 0 a produit <strong>5 793 chips</strong> sur 25 sites et 48 mois. Ce chapeau pose ce qui permet de
-transformer un chip en <strong>tenseur d'entrée de modèle</strong>, et le <strong>port</strong> derrière lequel les
-deux adapters du chapeau <code>l1-02</code> viendront se brancher. Aucun modèle n'est chargé ici :
-tout ce qui suit est vérifiable sans poids, hors ligne, en millisecondes.</p>
-<p><strong>La difficulté est dans la donnée, pas dans le modèle.</strong> Un chip n'est pas un raster, c'en
-est <strong>deux</strong>, à deux résolutions :</p>
-<div class="tablewrap"><table>
-<thead>
-<tr>
-<th>Fichier</th>
-<th>Taille</th>
-<th>Bandes</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>chip.tif</code></td>
-<td>512×512</td>
-<td><strong>4</strong> à 10 m : <code>blue</code>, <code>green</code>, <code>red</code>, <code>nir</code></td>
-<td>uint16</td>
-</tr>
-<tr>
-<td><code>chip_20m.tif</code></td>
-<td>256×256</td>
-<td><strong>6</strong> à 20 m : <code>rededge1/2/3</code>, <code>nir08</code>, <code>swir16</code>, <code>swir22</code></td>
-<td>uint16</td>
-</tr>
-<tr>
-<td><code>scl.tif</code></td>
-<td>256×256</td>
-<td>masque de classification</td>
-<td>uint8</td>
-</tr>
-</tbody>
-</table></div>
-<p>Les 10 bandes de la spec Clay sont donc <strong>réparties sur deux grilles</strong>. Les assembler
-demande un rééchantillonnage, et ce rééchantillonnage a un coût qui sera chronométré
-séparément du modèle en <code>l1-04.1</code> — sinon on attribuera au GFM un coût qui est celui de l'I/O.</p>
-<h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
+<p>Transformer un chip du Lot 0 en <strong>entrée de modèle</strong>, et poser le <strong>port</strong> des adapters.
+Rien ici ne charge un modèle : tout est vérifiable hors ligne, en millisecondes.</p>
+<p>Un chip = <strong>deux rasters à deux résolutions</strong> (<code>chip.tif</code> 512²×4 bandes 10 m ·
+<code>chip_20m.tif</code> 256²×6 bandes 20 m, uint16) plus <code>scl.tif</code> et <code>manifest.json</code>. Les 10 bandes
+sont réparties sur deux grilles ; les assembler coûte un rééchantillonnage, chronométré à
+part en <code>l1-04.1</code>.</p>
+<h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir-revisees-en-revue-v1">Décisions portées par ce chapeau (ne pas rouvrir — révisées en revue v1)</h2>
 <ol>
-<li>⭐ <strong>Une acquisition → UN vecteur.</strong> L'entrée est montée en <strong>20 m</strong> : un tenseur
-   <code>256×256×10</code>, soit exactement une tuile Clay. C'est le montage le moins cher <strong>et</strong>
-   l'unité annoncée depuis le début du POC. La variante 10 m (512×512 → 4 tuiles) n'est pas
-   produite ; son <strong>coût</strong> est chiffré sur échantillon par <code>l1-04.3</code>.</li>
-<li>⭐ <strong>La stratégie de découpage est un CHAMP DE LA SPEC</strong>, jamais une hypothèse enfouie
-   dans un adapter. C'est ce qui rend la décision n°1 réversible : produire l'autre variante
-   plus tard <strong>ajoute</strong> des vecteurs à côté des existants au lieu de les invalider.</li>
-<li><strong>Normalisation radiométrique depuis le manifeste, jamais en dur.</strong> Chaque asset porte
-   son <code>scale</code>/<code>offset</code> (arbitrage n°1 du Lot 0) ; <code>boa_offset_applied</code> dit si l'offset a
-   déjà été appliqué à l'écriture. La réflectance se dérive de ces valeurs, <strong>par bande</strong>.</li>
-<li><strong>Pas de masque SCL à l'entrée du modèle.</strong> Les GFM sont entraînés sur des images
-   réelles ; remplacer des pixels leur présente une distribution qu'ils n'ont jamais vue.
-   Le filtrage se fait <strong>en amont, au niveau du chip</strong> (<code>embed_cloud_pct_max</code>, cf. <code>l1-03.2</code>),
-   et le <code>cloud_pct</code> est <strong>consigné</strong> à côté du vecteur pour que le Lot 2 puisse pondérer.</li>
-<li><strong>L'ordre des bandes est normatif et n'existe qu'à UN endroit</strong> — <code>core/embedding.py</code>.
-   Aucune autre fiche ne le recopie ; les adapters y renvoient.</li>
+<li>⭐ <strong>Une acquisition → UN vecteur, entrée ramenée à 20 m</strong> : tenseur <code>(10, 256, 256)</code>.
+   La variante 10 m (4 tuiles) n'est pas produite ; son <strong>coût</strong> est chiffré sur tenseurs
+   synthétiques par <code>l1-04.3a</code>.</li>
+<li>⭐ <strong>La stratégie de découpage est un champ de la spec</strong> (<code>tiling</code>), et le <code>spec_hash</code>
+   entre dans la clé d'idempotence <strong>et dans le nom du fichier vecteur</strong> (<code>l1-03.1</code>) :
+   produire l'autre variante plus tard <strong>ajoute</strong> des vecteurs, n'écrase rien.</li>
+<li>⭐ <strong>Le loader livre du DN, la normalisation appartient aux adapters</strong> (revue K-02b) :
+   Clay et TerraMind attendent chacun un z-score sur DN avec <strong>leurs</strong> statistiques — pas de
+   la réflectance. <code>to_reflectance</code> reste un outil de contrôle hors chemin modèle.</li>
+<li><strong>Pas de masque SCL à l'entrée.</strong> Filtrage au niveau du chip (<code>embed_cloud_pct_max</code>,
+   <code>l1-03.2</code>) ; <code>cloud_pct</code> + <code>scl_summary</code> consignés au compagnon pour le Lot 2.</li>
+<li><strong>L'ordre des bandes est celui de Clay, écrit en littéral dans <code>l1-01.1</code></strong> — ce n'est
+   PAS la concaténation des constantes du Lot 0 (<code>nir</code> est en 7ᵉ position). Toute stat se
+   construit par lookup <strong>par nom</strong>.</li>
+<li><strong>Le port passe le <code>ChipTensor</code> entier</strong> (<code>embed(chip)</code>) : Clay consomme datetime,
+   lat/lon et <code>gsd=20</code> en plus des pixels.</li>
 </ol>
 <h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
-<p>Ici : tests unitaires sur le pur (<code>l1-01.1</code>), tests de forme sur le chargeur (<code>l1-01.2</code>).
-<strong>Aucun test dont l'oracle est « ça ne plante pas ».</strong> Les vérifications ponctuelles se
-consignent en prose dans le Résumé de réalisation. <strong>Pas de quota</strong> : c'est la nature du
-code qui dit combien de tests il mérite.</p>
+<p>Tests unitaires sur le pur (<code>l1-01.1</code>) et sur les invariants du chargeur (<code>l1-01.2</code>).
+Aucun test dont l'oracle est « ça ne plante pas ». Pas de quota : la nature du code dit
+combien de tests il mérite.</p>
 <h2 id="sous-taches">Sous-tâches</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -139,26 +103,26 @@ code qui dit combien de tests il mérite.</p>
 <tbody>
 <tr>
 <td><code>l1-01.1</code></td>
-<td><code>core/embedding.py</code> — spec de bandes, ordre, normalisation. Pur</td>
+<td>Ordre normatif, spec, <code>spec_hash</code>, <code>validate_spec</code></td>
 <td>S</td>
 </tr>
 <tr>
 <td><code>l1-01.2</code></td>
-<td><code>adapters/chip_loader.py</code> — le tenseur 10 bandes depuis les deux rasters</td>
+<td><code>ChipTensor</code> complet depuis les deux rasters</td>
 <td>M</td>
 </tr>
 <tr>
 <td><code>l1-01.3</code></td>
-<td>Port <code>EmbeddingModel</code> + registre <code>model_id → adapter</code></td>
+<td>Port + registre à table pré-posée, imports paresseux</td>
 <td>S</td>
 </tr>
 <tr>
 <td><code>l1-01.4</code></td>
-<td>Corpus de fixtures d'embedding</td>
+<td>4 fixtures réelles gelées (N0, sans dépendance)</td>
 <td>S</td>
 </tr>
 </tbody>
 </table></div>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
-<p>Le chargement des poids et l'exécution d'un modèle (<code>l1-02</code>) · le CLI et le stockage
-(<code>l1-03</code>) · toute mesure de performance (<code>l1-04</code>) · toute métrique de qualité (<code>l1-05</code>).</p><div class="prevnext"><span></span><a href="l1-02.html">[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+<p>Les modèles (<code>l1-02</code>) · le CLI et le stockage (<code>l1-03</code>) · toute mesure (<code>l1-04</code>, <code>l1-05</code>) ·
+les dépendances d'installation (<code>l1-00</code>).</p><div class="prevnext"><a href="l1-00.html">← [l1-00] Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié</a><a href="l1-02.html">[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small →</a></div><p class="gen">Généré le 24/08/2026 14:56 — le .md fait foi.</p></article></body></html>

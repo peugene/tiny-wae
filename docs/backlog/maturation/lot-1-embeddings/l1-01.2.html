@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube)</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.2</b></nav><h1>[l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.2</b></nav><h1>[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-012-assemblage-du-tenseur-dentree">[l1-01.2] — Assemblage du tenseur d'entrée</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,44 +60,68 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-02, K-19, E-19, E-23) : la sortie porte tout ce que le
+datacube de Clay exigera ; les valeurs restent en DN ; l'oracle sur corpus réel passe par
+les fixtures versionnées.
+<strong>Révisée post-revue v3</strong> (A-12, C-19, S-9, E-20) : <code>chip_bounds</code> existe déjà et se
+réutilise ; le format de <code>scl_summary</code> est défini en amont ; la borne DN de O6 était
+contredite par la fixture nuageuse que <code>l1-01.4</code> impose.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Lire une acquisition sur disque et en produire le <strong>tenseur d'entrée normalisé</strong> attendu par
-un modèle : <code>(10, 256, 256)</code> en float32, bandes dans l'ordre normatif, valeurs en réflectance.</p>
-<p>C'est l'unique endroit du projet qui sait que les 10 bandes vivent dans <strong>deux fichiers à
-deux résolutions</strong>. Tout le reste de la chaîne l'ignore.</p>
+<p>Lire une acquisition et produire un <strong><code>ChipTensor</code></strong> : les 10 bandes en <code>(10, 256, 256)</code>
+float32, <strong>dans l'ordre <code>BAND_ORDER_EMBED</code></strong>, en <strong>DN</strong> (pas de normalisation ici — chaque
+modèle applique la sienne), plus toutes les métadonnées dont les adapters et le compagnon
+auront besoin.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <p><code>src/tiny_wae/adapters/chip_loader.py</code>.</p>
-<p>Entrée : le répertoire d'une acquisition — <code>&lt;data_root&gt;/&lt;site&gt;/&lt;item_id&gt;/</code> contenant
-<code>chip.tif</code> (512×512, 4 bandes 10 m), <code>chip_20m.tif</code> (256×256, 6 bandes 20 m), <code>scl.tif</code> et
-<code>manifest.json</code>.</p>
-<p>Sortie : un tableau <code>numpy</code> <code>(10, 256, 256)</code> float32 + les métadonnées utiles au compagnon
-du vecteur (<code>item_id</code>, <code>datetime</code>, <code>cloud_pct</code>, <code>grid_hash</code>, résumé SCL).</p>
-<p>À livrer :</p>
+<p>⭐ <strong>Pourquoi du DN et pas de la réflectance (revue K-02b)</strong> : Clay attend un z-score sur DN
+(mean ≈ 1105, std ≈ 1809 pour blue — <code>configs/metadata.yaml</code>), TerraMind pareil
+(<code>v1_pretraining_mean ≈ 1390…</code>). Normaliser ici serait normaliser deux fois ou pour le
+mauvais modèle. Le loader livre du DN float32 brut ; <strong>la normalisation est une
+responsabilité d'adapter</strong>, déclarée dans sa spec (<code>l1-01.1</code>).</p>
+<p><code>ChipTensor</code> (dataclass gelée) :</p>
 <ul>
-<li><code>load_chip_tensor(acquisition_dir, spec) -&gt; ChipTensor</code> — assemblage complet.</li>
-<li>⭐ <strong>Le rééchantillonnage descend le 10 m vers 20 m</strong>, pas l'inverse : moyenne de blocs
-  2×2 sur les 4 bandes de <code>chip.tif</code>, ce qui donne <code>256×256</code> — la taille native du
-  <code>chip_20m.tif</code>, donc aucune interpolation sur les 6 autres bandes. <strong>Décision du chapeau :
-  on ne monte pas en 10 m</strong>, ça coûterait 4 tuiles Clay au lieu d'une.</li>
-<li>La <strong>normalisation</strong> appelle <code>core.embedding.to_reflectance</code> avec les <code>scale</code>/<code>offset</code>
-  <strong>lus du manifeste, par bande</strong> — jamais des constantes.</li>
-<li>Erreur typée si un fichier manque, si une bande manque, ou si les deux rasters n'ont pas
-  le <strong>même CRS et la même emprise</strong> — le chip 10 m et le chip 20 m couvrent la même
-  surface par construction (<code>core/geometry.chip_bounds</code> du Lot 0) ; si ce n'est plus vrai,
-  quelque chose est cassé en amont et il faut le savoir bruyamment.</li>
+<li><code>pixels: np.ndarray</code> — <code>(10, 256, 256)</code> float32, ordre <code>BAND_ORDER_EMBED</code>, DN ;</li>
+<li><code>item_id</code>, <code>site_id</code>, <code>datetime</code> — lus du manifeste (<code>Manifest</code> du Lot 0 porte tout) ;</li>
+<li><code>lat</code>, <code>lon</code> — <strong>le centre du chip</strong>, dérivé de <code>grid</code> (epsg, origins) —
+  Clay les exige dans son datacube (revue : 8 dimensions du modèle leur sont réservées).
+  ⭐ <strong>Ne pas recalculer l'emprise</strong> : <code>core/geometry.py:52</code> porte déjà
+  <code>chip_bounds(grid, settings)</code>, écrit et testé au Lot 0 (revue v3, A-12). Le centre s'en
+  déduit, puis se reprojette en WGS84 par pyproj. Réécrire ce calcul, c'est ouvrir un
+  second endroit où la convention d'origine peut diverger.
+  ⚠ <strong>Entrée à nommer</strong> (revue v4) : <code>chip_bounds</code> exige un <code>Grid</code> <strong>calculé</strong> —
+  <code>core/sites.py:35-37</code> laisse les champs à <code>None</code> par défaut et <code>_require_computed</code> lève.
+  La source est <strong><code>config/sites.yaml</code></strong>, versionné et complet pour les 25 sites : aucune
+  fixture supplémentaire n'est nécessaire, mais le chemin doit être une entrée explicite du
+  loader, pas une découverte d'implémentation ;</li>
+<li><code>gsd: float = 20.0</code> — ⚠ <strong>20, pas 10</strong> : notre tenseur est à 20 m, et le <code>gsd</code> entre dans
+  l'encodage de position de Clay — lui passer 10 ferait mentir l'échelle (finding réfuteur) ;</li>
+<li><code>cloud_pct</code>, <code>grid_hash</code>, <code>scl_summary</code>, <code>radiometry</code> — pour le filtre et le compagnon.</li>
+<li><code>scl_summary</code> — ⭐ <strong>le format est défini par <code>l1-03.1</code>, cette fiche s'y conforme</strong>
+  (revue v3, S-9 : <code>l1-03.1</code> est N0 et <code>l1-01.2</code> est N1 — c'est l'amont qui définit, pas
+  l'inverse). Forme : <strong><code>{"classes": {…fractions…}, "valid_pct": 98.0}</code></strong> — les fractions
+  somment à ≈ 1, <code>valid_pct</code> est un <strong>pourcentage</strong>. Le matériau existe déjà
+  (<code>Manifest.scl_class_counts</code>, <code>adapters/manifests.py:101-105</code>). En cas d'écart entre les
+  deux fiches, <code>l1-03.1</code> fait foi.</li>
 </ul>
-<p><strong>Hors périmètre</strong> : le masque SCL n'est <strong>pas appliqué</strong> aux pixels (décision n°4 du
-chapeau) — il est seulement <strong>résumé</strong> dans les métadonnées. Aucun modèle. Aucune mesure de
-temps (<code>l1-04.1</code> instrumentera ce module de l'extérieur).</p>
+<p>Comportement :</p>
+<ul>
+<li>assemblage : moyenne de blocs 2×2 sur les 4 bandes 10 m (numpy pur), les 6 bandes 20 m
+  inchangées, <strong>réordonnancement en <code>BAND_ORDER_EMBED</code> par nom</strong> ;</li>
+<li><code>validate_spec</code> appelée à chaque chargement (c'est elle qui porte le garde-fou <code>tiles</code>) ;</li>
+<li>erreurs typées : fichier manquant, bande manquante, CRS/emprise divergents entre les
+  deux rasters.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : toute normalisation modèle · le masque SCL (jamais appliqué aux
+pixels — décision b) · tout modèle · les temps (<code>l1-04.1</code>).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
 <li>[ ] <code>adapters/chip_loader.py</code> livré, <code>mypy --strict</code> vert.</li>
-<li>[ ] Une acquisition réelle du corpus produit un <code>(10, 256, 256)</code> float32.</li>
-<li>[ ] Les 4 bandes 10 m sont agrégées par moyenne de blocs 2×2, sans interpolation.</li>
-<li>[ ] Les erreurs (fichier manquant, bande manquante, emprises divergentes) sont typées et nomment la cause.</li>
-<li>[ ] <code>tests/test_chip_loader.py</code> — <strong>tests de forme</strong>, sur un raster synthétique écrit dans un <code>tmp_path</code>.</li>
+<li>[ ] <code>ChipTensor</code> porte les <strong>11</strong> champs ci-dessus ; <code>scl_summary</code> au format de <code>l1-03.1</code>.</li>
+<li>[ ] <code>lat</code>/<code>lon</code> dérivés de <code>core.geometry.chip_bounds</code>, <strong>pas</strong> d'un calcul réécrit.</li>
+<li>[ ] Ordre des bandes par <strong>nom</strong>, jamais par position.</li>
+<li>[ ] <code>tests/test_chip_loader.py</code> — rasters synthétiques + les 4 fixtures de <code>l1-01.4</code>.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -111,48 +135,48 @@ temps (<code>l1-04.1</code> instrumentera ce module de l'extérieur).</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td>Rasters <strong>synthétiques</strong> écrits par le test (valeurs connues, 4 bandes 512² + 6 bandes 256²)</td>
-<td>tenseur <code>(10, 256, 256)</code> float32 ; l'ordre des bandes est celui de <code>BAND_ORDER_EMBED</code> — vérifié en plaçant une <strong>valeur sentinelle différente par bande</strong> et en la retrouvant à la bonne position</td>
+<td>Rasters synthétiques, <strong>valeur sentinelle différente par bande</strong></td>
+<td>chaque sentinelle retrouvée à la position de sa bande dans <code>BAND_ORDER_EMBED</code> — c'est l'oracle qui attrape la permutation <code>nir</code></td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Agrégation 2×2 sur un bloc littéral de valeurs connues</td>
-<td>moyenne exacte au 1e-6 ; <strong>aucune interpolation</strong> sur les 6 bandes déjà en 20 m (valeurs inchangées)</td>
+<td>Agrégation 2×2 sur bloc littéral</td>
+<td>moyenne exacte au 1e-6 ; bandes 20 m <strong>inchangées</strong></td>
 </tr>
 <tr>
 <td>O3</td>
-<td>Normalisation</td>
-<td>avec <code>scale=0.0001, offset=-0.1, boa_offset_applied=false</code> → valeurs attendues ; avec <code>true</code> → offset <strong>non ré-appliqué</strong>. Les deux cas dans le même test</td>
+<td>Valeurs de sortie</td>
+<td><strong>DN float32 bruts</strong> — égaux aux uint16 d'entrée castés ; AUCUN scale/offset appliqué (assertion sur les sentinelles)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Fichier <code>chip_20m.tif</code> retiré · bande absente de la spec · CRS divergent entre les deux rasters</td>
-<td>erreur typée à chaque fois, message nommant <strong>le fichier ou la bande</strong></td>
+<td>lat/lon dérivés d'une grille littérale (epsg + origins connus), <strong>via <code>chip_bounds</code></strong></td>
+<td>centre attendu à 1e-4 degré près ; <code>gsd == 20.0</code></td>
 </tr>
 <tr>
 <td>O5</td>
-<td>Une acquisition <strong>réelle</strong> du corpus (fixture de <code>l1-01.4</code> si déjà là, sinon un chip copié dans <code>tmp_path</code>)</td>
-<td>tenseur produit, <strong>aucun NaN</strong>, valeurs dans <code>[-0.2, 2.0]</code> — bornes larges, on vérifie l'ordre de grandeur de la réflectance, pas une valeur</td>
+<td>Fichier manquant · bande manquante · CRS divergent</td>
+<td>erreur typée nommant la cause, à chaque fois</td>
 </tr>
 <tr>
 <td>O6</td>
+<td><strong>Les 4 fixtures de <code>l1-01.4</code></strong> (versionnées, donc dispo en CI)</td>
+<td>4 ChipTensor produits, <strong>aucun NaN</strong>, DN dans <code>[0, 32767]</code> (borne de plausibilité uint16, pas de réflectance) ; ⭐ <strong>la somme des fractions de <code>scl_summary["classes"]</code> ≈ 1</strong> — et <code>valid_pct</code> lu séparément, dans <code>[0, 100]</code>. <em>(Formulé « <code>scl_summary</code> somme à ~1 » jusqu'à la revue v4, l'oracle rougissait sur une implémentation conforme : <code>valid_pct</code> étant dans le même dict, la somme valait 1 + valid_pct.)</em> ⚠ <strong>Ne PAS borner à 20000</strong> : <code>l1-01.4</code> impose une fixture nuageuse, et un nuage sature bien au-delà — l'oracle rougirait sur une donnée légitime. La <strong>distribution réelle</strong> (min/max/p99 par fixture) est <strong>publiée au Résumé</strong> : c'est elle qui informe, la borne ne fait qu'attraper l'absurde</td>
+</tr>
+<tr>
+<td>O7</td>
 <td><code>just check</code></td>
 <td>vert</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : la justesse de l'ordre vis-à-vis de Clay (<code>l1-02.1</code>) · le
-temps de chargement (<code>l1-04.1</code>) · le comportement sur les 5 793 chips — seulement sur
-quelques-uns.</p>
+<p><strong>Non testé par cette fiche</strong> : la normalisation (adapters) · la justesse du z-score
+(oracles de <code>l1-02.x</code>) · les temps.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>⚠ <strong>Le piège du double offset</strong> est le plus coûteux de cette fiche : appliquer l'offset une
-seconde fois décale toute la radiométrie de −0,1 <strong>sans lever d'erreur</strong>. Les embeddings
-seraient plausibles et faux, et le banc mesurerait des vitesses parfaitement correctes sur
-des données fausses. D'où O3, dans les deux sens.</p>
-<p>⚠ <strong>Politique de test</strong> : forme et bornes, pas de valeurs d'embedding, pas de test paramétré
-exhaustif. Trois rasters synthétiques suffisent.</p>
-<p>Piste : <code>rasterio</code> est déjà au contrat du paquet (Lot 0), l'agrégation 2×2 se fait en numpy
-pur (<code>reshape</code> + <code>mean</code> sur deux axes) — inutile d'ajouter une dépendance.</p>
+<p>Le manifeste du Lot 0 porte <code>boa_offset_applied: true</code> : les chips sont déjà harmonisés à
+l'écriture. Les adapters consignent ce fait à côté de leurs stats — si les stats de
+pré-entraînement des modèles supposent un autre traitement d'offset, c'est <strong>leur</strong> ancrage
+qui le dira, pas ce loader.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
@@ -161,4 +185,4 @@ pur (<code>reshape</code> + <code>mean</code> sur deux axes) — inutile d'ajout
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-01.1.html">← [l1-01.1] Core embedding — spec de bandes, ordre normatif, normalisation radiométrique</a><a href="l1-01.3.html">[l1-01.3] Port EmbeddingModel + registre model_id → adapter →</a></div><p class="gen">Généré le 23/08/2026 14:58 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-01.1.html">← [l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash</a><a href="l1-01.3.html">[l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

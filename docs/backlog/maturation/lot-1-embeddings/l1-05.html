@@ -45,12 +45,13 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-05</b></nav><h1>[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-05</b></nav><h1>[l1-05] [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-05-chapeau-le-signal-existe-t-il">[l1-05] — CHAPEAU : le signal existe-t-il ?</a><ul>
 <li><a href="#contexte">Contexte</a></li>
+<li><a href="#convention-normative-du-chapeau-revue-e-9k-17-elle-nexiste-quici">⭐ Convention normative du chapeau (revue E-9/K-17 — elle n'existe qu'ICI)</a></li>
 <li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
-<li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
+<li><a href="#politique-de-test-rappel">Politique de test (rappel)</a></li>
 <li><a href="#sous-taches">Sous-tâches</a></li>
 <li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
 </ul>
@@ -59,43 +60,55 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong></p>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Révisée post-revue v1 (scission de la
+campagne en fiche humaine, convention similarité/dérive normative, seuils actés).</p>
 </blockquote>
 <h2 id="contexte">Contexte</h2>
-<p>⭐ <strong>Sans ce chapeau, le banc n'aurait pas de numérateur.</strong> Puisqu'il n'y a pas d'achat
-matériel, le critère de choix d'un modèle n'est plus « le meilleur » mais <strong>le plus de
-pouvoir discriminant par seconde de CPU</strong>. Mesurer le débit sans mesurer la discrimination
-reviendrait à optimiser la vitesse d'un système qui ne distingue rien.</p>
-<p>Ce chapeau répond à deux questions, dans cet ordre de gravité :</p>
-<ol>
-<li><strong>Les embeddings distinguent-ils les sites entre eux ?</strong> — le minimum vital. Si les
-   vecteurs de la mine d'Escondida et de l'aéroport de Riyad se ressemblent, rien de ce qui
-   suit n'a de sens.</li>
-<li>⭐ <strong>Un vecteur unique sur 26 km² porte-t-il un changement local ?</strong> — la vraie question
-   du POC, et celle qu'on ne peut pas trancher par l'expertise. Une halle de 200 m sur un
-   chantier, c'est <strong>0,15 % de la scène</strong>. Si le signal se noie, le Lot 2 mesurerait de la
-   dérive saisonnière et rien d'autre.</li>
-</ol>
+<p>Sans ce chapeau, le banc n'a pas de numérateur : le critère de choix d'un modèle est le
+<strong>pouvoir discriminant par seconde de CPU</strong>. Deux questions, par gravité : (1) les
+embeddings distinguent-ils les 25 sites ? (2) ⭐ un vecteur unique sur 26 km² porte-t-il un
+changement local (0,15 % de la scène) ? — la question que seule la mesure tranche
+(<code>l1-05.4</code>, A02 Hinkley Point C contre C08 Bouconne, la zone témoin de l'arbitrage G10).</p>
+<h2 id="convention-normative-du-chapeau-revue-e-9k-17-elle-nexiste-quici">⭐ Convention normative du chapeau (revue E-9/K-17 — elle n'existe qu'ICI)</h2>
+<p><strong>Toute grandeur de proximité du lot est une similarité cosinus ∈ [−1, 1]. La dérive est
+<code>1 − cosine</code>, bornée [0, 2]. Le cas défavorable est le MINIMUM d'une similarité et le
+MAXIMUM d'une dérive.</strong> Toute fiche qui publie une médiane publie aussi son cas
+défavorable, nommé selon cette règle. <em>(Motif : la v1 demandait de publier « le minimum de
+la distance » en le présentant comme le pire cas — c'est le meilleur.)</em></p>
 <h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
 <ol>
-<li><strong>Aucune vérité terrain n'est requise.</strong> La séparabilité inter-sites se mesure sur les
-   étiquettes qu'on a déjà — le <code>site_id</code>. C'est ce qui rend ce chapeau faisable en POC.</li>
-<li>⭐ <strong>La question de la sensibilité se tranche par la trajectoire témoin</strong> (<code>l1-05.4</code>) :
-   <strong>A02 Hinkley Point C</strong> — quatre ans de chantier EPR massif — contre <strong>C08 Bouconne</strong>, la
-   forêt retenue comme zone témoin lors de l'arbitrage G10. Si l'unité « un vecteur par
-   chip » porte le signal, A02 doit s'éloigner de son point de départ <strong>nettement plus</strong> que
-   C08. <strong>C'est le rôle d'une zone témoin, et c'est pour ça qu'elle a été choisie.</strong></li>
-<li><strong>On ne compare JAMAIS un vecteur Clay à un vecteur TerraMind.</strong> Un embedding de classe
-   et une moyenne de patchs ne vivent pas dans le même espace. Chaque modèle se compare
-   <strong>à lui-même</strong> dans le temps ; les deux modèles se comparent par leurs <strong>scores</strong>, pas
-   par leurs vecteurs. C'est le contresens le plus facile à commettre au Lot 2.</li>
-<li><strong>Déterminisme exigé à configuration fixée, mesuré entre configurations.</strong> <code>l1-04.3</code> fait
-   varier les threads BLAS : exiger le bit à bit partout contredirait ce levier.</li>
+<li><strong>Aucune vérité terrain requise</strong> : la séparabilité se mesure sur les <code>site_id</code>.</li>
+<li><strong>On ne compare JAMAIS un vecteur Clay (1024-d) à un vecteur TerraMind (384-d)</strong> —
+   chaque modèle à lui-même dans le temps ; les modèles par leurs scores.</li>
+<li><strong>Déterminisme exigé à configuration fixée, MESURÉ entre configurations</strong> (<code>l1-05.2</code>).</li>
+<li>⭐ <strong>Seuils actés au cadrage</strong> (arbitrage Philippe, revue). ⚠ <strong>Les valeurs font foi dans
+   <code>_roadmap.md</code> §2ter</strong> — ce chapeau y <strong>renvoie</strong> et n'en recopie que l'essentiel :
+   recopier des seuils dans plusieurs fiches, c'est fabriquer la divergence qu'on cherche à
+   éviter (revue v3, D-19/C-14 amendé par le réfuteur).
+   Les quatre : silhouette <strong>&gt; 0,2</strong> sur au moins un modèle, lue <strong>contre la baseline
+   triviale</strong> (moyenne + σ par bande — un GFM qui ne bat pas 20 nombres n'apporte rien) ·
+   rapport de dérive A02/C08 (médiane des 6 derniers mois) <strong>&gt; 2</strong> viable, 1–2 douteux,
+   ≤ 1 non viable · <strong>corrélation aux nuages <code>|r| &gt; 0,5</code></strong> sur la zone témoin, mesurée sur
+   la <strong>plage complète</strong> de <code>cloud_pct</code> (<code>l1-05.4</code>/O3) · fidélité de quantification
+   <strong>≥ 0,999</strong>, qui appartient à <code>l1-04.4</code> et non à ce chapeau.
+   Les fiches <strong>publient et qualifient</strong> ; seule <code>l1-06.H</code> prononce — un seuil raté est un
+   résultat majeur, pas un blocage de run (règle : pas de gate humain dans un oracle
+   d'agent).</li>
+<li><strong>La campagne complète est un geste HUMAIN</strong> (<code>l1-05.3.H</code>) : plusieurs heures de CPU ne
+   sont pas une session d'agent — précédent <code>l0-04.H</code>. L'agent livre les outils
+   (<code>l1-05.3a</code>), Philippe lance la campagne.</li>
+<li>⭐ <strong>Les deux sites témoins de <code>l1-05.4</code> sont nommés ICI, avant toute mesure</strong> (revue v3,
+   D-7 — K-16 n'avait été appliqué qu'à moitié) :
+   - <strong>site en chantier</strong> : <strong>A02 — Hinkley Point C</strong> (chantier massif, documenté, daté) ;
+   - <strong>site témoin stable n°1</strong> : <strong>C08 — forêt de Bouconne</strong> (couvert forestier, pas de
+     chantier connu) ;
+   - <strong>site témoin stable n°2</strong> : <strong>C02 — Toulouse-Blagnac</strong>.
+   <code>l1-05.3.H</code> peut <strong>remplacer</strong> un témoin, mais <strong>avec un motif écrit</strong>, et jamais après
+   avoir regardé les courbes : un témoin choisi au vu du résultat ne témoigne de rien.</li>
 </ol>
-<h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
-<p>Les <strong>métriques</strong> se testent (elles sont pures, sur vecteurs synthétiques : <code>l1-05.1</code>). Les
-<strong>campagnes</strong> ne se testent pas, elles se mesurent et se publient. Aucun test sur des valeurs
-d'embedding réelles.</p>
+<h2 id="politique-de-test-rappel">Politique de test (rappel)</h2>
+<p>Les métriques (pures) se testent ; les campagnes se mesurent et se publient. Aucun test sur
+des valeurs d'embedding réelles.</p>
 <h2 id="sous-taches">Sous-tâches</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -108,26 +121,30 @@ d'embedding réelles.</p>
 <tbody>
 <tr>
 <td><code>l1-05.1</code></td>
-<td>Métriques pures — cosinus, séparabilité intra/inter</td>
+<td>Métriques pures — cosinus, intra/inter, silhouette, dérive</td>
 <td>S</td>
 </tr>
 <tr>
 <td><code>l1-05.2</code></td>
-<td>Déterminisme — identité à configuration fixée, écart entre threads mesuré</td>
+<td>Déterminisme — identité à config fixée, écart entre threads mesuré</td>
 <td>S</td>
 </tr>
 <tr>
-<td><code>l1-05.3</code></td>
-<td>Campagne de séparabilité sur le corpus réel</td>
+<td><code>l1-05.3a</code></td>
+<td>CLI <code>similarity-report</code> + baseline, testé sur fixtures</td>
 <td>M</td>
 </tr>
 <tr>
+<td><code>l1-05.3.H</code></td>
+<td>⛔ Campagne réelle : sous-échantillon, puis complet (nuit)</td>
+<td>H</td>
+</tr>
+<tr>
 <td><code>l1-05.4</code></td>
-<td>⭐ Trajectoire témoin — chantier lourd contre zone stable</td>
+<td>Trajectoires témoins A02/C08 + corrélation nuage</td>
 <td>M</td>
 </tr>
 </tbody>
 </table></div>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
-<p>Toute détection de changement opérationnelle (Lot 2) · tout seuil d'alerte · toute
-classification supervisée · l'arbitrage final (<code>l1-06.H</code>).</p><div class="prevnext"><a href="l1-04.html">← [l1-04] [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet</a><a href="l1-06.H.html">[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+<p>Détection de changement, seuils d'alerte, classification (Lot 2) · l'arbitrage (<code>l1-06.H</code>).</p><div class="prevnext"><a href="l1-04.html">← [l1-04] [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet</a><a href="l1-06.H.html">[l1-06.H] [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

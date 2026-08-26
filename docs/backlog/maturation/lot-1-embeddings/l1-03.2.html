@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.2</b></nav><h1>[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.2</b></nav><h1>[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-00.html"><code>l1-00</code></a> Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-032-le-cli-embed">[l1-03.2] — Le CLI embed</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-1, K-08/S-10, C-24) : dépendances réalignées sur le double
+(plus d'arête vers Clay — c'est ce qui rend le chapeau parallèle à <code>l1-02</code>) ; l'oracle
+d'échec ne touche PLUS aux manifestes du Lot 0.
+<strong>Révisée post-revue v3</strong> (V-10, V-16, E-23, A-14) : dépend de <code>l1-00</code>, qui <strong>pré-pose</strong>
+les clés de <code>settings.yaml</code> (plus d'écriture concurrente) ; l'option <code>--cloud-max</code>
+n'était oraclée nulle part alors que deux fiches en dépendent ; la sémantique de reprise
+d'un <code>.error.json</code> n'était écrite nulle part.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Parcourir les acquisitions d'un site sur une fenêtre, calculer les vecteurs manquants, les
@@ -68,17 +75,26 @@ ranger, et <strong>ne rien recalculer</strong> au second passage.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
 <p><code>src/tiny_wae/cli/embed.py</code>.</p>
 <p>⚠ <strong>Lire <code>cli/ingest.py</code> avant d'écrire.</strong> Ce CLI en est le frère : mêmes codes de sortie
-(chapeau <code>l0-01</code> : <code>0</code> succès · <code>1</code> échec métier · <code>2</code> usage/config · <code>3</code> non concluant),
-logs sur <strong>STDERR</strong>, résumé de compteurs, aucune donnée mélangée aux logs.</p>
+(ceux du chapeau <code>l0-01</code> — renvoi, pas de recopie), logs sur <strong>STDERR</strong>, résumé de
+compteurs, aucune donnée mélangée aux logs.</p>
 <p>Interface :</p>
-<pre><code>just run embed --site A01 --from 2024-01-01 --to 2024-12-31 --model clay-v1.5 [--force]
+<pre><code>just run embed --site A01 --from 2024-01-01 --to 2024-12-31 --model clay-v1.5 [--force] [--cloud-max N]
 </code></pre>
 <p>Comportement :</p>
 <ul>
 <li>parcourt <code>&lt;data_root&gt;/&lt;site&gt;/*/manifest.json</code>, retient les <code>status == "ingested"</code> dans la
   fenêtre ;</li>
-<li>⭐ <strong>écarte</strong> ceux dont <code>cloud_pct &gt; embed_cloud_pct_max</code> (défaut <strong>10</strong>, lu de
-  <code>settings.yaml</code>) et les <strong>compte</strong> dans un compteur dédié <code>skipped_cloud</code> ;</li>
+<li>⭐ <strong>écarte</strong> ceux dont <code>cloud_pct &gt; embed_cloud_pct_max</code> (défaut <strong>10</strong>) et les <strong>compte</strong>
+  dans un compteur dédié <code>skipped_cloud</code>. ⭐ <strong>Précédence à trois niveaux, à respecter et à
+  oracler</strong> (revue v3, V-16) : <code>--cloud-max</code> (option) <strong>&gt;</strong> <code>TINY_WAE_EMBED_CLOUD_PCT_MAX</code>
+  (env) <strong>&gt;</strong> <code>settings.yaml</code>. C'est l'option que la checklist humaine de <code>l1-05.3.H</code>
+  utilise, et elle n'était exercée par aucun oracle.
+  ⚠ <strong>Deux points d'ancrage dans le code existant</strong> (revue v3, V-10/A-5) : la clé est
+  <strong>pré-posée par <code>l1-00</code></strong> dans <code>config/settings.yaml</code> — cette fiche <strong>consomme</strong>, elle
+  n'écrit pas dans ce fichier ; et <code>embed_cloud_pct_max</code> doit figurer dans
+  <code>adapters/config_io.py::_INT_FIELDS</code>, sans quoi la surcharge par environnement rend une
+  <strong>chaîne</strong> et le contrôle de bornes de <code>core/settings.py::validate()</code> lève un <code>TypeError</code>
+  illisible au lieu d'une erreur de configuration ;</li>
 <li>pour chacun : charge le tenseur (<code>l1-01.2</code>), embedde (<code>l1-01.3</code> → adapter), écrit
   (<code>l1-03.1</code>) ;</li>
 <li>⭐ <strong>saute</strong> ceux dont la clé d'idempotence stockée égale la clé courante → <code>skipped</code>.
@@ -90,6 +106,16 @@ logs sur <strong>STDERR</strong>, résumé de compteurs, aucune donnée mélang�
 <code>found == skipped_cloud + embedded + skipped + failed</code>. Il doit <strong>lever</strong> s'il ne boucle pas.</p>
 <p>Le CLI accepte n'importe quel <code>model_id</code> du registre — y compris le <strong>double</strong>, ce qui
 permet de tout vérifier sans poids.</p>
+<p>⭐ <strong>Sémantique de reprise d'un <code>.error.json</code></strong> (revue v3, E-15 — n'était écrite nulle
+part) : un <code>.error.json</code> est une <strong>trace de diagnostic</strong>, jamais un marqueur de skip. Un
+run suivant <strong>rejoue</strong> l'item comme s'il n'y avait rien, et <strong>supprime</strong> le fichier d'erreur
+en cas de succès. La règle inverse — traiter l'erreur comme « déjà traité » — produirait un
+corpus incomplet <strong>silencieusement</strong>, avec des compteurs qui bouclent : exactement le type
+de défaut que l'invariant de conservation ne peut pas attraper.</p>
+<p>⭐ <strong>Taxonomie des CLI</strong> : <code>src/tiny_wae/__main__.py</code> déclare en docstring une « taxonomie
+fermée du lot (9 sous-commandes) ». Le Lot 1 la porte à 15 : <strong>c'est cette fiche, premier
+CLI ajouté, qui met la docstring à jour</strong> — les suivantes n'y touchent plus. Aucun test ne
+l'asserte aujourd'hui ; ne pas en écrire un pour ça, c'est de la documentation.</p>
 <p><strong>Hors périmètre</strong> : le parcours multi-sites (<code>l1-03.3</code>) · toute mesure de temps
 (<code>l1-04.1</code> instrumentera ce code de l'extérieur) · toute qualité.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -97,7 +123,10 @@ permet de tout vérifier sans poids.</p>
 <li>[ ] <code>cli/embed.py</code> livré, découvert automatiquement par <code>__main__</code> (mécanisme <code>l0-01.2</code>).</li>
 <li>[ ] Codes de sortie conformes au chapeau <code>l0-01</code>.</li>
 <li>[ ] Invariant de conservation vérifié à chaque run, levée si rompu.</li>
-<li>[ ] <code>embed_cloud_pct_max</code> dans <code>settings.yaml</code> <strong>et</strong> surchargeable par variable d'environnement.</li>
+<li>[ ] Précédence <code>--cloud-max</code> &gt; env &gt; <code>settings.yaml</code> implémentée <strong>et oraclée</strong> ;
+      <code>embed_cloud_pct_max</code> ajouté à <code>config_io._INT_FIELDS</code> et borné dans <code>validate()</code>.</li>
+<li>[ ] Un <code>.error.json</code> se <strong>rejoue</strong> au run suivant et disparaît en cas de succès.</li>
+<li>[ ] La docstring de taxonomie de <code>__main__.py</code> est à jour.</li>
 <li>[ ] <code>tests/test_cli_embed.py</code> — sur le <strong>double</strong>, avec les fixtures de <code>l1-01.4</code>.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
@@ -118,27 +147,42 @@ permet de tout vérifier sans poids.</p>
 <tr>
 <td>O2</td>
 <td>⭐ <strong>Run double</strong> — témoins positif ET négatif</td>
-<td>1er run : <code>embedded &gt; 0</code>, <code>skipped == 0</code> · 2e run : <code>embedded == 0</code>, <code>skipped == embedded du 1er</code>, <strong>vecteurs identiques au bit près</strong>. Sans le témoin positif, un CLI qui ne ferait rien passerait</td>
+<td>1er run : <code>embedded &gt; 0</code>, <code>skipped == 0</code> · 2e run : <code>embedded == 0</code>, <code>skipped == embedded du 1er</code>. Sans le témoin positif, un CLI qui ne ferait rien passerait. ⚠ <strong>Ne pas asserter ici « vecteurs identiques au bit près »</strong> : après « 0 recalcul », c'est <strong>tautologique</strong> — les fichiers n'ont pas été touchés (revue v3, E-23). Le déterminisme réel se mesure en <strong>3e passage avec <code>--force</code></strong> (O3), seul cas où le vecteur est effectivement recalculé, ou par comparaison des <code>mtime</code></td>
 </tr>
 <tr>
 <td>O3</td>
-<td><code>--force</code> au 2e run</td>
-<td>recalcule tout : <code>embedded</code> retrouve sa valeur du 1er run</td>
+<td><code>--force</code> au 3e run</td>
+<td>recalcule tout : <code>embedded</code> retrouve sa valeur du 1er run, <strong>et les vecteurs recalculés sont identiques au bit près</strong> aux premiers (le double est déterministe) — c'est ici, et pas en O2, que l'identité se mesure</td>
 </tr>
 <tr>
 <td>O4</td>
 <td>⭐ <strong>Filtre nuage, dans les deux sens</strong></td>
-<td>la fixture à <code>cloud_pct</code> &gt; 10 est en <code>skipped_cloud</code> et <strong>n'a pas de vecteur</strong> ; avec <code>embed_cloud_pct_max=100</code>, elle est embeddée. Le seuil discrimine réellement</td>
+<td>la fixture à <code>cloud_pct</code> &gt; 10 est en <code>skipped_cloud</code> et <strong>n'a pas de vecteur</strong> ; avec le seuil relevé à 100, elle est embeddée. Le seuil discrimine réellement</td>
+</tr>
+<tr>
+<td>O4b</td>
+<td>⭐ <strong>Précédence des trois niveaux</strong></td>
+<td><code>settings.yaml</code> à 10, env à 50, <code>--cloud-max 90</code> : le run retient <strong>90</strong> ; sans l'option, <strong>50</strong> ; sans l'env, <strong>10</strong>. Trois assertions — c'est le seul oracle qui exerce l'option dont <code>l1-05.3.H</code> dépend</td>
+</tr>
+<tr>
+<td>O4c</td>
+<td>Surcharge par environnement, valeur non entière (<code>"abc"</code>)</td>
+<td>erreur de <strong>configuration</strong> lisible, pas un <code>TypeError</code> de comparaison — c'est le témoin de l'ajout à <code>_INT_FIELDS</code> et du contrôle de bornes</td>
 </tr>
 <tr>
 <td>O5</td>
 <td><code>spec_hash</code> modifié (spec mutée dans le test)</td>
-<td>l'item est <strong>ré-embeddé</strong> — c'est ce qui rend la décision « 20 m » réversible</td>
+<td>l'item est <strong>ré-embeddé</strong> ET <strong>l'ancien vecteur reste lisible à côté</strong> (le spec_hash est dans le nom, <code>l1-03.1</code>) — les deux assertions</td>
 </tr>
 <tr>
 <td>O6</td>
-<td>Un item en échec injecté (le double lève sur un id)</td>
-<td>manifeste <code>failed</code> + cause, les autres traités, <strong>exit 1</strong> ; l'invariant boucle toujours</td>
+<td>⭐ Un item en échec injecté (le double lève sur un id)</td>
+<td>compté <code>failed</code>, cause sur STDERR <strong>et</strong> dans <code>embeddings/&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.error.json</code> ; les autres traités, <strong>exit 1</strong> ; l'invariant boucle ; <strong>le <code>manifest.json</code> du Lot 0 est INCHANGÉ — hash du fichier comparé avant/après dans le test</strong>. ⚠ Revue E-1 : la v1 de cet oracle faisait réécrire le manifeste d'ingestion, détruisant la trace du Lot 0</td>
+</tr>
+<tr>
+<td>O6b</td>
+<td>⭐ <strong>Reprise après échec</strong> : run suivant sur l'item qui a produit un <code>.error.json</code>, le double ne levant plus</td>
+<td>l'item est <strong>ré-embeddé</strong> (<code>embedded</code> l'inclut), le <code>.error.json</code> a <strong>disparu</strong>. Témoin de la sémantique « une erreur se rejoue » — sans lui, un corpus incomplet passerait avec des compteurs qui bouclent</td>
 </tr>
 <tr>
 <td>O7</td>
@@ -169,4 +213,4 @@ et chacun dans les deux sens.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-03.1.html">← [l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence</a><a href="l1-03.3.html">[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-03.1.html">← [l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence</a><a href="l1-03.3.html">[l1-03.3] CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

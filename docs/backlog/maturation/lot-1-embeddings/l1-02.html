@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,16 +45,16 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-02</b></nav><h1>[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-02</b></nav><h1>[l1-02] [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : L<br><b>Catégorie</b> : chapeau<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="note">▣ <b>Fiche chapeau</b> — ne se dispatche pas : elle porte le contexte de ses sous-tâches.</div><div class="nav"><b>Sous-tâches</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-02-chapeau-les-deux-modeles">[l1-02] — CHAPEAU : les deux modèles</a><ul>
 <li><a href="#contexte">Contexte</a><ul>
-<li><a href="#ce-quon-sait-des-deux-modeles-releve-le-23082026-a-reverifier-par-les-fiches">Ce qu'on sait des deux modèles (relevé le 23/08/2026, à revérifier par les fiches)</a></li>
+<li><a href="#la-table-des-faits-verifiee-au-code-source-revue-v1-24082026">La table des faits — VÉRIFIÉE AU CODE SOURCE (revue v1, 24/08/2026)</a></li>
+<li><a href="#lasymetrie-dite-franchement-finding-du-refuteur">⭐ L'asymétrie, dite franchement (finding du réfuteur)</a></li>
 </ul>
 </li>
 <li><a href="#decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</a></li>
-<li><a href="#deux-honnetetes-a-ecrire-dans-les-fiches-pas-a-laisser-decouvrir-en-revue">⚠ Deux honnêtetés à écrire dans les fiches, pas à laisser découvrir en revue</a></li>
-<li><a href="#politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</a></li>
+<li><a href="#politique-de-test-rappel">Politique de test (rappel)</a></li>
 <li><a href="#sous-taches">Sous-tâches</a></li>
 <li><a href="#hors-perimetre-du-chapeau">Hors périmètre du chapeau</a></li>
 </ul>
@@ -63,13 +63,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong></p>
+<p><strong>Fiche chapeau : elle ne se dispatche pas.</strong> Révisée post-revue v1 — la table des faits
+a été corrigée à la source (code des dépôts, pas les cartes HF, qui se sont révélées
+fausses sur plusieurs points).</p>
 </blockquote>
 <h2 id="contexte">Contexte</h2>
-<p>Deux modèles de fondation géospatiaux, derrière le port de <code>l1-01.3</code>. Le but n'est pas de
-sacrer un vainqueur mais de mesurer, sur <strong>cette machine</strong>, le <strong>pouvoir discriminant par
-seconde de CPU</strong> — puisqu'il n'y aura pas d'achat matériel.</p>
-<h3 id="ce-quon-sait-des-deux-modeles-releve-le-23082026-a-reverifier-par-les-fiches">Ce qu'on sait des deux modèles (relevé le 23/08/2026, à revérifier par les fiches)</h3>
+<p>Deux modèles derrière le port de <code>l1-01.3</code>. Critère de comparaison : <strong>pouvoir discriminant
+par seconde de CPU</strong> — il n'y a pas d'achat matériel, le lot décide d'un périmètre.</p>
+<h3 id="la-table-des-faits-verifiee-au-code-source-revue-v1-24082026">La table des faits — VÉRIFIÉE AU CODE SOURCE (revue v1, 24/08/2026)</h3>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -80,71 +81,73 @@ seconde de CPU</strong> — puisqu'il n'y aura pas d'achat matériel.</p>
 </thead>
 <tbody>
 <tr>
-<td>Bandes S2 attendues</td>
-<td><strong>10</strong></td>
-<td><strong>12</strong> (sous-ensemble déclarable via <code>bands=</code>)</td>
+<td>Variante réelle</td>
+<td>⚠ <strong>large</strong> — seule publiée en v1.5 (dim 1024, depth 24, ~302 M params d'encodeur)</td>
+<td>small (dim <strong>384</strong>, depth 12, ~21 M)</td>
 </tr>
 <tr>
-<td>Entrée de référence</td>
-<td>256×256</td>
-<td><strong>224×224</strong></td>
+<td>Entrée</td>
+<td>256×256, patch 8×8 → <strong>1024 tokens</strong></td>
+<td><strong>256×256 accepté</strong> (pos-emb interpolés) → <strong>256 tokens</strong></td>
 </tr>
 <tr>
-<td>Patch d'attention</td>
-<td><strong>8×8</strong> → <strong>1024 tokens</strong></td>
-<td><strong>16×16</strong> → <strong>196 tokens</strong></td>
+<td>Sortie brute</td>
+<td>tuple ; CLS = <code>out[0][:, 0, :]</code> → <strong>(1024,)</strong></td>
+<td><strong>liste de 12 tenseurs</strong> <code>(B, 256, 384)</code> — la carte HF qui annonce <code>(B, 196, 768)</code> est <strong>fausse</strong> (copier-coller de la variante base)</td>
 </tr>
 <tr>
-<td>Sortie</td>
-<td><strong>un vecteur 1024-d</strong></td>
-<td><strong>196 embeddings de patch, 768-d</strong></td>
+<td>Agrégation</td>
+<td>CLS</td>
+<td>⭐ à écrire soi-même : <code>out[-1].mean(dim=1)</code> — <code>merge_method='mean'</code> moyenne les <strong>modalités</strong>, identité en mono-modalité</td>
+</tr>
+<tr>
+<td>Normalisation</td>
+<td><strong>z-score sur DN</strong> (mean/std de <code>configs/metadata.yaml</code>)</td>
+<td>z-score sur DN (<code>v1_pretraining_mean/std</code>, clé <code>untok_sen2l2a@224</code>, sous-ensemblé <strong>par nom</strong>)</td>
+</tr>
+<tr>
+<td>Entrées non-pixel</td>
+<td>datacube <code>{pixels, time[B,4], latlon[B,4], gsd, waves}</code> — <strong>gsd=20</strong></td>
+<td>non</td>
+</tr>
+<tr>
+<td>⚠ Piège majeur</td>
+<td><strong><code>mask_ratio=0.75</code> PAR DÉFAUT, appliqué en inférence</strong> → poser <code>mask_ratio=0.0, shuffle=False</code></td>
+<td>une bande mal nommée dans <code>bands=</code> → <strong>poids aléatoires silencieux</strong> (noms TerraTorch : <code>NIR_BROAD</code>, <code>NIR_NARROW</code>, <code>RED_EDGE_1</code>…)</td>
 </tr>
 <tr>
 <td>Licence</td>
-<td>à relever par <code>l1-02.1</code></td>
-<td><strong>Apache 2.0</strong> (vérifiée sur la carte du modèle)</td>
-</tr>
-<tr>
-<td>Accès</td>
-<td>poids Hugging Face</td>
-<td>TerraTorch, <code>BACKBONE_REGISTRY.build(...)</code></td>
+<td>apache-2.0 (relevée sur l'API HF)</td>
+<td>apache-2.0</td>
 </tr>
 </tbody>
 </table></div>
-<p>⭐ <strong>Le chiffre qui compte : 1024 tokens contre 196, soit 5,2×.</strong> Sur CPU, le coût d'un
-transformer suit d'abord le nombre de tokens, et l'attention monte en carré. <strong>Clay pourrait
-être plusieurs fois plus lent que TerraMind small par image, indépendamment du nombre de
-paramètres.</strong> C'est contre-intuitif quand on raisonne en « taille de modèle », et c'est
-probablement le résultat le plus utile que le banc produira.</p>
+<h3 id="lasymetrie-dite-franchement-finding-du-refuteur">⭐ L'asymétrie, dite franchement (finding du réfuteur)</h3>
+<p><strong>La comparaison est « Clay-large contre TerraMind-small »</strong> — ~302 M contre ~21 M de
+paramètres d'encodeur, 1024 contre 256 tokens. L'ordre de grandeur attendu du rapport de
+coût CPU est <strong>~50×</strong>, dominé par la taille des modèles AUTANT que par les tokens. Cette
+asymétrie est <strong>subie</strong> (aucune variante plus petite de Clay v1.5 n'est publiée), pas
+choisie : le banc publie les deux compteurs de paramètres côte à côte, et le « pouvoir
+discriminant par seconde » se lit avec cette réserve. <em>(Décision Philippe, arbitrage A de
+la revue : on garde le duo — mesurer est le travail du banc.)</em></p>
 <h2 id="decisions-portees-par-ce-chapeau-ne-pas-rouvrir">Décisions portées par ce chapeau (ne pas rouvrir)</h2>
 <ol>
-<li><strong>Variante TerraMind : <code>small</code>.</strong> Repli sur <code>tiny</code> si le CPU ne suit pas. <strong>Pas <code>base</code></strong> :
-   on cherche si l'approche tient sur cette machine, pas deux points de benchmark.</li>
-<li>⭐ <strong>Le port absorbe l'asymétrie de sortie.</strong> Clay prend son embedding de classe,
-   TerraMind <strong>moyenne ses 196 patchs</strong>. L'appelant reçoit un vecteur dans les deux cas.</li>
-<li>⚠ <strong>Même emprise au sol pour les deux modèles, sans exception.</strong> Nourrir Clay en 256 et
-   TerraMind en 224 comparerait des embeddings de <strong>5 120 m contre 4 480 m</strong> — la
-   séparabilité mesurée ne voudrait plus rien dire. <code>l1-02.2</code> doit <strong>vérifier</strong> si TerraMind
-   accepte 256×256 (les ViT interpolent souvent leurs embeddings de position) ; si non, on
-   recadre les <strong>deux</strong> à 224 et on l'écrit.</li>
-<li><strong>Aucun téléchargement de poids au run.</strong> Cache local + recette de pré-chargement +
-   garde (<code>l1-02.3</code>). La carte du modèle TerraMind le dit explicitement : <em>« The weights are
-   automatically downloaded from Hugging Face »</em> — c'est exactement ce qu'on interdit.</li>
+<li><strong>TerraMind <code>small</code></strong> (repli <code>tiny</code> : point d'arbitrage de <code>l1-06.H</code>, pas une décision
+   d'implémenteur).</li>
+<li><strong>Les deux modèles travaillent en 256×256</strong> — verdict acté par <code>l1-00</code>, la question 224
+   n'existe plus.</li>
+<li><strong>Le port absorbe l'asymétrie de sortie</strong> (CLS vs moyenne de patchs) : l'appelant reçoit
+   un vecteur, point.</li>
+<li><strong>Aucun téléchargement au run</strong> — les 3 artefacts (ckpt Clay, teacher timm, poids
+   TerraMind) passent par <code>hf_hub_download</code>, donc sous <code>HF_HOME</code>/<code>HF_HUB_OFFLINE</code> (<code>l1-00</code>,
+   <code>l1-02.3</code>).</li>
+<li>⚠ <strong>On ne compare JAMAIS un vecteur Clay (1024-d) à un vecteur TerraMind (384-d)</strong> —
+   espaces différents. Chaque modèle se compare à lui-même dans le temps ; les modèles se
+   comparent par leurs <strong>scores</strong>.</li>
 </ol>
-<h2 id="deux-honnetetes-a-ecrire-dans-les-fiches-pas-a-laisser-decouvrir-en-revue">⚠ Deux honnêtetés à écrire dans les fiches, pas à laisser découvrir en revue</h2>
-<ul>
-<li>Comparer un <strong>embedding CLS</strong> (Clay) à une <strong>moyenne de patchs</strong> (TerraMind) n'est pas une
-  comparaison parfaitement équitable au sens scientifique. C'est en revanche ce qu'on
-  utiliserait en production : c'est donc la bonne comparaison <strong>pour nous</strong>.</li>
-<li>TerraMind est <strong>multimodal</strong> (optique + radar) et sera utilisé en <strong>mono-modalité S2</strong>.
-  S'il discrimine moins bien que Clay, cela ne prouvera <strong>pas</strong> qu'il est moins bon —
-  seulement qu'on l'utilise à moitié.</li>
-</ul>
-<h2 id="politique-de-test-rappel-cest-un-poc">Politique de test (rappel — c'est un POC)</h2>
-<p><strong>Aucun test sur les valeurs d'embedding</strong> : on n'asserte pas 1024 flottants. Ce qui se
-teste ici, c'est la <strong>forme</strong> (dimension, dtype, absence de NaN) et le <strong>déterminisme</strong>.
-Les vérifications ponctuelles — licence relevée, garde qui mord, taille d'entrée acceptée —
-se consignent <strong>en une ligne de prose</strong> dans le Résumé, pas en machinerie permanente.</p>
+<h2 id="politique-de-test-rappel">Politique de test (rappel)</h2>
+<p>Forme, déterminisme, témoins négatifs — jamais les valeurs. Les vérifications ponctuelles
+en une ligne de prose. La garde réseau n'est pas testée : le smoke tourne dessous.</p>
 <h2 id="sous-taches">Sous-tâches</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -157,26 +160,26 @@ se consignent <strong>en une ligne de prose</strong> dans le Résumé, pas en ma
 <tbody>
 <tr>
 <td><code>l1-02.1</code></td>
-<td>Adapter <strong>Clay v1.5</strong></td>
+<td>Adapter <strong>Clay v1.5</strong> — recette complète écrite dans la fiche</td>
 <td>M</td>
 </tr>
 <tr>
 <td><code>l1-02.2</code></td>
-<td>Adapter <strong>TerraMind small</strong></td>
+<td>Adapter <strong>TerraMind small</strong> — 384-d, agrégation explicite</td>
 <td>M</td>
 </tr>
 <tr>
 <td><code>l1-02.3</code></td>
-<td><strong>Garde réseau</strong> : cache local, pré-chargement, smoke sous la garde</td>
+<td><strong>Garde réseau au run</strong> (<code>HF_HUB_OFFLINE</code>)</td>
 <td>S</td>
 </tr>
 <tr>
 <td><code>l1-02.4</code></td>
-<td><strong>Substituabilité</strong> des deux adapters, prouvée</td>
+<td><strong>Substituabilité</strong> prouvée (1024/384/double)</td>
 <td>S</td>
 </tr>
 </tbody>
 </table></div>
 <h2 id="hors-perimetre-du-chapeau">Hors périmètre du chapeau</h2>
-<p>Tout fine-tuning · le mode « Thinking in Modalities » de TerraMind · Prithvi ou tout
-troisième modèle · toute mesure de performance (<code>l1-04</code>) · toute métrique de qualité (<code>l1-05</code>).</p><div class="prevnext"><a href="l1-01.html">← [l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port</a><a href="l1-03.html">[l1-03] [CHAPEAU] CLI embed et stockage fichier des vecteurs →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+<p>Fine-tuning · « Thinking in Modalities » · multimodal (pas de Sentinel-1) · tout troisième
+modèle · les mesures (<code>l1-04</code>, <code>l1-05</code>) · l'installation des dépendances (<code>l1-00</code>).</p><div class="prevnext"><a href="l1-01.html">← [l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port</a><a href="l1-03.html">[l1-03] [CHAPEAU] CLI embed et stockage fichier des vecteurs →</a></div><p class="gen">Généré le 24/08/2026 14:56 — le .md fait foi.</p></article></body></html>

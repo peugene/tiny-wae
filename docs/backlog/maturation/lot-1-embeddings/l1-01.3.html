@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.3] Port EmbeddingModel + registre model_id → adapter</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.3</b></nav><h1>[l1-01.3] Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.3</b></nav><h1>[l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-013-le-port-derriere-lequel-les-modeles-se-branchent">[l1-01.3] — Le port derrière lequel les modèles se branchent</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,40 +60,54 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-22, S-7, C-8, E-23, D-19) : signature élargie à <code>ChipTensor</code>,
+imports paresseux, table du registre pré-posée pour supprimer l'écriture concurrente.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Définir le <strong>contrat</strong> que Clay et TerraMind devront respecter, et le registre qui résout un
-<code>model_id</code> en implémentation. Sans ce port, chaque appelant connaîtrait les particularités de
-chaque modèle — et il y en a, précisément là où on ne les attend pas.</p>
+<p>Définir le contrat que Clay et TerraMind respecteront, et le registre qui résout un
+<code>model_id</code>. Le port promet <strong>« un vecteur par chip »</strong> ; l'asymétrie de sortie (Clay : CLS
+1024-d · TerraMind : liste de couches → moyenne des 256 patchs 384-d) est absorbée par les
+adapters — l'appelant ne voit rien.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
-<p><code>src/tiny_wae/core/embedding_port.py</code> (le Protocol, pur) et
-<code>src/tiny_wae/adapters/model_registry.py</code> (la résolution <code>model_id → adapter</code>).</p>
-<p>⭐ <strong>La raison d'être du port, en une phrase</strong> : les deux modèles n'ont <strong>pas le même
-contrat de sortie</strong>. Clay rend <strong>un vecteur</strong> (son embedding de classe) ; TerraMind rend
-<strong>196 embeddings de patch de 768 dimensions</strong> qu'il faut agréger. Le port promet
-<strong>« un vecteur par chip »</strong> et chaque adapter est responsable de le produire — Clay prend
-son CLS, TerraMind moyenne ses patchs. <strong>L'appelant ne voit pas la différence.</strong></p>
-<p>À livrer :</p>
+<p><code>src/tiny_wae/core/embedding_port.py</code> (Protocol, pur) et
+<code>src/tiny_wae/adapters/model_registry.py</code>.</p>
 <ul>
-<li><code>EmbeddingModel</code> — <code>Protocol</code> (pas une classe de base) exposant :</li>
-<li><code>model_id: str</code> — identifiant stable, entre dans la clé d'idempotence ;</li>
-<li><code>spec: EmbeddingSpec</code> — ce que le modèle attend en entrée (<code>l1-01.1</code>) ;</li>
-<li><code>dim: int</code> — dimension du vecteur produit ;</li>
-<li><code>embed(tensor) -&gt; np.ndarray</code> — <strong>un vecteur <code>(dim,)</code> float32</strong>, pas une matrice.</li>
-<li><code>FakeEmbeddingModel</code> — double de test <strong>substituable</strong>, déterministe (hash de l'entrée →
-  vecteur), sans aucune dépendance à torch. Il permet à <code>l1-03.x</code> d'avancer <strong>avant</strong> que le
-  moindre poids soit téléchargé.</li>
-<li><code>resolve_model(model_id) -&gt; EmbeddingModel</code> — registre. Un <code>model_id</code> inconnu lève une
-  erreur typée <strong>listant les identifiants disponibles</strong>.</li>
+<li><code>EmbeddingModel</code> — Protocol : <code>model_id: str</code> · <code>spec: EmbeddingSpec</code> · <code>dim: int</code> ·
+  ⭐ <code>embed(chip: ChipTensor) -&gt; np.ndarray</code> — <strong>le <code>ChipTensor</code> entier, pas un tableau
+  nu</strong> : Clay a besoin de <code>datetime</code>, <code>lat/lon</code> et <code>gsd</code> (revue K-02c, 8 dimensions du
+  modèle leur sont réservées). Un port qui ne passerait que les pixels forcerait les
+  adapters à tricher.</li>
+<li><code>FakeEmbeddingModel</code> — dans <strong><code>adapters/embed_fake.py</code></strong> (emplacement tranché, revue
+  D-19) : déterministe (hash de l'entrée → vecteur), zéro torch. ⭐ <strong>Sa spec inclut ce que
+  ses consommateurs exigent</strong> (revue v2, m2) : <code>fail_on: set[str]</code> (lève une erreur typée
+  sur ces <code>item_id</code> — requis par <code>l1-03.2</code>/O6 et <code>l1-03.3</code>/O2), <code>delay_s: float</code> (ralentit
+  chaque embed — requis par le jalon SIGINT de <code>l1-03.3</code>/O4 <strong>et par <code>l1-04.1</code>/O1</strong>, qui
+  s'en sert pour vérifier que ses chronomètres séparent bien les phases), et une
+  <strong>notification de progression</strong> (callback ou compteur exposé — c'est elle que le test
+  SIGINT attend avant d'interrompre). C'est lui qui découple le chapeau <code>l1-03</code> des vrais
+  modèles. ⭐ <strong>Ces trois capacités s'oraclent ICI, chez leur propriétaire</strong> (O7, revue v3
+  C-20) — un consommateur qui découvre à l'usage que le double ne sait pas faillir a déjà
+  perdu son temps.</li>
+<li>⭐ <strong>Registre : table statique COMPLÈTE, imports PARESSEUX</strong> (revue S-7/K-22) :</li>
 </ul>
-<p><strong>Hors périmètre</strong> : aucun modèle réel (<code>l1-02</code>), aucun chargement de poids, aucun torch.
-Cette fiche doit rester importable sans que torch soit installé.</p>
+<p><code>python
+  _ADAPTERS = {
+      "fake": ("tiny_wae.adapters.embed_fake", "FakeEmbeddingModel"),
+      "clay-v1.5": ("tiny_wae.adapters.embed_clay", "ClayModel"),
+      "terramind-v1-small": ("tiny_wae.adapters.embed_terramind", "TerraMindModel"),
+  }</code></p>
+<p>Les <strong>trois entrées sont écrites ICI, maintenant</strong> — les modules n'existent pas encore,
+  et c'est voulu : <code>l1-02.1</code> et <code>l1-02.2</code> ne touchent <strong>que leur propre fichier</strong>, plus
+  aucune écriture concurrente sur le registre. <code>resolve_model</code> fait
+  <code>importlib.import_module</code> <strong>dans la fonction</strong> : importer le registre n'importe pas
+  torch, un module manquant donne une erreur claire listant les ids disponibles.</p>
+<p><strong>Hors périmètre</strong> : les vrais adapters (<code>l1-02</code>) · torch (jamais importé au chargement).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>core/embedding_port.py</code> et <code>adapters/model_registry.py</code> livrés, <code>mypy --strict</code> vert.</li>
-<li>[ ] <code>EmbeddingModel</code> est un <code>Protocol</code> ; <code>FakeEmbeddingModel</code> le satisfait <strong>sans en hériter</strong>.</li>
-<li>[ ] Le registre connaît au moins le double ; les deux vrais modèles s'y ajouteront en <code>l1-02</code>.</li>
+<li>[ ] Les trois fichiers livrés (<code>embedding_port.py</code>, <code>model_registry.py</code>, <code>embed_fake.py</code>),
+      <code>mypy --strict</code> vert.</li>
+<li>[ ] Table à 3 entrées, imports dans le corps de <code>resolve_model</code>.</li>
 <li>[ ] <code>tests/test_embedding_port.py</code> — court.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
@@ -108,40 +122,47 @@ Cette fiche doit rester importable sans que torch soit installé.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><strong>Substituabilité statique</strong> : une fonction annotée <code>EmbeddingModel</code> reçoit <code>FakeEmbeddingModel</code></td>
-<td><code>mypy --strict</code> vert <strong>sans <code>cast</code> ni <code>type: ignore</code></strong>. ⚠ C'est <code>mypy</code> qui est l'oracle ici, pas un test d'exécution — c'est précisément la leçon de <code>out-01</code> (Lot 0)</td>
+<td>Substituabilité statique : fonction annotée <code>EmbeddingModel</code> recevant le double</td>
+<td><code>mypy --strict</code> vert <strong>sans cast ni type: ignore</strong> — mypy est l'oracle (leçon out-01)</td>
 </tr>
 <tr>
 <td>O2</td>
-<td><code>FakeEmbeddingModel.embed</code> sur la même entrée, deux appels</td>
-<td>vecteur <strong>identique</strong>, forme <code>(dim,)</code>, dtype float32</td>
+<td><code>FakeEmbeddingModel.embed</code> deux fois sur le même <code>ChipTensor</code></td>
+<td>vecteurs identiques, forme <code>(dim,)</code>, float32</td>
 </tr>
 <tr>
 <td>O3</td>
 <td><code>resolve_model("inconnu")</code></td>
-<td>erreur typée dont le message <strong>liste les ids disponibles</strong> (assertion littérale)</td>
+<td>erreur typée <strong>listant les 3 ids</strong> (assertion littérale)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Import du module</td>
-<td>réussit <strong>sans torch installé</strong> — vérifié une fois à la main, consigné en prose</td>
+<td>⭐ <strong>Dans un sous-processus frais</strong> (<code>subprocess.run([sys.executable, "-c", …])</code>) : <code>import tiny_wae.__main__</code> puis assertion</td>
+<td><strong><code>"torch" not in sys.modules</code></strong>. Deux précisions de la revue v3 (A-9) : la cible est <strong><code>__main__</code></strong>, pas le registre seul — c'est la découverte des CLI qui importe tout <code>cli/</code>, et c'est là que la régression arrivera ; et le <strong>sous-processus est obligatoire</strong>, car sous pytest un autre test peut avoir déjà chargé torch, ce qui rendrait l'oracle faussement rouge</td>
 </tr>
 <tr>
 <td>O5</td>
+<td><code>resolve_model("clay-v1.5")</code> avant que <code>l1-02.1</code> existe</td>
+<td>erreur claire nommant le module manquant — pas un <code>KeyError</code> cryptique</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>⭐ Le double sur ses trois capacités : <code>fail_on={"x"}</code> → erreur <strong>typée</strong> sur <code>x</code> et pas sur les autres · <code>delay_s=0.05</code> → durée mesurée ≥ 0,05 s · compteur de progression incrémenté d'exactement N après N appels</td>
+<td>les trois, chacun avec son témoin. C'est ce qui garantit que <code>l1-03.2</code>, <code>l1-03.3</code> et <code>l1-04.1</code> trouveront un double capable de ce qu'ils lui demandent</td>
+</tr>
+<tr>
+<td>O7</td>
 <td><code>just check</code></td>
 <td>vert</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : tout comportement de modèle réel · la pertinence de
-l'agrégation choisie par chaque adapter (<code>l1-02</code>).</p>
+<p><strong>Non testé par cette fiche</strong> : le comportement des vrais modèles · la pertinence des
+agrégations (chaque adapter).</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>Le double n'est pas une commodité de test : c'est ce qui <strong>découple le chapeau <code>l1-03</code></strong> du
-chapeau <code>l1-02</code>. Le CLI <code>embed</code>, son stockage et son idempotence peuvent être écrits et
-vérifiés entièrement avec le double — donc <strong>sans réseau, sans poids, en millisecondes</strong>.
-C'est le même patron que <code>FixtureSource</code> au Lot 0.</p>
-<p>⚠ <strong>Politique de test</strong> : le vrai filet ici est <code>mypy</code>, pas pytest — le port est un contrat
-statique. Les tests d'exécution ne font que confirmer que le double se comporte comme prévu.</p>
+<p>O4 est la version mécanisée de l'ancien « importable sans torch, vérifié à la main » — la
+revue a montré que la régression était <em>planifiée</em> par les fiches suivantes, donc la prose
+ne suffisait pas.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
@@ -150,4 +171,4 @@ statique. Les tests d'exécution ne font que confirmer que le double se comporte
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-01.2.html">← [l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters</a><a href="l1-01.4.html">[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-01.2.html">← [l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube)</a><a href="l1-01.4.html">[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

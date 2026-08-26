@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-04.5] Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-04.5] Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.5</b></nav><h1>[l1-04.5] Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-06.H.html"><code>l1-06.H</code></a> [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3.html"><code>l1-04.3</code></a> Leviers modèle — résolution d&#x27;entrée, taille de batch, threads BLAS, workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — tableau comparatif et extrapolation chiffrée au corpus <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.5</b></nav><h1>[l1-04.5] Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-06.H.html"><code>l1-06.H</code></a> [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-045-le-rapport-qui-rend-le-banc-decidable">[l1-04.5] — Le rapport qui rend le banc décidable</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,45 +60,66 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-06, K-07, E-31) : le rapport vient désormais APRÈS la
+campagne — c'est lui qui porte le <strong>ratio discrimination / seconde</strong> (critère de sortie
+n°5 du lot, qui n'avait aucun porteur) et la confrontation durée réelle ↔ extrapolation.
+Destination versionnée : <code>docs/lots/lot-1/</code>, plus jamais <code>data/</code> (gitignoré — les
+rapports seraient morts avec le worktree).
+<strong>Révisée post-revue v3</strong> (S-4/E-7, V-13, V-15) : le rapport agrège des <strong>JSON</strong> — or deux
+de ses sources ne produisaient que de la prose ; et « les vecteurs présents » ne
+désignait aucune spec en particulier.
+⭐ <strong>Zone d'écriture</strong> : <code>docs/lots/lot-1/</code> est <strong>ouverte à l'équipe en création</strong> par
+décision Philippe du 25/08 (revue v3, V-13) — cette fiche y <strong>dépose</strong> son rapport. Le
+reste de <code>docs/lots/</code> (les fiches de lot elles-mêmes) demeure zone PO.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Rassembler les mesures des trois fiches de levier en <strong>un document que Philippe peut lire et
-sur lequel il peut arbitrer</strong> en <code>l1-06.H</code>. Sans ce rapport, le lot livre des fichiers JSON
-épars et personne ne décide rien.</p>
+<p>Rassembler toutes les mesures en <strong>un document sur lequel Philippe arbitre</strong> en <code>l1-06.H</code>.
+Il agrège les JSON — il ne mesure rien lui-même, et se régénère à l'identique.</p>
+<p>⭐ <strong>Ses sources sont TOUTES machine-lisibles</strong> (revue v3, S-4/E-7). Deux ne l'étaient pas :
+<code>l1-05.3a</code> ne produisait qu'un <code>.md</code> (il produit désormais aussi un <code>.json</code>) et la campagne
+<code>l1-05.3.H</code> ne laissait que de la prose (elle produit désormais <code>campaign.json</code> : durée
+réelle, périmètre, réglages). Sans ces deux fichiers, ni le <strong>ratio
+discrimination/seconde</strong> (point 5) ni la <strong>confrontation à la durée réelle</strong> (point 4) ne
+peuvent être calculés autrement qu'en recopiant des nombres à la main — ce qui n'est pas
+régénérable.</p>
+<p>⚠ <strong>Sélection des vecteurs</strong> : ce rapport lit les vecteurs par
+<code>l1-03.1::list_vectors(model_id=…, spec_hash=…)</code>, <strong>jamais</strong> « ceux qui traînent dans
+<code>data_root</code> » — la coexistence de deux specs est un scénario <strong>exigé</strong> par <code>l1-03.2</code>/O5.
+La spec agrégée est <strong>nommée dans le rapport</strong>.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
-<p><code>src/tiny_wae/cli/bench_report.py</code> → <code>data/bench-report.md</code>.</p>
-<p>Le rapport agrège les JSON produits par <code>l1-04.1</code> à <code>l1-04.4</code> — <strong>il ne mesure rien
-lui-même</strong>, il lit et met en forme. S'il devait relancer des mesures, il deviendrait
-impossible à rejouer.</p>
-<p>Ce qu'il doit contenir, dans cet ordre :</p>
+<p><code>src/tiny_wae/cli/bench_report.py</code> → <strong><code>docs/lots/lot-1/bench-report.md</code></strong>.</p>
+<p>Contenu, dans cet ordre :</p>
 <ol>
-<li><strong>Le contexte machine</strong> : cœurs, RAM, version de torch, emplacement du corpus. Sans lui,
-   aucun chiffre n'est interprétable dans six mois.</li>
-<li><strong>Le tableau comparatif</strong> des deux modèles : temps par phase (médiane et p90), RAM crête,
-   dimension du vecteur, tokens par image.</li>
-<li>⭐ <strong>L'extrapolation, en deux temps</strong> :
-   - <strong>le run quotidien</strong> — combien d'acquisitions nouvelles par jour (le Lot 0 en donne la
-     cadence réelle), et le temps que leur embedding demanderait. <strong>C'est le chiffre qui
-     décide si le système peut vivre.</strong>
-   - <strong>la reprise complète</strong> — les 5 793 chips, sur le meilleur réglage mesuré. C'est un
-     coût <strong>unique</strong>, étalable sur plusieurs nuits.</li>
-<li><strong>Les leviers</strong>, chacun avec son facteur et sa limite.</li>
-<li>⭐ <strong>Ce qui n'a pas été mesuré</strong>, explicitement.</li>
+<li><strong>Contexte machine</strong> — cœurs, RAM, torch, emplacement du corpus, et les <strong>compteurs de
+   paramètres des deux modèles côte à côte</strong> (~302 M / ~21 M) : la réserve d'asymétrie du
+   chapeau <code>l1-02</code> se lit ici.</li>
+<li><strong>Comparatif</strong> : temps par phase (médiane, p90), RAM, dim, tokens — par modèle.</li>
+<li>⭐ <strong>Extrapolations, sur les DEUX dénominateurs</strong> (revue E-31) : corpus complet (5 793)
+   ET corpus filtré (~4 959 au seuil par défaut) — et en deux temps :
+   - <strong>le run quotidien</strong> (cadence du Lot 0) — le chiffre qui décide si le système vit ;
+   - <strong>la reprise complète</strong> — coût unique, étalable.
+   Chaque extrapolation porte son dénominateur et la mention « linéaire, donc optimiste ».</li>
+<li>⭐ <strong>Confrontation</strong> : durée réelle de la campagne, <strong>lue dans <code>campaign.json</code></strong>
+   (<code>l1-05.3.H</code>), contre l'extrapolation — <strong>écart publié en %</strong>. C'est la mesure qui juge
+   l'extrapolation, pas l'inverse.</li>
+<li>⭐ <strong>Le ratio discrimination / seconde</strong>, par modèle : marge de séparabilité <strong>lue dans
+   <code>similarity-report.json</code></strong> (<code>l1-05.3a</code>) rapportée au temps médian par chip. <strong>C'est le
+   critère de choix du modèle</strong> — numérateur et dénominateur enfin au même endroit, et tous
+   deux lus d'un fichier, jamais recopiés.</li>
+<li><strong>Les leviers</strong>, chacun avec son facteur et sa limite — y compris les non concluants.</li>
+<li><strong>Ce qui n'a pas été mesuré.</strong></li>
 </ol>
-<p>⚠ <strong>Toute extrapolation doit porter son dénominateur</strong> : « 3,2 s/chip mesuré sur 50 chips du
-site A01 » et non « 3,2 s/chip ». Et dire qu'elle est <strong>linéaire, donc optimiste</strong> — elle
-ignore la variabilité entre sites et la dérive thermique d'une machine qui tourne six heures.</p>
-<p><strong>Hors périmètre</strong> : toute mesure nouvelle · toute recommandation d'achat (il n'y en aura
-pas) · l'arbitrage lui-même (<code>l1-06.H</code>) · la qualité (<code>l1-05</code>).</p>
+<p><strong>Hors périmètre</strong> : toute mesure nouvelle · l'arbitrage (<code>l1-06.H</code>) · toute
+recommandation d'achat.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>cli/bench_report.py</code> livré, <code>data/bench-report.md</code> produit.</li>
-<li>[ ] Contexte machine en tête.</li>
-<li>[ ] Les deux extrapolations, avec dénominateur et mention du caractère linéaire.</li>
-<li>[ ] Section « non mesuré » non vide.</li>
-<li>[ ] Le rapport se régénère <strong>sans relancer aucune mesure</strong>.</li>
-<li>[ ] <code>tests/test_bench_report.py</code> — <strong>court</strong>, sur des JSON de fixture.</li>
+<li>[ ] <code>docs/lots/lot-1/bench-report.md</code> produit, versionné, régénérable sans re-mesure,
+      <strong>plus sa vue <code>.html</code></strong> (<code>just md2html</code>) — les trois rapports décisionnels sont ce que
+      Philippe lit en <code>l1-06.H</code>, dans un projet où tout le reste a sa page rendue.</li>
+<li>[ ] Ratio discrimination/seconde présent, par modèle.</li>
+<li>[ ] Les deux extrapolations, la confrontation, la section « non mesuré ».</li>
+<li>[ ] <code>tests/test_bench_report.py</code> — sur JSON de fixture.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -112,54 +133,49 @@ pas) · l'arbitrage lui-même (<code>l1-06.H</code>) · la qualité (<code>l1-05
 <tbody>
 <tr>
 <td>O1</td>
-<td>Rapport produit à partir de JSON de fixture aux valeurs <strong>connues</strong></td>
-<td>chiffres du tableau <strong>exacts</strong>, extrapolations recalculables à la main depuis les mêmes valeurs</td>
+<td>Rapport depuis des JSON de fixture aux valeurs connues</td>
+<td>chiffres exacts, extrapolations et ratio <strong>recalculables à la main</strong></td>
 </tr>
 <tr>
 <td>O2</td>
-<td>⭐ <strong>Le rapport sait rendre rouge</strong> : un JSON de levier avec <code>status: "inconclusive"</code></td>
-<td>apparaît comme tel dans le rapport, <strong>pas silencieusement omis</strong>. Un rapport qui ne montre que ce qui a marché ment</td>
+<td>⭐ Un JSON de levier <code>status: "inconclusive"</code></td>
+<td>apparaît comme tel — <strong>jamais omis</strong>. Un rapport qui ne montre que ce qui a marché ment</td>
 </tr>
 <tr>
 <td>O3</td>
-<td>Un JSON de mesure <strong>manquant</strong> (levier non exécuté)</td>
-<td>le rapport le signale explicitement au lieu de produire un tableau à trou</td>
+<td>Un JSON manquant — y compris <code>campaign.json</code> ou <code>similarity-report.json</code></td>
+<td>signalé explicitement, pas un tableau à trou ; et le ratio discrimination/seconde est <strong>absent avec sa raison</strong>, jamais calculé sur une valeur devinée</td>
+</tr>
+<tr>
+<td>O3b</td>
+<td>Deux specs présentes dans <code>data_root</code></td>
+<td>le rapport <strong>nomme</strong> celle qu'il a agrégée, et n'en agrège <strong>qu'une</strong></td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Extrapolation quotidienne</td>
-<td>présente, avec le <strong>dénominateur</strong> (nombre de chips mesurés) et la cadence d'acquisitions retenue, sourcée depuis le Lot 0</td>
+<td>Deux générations sans nouvelle mesure</td>
+<td>rapport identique (hors horodatage)</td>
 </tr>
 <tr>
 <td>O5</td>
-<td>Deux générations successives sans nouvelle mesure</td>
-<td>rapport <strong>identique</strong> (hors horodatage) — il agrège, il ne mesure pas</td>
-</tr>
-<tr>
-<td>O6</td>
 <td><code>just check</code></td>
 <td>vert</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : la justesse des extrapolations elles-mêmes — elles seront
-confrontées à la réalité lors de la campagne de <code>l1-05.3</code>, et <strong>l'écart devra être consigné</strong>
-· la qualité des vecteurs.</p>
+<p><strong>Non testé par cette fiche</strong> : la justesse des mesures elles-mêmes (fiches de banc) · la
+qualité (chapeau <code>l1-05</code>).</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>⚠ <strong>Le chiffre qui compte n'est pas la reprise complète, c'est le run quotidien.</strong> Six heures
-de rattrapage une fois, c'est une nuit. Trente minutes par jour pour dix chips nouveaux,
-c'est un système qui vit. L'inverse serait un système mort-né. Mettre le quotidien <strong>en
-premier</strong> dans le rapport.</p>
-<p>⚠ <strong>Politique de test</strong> : tout se teste sur des JSON de fixture aux valeurs connues. O2 est
-l'oracle indispensable — un rapport qui masquerait un levier non concluant serait pire
-qu'absent.</p>
+<p>⚠ Le chiffre qui compte est <strong>le run quotidien</strong>, pas la reprise : trente minutes par jour
+pour dix chips est un système qui vit ; six heures une fois est une nuit. Le mettre en
+premier.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Extrapolation quotidienne</strong> : …</li>
-<li><strong>Extrapolation reprise complète</strong> : …</li>
+<li><strong>Ratio discrimination/seconde</strong> : <em>(par modèle)</em></li>
+<li><strong>Extrapolation quotidienne · reprise</strong> : …</li>
+<li><strong>Écart extrapolation ↔ campagne réelle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-04.4.html">← [l1-04.4] Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant</a><span></span></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-04.4.html">← [l1-04.4] Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant</a><span></span></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

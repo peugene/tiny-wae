@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.1</b></nav><h1>[l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.1</b></nav><h1>[l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-051-les-metriques-a-sec">[l1-05.1] — Les métriques, à sec</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,9 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-7, E-35) : la dérive est DÉFINIE (<code>1 − cosine</code>), les « ≈ 0 »
+sont quantifiés. La convention du chapeau <code>l1-05</code> fait foi.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Poser les fonctions de mesure de qualité — pures, testables sur des vecteurs fabriqués, en
@@ -80,13 +82,25 @@ s'arbitre avant d'être ajoutée).</p>
 <li><strong>inter</strong> : similarité moyenne entre vecteurs de labels <strong>différents</strong> ;</li>
 <li><strong>marge</strong> = intra − inter. ⭐ C'est cette marge qui sera le numérateur du rapport
     « discrimination par seconde » de <code>l1-04.5</code>.</li>
-<li><code>silhouette(vectors, labels) -&gt; float</code> — indicateur classique, borné dans [−1, 1], plus
-  robuste que la seule marge quand les groupes ont des tailles très inégales (ce sera le cas :
-  de 43 à 300 chips par site).</li>
-<li><code>trajectory_drift(vectors, dates, reference="first") -&gt; list[float]</code> — distance de chaque
-  vecteur au vecteur de référence, dans l'ordre chronologique. C'est l'outil de <code>l1-05.4</code>.</li>
+<li><code>silhouette(vectors, labels) -&gt; float</code> — borné dans [−1, 1], plus robuste que la seule
+  marge quand les groupes ont des tailles très inégales — ⭐ <strong>et ils le sont plus qu'on ne
+  le croyait</strong> : recomptés sur les 9 873 manifestes le 26/08, <strong>63 (B08) à 579 (B01) chips
+  <code>ingested</code> par site</strong>, médiane 219 ; <strong>49 à 563 après le filtre à 10 %</strong>. Soit un rapport
+  de <strong>9,2×</strong>, pas 7× — le « 43 à 300 » qui figurait ici était faux, et l'argument en faveur
+  de la silhouette en sort <strong>renforcé</strong>.
+  ⭐ <strong>La distance employée est <code>1 − cosine</code>, et c'est écrit ici</strong> (revue v3, E-6) : la
+  silhouette est définie <em>sur une distance</em>, alors que tout le reste du lot manipule une
+  <em>similarité</em>. « Indicateur classique » laissait le choix à l'implémenteur — et
+  l'implémentation de référence de scikit-learn utilise l'euclidienne par défaut, ce qui
+  donnerait un nombre différent, plausible, et incomparable au seuil de 0,2 acté. La même
+  définition que <code>trajectory_drift</code>, donc, et une <strong>valeur littérale gelée dans le test</strong>
+  (O4b) pour qu'un changement de convention rougisse.</li>
+<li><code>trajectory_drift(vectors, dates, reference="first") -&gt; list[float]</code> — ⭐ <strong>définie comme
+  <code>1 − cosine(v_i, v_ref)</code></strong>, bornée [0, 2], documentée comme DISTANCE (convention du
+  chapeau : le pire cas d'une dérive est son MAXIMUM). C'est l'outil de <code>l1-05.4</code> — et son
+  seuil « &gt; 2 » n'a de sens que sur cette définition, pas sur une similarité.</li>
 </ul>
-<p><strong>Hors périmètre</strong> : toute lecture de vecteurs sur disque (<code>l1-05.3</code>) · tout modèle · tout
+<p><strong>Hors périmètre</strong> : toute lecture de vecteurs sur disque (<code>l1-05.3a</code>) · tout modèle · tout
 seuil de décision — les seuils appartiennent aux campagnes, pas aux métriques.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
@@ -122,7 +136,12 @@ seuil de décision — les seuils appartiennent aux campagnes, pas aux métrique
 <tr>
 <td>O4</td>
 <td><code>silhouette</code> sur les mêmes deux jeux</td>
-<td><strong>&gt; 0,5</strong> sur le cas séparé, <strong>≈ 0</strong> sur le cas aléatoire</td>
+<td><strong>&gt; 0,5</strong> sur le cas séparé, <strong>|silhouette| &lt; 0,05</strong> sur le cas aléatoire (quantifié, revue E-35)</td>
+</tr>
+<tr>
+<td>O4b</td>
+<td>⭐ <code>silhouette</code> sur <strong>4 vecteurs littéraux</strong> (2 par groupe), valeur calculée à la main avec la distance <code>1 − cosine</code></td>
+<td><strong>égalité à la valeur littérale</strong> au 1e-9. C'est le seul témoin qui rougit si la distance change de convention — sans lui, une silhouette euclidienne passerait O4 sans difficulté</td>
 </tr>
 <tr>
 <td>O5</td>
@@ -141,20 +160,22 @@ seuil de décision — les seuils appartiennent aux campagnes, pas aux métrique
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : le comportement sur de vrais embeddings (<code>l1-05.3</code>) · la
+<p><strong>Non testé par cette fiche</strong> : le comportement sur de vrais embeddings (campagne <code>l1-05.3.H</code>) · la
 pertinence des seuils, qui appartient aux campagnes.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
 <p>⚠ <strong>O3 est le test qui porte tout le chapeau.</strong> Une métrique de séparabilité qui rendrait un
-score élevé sur du bruit invaliderait toutes les conclusions de <code>l1-05.3</code> et <code>l1-05.4</code> —
+score élevé sur du bruit invalideraient toutes les conclusions de <code>l1-05.3a</code> et <code>l1-05.4</code> —
 et c'est le genre d'erreur qui ne se voit pas, parce que le résultat « ça sépare bien »
 est celui qu'on espère. <strong>Le témoin négatif n'est pas optionnel.</strong></p>
 <p>⚠ <strong>Politique de test</strong> : cette fiche est du pur, c'est donc la mieux testée du lot — et
-c'est justifié, les métriques portent toutes les conclusions de <code>l1-05.3</code> et <code>l1-05.4</code>. Ce
+c'est justifié, les métriques portent toutes les conclusions de <code>l1-05.3a</code> et <code>l1-05.4</code>. Ce
 qu'on évite en revanche : le test paramétré sur des dizaines de configurations de bruit, qui
 donne du volume sans donner de garantie de plus.</p>
 <p>Piste : la silhouette complète est en O(n²) ; sur 5 793 vecteurs c'est ~17 millions de
 paires, faisable en numpy vectorisé mais à surveiller. Si c'est trop lent, échantillonner et
-<strong>le dire</strong> dans la campagne.</p>
+<strong>le dire</strong> dans la campagne. ⚠ Avec un site à 579 chips, le groupe le plus gros pèse à lui
+seul ~335 000 paires intra : c'est bien la silhouette, et non la seule marge, qui absorbe ce
+déséquilibre.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
@@ -163,4 +184,4 @@ paires, faisable en numpy vectorisé mais à surveiller. Si c'est trop lent, éc
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 23/08/2026 15:12 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

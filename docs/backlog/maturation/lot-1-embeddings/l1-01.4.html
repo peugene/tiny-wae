@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.4</b></nav><h1>[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.4</b></nav><h1>[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-014-fixtures-dembedding">[l1-01.4] — Fixtures d'embedding</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,7 +60,11 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (S-6, D-2 desserrage) : plus aucune dépendance — c'est une
+copie de fichiers plus un README, elle part en N0 et libère les fixtures pour tout
+l'aval. La vérification par <code>load_chip_tensor</code> a été déplacée chez <code>l1-01.2</code> (son O6),
+qui dépend désormais d'elle.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
 <p>Geler quelques acquisitions réelles dans <code>tests/fixtures/</code> pour que le smoke et les tests de
@@ -88,8 +92,8 @@ fixtures. Une acquisition pèse ~2,9 Mo (<code>chip.tif</code> 2,1 + <code>chip_
 </tr>
 <tr>
 <td>2</td>
-<td>un chip <strong>au-dessus du seuil</strong> (<code>cloud_pct</code> &gt; 10)</td>
-<td>vérifier que le filtre de <code>l1-03.2</code> l'écarte vraiment</td>
+<td>un chip <strong>au-dessus du seuil</strong> (<code>cloud_pct</code> &gt; 10, valeur en dur ici — voir O3)</td>
+<td>vérifier que le filtre de <code>l1-03.2</code> l'écarte vraiment. ⚠ Conséquence pour <code>l1-01.2</code>/O6 : un chip nuageux sature en DN, la borne de plausibilité y est <code>[0, 32767]</code>, pas <code>[0, 20000]</code></td>
 </tr>
 <tr>
 <td>3</td>
@@ -139,18 +143,18 @@ poids) · aucune fixture de modèle.</p>
 </tr>
 <tr>
 <td>O2</td>
-<td><code>load_chip_tensor</code> (<code>l1-01.2</code>) sur chacune des 4</td>
-<td>tenseur <code>(10, 256, 256)</code> float32, <strong>aucun NaN</strong>, sur les 4</td>
+<td>Intégrité des copies</td>
+<td>les 3 rasters + <code>manifest.json</code> présents pour chacune des 4 ; manifestes <strong>identiques octet à octet</strong> aux originaux (la validation par <code>load_chip_tensor</code> appartient à <code>l1-01.2</code>/O6)</td>
 </tr>
 <tr>
 <td>O3</td>
 <td>Les <code>cloud_pct</code> des 4 fixtures</td>
-<td>au moins <strong>un</strong> ≤ 1 % et <strong>un</strong> &gt; 10 % — sinon le filtre de <code>l1-03.2</code> ne pourra pas être exercé dans les deux sens</td>
+<td>au moins <strong>un</strong> ≤ 1 % et <strong>un strictement au-dessus de 10 %</strong> — la valeur est écrite <strong>en littéral</strong>, pas par référence à <code>embed_cloud_pct_max</code> : ce réglage naît en <code>l1-03.2</code> (N2) alors que cette fiche est <strong>N0</strong>, et un oracle ne peut pas dépendre d'un objet qui n'existe pas encore (revue v3, D-16/E-27). Motif : sans ces deux cas, le filtre de <code>l1-03.2</code> ne pourra pas être exercé dans les deux sens</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Deux fixtures partagent le même <code>site_id</code> avec des <code>datetime</code> distincts</td>
-<td>vrai (condition d'existence des oracles de <code>l1-03.2</code> et <code>l1-05.2</code>)</td>
+<td>Topologie (revue C-22) : <strong>2 sites, dont un avec 2 dates</strong></td>
+<td>vrai — condition d'existence des oracles de <code>l1-03.2</code> (mono-site) et <code>l1-03.3</code> (2 sites)</td>
 </tr>
 <tr>
 <td>O5</td>
@@ -175,4 +179,4 @@ ajouter autant.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre model_id → adapter</a><span></span></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</a><span></span></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-04.3b] Leviers modèle 2/2 — threads BLAS et contention des workers</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-04.html"><code>▣ l1-04</code></a> › <b>l1-04.3b</b></nav><h1>[l1-04.3b] Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-04.html"><code>l1-04</code></a> [CHAPEAU] Banc de mesure et leviers — ce que cette machine permet <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-04.1.html"><code>l1-04.1</code></a> Instrumentation du banc — chargement, forward et écriture chronométrés séparément <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.2.html"><code>l1-04.2</code></a> Levier I/O — le corpus lu depuis drvfs contre une copie locale ext4 <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.3a.html"><code>l1-04.3a</code></a> Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-04.3b.html"><code>l1-04.3b</code></a> Leviers modèle 2/2 — threads BLAS et contention des workers <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.4.html"><code>l1-04.4</code></a> Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-04.5.html"><code>l1-04.5</code></a> Rapport de banc — comparatif, extrapolations, ratio discrimination/seconde <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-043b-threads-et-contention">[l1-04.3b] — Threads et contention</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Issue de la scission de <code>l1-04.3</code></strong> ; O de stabilité réécrit (revue E-11 : le « 20 % »
+sans statistique ni règle d'arrêt laissait l'agent boucler ou déclarer stable au tirage
+favorable).
+<strong>Révisée post-revue v3</strong> (V-24, V-21, V-09) : effort relevé à <strong>M</strong> — elle porte une
+dépendance de plus que sa sœur, un protocole via un vrai CLI, et c'est elle qui doit
+prouver que le levier « threads » atteint réellement les workers.</p>
+</blockquote>
+<p>⛔ <strong>Fiche de mesure CPU — ne se dispatche JAMAIS en parallèle</strong> d'une autre fiche de banc
+(<code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.4</code>, <code>l1-05.2</code>) ni d'aucune charge CPU concurrente. C'est la
+plus sensible des cinq : elle mesure précisément la <strong>contention</strong>.</p>
+<h2 id="objectif">Objectif</h2>
+<p>Trouver le bon réglage de parallélisme pour la campagne : combien de threads BLAS, combien
+de workers — et surtout mesurer la <strong>contention</strong> entre les deux, qui peut rendre le
+parallélisme contre-productif sur un goulot CPU.</p>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p><code>scripts/bench_levers_b.py</code>, sortie JSON, pour <strong>les deux modèles</strong>.</p>
+<ol>
+<li><strong>Threads BLAS</strong> (<code>torch.set_num_threads</code>) : 1, 2, 4, nombre de cœurs physiques.
+   ⚠ Le nombre de cœurs de la machine est <strong>écrit dans le JSON</strong> — sans lui la mesure n'est
+   pas interprétable.</li>
+<li>⭐ <strong>Contention</strong> : à charge égale, <code>(workers=1, threads=N)</code> contre
+   <code>(workers=N, threads=1)</code> via <code>embed-backfill</code> (<code>l1-03.3</code>). Si le second est plus lent,
+   le dire — c'est un résultat, pas un échec. Le réglage retenu est celui que la campagne
+   (<code>l1-05.3.H</code>) utilisera.</li>
+</ol>
+<p>Échantillon : <strong>celui que <code>l1-04.1</code> a gelé</strong>, même liste d'<code>item_id</code> que les autres fiches
+de levier.</p>
+<p>⭐ <strong>Le levier atteint-il vraiment les workers ?</strong> (revue v3, V-21). <code>l1-03.3</code> utilise un
+<code>ThreadPoolExecutor</code> — même processus, donc <code>torch.set_num_threads</code> <strong>s'applique</strong> aux
+workers. C'est l'hypothèse de travail, et elle est fondée ; mais elle ne se suppose pas :
+O1 exige de <strong>relever depuis un worker</strong> <code>torch.get_num_threads()</code> et <code>OMP_NUM_THREADS</code>, et
+de les écrire dans le JSON. Si un jour le pool devenait un pool de <strong>processus</strong>, le réglage
+cesserait d'être hérité et cette mesure — pas une relecture de code — le dirait tout de
+suite. <em>(Un balayage de threads qui ne bouge pas le débit alors que les valeurs relevées ne
+bougent pas non plus est un artefact ; le même balayage avec des valeurs relevées correctes
+est un vrai résultat. La différence ne se voit que si on relève.)</em></p>
+<p><strong>Hors périmètre</strong> : résolution et batch (<code>l1-04.3a</code>) · la quantification.</p>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<ul>
+<li>[ ] JSON par modèle : débit par nombre de threads, les deux configs de contention,
+      contexte machine (cœurs physiques/logiques, RAM, version torch).</li>
+<li>[ ] Le réglage recommandé pour la campagne est écrit en toutes lettres.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Balayage threads — <strong>et relevé des threads effectifs DEPUIS un worker</strong></td>
+<td>débit par valeur, cœurs machine, <strong><code>torch.get_num_threads()</code> et <code>OMP_NUM_THREADS</code> tels que vus dans le worker</strong>, tous dans le même JSON. Le relevé doit <strong>suivre</strong> la consigne (threads=2 demandés → 2 relevés) ; s'il ne la suit pas, le balayage ne mesure rien et <strong>c'est ce constat-là</strong> qui est le résultat</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>⭐ Contention <code>(1,N)</code> vs <code>(N,1)</code></td>
+<td>les deux <strong>publiés</strong> ; verdict écrit</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Même échantillon partout — celui de <code>l1-04.1</code></td>
+<td>vérifié dans le script</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>⭐ Stabilité</td>
+<td><code>l1-04.1::stability</code>, <strong>3 passes</strong> par configuration, barème commun du lot (CV ≤ 5 % stable · 5–15 % bruitée, conclusion prudente · &gt; 15 % non concluante). <strong>Jamais plus de 3 passes</strong> : sur un poste de travail, l'instabilité est un résultat, pas un problème à faire disparaître. <em>(L'ancien barème local 10/25 % est remplacé par celui de <code>l1-04.1</code> — un seul barème pour les quatre fiches de levier, sinon leurs verdicts ne se comparent pas.)</em></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la charge concurrente d'autres applications (poste de
+travail — limite déclarée) · le GPU.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Réglage recommandé</strong> : <em>(threads · workers, par modèle)</em></li>
+<li><strong>Threads effectivement relevés depuis un worker</strong> : <em>(le levier est-il hérité ?)</em></li>
+<li><strong>Contention observée</strong> : …</li>
+<li><strong>Stabilité</strong> : <em>(CV et verdict par configuration)</em></li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-04.3a.html">← [l1-04.3a] Leviers modèle 1/2 — coût de la variante 4 tuiles, taille de batch</a><a href="l1-04.4.html">[l1-04.4] Levier quantification — int8 / ONNX, mesuré ou déclaré non concluant →</a></div><p class="gen">Généré le 25/08/2026 20:34 — le .md fait foi.</p></article></body></html>

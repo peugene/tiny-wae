@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.2</b></nav><h1>[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.html"><code>l1-05.3</code></a> Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.2</b></nav><h1>[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-06.H.html"><code>l1-06.H</code></a> [HUMAIN] Arbitrage du périmètre embeddable et clôture du Lot 1 <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-052-deux-fois-le-meme-chip-deux-fois-le-meme-vecteur">[l1-05.2] — Deux fois le même chip, deux fois le même vecteur ?</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -60,8 +60,18 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (E-22, K-17, E-34, F-14) : O1 devient une assertion DURE ;
+la grandeur publiée est une SIMILARITÉ (convention du chapeau) ; le témoin négatif est
+déterministe ; le JSON consigne la précision matmul.
+<strong>Révisée post-revue v3</strong> (E-2, C-3, E-30, décision Philippe du 25/08) : la clause « la
+fiche n'est PAS terminable » créait un <strong>interblocage</strong> — <code>l1-06.H</code> dépend de cette fiche,
+une fiche jamais en <code>fait/</code> rend l'arbitre inatteignable ; « distance cosinus » résiduel
+dans le corps ; O4 était sans issue dans la zone grise.</p>
 </blockquote>
+<p>⛔ <strong>Fiche de mesure CPU — ne se dispatche JAMAIS en parallèle</strong> d'une fiche de banc
+(<code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-04.4</code>) ni d'aucune charge CPU concurrente : elle
+lance des processus à threads fixés, et une charge voisine fausse le balayage.</p>
 <h2 id="objectif">Objectif</h2>
 <p>Établir dans quelles conditions un embedding est <strong>reproductible</strong>. C'est ce dont dépend
 l'idempotence de <code>l1-03.2</code> — et, plus loin, la validité de toute comparaison de vecteurs au
@@ -73,18 +83,22 @@ Lot 2.</p>
 <li><strong>À configuration fixée</strong> — même modèle, même nombre de threads BLAS, même entrée —
   l'identité est <strong>exigée</strong>. C'est ce que l'idempotence suppose : un vecteur resservi doit
   être celui qu'on aurait recalculé.</li>
-<li><strong>Entre configurations de threads</strong>, l'écart est <strong>mesuré, pas exigé nul</strong>. <code>l1-04.3</code> fait
+<li><strong>Entre configurations de threads</strong>, l'écart est <strong>mesuré, pas exigé nul</strong>. <code>l1-04.3b</code> fait
   précisément varier ce paramètre pour mesurer le passage à l'échelle : exiger le bit à bit
   partout contredirait ce levier.</li>
 </ul>
 <p>Et ce second chiffre est <strong>utile en soi</strong> : s'il n'est pas nul, cela signifie qu'au Lot 2 on
 ne pourra pas comparer sans précaution des vecteurs calculés à des moments différents, sur
 des machines réglées différemment. Mieux vaut le savoir maintenant.</p>
-<p>Ce que le script mesure, sur ≥ 20 chips et <strong>pour les deux modèles</strong> :</p>
+<p>Ce que le script mesure, sur <strong>l'échantillon de banc gelé par <code>l1-04.1</code></strong> (même liste
+d'<code>item_id</code> que les fiches de levier) et <strong>pour les deux modèles</strong> :</p>
 <ol>
 <li>deux passages, threads figés → <strong>égalité bit à bit</strong> attendue ;</li>
-<li>passages à 1, 2, 4, 8 threads → <strong>distance cosinus</strong> au vecteur de référence, médiane et
-   <strong>minimum</strong> ;</li>
+<li>passages à 1, 2, 4, 8 threads → ⭐ <strong>similarité cosinus</strong> au vecteur de référence (une
+   similarité : 1 = identiques), médiane et <strong>minimum</strong> — le minimum d'une similarité est
+   bien le <strong>pire</strong> cas, ce qui est l'information cherchée. <em>(Le corps disait « distance »
+   alors que O3 dit « similarité » : lu à l'envers, le « minimum » devenait le meilleur
+   cas — l'erreur exacte que la revue v1 avait déjà corrigée dans l'oracle.)</em> ;</li>
 <li>deux processus <strong>distincts</strong>, mêmes réglages → même question. ⚠ C'est un cas différent du
    premier : l'ordre d'allocation mémoire et l'initialisation des bibliothèques natives
    peuvent changer d'un processus à l'autre.</li>
@@ -97,9 +111,17 @@ performances · toute vérité terrain.</p>
 <li>[ ] Les 3 cas mesurés, pour les 2 modèles.</li>
 <li>[ ] La graine et le nombre de threads sont <strong>écrits dans le JSON</strong> — sans eux la mesure
       n'est pas reproductible.</li>
-<li>[ ] <strong>Si l'égalité bit à bit n'est pas atteinte à configuration fixée</strong> : la fiche le dit,
-      publie l'écart, et propose une tolérance chiffrée. Elle ne la <strong>fixe pas après coup en
-      la calant sur la valeur observée</strong> — elle documente et laisse <code>l1-06.H</code> trancher.</li>
+<li>[ ] ⭐ <strong>Si O1 échoue : la fiche se termine en ROUGE DÉCLARÉ, elle ne se bloque pas.</strong>
+      Le JSON porte <code>determinism_violated: true</code> avec l'écart mesuré, un constat d'anomalie
+      est écrit au Résumé, et la fiche <strong>passe en <code>fait/</code></strong> — le point 6 de <code>l1-06.H</code>
+      devient alors <strong>bloquant pour la recette du lot</strong>.
+      <em>(Motif : la formulation « pas terminable » créait un interblocage — <code>l1-06.H</code> a
+      <code>l1-05.2</code> dans ses <code>depends_on</code>, donc une fiche qui ne descend jamais en <code>fait/</code>
+      rendrait l'arbitrage humain, et avec lui la clôture du lot, inatteignables. Le rouge
+      doit </em><em>remonter</em><em>, pas immobiliser.)</em>
+      ⚠ Ce qui reste interdit, et c'est le fond de la règle : <strong>aucune tolérance ne se fixe
+      après coup en la calant sur la valeur observée</strong>. Le chiffre se publie, Philippe
+      tranche.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -113,8 +135,8 @@ performances · toute vérité terrain.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td>⭐ Deux passages, <strong>même processus</strong>, threads figés, ≥ 20 chips</td>
-<td><strong>égalité bit à bit sur 100 %</strong> des chips (<code>array_equal</code>). Si non : écart publié + raison recherchée</td>
+<td>⭐ Deux passages, <strong>même processus</strong>, threads figés, sur l'échantillon gelé de <code>l1-04.1</code></td>
+<td><strong>assertion DURE : 100 % de <code>array_equal</code>.</strong> Si elle échoue → <strong>rouge déclaré</strong> (<code>determinism_violated: true</code> + écart mesuré), fiche terminée quand même, point 6 de <code>l1-06.H</code> bloquant pour la recette — car la sémantique d'idempotence de <code>l1-03.2</code> devra être révisée. ⚠ Revue E-22 : la v1 disait « si non : écart publié », ce qui rendait l'oracle jamais rouge ; revue v3 : « pas terminable » le rendait bloquant pour le lot entier</td>
 </tr>
 <tr>
 <td>O2</td>
@@ -124,17 +146,17 @@ performances · toute vérité terrain.</p>
 <tr>
 <td>O3</td>
 <td>Balayage de threads (1, 2, 4, 8)</td>
-<td>distance cosinus au vecteur de référence : <strong>médiane ET minimum</strong> publiés. ⚠ Le minimum compte plus : c'est le pire chip qui décidera</td>
+<td><strong>similarité cosinus</strong> au vecteur de référence : médiane ET <strong>minimum</strong> publiés — le minimum d'une similarité EST le pire cas (revue K-17 : la v1 publiait le minimum d'une distance, c'est-à-dire le MEILLEUR cas). ⭐ <strong>Qualification à trois états, SANS seuil de passage</strong> (décision Philippe du 25/08) : <code>identical</code> (bit à bit) · <code>negligible</code> (min ≥ 0,9999) · <code>significant</code> (en deçà) — chaque état est un <strong>résultat publié</strong>, aucun ne fait échouer la fiche. C'est <code>l1-06.H</code> (point 6) qui décide de la tolérance à retenir. ⚠ <strong>Ne pas réutiliser ici le 0,999 de <code>l1-04.4</code></strong> : c'est le plancher acté pour la <em>quantification</em>, un tout autre phénomène — l'importer en douce reviendrait à créer un seuil décisionnel que personne n'a arbitré (revue v3, E-16 amendé par le réfuteur)</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Un chip <strong>volontairement modifié</strong> d'un pixel</td>
-<td>vecteur <strong>différent</strong> — témoin négatif. Sans lui, un adapter qui rendrait une constante passerait O1, O2 et O3</td>
+<td>Un chip modifié d'un <strong>bloc 2×2 mis à 0 sur une bande</strong></td>
+<td>vecteur <strong>différent</strong> (<code>not array_equal</code>) — c'est l'assertion <strong>dure</strong> du témoin négatif. La similarité observée est <strong>publiée</strong> avec, à côté, la <strong>plus petite similarité mesurable</strong> sur cette machine (<code>min_detectable</code>, relevée en O1/O3) : si la perturbation tombe dans le bruit, on le <strong>lit</strong> au lieu de buter sur un seuil sans issue. ⚠ Revue v3, E-30 : « similarité &lt; 0,999999 » ne laissait aucune conduite à tenir pour une valeur mesurée à 0,9999995. ⚠ Revue E-34 : un seul pixel 10 m pèse ¼ de pixel après l'agrégation 2×2 et pouvait passer sous le bruit float32 — d'où le bloc, pas le pixel</td>
 </tr>
 <tr>
 <td>O5</td>
 <td>JSON de sortie</td>
-<td>contient graine, threads, versions de torch et du paquet, <code>model_id</code>, nombre de chips</td>
+<td>graine, threads, versions torch/paquet, <code>model_id</code>, nombre de chips, <strong>et <code>torch.get_float32_matmul_precision()</code></strong> — l'import de claymodel la change globalement (revue F-14) ; le banc lance un processus par modèle</td>
 </tr>
 </tbody>
 </table></div>
@@ -145,6 +167,10 @@ la quantification.</p>
 <p>⚠ <strong>O4 est le garde-fou le plus important de la fiche.</strong> Trois critères d'égalité et aucun
 témoin négatif, c'est exactement la configuration où un bug qui renvoie toujours le même
 vecteur passe au vert.</p>
+<p>⚠ ⭐ <strong>« Pas de test » ne veut PAS dire « hors du filet »</strong> (revue v4, m2) : <code>pyproject.toml:146</code>
+pose <code>files = ["src", "tests", "scripts"]</code> — <strong><code>mypy --strict</code> couvre <code>scripts/</code></strong>, ce script
+compris. <em>(Et <code>assert</code> y est permis : <code>l1-00</code> pré-pose l'exemption <code>S101</code> pour
+<code>scripts/bench_*.py</code> — c'est ce qui rend exécutable l'« assertion DURE » d'O1.)</em></p>
 <p>⚠ <strong>Politique de test</strong> : script de mesure, <strong>aucun test unitaire</strong>. La vérification, c'est
 la mesure elle-même.</p>
 <p>Pistes : <code>torch.use_deterministic_algorithms(True)</code> et <code>torch.set_num_threads(N)</code> sont les
@@ -156,8 +182,10 @@ le dire plutôt que de le contourner silencieusement.</p>
 <ul>
 <li><strong>Bit à bit, même processus</strong> : …</li>
 <li><strong>Bit à bit, processus distincts</strong> : …</li>
-<li><strong>Écart entre threads</strong> : <em>(cosinus médian · minimum)</em></li>
-<li><strong>Tolérance proposée, s'il y a lieu</strong> : …</li>
+<li><strong>Écart entre threads</strong> : <em>(similarité médiane · minimum · état retenu des trois)</em></li>
+<li><strong><code>min_detectable</code> sur cette machine</strong> : …</li>
+<li><strong><code>determinism_violated</code></strong> : <em>(oui/non — si oui, <code>l1-06.H</code> point 6 est bloquant)</em></li>
+<li><strong>Tolérance proposée, s'il y a lieu</strong> : <em>(proposition, pas décision)</em></li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-05.1.html">← [l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site</a><a href="l1-05.3.html">[l1-05.3] Campagne de séparabilité — les 25 sites, les deux modèles, sur le corpus réel →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-05.1.html">← [l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site</a><a href="l1-05.3a.html">[l1-05.3a] CLI similarity-report — séparabilité, baseline triviale, témoin mécanique →</a></div><p class="gen">Généré le 26/08/2026 15:37 — le .md fait foi.</p></article></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-02.3] Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,14 +45,13 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.3</b></nav><h1>[l1-02.3] Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — 10 bandes, entrée 256, vecteur 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — agrégation des patchs, emprise identique à Clay <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau — cache local des poids, recette de pré-chargement, smoke sous la garde <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-02.html"><code>▣ l1-02</code></a> › <b>l1-02.3</b></nav><h1>[l1-02.3] Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Dépend de</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Débloque</b><ul><li><a href="l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-02.html"><code>l1-02</code></a> [CHAPEAU] Adapters de modèles — Clay v1.5 (large) et TerraMind small <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-02.3.html"><code>l1-02.3</code></a> Garde réseau au run — HF_HUB_OFFLINE posé par le code, erreurs actionnables <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.4.html"><code>l1-02.4</code></a> Substituabilité des deux adapters — le même code consomme Clay et TerraMind <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
-<li><a href="#l1-023-la-garde-reseau-des-poids">[l1-02.3] — La garde réseau des poids</a><ul>
+<li><a href="#l1-023-la-garde-reseau">[l1-02.3] — La garde réseau</a><ul>
 <li><a href="#objectif">Objectif</a></li>
 <li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
-<li><a href="#notes-pistes">Notes / pistes</a></li>
 <li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
 </ul>
 </li>
@@ -60,51 +59,82 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </div>
 </details>
 <blockquote>
-<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.</p>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+<strong>Révisée post-revue v1</strong> (K-04, K-10, C-4, C-14, C-27) : le fetch et le cache sont
+partis en <code>l1-00</code> ; cette fiche ne porte QUE la garde au run. Le propriétaire de la
+variable est tranché : <strong>le code de production</strong>, jamais le script de smoke.
+<strong>Révisée post-revue v3</strong> (V-04, C-9/E-22, V-13) : poser la variable « avant tout accès »
+ne suffit <strong>pas</strong> — elle est lue à l'import de <code>huggingface_hub</code> ; le grep de la DoD était
+non scopé et condamnait des appels légitimes ; le README sort du périmètre (zone fermée).</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Empêcher tout téléchargement de poids <strong>pendant un run</strong>. La carte du modèle TerraMind
-l'annonce noir sur blanc : <em>« The weights are automatically downloaded from Hugging Face »</em>.
-C'est précisément ce qu'on interdit.</p>
+<p>Garantir qu'aucun poids ne se télécharge <strong>pendant un run</strong>. Un téléchargement au milieu
+d'un run chronométré fausse le banc sans se voir ; un gate dépendant du réseau échoue hors
+ligne ; chaque worktree d'agent retéléchargerait.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
-<p><strong>Pourquoi ça compte, dans l'ordre de gravité :</strong></p>
-<ol>
-<li>⭐ <strong>Un téléchargement au milieu d'un run chronométré fausse la mesure, et ça ne se voit
-   pas.</strong> Le banc rapporterait « 45 s par chip » au lieu de 3, on incriminerait le CPU, et
-   le Lot 1 conclurait à un périmètre embeddable faux.</li>
-<li><strong>Chaque worktree d'agent retéléchargerait.</strong> Le Lot 0 a établi que les environnements ne
-   se partagent pas entre worktrees. Trois agents en parallèle, trois téléchargements.</li>
-<li><strong>Le gate deviendrait dépendant du réseau</strong> — <code>just check</code> échouerait hors connexion.</li>
-</ol>
-<p>À livrer, trois pièces :</p>
+<p>Grâce à <code>l1-00</code>, les <strong>trois</strong> artefacts (ckpt Clay, teacher timm, poids TerraMind) passent
+par <code>huggingface_hub</code> : <strong>une seule variable les couvre tous</strong>.</p>
+<p>À livrer :</p>
 <ul>
-<li><strong>Le cache local.</strong> <code>HF_HOME</code> (ou <code>HF_HUB_CACHE</code>) pointé vers un répertoire <strong>du projet</strong>,
-  gitignoré — par exemple <code>models/</code> — au lieu de <code>~/.cache/huggingface</code>. Tout atterrit au
-  même endroit, partagé par les worktrees, visible, effaçable.</li>
-<li><strong>La recette de pré-chargement.</strong> <code>just fetch-models</code> : la <strong>seule</strong> commande du projet
-  autorisée à faire du réseau pour les poids. Lancée une fois, à la main. Même esprit que
-  <code>just db</code> — de la préparation d'infrastructure, <strong>hors du gate</strong>.</li>
-<li><strong>La garde.</strong> Au run, <code>HF_HUB_OFFLINE=1</code> est posé par le code lui-même. La bibliothèque
-  refuse alors le réseau et lève si les poids manquent ; on rattrape l'erreur pour la
-  réécrire en clair : <em>« poids <code>&lt;model_id&gt;</code> absents du cache — lance <code>just fetch-models</code> »</em>.</li>
+<li>⭐ <strong>La garde est posée par le CODE DE PRODUCTION</strong> : le chemin de résolution des poids
+  (commun aux deux adapters — l'extraire ici en une petite fonction
+  <code>adapters/model_files.py</code> si besoin) rattrape l'erreur du hub pour la réécrire :
+  <em>« poids <code>&lt;model_id&gt;</code> absents du cache — lance <code>just fetch-models</code> »</em>.
+  ⚠ Pourquoi pas le script de smoke : si c'était lui qui posait la variable, retirer la
+  garde du code ne ferait plus tomber le smoke — le mécanisme s'annulerait (revue C-14).</li>
+<li>⭐ <strong>Le mécanisme, dans cet ordre — corrigé en revue v3 (V-04)</strong>. « Poser
+  <code>HF_HUB_OFFLINE=1</code> avant tout accès » est <strong>insuffisant</strong> : <code>huggingface_hub.constants</code>
+  calcule <code>HF_HUB_OFFLINE</code> et <code>HF_HUB_CACHE</code> <strong>à l'import du paquet</strong>. Si <code>terratorch</code>,
+  <code>timm</code> ou <code>claymodel</code> a déjà été importé — ce qui arrive dès qu'un adapter est chargé —
+  poser la variable ensuite est un <strong>no-op silencieux</strong>. Trois niveaux, du plus robuste au
+  filet :
+  1. <strong><code>cache_dir=</code> et <code>local_files_only=True</code> explicites</strong> sur <em>nos</em> appels
+     (<code>hf_hub_download</code>) : indépendants de l'ordre d'import, c'est le seul mécanisme
+     réellement fiable ;
+  2. <strong>variables d'environnement posées avant l'interpréteur</strong> — activation pixi et
+     <code>ci.yml</code> (<code>l1-07</code>) : c'est le seul levier sur les appels <strong>internes</strong> de timm et
+     terratorch, qui ne reçoivent pas nos kwargs ;
+  3. <strong>assertion runtime</strong> au moment de résoudre les poids :
+     <code>huggingface_hub.constants.HF_HUB_OFFLINE is True</code> et <code>HF_HUB_CACHE</code> sous <code>hf_home</code> —
+     elle ne <strong>prévient</strong> pas le défaut, elle le <strong>détecte</strong> franchement au lieu de le
+     laisser filer en téléchargement silencieux.
+  <em>(Le Lot 0 avait résolu le problème équivalent avec <code>_is_offline()</code> relu à chaque appel :
+  même leçon, autre paquet.)</em></li>
+<li>La propriété qui compte : <strong>un poids manquant échoue franchement, jamais de
+  téléchargement en douce.</strong></li>
+<li>⭐ <strong>Code de sortie du cas « poids absent du cache » : <code>USAGE</code> (2)</strong> — tranché ici, dans la
+  fiche qui possède le chemin commun (revue v4, m3 : le cas traversait <code>l1-02.3</code>, <code>l1-07</code> et
+  <code>l1-03.4</code> sans qu'aucune ne le fixe). Motif : <code>cli/exit_codes.py</code> fige <code>1</code> = échec
+  <strong>métier</strong>, <code>2</code> = erreur <strong>config/usage</strong>, <code>3</code> = **non concluant (amont injoignable)<code>.
+  Un cache non peuplé n'est pas un échec de traitement et n'est pas un amont injoignable —
+  c'est un **défaut d'environnement**, dont la réparation est une commande (</code>just
+  fetch-models<code>). C'est exactement</code>2`.</li>
+<li>Le smoke (<code>l1-03.4</code>) tournera <strong>sous</strong> cette garde sans rien poser lui-même : c'est lui
+  qui l'exercera à chaque <code>just check</code>. <strong>Aucun test dédié à la garde</strong> (décision de
+  méthode du lot).</li>
 </ul>
-<p>⭐ <strong>Ce qu'on ne fait PAS : un test dédié à la garde.</strong> Vider un cache, capturer une
-exception, restaurer l'état — c'est de la machinerie qui coûte plus cher que ce qu'elle
-protège. <strong>On met le smoke SOUS la garde</strong> : <code>scripts/smoke.py</code> (fiche <code>l1-03.4</code>) tourne avec
-<code>HF_HUB_OFFLINE=1</code> posé. Si quelqu'un retire la garde ou casse le chemin du cache, le smoke
-tombe — à chaque <code>just check</code>, gratuitement, sans une ligne de test dédiée.</p>
-<p>C'est le pendant exact de <code>TINY_WAE_OFFLINE</code> posé par le smoke du Lot 0 (<code>l0-03.7</code>) : la
-même idée, appliquée aux poids au lieu des rasters.</p>
-<p><strong>Hors périmètre</strong> : la garde rasterio/GDAL du Lot 0, qui reste en place et couvre un autre
-chemin · toute mesure.</p>
+<p><strong>Hors périmètre</strong> : <code>fetch-models</code> et le cache (<code>l1-00</code>, livrés) · le smoke (<code>l1-03.4</code>) ·
+la vérification manuelle cache-vidé (une seule, en <code>l1-03.4</code>/O4 — pas ici, revue C-27).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>HF_HOME</code> (ou équivalent) résolu depuis la configuration, jamais en dur.</li>
-<li>[ ] <code>models/</code> ajouté au <code>.gitignore</code>.</li>
-<li>[ ] <code>just fetch-models</code> livrée, documentée dans le README, <strong>hors de <code>just check</code></strong>.</li>
-<li>[ ] La garde pose <code>HF_HUB_OFFLINE=1</code> et rattrape l'erreur en message actionnable.</li>
-<li>[ ] Le smoke tourne <strong>sous la garde</strong> (coordination avec <code>l1-03.4</code>).</li>
-<li>[ ] README : une ligne dans le démarrage — « <code>just fetch-models</code> avant le premier <code>just check</code> ».</li>
+<li>[ ] La garde vit dans le code de production, posée avant toute résolution de poids.</li>
+<li>[ ] Message d'erreur actionnable nommant <code>model_id</code> ET <code>just fetch-models</code>, avec le code
+      de sortie <strong><code>USAGE</code> (2)</strong> — importé de <code>cli/exit_codes.py</code>, jamais réécrit en littéral.</li>
+<li>[ ] Les deux adapters passent par ce chemin commun — <strong>grep scopé à <code>src/</code></strong> : aucun
+      <code>hf_hub_download</code> hors de lui. ⚠ <strong>Exceptions légitimes, nommées</strong> :
+      <code>scripts/fetch_models.py</code> (dont c'est la raison d'être) et <code>scripts/check_cache.py</code>,
+      tous deux livrés par <code>l1-00</code>. Ils <strong>échappent</strong> à la garde par construction — un grep
+      non scopé les condamnerait à tort.</li>
+<li>[ ] Assertion runtime des constantes HF au moment de résoudre les poids.</li>
+<li>[ ] ⛔ <strong>Retirer le bloc <code>[tool.deptry.per_rule_ignores] DEP002</code> posé par <code>l1-00</code></strong> — c'est
+      cette fiche qui en est propriétaire. Au moment où elle livre, les quatre paquets
+      (torch, claymodel, terratorch, <code>huggingface_hub</code>) sont <strong>réellement importés depuis
+      <code>src/</code></strong> : la garde n'a plus lieu d'être, et laissée en place elle masquerait les
+      vraies dépendances mortes du reste du projet. <code>deptry</code> doit être <strong>vert sans elle</strong> —
+      c'est l'oracle O6.</li>
+<li>[ ] La ligne de README (« <code>just fetch-models</code> avant le premier <code>just check</code> ») est
+      <strong>rédigée dans le Résumé, pas appliquée</strong> — <code>README.md</code> est hors zone (décision
+      Philippe du 25/08). ⚠ Vaut aussi pour <code>l1-07</code>, qui a une ligne à y reporter.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -118,43 +148,45 @@ chemin · toute mesure.</p>
 <tbody>
 <tr>
 <td>O1</td>
-<td><code>just check</code> sur une machine dont le cache est <strong>peuplé</strong>, réseau coupé</td>
-<td><strong>vert</strong></td>
+<td><code>just check</code> cache <strong>peuplé</strong>, réseau coupé</td>
+<td>vert</td>
 </tr>
 <tr>
 <td>O2</td>
-<td>Cache vidé (ou <code>HF_HOME</code> pointé sur un dossier vide), un <code>embed</code> lancé</td>
-<td>échec <strong>immédiat</strong>, message nommant <strong>le <code>model_id</code></strong> ET <strong><code>just fetch-models</code></strong> (assertion littérale sur les deux chaînes). Vérifié <strong>une fois à la main</strong>, consigné en une ligne de prose</td>
+<td>Grep <strong>scopé à <code>src/</code></strong></td>
+<td><code>hf_hub_download</code> n'apparaît que dans le chemin commun ; aucun script de test ne pose <code>HF_HUB_OFFLINE</code>. Les deux scripts de <code>l1-00</code> sont hors du périmètre du grep, et c'est écrit dans le test</td>
 </tr>
 <tr>
 <td>O3</td>
-<td><code>just fetch-models</code> sur cache vide, avec réseau</td>
-<td>les poids des deux modèles arrivent dans <code>models/</code>, <strong>taille totale mesurée et publiée</strong> dans le Résumé</td>
+<td><code>just check</code> ne contient aucune recette réseau</td>
+<td>lecture du justfile — <code>fetch-models</code> hors gate</td>
 </tr>
 <tr>
 <td>O4</td>
-<td>Aucune recette du gate ne fait de réseau</td>
-<td><code>just check</code> ne contient ni <code>fetch-models</code> ni équivalent — vérification par lecture du justfile</td>
+<td>⭐ Témoin de la garde à trois niveaux : monkeypatch de <code>huggingface_hub.constants.HF_HUB_OFFLINE</code> à <code>False</code>, puis résolution d'un poids</td>
+<td>l'assertion <strong>lève</strong>, avec un message nommant la variable et le fait qu'elle est lue à l'import — sinon le niveau 3 est du code jamais exercé</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>⭐ Code de sortie : <code>HF_HOME</code> sur un tmpdir vide, un CLI d'embed lancé</td>
+<td><strong>exit 2</strong> (<code>USAGE</code>), assertion littérale sur le code — pas seulement sur le message. Un cas d'erreur dont le code n'est pas asserté finit par dériver</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>⭐ <strong>Retrait de la garde temporaire</strong> : <code>deptry</code> lancé <strong>après</strong> suppression du bloc <code>per_rule_ignores DEP002</code> de <code>l1-00</code></td>
+<td><strong>vert</strong>. Les quatre paquets sont désormais importés depuis <code>src/</code> ; si l'un ne l'est pas, <code>deptry</code> le dit et c'est l'information utile — soit l'import manque, soit la dépendance est de trop</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : le comportement en cas de cache <strong>partiellement</strong> peuplé
-(un modèle présent, l'autre non) — cas déclaré non couvert, il produira l'erreur de O2 pour
-le modèle manquant · les quotas Hugging Face.</p>
-<h2 id="notes-pistes">Notes / pistes</h2>
-<p>⚠ <strong>Politique de test du lot</strong> : O2 est une <strong>vérification ponctuelle</strong>, pas un test
-permanent. Casser une garde une fois pour voir si elle mord est un geste qu'on consigne en
-prose ; en faire une machinerie est exactement le travers relevé sur le Lot 0
-(8 413 lignes de test pour 4 074 de source).</p>
-<p>Le volume des poids est à publier : c'est une donnée d'exploitation utile (place disque, et
-temps de préparation d'un worktree d'agent).</p>
+<p><strong>Non testé par cette fiche</strong> : le cas cache-vidé (vérifié une fois, en <code>l1-03.4</code>/O4) · le
+cache partiellement peuplé (déclaré non couvert : il produit l'erreur actionnable pour le
+modèle manquant).</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
 <ul>
 <li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Taille des poids en cache</strong> : …</li>
-<li><strong>Vérification de la garde (O2)</strong> : <em>(une ligne : ce qui a été cassé, ce qui s'est passé)</em></li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="l1-02.2.html">← [l1-02.2] Adapter TerraMind small — agrégation des patchs, emprise identique à Clay</a><a href="l1-02.4.html">[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind →</a></div><p class="gen">Généré le 23/08/2026 15:07 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="l1-02.2.html">← [l1-02.2] Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms</a><a href="l1-02.4.html">[l1-02.4] Substituabilité des deux adapters — le même code consomme Clay et TerraMind →</a></div><p class="gen">Généré le 26/08/2026 16:21 — le .md fait foi.</p></article></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.1] Core embedding — spec de bandes, ordre normatif, normalisation radiométrique</title><style>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash</title><style>
 body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
 sans-serif;line-height:1.65;font-size:16px}
 .banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — spec de bandes, ordre normatif, normalisation radiométrique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre model_id → adapter <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <a href="l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.1</b></nav><h1>[l1-01.1] Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-011-core-embedding-pur-zero-io">[l1-01.1] — Core embedding (pur, zéro I/O)</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -61,50 +61,61 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 </details>
 <blockquote>
 <p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
-Avancement = dossier : <code>maturation/</code> → <code>a-faire/</code> → <code>en-cours/</code> → <code>fait/</code>.</p>
+<strong>Révisée post-revue v1</strong> (K-02d, E-17, E-18, C-16, C-20) : l'ordre des bandes est
+désormais ÉCRIT dans la fiche, l'oracle teste un ordre et non un ensemble.</p>
 </blockquote>
 <h2 id="objectif">Objectif</h2>
-<p>Poser la logique pure de préparation d'une entrée de modèle : <strong>quelles bandes, dans quel
-ordre, et comment passer du uint16 stocké à la réflectance attendue par un GFM</strong>. Testable à
-sec, en millisecondes, sans aucun fichier ni modèle.</p>
-<p>C'est la fiche qui fixe l'<strong>énumération normative</strong> de l'ordre des bandes : elle n'existera
-qu'ici, et les deux adapters du chapeau <code>l1-02</code> y renverront au lieu de la recopier.</p>
+<p>Poser la logique pure de préparation d'une entrée de modèle : l'ordre normatif des bandes,
+la spec d'entrée et sa signature d'idempotence. Testable à sec, sans fichier ni modèle.</p>
 <h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
-<p><code>src/tiny_wae/core/embedding.py</code> — module <strong>pur</strong> (zéro I/O, zéro framework, pas de torch).</p>
+<p><code>src/tiny_wae/core/embedding.py</code> — module <strong>pur</strong> (zéro I/O, pas de torch).</p>
 <p>À livrer :</p>
 <ul>
-<li>⭐ <code>BAND_ORDER_EMBED: tuple[str, ...]</code> — <strong>l'ordre normatif des 10 bandes</strong>. Il combine
-  les 4 bandes 10 m et les 6 bandes 20 m ; l'ordre exact est celui de la spec Clay v1.5, à
-  relever et à écrire en commentaire avec sa source. Les constantes <code>BAND_ORDER_10M</code> /
-  <code>BAND_ORDER_20M</code> existent déjà dans <code>core/bands.py</code> (Lot 0) — <strong>les importer, ne pas les
-  redéfinir</strong>.</li>
-<li><code>EmbeddingSpec</code> — dataclass gelée décrivant l'entrée attendue d'un modèle :
-  <code>bands</code> · <code>size_px</code> · <code>resolution_m</code> · <code>tiling</code> (voir ci-dessous) · <code>dtype</code>.</li>
-<li>⭐ <code>tiling: Literal["whole_chip", "tiles"]</code> — <strong>la stratégie de découpage est un champ de
-  la spec</strong>, pas une hypothèse enfouie ailleurs. Décision du chapeau : le Lot 1 produit
-  <code>whole_chip</code> en 20 m ; <code>tiles</code> existe dans le type mais <strong>n'est pas implémenté ici</strong>
-  (<code>NotImplementedError</code> explicite). C'est ce qui rend le choix réversible.</li>
-<li><code>spec_hash(spec) -&gt; str</code> — signature canonique de la spec, sur le modèle de <code>grid_hash</code>
-  (<code>adapters/manifests.py</code>, Lot 0). ⚠ <strong>Insensible au type numérique</strong> : <code>256</code> et <code>256.0</code>
-  doivent donner le même hash (le piège O3bis de <code>l0-03.2</code>, relu depuis un YAML). Elle
-  entrera dans la clé d'idempotence en <code>l1-03.1</code>.</li>
-<li><code>to_reflectance(array, scale, offset, boa_offset_applied) -&gt; array</code> — conversion pure.
-  Les <code>scale</code>/<code>offset</code> viennent <strong>du manifeste, par asset</strong> (arbitrage n°1 du Lot 0), jamais
-  d'une constante. <code>boa_offset_applied</code> dit si l'offset a déjà été appliqué à l'écriture :
-  ⚠ <strong>l'appliquer deux fois décale toute la radiométrie de −0,1</strong>, silencieusement.</li>
-<li><code>validate_spec(spec, available_bands)</code> — erreur typée nommant <strong>la bande manquante</strong> si la
-  spec demande une bande absente du chip.</li>
+<li>⭐ <code>BAND_ORDER_EMBED</code> — <strong>l'énumération normative, tranchée en revue</strong> (relevée dans
+  <code>configs/metadata.yaml</code> du dépôt Clay, <code>sentinel-2-l2a.band_order</code>) :</li>
 </ul>
-<p><strong>Hors périmètre</strong> : toute lecture de fichier (<code>l1-01.2</code>), tout modèle (<code>l1-02</code>), toute
-mesure (<code>l1-04</code>).</p>
+<p><code>python
+  BAND_ORDER_EMBED = (
+      "blue",
+      "green",
+      "red",
+      "rededge1",
+      "rededge2",
+      "rededge3",
+      "nir",
+      "nir08",
+      "swir16",
+      "swir22",
+  )</code></p>
+<p>⚠ <strong>Ce n'est PAS <code>BAND_ORDER_10M + BAND_ORDER_20M</code></strong> : <code>nir</code> est en <strong>7ᵉ</strong> position chez
+  Clay, pas en 4ᵉ. C'est le piège que la revue a attrapé — un modèle nourri de bandes
+  permutées produit des vecteurs plausibles et faux. L'invariant réel (Clay est
+  sensor-agnostic) : <strong>pixels, <code>waves</code>, <code>mean</code> et <code>std</code> dans le MÊME ordre</strong> — d'où la règle
+  de construction : tout vecteur de stats se construit par <strong>lookup PAR NOM</strong> depuis
+  <code>BAND_ORDER_EMBED</code>, jamais par position.
+- <code>EmbeddingSpec</code> — dataclass gelée : <code>bands</code> · <code>size_px</code> · <code>resolution_m</code> ·
+  <code>tiling: Literal["whole_chip", "tiles"]</code> · <code>normalization: str</code> (identifiant du schéma de
+  normalisation du modèle — les <strong>stats vivent dans l'adapter</strong>, la spec ne porte que
+  l'identifiant, qui entre dans le hash).
+- <code>spec_hash(spec) -&gt; str</code> — signature canonique, <strong>insensible au type numérique</strong>
+  (<code>256</code> ≡ <code>256.0</code>, piège O3bis du Lot 0). Entre dans la clé d'idempotence (<code>l1-03.1</code>).
+- <code>validate_spec(spec, available_bands)</code> — erreur typée nommant la bande manquante ;
+  ⭐ <strong>lève <code>NotImplementedError</code> explicite si <code>tiling == "tiles"</code></strong> — c'est ici que vit le
+  garde-fou de la variante non implémentée, sur un chemin réellement parcouru
+  (<code>l1-01.2</code> appelle <code>validate_spec</code> à chaque chargement).
+- <code>to_reflectance(array, scale, offset, boa_offset_applied)</code> — conversion physique,
+  <strong>outil de contrôle uniquement</strong> : ⚠ les modèles n'attendent PAS de la réflectance
+  (revue K-02b — Clay et TerraMind consomment du <strong>DN z-scoré</strong> avec leurs propres stats).
+  Elle sert aux bornes de plausibilité et à rien d'autre ; le chemin des modèles ne la
+  traverse pas.</p>
+<p><strong>Hors périmètre</strong> : lecture de fichiers (<code>l1-01.2</code>) · stats de normalisation des modèles
+(chaque adapter porte les siennes) · tout modèle.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>core/embedding.py</code> livré, importé par personne d'autre pour l'instant, <code>mypy --strict</code> vert.</li>
-<li>[ ] <code>BAND_ORDER_EMBED</code> défini <strong>une seule fois</strong>, avec la source de l'ordre en commentaire.</li>
-<li>[ ] <code>EmbeddingSpec</code> gelée (<code>frozen=True</code>), <code>tiling</code> présent, <code>"tiles"</code> levant explicitement.</li>
-<li>[ ] <code>spec_hash</code> stable au type numérique.</li>
-<li>[ ] <code>to_reflectance</code> gère le double offset.</li>
-<li>[ ] <code>tests/test_embedding.py</code> — <strong>entrées littérales, aucun fichier</strong>.</li>
+<li>[ ] <code>core/embedding.py</code> livré, <code>mypy --strict</code> vert.</li>
+<li>[ ] <code>BAND_ORDER_EMBED</code> égal au tuple ci-dessus, source citée en commentaire.</li>
+<li>[ ] <code>validate_spec</code> lève sur <code>tiles</code>, nomme les bandes manquantes.</li>
+<li>[ ] <code>tests/test_embedding.py</code> — entrées littérales, aucun fichier.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -117,29 +128,34 @@ mesure (<code>l1-04</code>).</p>
 </thead>
 <tbody>
 <tr>
-<td>O1</td>
-<td><code>BAND_ORDER_EMBED</code> contient exactement les 10 bandes de <code>BAND_ORDER_10M</code> + <code>BAND_ORDER_20M</code>, sans doublon ni oubli</td>
-<td>égalité d'ensembles vérifiée dans le test, <strong>par import</strong> des constantes du Lot 0 — pas par une liste recopiée</td>
+<td>O1a</td>
+<td>⭐ <code>BAND_ORDER_EMBED</code> comparé à un <strong>tuple littéral gelé dans le test</strong> (l'ordre Clay ci-dessus, source citée)</td>
+<td><strong>égalité ORDONNÉE</strong> — la seule assertion qui rougit si on permute</td>
+</tr>
+<tr>
+<td>O1b</td>
+<td><code>set(BAND_ORDER_EMBED)</code> contre <code>set(BAND_ORDER_10M) | set(BAND_ORDER_20M)</code> <strong>importés</strong> du Lot 0</td>
+<td>égalité d'ensembles — attrape l'oubli et le doublon</td>
 </tr>
 <tr>
 <td>O2</td>
-<td><code>spec_hash</code> sur deux specs identiques dont l'une a <code>size_px=256</code> (int) et l'autre <code>256.0</code> (float)</td>
-<td><strong>même hash</strong> ; et une spec dont le <code>tiling</code> diffère donne un hash <strong>différent</strong> — les deux sens testés</td>
+<td><code>spec_hash</code> : <code>size_px=256</code> (int) vs <code>256.0</code> (float) → même hash ; <code>tiling</code> ou <code>normalization</code> différents → hash différent</td>
+<td>les deux sens</td>
 </tr>
 <tr>
 <td>O3</td>
-<td><code>to_reflectance</code> sur un tableau littéral, <code>scale=0.0001</code>, <code>offset=-0.1</code></td>
-<td>valeurs attendues au 1e-6 près ; avec <code>boa_offset_applied=True</code>, l'offset <strong>n'est pas</strong> ré-appliqué (deux cas, résultats distincts)</td>
+<td><code>to_reflectance</code>, <code>scale=0.0001, offset=-0.1</code> : valeurs au 1e-6 ; <code>boa_offset_applied=True</code> → offset non ré-appliqué</td>
+<td>les deux cas, résultats distincts</td>
 </tr>
 <tr>
 <td>O4</td>
-<td><code>validate_spec</code> avec une bande absente</td>
-<td>erreur typée dont le message <strong>nomme la bande</strong> (assertion littérale sur la chaîne)</td>
+<td><code>validate_spec</code>, bande absente</td>
+<td>erreur nommant <strong>la bande</strong> (assertion littérale)</td>
 </tr>
 <tr>
 <td>O5</td>
-<td><code>EmbeddingSpec(tiling="tiles")</code> passée à la fonction de découpage</td>
-<td><code>NotImplementedError</code> explicite, pas un comportement silencieux</td>
+<td><code>validate_spec</code> avec <code>tiling="tiles"</code></td>
+<td><code>NotImplementedError</code> — sur le chemin réel du chargeur, pas une fonction morte</td>
 </tr>
 <tr>
 <td>O6</td>
@@ -148,16 +164,12 @@ mesure (<code>l1-04</code>).</p>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Non testé par cette fiche</strong> : la lecture réelle des rasters (<code>l1-01.2</code>) · la justesse de
-l'ordre de bandes <strong>vis-à-vis de Clay</strong> — elle sera confrontée au modèle réel en <code>l1-02.1</code>,
-et c'est là que l'erreur apparaîtrait · toute valeur d'embedding.</p>
+<p><strong>Non testé par cette fiche</strong> : la confrontation au modèle réel — <code>l1-02.1</code> asserte que son
+vecteur <code>waves</code>/<code>mean</code>/<code>std</code> est construit par lookup depuis cette constante · toute valeur
+d'embedding.</p>
 <h2 id="notes-pistes">Notes / pistes</h2>
-<p>L'ordre des bandes est le genre de détail qui casse un modèle <strong>sans lever d'erreur</strong> :
-un GFM nourri de bandes permutées produit des vecteurs plausibles et faux. C'est pourquoi
-l'ordre est normatif ici et confronté au modèle réel en <code>l1-02.1</code> — deux fiches, deux
-niveaux de garantie.</p>
-<p>⚠ <strong>Politique de test du lot</strong> : cette fiche est du pur, donc bien testée — mais ~1 ligne de
-test par ligne de source, pas plus. Pas de test paramétré à 40 cas là où 3 suffisent.</p>
+<p>Module pur, donc bien testé — et c'est justifié : l'ordre des bandes porte tout le lot.
+Éviter le test paramétré massif ; les six oracles ci-dessus couvrent ce qui casse.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
 <p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
@@ -166,4 +178,4 @@ test par ligne de source, pas plus. Pas de test paramétré à 40 cas là où 3 
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-01.2.html">[l1-01.2] chip_loader — assemblage du tenseur 10 bandes depuis les deux rasters →</a></div><p class="gen">Généré le 23/08/2026 14:58 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="l1-01.2.html">[l1-01.2] chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) →</a></div><p class="gen">Généré le 24/08/2026 14:58 — le .md fait foi.</p></article></body></html>
