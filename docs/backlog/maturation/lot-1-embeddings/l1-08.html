@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>[l1-08] Embarquer le metadata.yaml de Clay — il n&#x27;est pas dans le paquet, et l1-02.1 en dépend</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-08</b></nav><h1>[l1-08] Embarquer le metadata.yaml de Clay — il n&#x27;est pas dans le paquet, et l1-02.1 en dépend <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O2<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+<ul>
+<li><a href="#l1-08-le-fichier-de-configuration-de-clay-qui-nexiste-nulle-part-chez-nous">[l1-08] — Le fichier de configuration de Clay, qui n'existe nulle part chez nous</a><ul>
+<li><a href="#objectif">Objectif</a></li>
+<li><a href="#le-constat-verifie-a-limplementation">Le constat, vérifié à l'implémentation</a></li>
+<li><a href="#pourquoi-ca-depasse-le-simple-confort">Pourquoi ça dépasse le simple confort</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#ce-qui-reste-a-decider-po-philippe-la-fiche-nest-pas-prete-a-faire">Ce qui reste à décider (PO / Philippe) — la fiche n'est PAS prête à faire</a></li>
+<li><a href="#definition-de-termine">Définition de « terminé »</a></li>
+<li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
+<li><a href="#notes-pistes">Notes / pistes</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details>
+<blockquote>
+<p>Fiche de backlog : sert de <strong>brief (prompt)</strong> pour l'IA.
+⭐ <strong>Fiche DIFFÉRÉE, rédigée pendant le run de N0</strong> (26/08/2026, règle d'autonomie du
+<code>/run</code>) : le constat est tombé en ancrant <code>l1-01.1</code>, hors de son périmètre. Elle n'a pas
+encore été relue par le PO — <strong>son insertion dans le graphe reste à faire</strong> (voir
+« Ce qui reste à décider »).</p>
+</blockquote>
+<h2 id="objectif">Objectif</h2>
+<p>Rendre disponible, dans le dépôt, le <code>configs/metadata.yaml</code> du projet Clay — sans lequel
+<code>l1-02.1</code> ne peut ni instancier le modèle, ni construire sa normalisation.</p>
+<h2 id="le-constat-verifie-a-limplementation">Le constat, vérifié à l'implémentation</h2>
+<p>Le paquet <code>claymodel</code> <strong>1.5.0</strong> installé par <code>l1-00</code> (commit <code>f14e698</code>) <strong>ne contient aucun
+fichier <code>.yaml</code></strong>, et pas une seule occurrence de <code>rededge</code>. Le <code>configs/metadata.yaml</code> du
+dépôt Clay n'est <strong>pas packagé dans la distribution</strong> — il vit dans l'arbre git, à côté du
+code, et la wheel ne l'embarque pas.</p>
+<p>Or ce fichier est requis à <strong>deux</strong> endroits, et il n'est facultatif nulle part :</p>
+<ul>
+<li><code>claymodel/module.py:19</code> — <code>metadata_path="configs/metadata.yaml"</code>, un chemin <strong>relatif
+  au CWD</strong> ;</li>
+<li><code>claymodel/module.py:31</code> — <code>self.metadata = Box(yaml.safe_load(open(metadata_path)))</code>,
+  ouvert <strong>directement, sans repli ni valeur par défaut</strong>.</li>
+</ul>
+<p>Autrement dit : <code>ClayMAEModule.load_from_checkpoint(...)</code> lève un <code>FileNotFoundError</code> quel
+que soit le répertoire d'où on le lance, sauf à lui passer un chemin absolu vers un fichier
+<strong>que nous aurons nous-mêmes fourni</strong>.</p>
+<p>⚠ <strong>Ce que <code>l1-02.1</code> prévoit ne marche qu'à moitié.</strong> Sa recette dit : « embarquer le YAML
+<strong>ou le résoudre depuis le paquet</strong> ». La seconde branche est <strong>impossible</strong> — vérifié. La
+première n'a <strong>aucun propriétaire</strong> : ni <code>l1-02.1</code>, ni <code>l1-00</code>, ni la table des zones
+d'écriture de <code>_roadmap.md</code> §5 ne dit qui dépose ce fichier, ni où.</p>
+<h2 id="pourquoi-ca-depasse-le-simple-confort">Pourquoi ça dépasse le simple confort</h2>
+<p>Le fichier ne porte pas qu'un paramètre technique. Il porte <strong>deux choses dont le lot dépend
+déjà</strong> :</p>
+<ol>
+<li><strong>Les statistiques de normalisation par bande</strong> (<code>mean</code> ≈ 1105 / <code>std</code> ≈ 1809 pour
+   <code>blue</code>, etc.) que <code>l1-02.1</code> doit appliquer en z-score sur DN. Sans elles, pas d'adapter.</li>
+<li>⭐ <strong>L'ordre normatif des bandes</strong> (<code>sentinel-2-l2a.band_order</code>) — la source d'où
+   <code>BAND_ORDER_EMBED</code> a été relevé par les revues v1 et v3. Tant que le fichier n'est pas
+   dans le dépôt, cette constante reste <strong>adossée à une citation</strong> : l'ancrage de <code>l1-01.1</code>
+   a pu vérifier son <em>ensemble</em> (contre <code>core/bands.py</code>) et sa <em>stabilité</em> (tuple gelé dans
+   le test), <strong>jamais son ordre</strong>. L'embarquer transforme une citation en fait vérifiable
+   par un test.</li>
+</ol>
+<h2 id="contexte-et-perimetre">Contexte et périmètre</h2>
+<p>À livrer, une fois les questions ci-dessous tranchées :</p>
+<ul>
+<li>le fichier, déposé à un emplacement versionné du dépôt (à décider — voir plus bas) ;</li>
+<li>sa <strong>provenance consignée</strong> : dépôt, commit, date de relevé — au même titre que les
+  révisions épinglées de <code>l1-00</code> ;</li>
+<li>de quoi le <strong>retrouver</strong> : soit une recette (<code>just</code>) qui le récupère à la révision
+  épinglée, soit une note de procédure si le geste reste manuel ;</li>
+<li>⭐ <strong>un contrôle mécanique de cohérence</strong> : <code>BAND_ORDER_EMBED</code> (<code>l1-01.1</code>) comparé au
+  <code>band_order</code> du fichier embarqué. C'est la valeur principale de cette fiche.</li>
+</ul>
+<p><strong>Hors périmètre</strong> : l'adapter lui-même (<code>l1-02.1</code>) · les poids (<code>l1-00</code>, livrés) · toute
+modification de <code>claymodel</code>.</p>
+<h2 id="ce-qui-reste-a-decider-po-philippe-la-fiche-nest-pas-prete-a-faire">Ce qui reste à décider (PO / Philippe) — la fiche n'est PAS prête à faire</h2>
+<ol>
+<li><strong>Où</strong> le fichier vit-il ? <code>assets/</code> (à côté des artefacts CWL), <code>config/</code>, ou dans le
+   paquet (<code>src/tiny_wae/</code>, pour qu'il suive la wheel) ? La troisième option est la seule
+   qui survive à un <code>pip install</code> hors de notre atelier — mais elle alourdit le contrat.</li>
+<li><strong>Qui le récupère ?</strong> Le télécharger à la volée le remettrait sous la garde réseau que
+   <code>l1-02.3</code> construit ; le versionner fige une copie d'un fichier tiers dans un dépôt
+   <strong>public</strong> — la licence de Clay est apache-2.0, ce qui l'autorise, mais c'est une
+   décision, pas un détail d'implémentation.</li>
+<li><strong>Quelle arête dans le graphe ?</strong> <code>l1-02.1</code> devrait dépendre de cette fiche. Le graphe
+   du lot est propriété du PO — l'arête n'est <strong>pas</strong> posée ici.</li>
+</ol>
+<h2 id="definition-de-termine">Définition de « terminé »</h2>
+<p><em>(à compléter une fois les trois questions tranchées)</em></p>
+<ul>
+<li>[ ] Le fichier est présent dans le dépôt, à l'emplacement décidé.</li>
+<li>[ ] Sa provenance est consignée (dépôt, commit, date).</li>
+<li>[ ] Un test compare <code>BAND_ORDER_EMBED</code> au <code>band_order</code> du fichier.</li>
+<li>[ ] <code>l1-02.1</code> peut lui passer un chemin <strong>absolu</strong>, indépendant du CWD.</li>
+</ul>
+<h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère mesuré</th>
+<th>Seuil de succès</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>⭐ <code>BAND_ORDER_EMBED</code> comparé au <code>sentinel-2-l2a.band_order</code> du fichier embarqué</td>
+<td><strong>égalité ORDONNÉE</strong>. C'est le témoin qui manque aujourd'hui à <code>l1-01.1</code>/O1a, dont l'ancrage dit explicitement qu'il ne peut pas prouver l'ordre</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Résolution du chemin depuis <strong>deux CWD différents</strong></td>
+<td>même chemin absolu les deux fois — le défaut de <code>metadata_path</code> est justement d'être relatif au CWD</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Les stats de normalisation lues pour les 10 bandes de <code>BAND_ORDER_EMBED</code></td>
+<td>les 10 présentes, <code>mean</code> et <code>std</code> non nuls ; témoin littéral sur <code>blue</code> (≈ 1105 / ≈ 1809)</td>
+</tr>
+<tr>
+<td>O4</td>
+<td><code>just check</code></td>
+<td>vert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Non testé par cette fiche</strong> : la justesse des statistiques elles-mêmes (elles sont ce
+qu'elles sont — c'est le pré-entraînement de Clay qui fait foi) · le comportement de
+<code>ClayMAEModule</code>, qui appartient à <code>l1-02.1</code>.</p>
+<h2 id="notes-pistes">Notes / pistes</h2>
+<p>⚠ <strong>Ne pas commencer cette fiche avant que les trois questions soient tranchées</strong> : elle
+touche à l'emplacement d'un fichier tiers dans un dépôt public et à une arête du graphe.
+Ce sont deux décisions de PO, pas d'implémenteur.</p>
+<p>⚠ Le constat a été fait sur <code>claymodel</code> <strong>1.5.0 au commit <code>f14e698</code></strong>. Si la révision
+épinglée change, revérifier — un futur packaging pourrait très bien embarquer le YAML et
+rendre cette fiche caduque.</p>
+<hr />
+<h2 id="resume-de-realisation">Résumé de réalisation</h2>
+<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<ul>
+<li><strong>Emplacement retenu</strong> : …</li>
+<li><strong>Provenance consignée</strong> : <em>(dépôt, commit, date)</em></li>
+<li><strong>Verdict de l'oracle</strong> : …</li>
+<li><strong>Commit(s)</strong> : …</li>
+<li><strong>Date</strong> : AAAA-MM-JJ</li>
+</ul><div class="prevnext"><a href="l1-07.html">← [l1-07] Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout</a><span></span></div><p class="gen">Généré le 26/08/2026 19:58 — le .md fait foi.</p></article></body></html>

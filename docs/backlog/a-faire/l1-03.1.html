@@ -49,7 +49,10 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <ul>
 <li><a href="#l1-031-ou-vivent-les-vecteurs-et-comment-on-sait-quils-sont-a-jour">[l1-03.1] — Où vivent les vecteurs, et comment on sait qu'ils sont à jour</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-0aa0efc">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD 0aa0efc)</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -156,6 +159,50 @@ prévoir que <code>data_root</code> soit configurable (il l'est déjà, Lot 0) e
   fractions, donc <code>sum(values())</code> valait <code>≈ 1 + valid_pct</code> — et l'oracle O6 de <code>l1-01.2</code>,
   qui exige « somme ≈ 1 », <strong>rougissait sur une implémentation conforme</strong>. L'imbrication
   rend la somme vérifiable sans convention implicite. <code>l1-01.2</code> s'y conforme.</p>
+<h3 id="ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-0aa0efc">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD <code>0aa0efc</code>)</h3>
+<p><strong>Vérifié dans le code — les patrons existent déjà, ne rien réinventer</strong></p>
+<ul>
+<li><code>adapters/manifests.py:184-203</code> — <code>_write_json_atomic</code> : fichier temporaire puis
+  <code>Path.replace</code>. ⭐ <strong>Son nom de tmp porte le PID ET l'identifiant de thread</strong>, et le
+  commentaire dit pourquoi : deux threads du même processus visaient le même tmp, et le
+  premier <code>replace</code> le faisait disparaître sous le second. <code>l1-03.3</code> utilisera un
+  <code>ThreadPoolExecutor</code> — <strong>reprendre les DEUX composantes</strong>, pas seulement le PID.</li>
+<li><code>adapters/manifests.py:241-247</code> — <code>list_for_site</code> ne globe <strong>que</strong> les fichiers nommés
+  exactement <code>manifest.json</code>, si bien qu'un tmp orphelin n'est jamais vu. ⭐ <strong>C'est le
+  patron littéral de <code>list_vectors</code></strong> : globber les <code>.json</code> rend la règle « le <code>.json</code> fait
+  foi » gratuite, sans code de filtrage supplémentaire.</li>
+<li><code>src/tiny_wae/adapters/vectors.py</code> <strong>n'existe pas</strong> — création.</li>
+<li>⭐ <strong>O6 est réalisable tel qu'écrit, exécuté pour le prouver</strong> :
+  <code>importlib.metadata.version("torch")</code> rend <code>2.13.0</code> <strong>sans que <code>torch</code> entre dans
+  <code>sys.modules</code></strong>. La contrainte n'est pas théorique, elle tient.</li>
+</ul>
+<p><strong>Deux points que la fiche laisse ouverts — tranchés ici, à ne pas rouvrir</strong></p>
+<ol>
+<li>⭐ <strong>Les clés de <code>classes</code> sont celles du manifeste, telles quelles : des chaînes de
+   chiffres</strong> (<code>"3"</code>, <code>"8"</code>, <code>"10"</code>). Relevé sur un manifeste réel :
+   <code>{"10": 213, "8": 11595, "9": 53728}</code> — et seules les classes <strong>présentes</strong> y figurent,
+   jamais les douze. La fiche écrit <code>&lt;nom_classe&gt;</code>, ce qui pourrait faire croire qu'il faut
+   traduire en libellés : <strong>ne pas le faire.</strong> <code>core/report.py:28</code> ne porte de libellé que
+   pour <strong>deux</strong> classes (3 et 11), et en fabriquer un second jeu recréerait exactement le
+   défaut que <code>rep-01</code> a corrigé — un libellé faux qui survit parce qu'il vit à deux
+   endroits.</li>
+<li>⭐ <strong><code>valid_pct</code> se DÉRIVE, il ne se réinvente pas.</strong> <code>core/scl.py</code> porte la définition
+   unique de « invalide » — <code>_INVALID_CLASSES = (0, 1)</code> (no-data, saturé) — et <code>verdict()</code>
+   calcule déjà <code>invalid_pct = 100 × count(0,1) / total</code>. Donc
+   <strong><code>valid_pct = 100 − invalid_pct</code></strong>, sur le même dénominateur. Le manifeste porte de
+   surcroît <code>invalid_pct</code> <strong>déjà calculé</strong> : le relire vaut mieux que le recalculer, c'est
+   une source de divergence en moins.</li>
+</ol>
+<p><strong>Un piège de typage, et il est réel</strong></p>
+<p><code>Manifest.scl_class_counts</code> est un <code>dict[str, int]</code> — les clés sont converties en chaînes
+à l'écriture (<code>adapters/ingestion.py:195</code> : <code>{str(k): v for k, v in ...}</code>) — alors que
+<code>core/scl.py::verdict</code> attend un <code>dict[int, int]</code>. mypy strict attrapera la confusion, mais
+autant la connaître d'avance que la découvrir au gate.</p>
+<p><strong>Le total est EXACT, pas approché</strong></p>
+<p>Relevé sur le corpus : la somme des counts vaut <strong>65 536 = 256 × 256</strong>. La docstring de
+<code>verdict</code> l'explique : « un chip est un rectangle plein, chaque pixel appartient forcément
+à une classe ». Les fractions de <code>classes</code> somment donc à <strong>1,0</strong> (aux flottants près), et
+non « environ 1 » — l'oracle peut être serré.</p>
 <p><strong>Hors périmètre</strong> : le CLI (<code>l1-03.2</code>) · toute base de données · tout index global.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
@@ -240,4 +287,4 @@ il fera la conversion, ce n'est pas le travail de ce lot.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 26/08/2026 19:41 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 26/08/2026 19:56 — le .md fait foi.</p></article></body></html>
