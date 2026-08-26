@@ -1,0 +1,657 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue v4 — Lot 1 (équipe d&#x27;implémentation)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue v4 — Lot 1 (équipe d&#x27;implémentation)</h1><p>Généré le 26/08/2026 depuis _revue-v4.md — le .md fait foi.</p></div></div><article><h1 id="revue-v4-chantier-lot-1-langle-de-limplementeur">Revue v4 — Chantier Lot 1, l'angle de l'implémenteur</h1>
+<p><strong>Date</strong> : 26/08/2026 · <strong>Revueur</strong> : équipe d'implémentation (Claude Code, Opus) — <strong>revue
+solo, non adversariale</strong>, à la demande de Philippe, comme la post-revue 1 du Lot 0.
+<strong>Base</strong> : <code>cfd09cb</code> (branche <code>develop</code>), fiches lues dans leur état de travail (l'instance
+PO écrivait au même moment — aucune fiche n'a été modifiée par cette revue).
+<strong>Position</strong> : celle qui a livré le Lot 0 et qui devra exécuter ces 24 fiches d'agent. C'est
+la seule chose que j'apporte que les v1, v2 et v3 ne pouvaient pas apporter — l'accès au
+<strong>code réel</strong>, au <strong>gate réel</strong> et au <strong>corpus réel</strong>.</p>
+<h2 id="protocole">Protocole</h2>
+<p>Aucun agent délégué. Trois passes, toutes fondées sur des preuves exécutables :</p>
+<ol>
+<li><strong>Graphe</strong> — les 31 frontmatters reparsés, niveaux recalculés, appariements vérifiés.</li>
+<li><strong>Ancrage</strong> — chaque affirmation des fiches qui parle du code du Lot 0 confrontée au
+   fichier, cité <code>fichier:ligne</code>.</li>
+<li><strong>Faits chiffrés</strong> — chaque nombre du chantier recompté sur les 9 873 manifestes et les
+   5 793 chips de <code>D:\datas\tiny-wae</code>, et deux mécanismes d'outillage <strong>sondés</strong> plutôt que
+   déduits (deptry face aux extras, ruff face à un <code>assert</code> dans <code>scripts/</code>).</li>
+</ol>
+<p><strong>Chiffres de la revue</strong> : 12 issues — <strong>1 bloquante · 6 majeures · 5 mineures</strong> — plus
+<strong>1 fait chiffré faux</strong>. 23 affirmations d'ancrage contre-vérifiées, <strong>22 exactes</strong>.</p>
+<hr />
+<h2 id="1-verdict-global">1. Verdict global</h2>
+<p><strong>Le chantier est prêt, et il est d'une qualité que je n'ai pas vue au Lot 0.</strong> Les trois
+revues précédentes ont fait leur travail : la table des faits des deux modèles est juste,
+les oracles ont des témoins dans les deux sens, la politique de test est cadrée, et le
+graphe publié dans <code>_roadmap.md</code> §4 est <strong>exact au fiche près</strong> — je l'ai recalculé, les
+huit niveaux tombent à l'identique.</p>
+<p>Mon verdict tient en une phrase : <strong>les fiches sont justes entre elles et justes vis-à-vis
+du code ; ce qui casse encore, c'est leur rencontre avec le HARNAIS.</strong> C'est le même motif
+que le finding B1 de la revue v2, appliqué cette fois non plus au cache de poids mais aux
+règles de lint, aux zones d'écriture et à l'ordre d'import. Aucune de ces choses ne se voit
+en lisant les fiches ; toutes se voient en essayant de les exécuter.</p>
+<p>Une seule issue est <strong>bloquante</strong>, et elle rendrait le gate rouge sur cinq fiches
+consécutives. Les six majeures sont des trous de spécification qui produiraient chacun un
+résultat plausible et faux — le risque nommé par la v1, toujours le bon.</p>
+<p><strong>Rien ne justifie de retarder la descente en <code>a-faire/</code>.</strong> Douze corrections, toutes
+locales, aucune ne rouvre une décision.</p>
+<h2 id="2-synthese-par-objectif">2. Synthèse par objectif</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Verdict</th>
+<th>Ce qui reste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>O1 — Socle</strong> (<code>l1-00</code>, <code>l1-01.x</code>, <code>l1-07</code>)</td>
+<td><strong>solide, deux trous mécaniques</strong></td>
+<td>l'expansion de <code>~</code> n'a pas d'ancrage (M1) ; <code>scl_summary</code> a deux définitions contradictoires (M5)</td>
+</tr>
+<tr>
+<td><strong>O2 — Modèles &amp; exécution</strong> (<code>l1-02.x</code>, <code>l1-03.x</code>)</td>
+<td><strong>le mieux tenu du lot</strong></td>
+<td>l'atomicité porte sur les fichiers, pas sur la paire (M2) ; l'issue anti-double-coût du smoke est à moitié écrite (M6)</td>
+</tr>
+<tr>
+<td><strong>O3 — Banc &amp; qualité</strong> (<code>l1-04.x</code>, <code>l1-05.x</code>)</td>
+<td><strong>bloqué par le lint</strong></td>
+<td><code>assert</code> interdit dans <code>scripts/</code> alors que cinq oracles l'exigent (B1) ; le contrôle nuage repose sur 14 points (m4) ; un chiffre faux dans deux fiches (F1)</td>
+</tr>
+<tr>
+<td><strong>O4 — Décision</strong> (<code>l1-06.H</code>)</td>
+<td><strong>rien à redire</strong></td>
+<td>la fiche liste ses entrées, nomme ses huit décisions, et refuse de trancher à la place de l'humain</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-issues-consolidees">3. Issues consolidées</h2>
+<table>
+<thead>
+<tr>
+<th>Sév.</th>
+<th>Fiche(s)</th>
+<th>Problème</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>bloquant</strong></td>
+<td><code>l1-04.2</code> <code>l1-04.3a</code> <code>l1-04.3b</code> <code>l1-04.4</code> <code>l1-05.2</code></td>
+<td><code>assert</code> dans <code>scripts/</code> → <code>S101</code> → <code>just lint</code> rouge. Cinq oracles l'exigent explicitement</td>
+<td><code>l1-00</code> pré-pose la ligne <code>per-file-ignores</code>, <strong>ou</strong> les fiches disent « exception typée, jamais <code>assert</code> »</td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-00</code> <code>l1-07</code></td>
+<td>l'expansion de <code>~</code> dans <code>hf_home</code> n'a aucun point d'ancrage nommé, et son échec est <strong>silencieux</strong></td>
+<td>nommer le mécanisme dans <code>config_io</code>, ajouter un oracle « même chemin depuis deux CWD »</td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-03.1</code> (+ <code>l1-03.3</code> <code>l1-05.3a</code>)</td>
+<td>l'atomicité est spécifiée fichier par fichier, jamais sur la <strong>paire</strong> <code>.npy</code> + <code>.json</code></td>
+<td>le <code>.json</code> s'écrit en dernier et fait foi ; un <code>.npy</code> orphelin est un déchet ignoré</td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-05.3a</code> <code>l1-03.2</code></td>
+<td><code>unexplained_missing</code> comptera comme inexpliqués les items qui portent un <code>.error.json</code></td>
+<td>deux listes : <code>failed_missing</code> et <code>unexplained_missing</code></td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-05.3a</code> <code>l1-04.5</code> <code>l1-05.4</code></td>
+<td>les trois fiches écrivent dans <code>docs/lots/lot-1/</code>, que <code>CLAUDE.md</code> attribue <strong>explicitement</strong> à l'architecte</td>
+<td>porter l'exception dans <code>CLAUDE.md</code> <strong>avant</strong> le dispatch de <code>l1-05.3a</code> (N1)</td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-01.2</code> <code>l1-03.1</code></td>
+<td><code>scl_summary</code> : l'oracle O6 contredit le format défini par la fiche qui fait foi</td>
+<td>trancher la forme et l'unité dans <code>l1-03.1</code>, réécrire O6</td>
+</tr>
+<tr>
+<td>majeur</td>
+<td><code>l1-03.4</code></td>
+<td>l'issue proposée pour ne pas payer le smoke deux fois est <strong>incomplète</strong></td>
+<td>ajouter la condition manquante : import <strong>paresseux</strong> de l'adapter</td>
+</tr>
+<tr>
+<td>fait faux</td>
+<td><code>l1-05.1</code> <code>l1-05.3a</code></td>
+<td>« 43 à 300 chips par site » — mesuré : <strong>63 à 579</strong> (49 à 563 après filtre)</td>
+<td>corriger les deux occurrences</td>
+</tr>
+<tr>
+<td>mineur</td>
+<td><code>l1-04.4</code></td>
+<td>O5 (<code>deptry</code> + <code>test_packaging</code>) est <strong>vert par construction</strong></td>
+<td>le dire, ou déplacer la garde là où elle mord</td>
+</tr>
+<tr>
+<td>mineur</td>
+<td>7 scripts neufs</td>
+<td><code>mypy --strict</code> couvre <code>scripts/</code>, et un commentaire du Lot 0 affirme le contraire</td>
+<td>une ligne dans les fiches de banc ; corriger le commentaire périmé</td>
+</tr>
+<tr>
+<td>mineur</td>
+<td><code>l1-02.3</code></td>
+<td>le <strong>code de sortie</strong> du cas « poids absent » n'est fixé nulle part</td>
+<td>trancher en une ligne</td>
+</tr>
+<tr>
+<td>mineur</td>
+<td><code>l1-05.4</code> <code>l1-05.3.H</code></td>
+<td>le contrôle de corrélation aux nuages repose sur <strong>14 points</strong></td>
+<td>élargir à C02, ou déclarer non concluant sous un <code>n</code> minimal</td>
+</tr>
+<tr>
+<td>mineur</td>
+<td><code>l1-04.5</code> <code>l1-05.3a</code> <code>l1-05.4</code></td>
+<td>les trois rapports décisionnels n'auront <strong>pas de vue HTML</strong> ; rien ne borne le volume des PNG</td>
+<td>une ligne par fiche</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-le-detail-avec-les-preuves">4. Le détail, avec les preuves</h2>
+<h3 id="b1-assert-dans-scripts-fait-rougir-le-gate-et-cinq-oracles-lexigent">B1 — <code>assert</code> dans <code>scripts/</code> fait rougir le gate, et cinq oracles l'exigent</h3>
+<p><code>pyproject.toml</code> sélectionne la famille <code>S</code> (flake8-bandit) et <strong>n'exempte <code>S101</code> que pour
+deux périmètres</strong> : <code>"tests/**"</code> et <code>"scripts/smoke.py"</code> — nommément, et avec un commentaire
+qui explique pourquoi le smoke seul y a droit. Les sept scripts que le Lot 1 ajoute n'y
+sont pas.</p>
+<p>Or les oracles exigent la vérification <strong>dans le script</strong>, pas à côté :</p>
+<ul>
+<li><code>l1-04.2</code>/O1 — « ensembles <strong>identiques</strong> — vérifié <strong>dans le script</strong>, pas supposé » ;</li>
+<li><code>l1-04.3a</code>/O3, <code>l1-04.3b</code>/O3, <code>l1-04.4</code>/O3 — même formulation ;</li>
+<li><code>l1-05.2</code>/O1 — « <strong>assertion DURE</strong> : 100 % de <code>array_equal</code> ».</li>
+</ul>
+<p><strong>Sonde exécutée</strong> (jetable, supprimée) : un fichier <code>scripts/</code> contenant un <code>assert a == b</code>
+avec message → <code>ruff check</code> rend <code>S101 Use of assert detected</code>, une erreur. <code>just lint</code> étant
+<code>ruff format --check . &amp;&amp; ruff check .</code>, le gate est rouge, et <code>just check</code> avec lui.</p>
+<p>L'agent aura trois issues, et deux sont mauvaises : semer des <code># noqa: S101</code> (bruit
+permanent), ou ajouter la ligne d'exemption dans <code>pyproject.toml</code> — <strong>fichier dont <code>l1-00</code>
+est propriétaire exclusif pour tout le lot</strong>. La seconde casse le patron « table pré-posée »
+qui protège le chantier, et elle le casse au moment le plus tardif, quand <code>l1-00</code> est déjà
+close. La troisième, la bonne, est de lever une exception typée.</p>
+<p>⚠ Cette issue est la seule que je classe <strong>bloquante</strong>, et pas parce qu'elle serait difficile
+à contourner : parce que la règle d'autonomie du <code>/run</code> dit qu'après trois tentatives sur un
+gate rouge, <strong>on diffère la fiche</strong>. Cinq fiches de banc différées, c'est O3 qui ne se fait
+pas.</p>
+<p>→ <strong><code>l1-00</code> pré-pose <code>"scripts/bench_*.py" = ["S101"]</code></strong> dans <code>per-file-ignores</code>, dans le
+même geste qui pré-pose la feature <code>bench</code> et les trois clés de settings. C'est le patron du
+lot, appliqué à ce qui lui manquait. Alternative défendable : chaque fiche de banc écrit
+« lever une exception typée, jamais <code>assert</code> » — plus propre, mais il faut alors le dire
+<strong>cinq fois</strong>, et une fiche oubliée redevient rouge.</p>
+<h3 id="m1-lexpansion-de-na-pas-dancrage-et-son-echec-ne-se-voit-pas">M1 — L'expansion de <code>~</code> n'a pas d'ancrage, et son échec ne se voit pas</h3>
+<p><code>l1-00</code> point 3 demande <code>hf_home: "~/.cache/tiny-wae/models"</code>, « expansé et rendu absolu au
+chargement ». La fiche nomme précisément le point d'ancrage des deux <strong>autres</strong> clés
+qu'elle pré-pose — <code>config_io._INT_FIELDS</code> pour la coercition, <code>Settings.validate()</code> pour les
+bornes. Pour la troisième, la plus subtile, elle ne nomme rien.</p>
+<p>Et il n'y a rien à copier : <code>core/settings.py</code> définit <code>Settings</code> en <code>@dataclass(frozen=True,
+slots=True)</code> où <strong>tous les chemins sont des <code>str</code></strong> (<code>data_root: str = "./data"</code>), et
+<code>adapters/config_io.py:30</code> ne connaît que <code>_INT_FIELDS</code> et <code>_LIST_FIELDS</code>. Le Lot 0 n'a
+jamais eu de champ-chemin à expanser — il n'offre donc <strong>aucun patron</strong>.</p>
+<p>Le mode d'échec est le pire qui soit : <code>Path("~/.cache/tiny-wae/models")</code> non expansé n'est
+pas une erreur, c'est un <strong>répertoire nommé <code>~</code></strong> créé dans le CWD. Chaque worktree
+d'agent se fabrique alors son propre cache, et re-télécharge plusieurs Go — c'est-à-dire
+exactement la propriété que <code>l1-07</code>/O4 existe pour garantir (« <code>just check</code> dans un worktree
+neuf, vert <strong>sans aucun téléchargement</strong> »). O4 tomberait, mais <strong>après</strong> que le mal est
+fait, et en désignant <code>l1-07</code> alors que la cause est dans <code>l1-00</code>.</p>
+<p>→ Nommer le mécanisme dans <code>l1-00</code> (un <code>_PATH_FIELDS</code> dans <code>config_io</code>, symétrique de
+<code>_INT_FIELDS</code>) et ajouter un oracle discriminant : <strong><code>hf_home</code> chargé depuis deux CWD
+différents rend le même chemin absolu</strong>. Sans témoin de ce genre, la garde n'est pas
+exercée.</p>
+<p><em>Note</em> : <code>resolve()</code> sur un chemin relatif l'ancre au CWD, ce qui serait le même bug déguisé.
+Avec un <code>~</code> en tête, <code>expanduser()</code> suffit et donne déjà un absolu.</p>
+<h3 id="m2-latomicite-porte-sur-les-fichiers-jamais-sur-la-paire">M2 — L'atomicité porte sur les fichiers, jamais sur la paire</h3>
+<p><code>l1-03.1</code> spécifie « écriture <strong>atomique</strong> (fichier temporaire puis <code>Path.replace</code>), comme
+<code>write_manifest</code> du Lot 0 ». Le renvoi est juste : <code>adapters/manifests.py:184-203</code> fait
+exactement ça, et son nom de temporaire porte <strong>PID <em>et</em> identifiant de thread</strong> parce que
+le <code>ThreadPoolExecutor</code> du Lot 0 a produit la collision en vrai.</p>
+<p>Mais un vecteur, c'est <strong>deux</strong> fichiers : le <code>.npy</code> et son compagnon <code>.json</code>. Rendre chacun
+atomique ne rend pas la <strong>paire</strong> atomique. Rien ne dit l'ordre d'écriture, ni ce que vaut un
+<code>.npy</code> sans compagnon. Or trois fiches en aval supposent l'indissociabilité :</p>
+<ul>
+<li><code>l1-03.3</code>/O4 — SIGINT : « <code>read_vector</code> réussit sur <strong>≥ 2</strong> vecteurs ; aucun temporaire
+  visible » — c'est précisément le scénario d'interruption entre les deux écritures ;</li>
+<li><code>l1-05.3a</code> — l'invariant <code>vecteurs_sur_disque == len(list_vectors(...))</code> ;</li>
+<li><code>l1-04.5</code> et <code>l1-05.4</code> — sélection par <code>list_vectors</code>.</li>
+</ul>
+<p>Et le contrat de <code>read_vector</code> ne couvre pas le cas : « <code>None</code> si absent, erreur typée si
+corrompu ». Un <code>.npy</code> orphelin n'est <strong>ni absent ni corrompu</strong>.</p>
+<p>→ Le Lot 0 a déjà la réponse, et elle est élégante : <code>list_for_site</code>
+(<code>adapters/manifests.py:241-247</code>) <strong>ne globe que les fichiers nommés exactement
+<code>manifest.json</code></strong>, ce qui rend les temporaires et les résidus structurellement invisibles.
+Transposer : <strong>écrire le <code>.json</code> en dernier</strong>, en faire le marqueur de complétude, ancrer
+<code>read_vector</code> et <code>list_vectors</code> dessus, et traiter un <code>.npy</code> sans compagnon comme un déchet.
+Un oracle de plus dans <code>l1-03.1</code> : <code>.npy</code> seul déposé à la main → invisible de
+<code>list_vectors</code>, <code>read_vector</code> rend <code>None</code>.</p>
+<h3 id="m3-le-controle-de-completude-criera-des-le-premier-echec">M3 — Le contrôle de complétude criera dès le premier échec</h3>
+<p><code>l1-03.2</code> écrit <code>embeddings/&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.error.json</code> pour tout item en échec —
+choix justifié (E-1 : ne jamais réécrire le manifeste du Lot 0) et sémantique claire
+(« une erreur se rejoue »).</p>
+<p><code>l1-05.3a</code> définit <code>unexplained_missing</code> comme « la liste nommée des <code>item_id</code> <strong>éligibles
+sans vecteur</strong> ». Un item qui a échoué est éligible, il n'a pas de vecteur, et il <strong>porte sa
+propre explication à côté</strong> — il tombera pourtant dans la liste des inexpliqués. Aucune
+fiche ne relie les deux mécanismes.</p>
+<p>La conséquence n'est pas une fausse valeur, c'est pire : un contrôle qui crie sans raison
+finit par être ignoré, et c'est le jour où il crie pour la bonne raison qu'on ne le regarde
+plus. La revue v3 a eu raison de refaire cet invariant (E-3, « un témoin qu'on ne peut pas
+rendre rouge n'est pas un témoin ») ; il lui manque le pendant — <strong>un témoin qui rougit tout
+le temps n'en est pas un non plus</strong>.</p>
+<p>→ <code>l1-05.3a</code> publie <strong>deux</strong> listes : <code>failed_missing</code> (un <code>.error.json</code> est présent — c'est
+un incident connu, avec sa cause) et <code>unexplained_missing</code> (rien du tout — c'est le vrai
+signal). O3 exerce les deux sens sur chacune.</p>
+<h3 id="m4-trois-fiches-ecrivent-dans-une-zone-que-claudemd-attribue-a-larchitecte">M4 — Trois fiches écrivent dans une zone que <code>CLAUDE.md</code> attribue à l'architecte</h3>
+<p><code>_roadmap.md</code> §5 et <code>l1-05.3a</code> actent que <code>docs/lots/lot-1/</code> est « ouverte à l'équipe en
+création » par décision de Philippe du 25/08. La décision est prise, je ne la rouvre pas.</p>
+<p>Mais <code>CLAUDE.md</code>, qui écrit de lui-même « <strong>Ces instructions priment</strong> », dit toujours :
+« L'architecte/PO écrit UNIQUEMENT dans <code>docs/backlog/</code> […] et <code>docs/lots/</code> […]. L'équipe
+d'implémentation écrit dans <code>src/</code>, <code>tests/</code>, <code>scripts/</code> ». Un agent d'implémentation
+consciencieux — celui qu'on veut — lira la contradiction et fera ce que la méthode lui dit
+de faire dans ce cas : <strong>signaler plutôt qu'écrire</strong>. <code>l1-05.3a</code> est en <strong>N1</strong>, très tôt
+dans le run.</p>
+<p>Et <code>l1-07</code>/<code>l1-02.3</code> ont fermé la seule porte de sortie : <code>CLAUDE.md</code> est hors zone, les
+fiches <strong>rédigent</strong> la ligne au Résumé et Philippe la reporte — c'est-à-dire <strong>après</strong> le
+run.</p>
+<p>→ Les trois exceptions (<code>docs/lots/lot-1/</code>, <code>.github/workflows/</code>, <code>config/</code>) doivent être
+portées dans <code>CLAUDE.md</code> <strong>avant le dispatch</strong>, pas après. C'est un geste de Philippe, de
+deux minutes, et c'est un pré-requis de run au même titre que la sonde de worktree.</p>
+<h3 id="m5-scl_summary-loracle-contredit-la-definition-qui-fait-foi">M5 — <code>scl_summary</code> : l'oracle contredit la définition qui fait foi</h3>
+<p><code>l1-03.1</code> — la fiche N0, celle qui définit : « un <code>dict[str, float]</code> : les classes SCL
+converties en <strong>fractions</strong> — somme ≈ 1 — <strong>plus une clé <code>valid_pct</code></strong> ».
+<code>l1-01.2</code>/O6 — la fiche N1, qui déclare pourtant s'y conformer : « <code>scl_summary</code> <strong>somme à
+~1</strong> ».</p>
+<p>Avec <code>valid_pct</code> dans le même dict, <code>sum(values())</code> vaut ≈ 1 + <code>valid_pct</code>. L'oracle rougit
+sur une implémentation <strong>conforme</strong> au format qui fait foi.</p>
+<p>S'y ajoute une unité non tranchée : <code>valid_pct</code> est-il une fraction (0,98) ou un pourcentage
+(98,0) ? Le nom dit « pct », ses voisins sont des fractions. Un dict qui mélange les deux
+est exactement l'ambiguïté que ce lot traque partout ailleurs — et le Lot 0 en a déjà payé
+une, sur <code>ratio</code> contre <code>pct</code>.</p>
+<p>→ Trancher la forme dans <code>l1-03.1</code> — je recommande <code>{"classes": {...}, "valid_pct": 98.0}</code>,
+qui rend la somme vérifiable sans convention implicite — et réécrire O6 en « la somme des
+<strong>fractions de classes</strong> ≈ 1 ».</p>
+<h3 id="m6-lanti-double-cout-du-smoke-ne-suffit-pas-sil-reste-un-import-en-tete">M6 — L'anti-double-coût du smoke ne suffit pas s'il reste un import en tête</h3>
+<p>La revue v3 (V-23) a vu juste : <code>tests/test_smoke.py</code> rejoue <code>smoke.main()</code> sous pytest,
+donc l'étape embed serait payée deux fois par <code>just check</code>. Elle offre deux issues : exposer
+l'étape en fonction séparée que le test n'appelle pas, ou restreindre le test.</p>
+<p><strong>Aucune des deux ne suffit.</strong> <code>tests/test_smoke.py:47</code> fait, <strong>au niveau module</strong> :</p>
+<pre><code>smoke = _load_smoke_module()
+</code></pre>
+<p>C'est-à-dire que <code>scripts/smoke.py</code> est chargé et <strong>exécuté à la collecte pytest</strong>, avant
+tout test. Si l'import de l'adapter TerraMind reste <strong>en tête</strong> de <code>smoke.py</code> — comme le sont
+tous les imports du fichier aujourd'hui, et comme c'est le style dominant du dépôt —
+terratorch (lightning, timm, diffusers, torchgeo) est importé à chaque collecte. Y compris
+pour un simple <code>just test</code>, y compris pour un <code>-k</code> d'une seule fonction.</p>
+<p>→ Ajouter la condition manquante à <code>l1-03.4</code> : <strong>l'import de l'adapter doit être paresseux,
+dans le corps de la fonction d'étape</strong>. Le lot connaît déjà ce geste et l'a oraclé ailleurs
+(<code>l1-01.3</code>/O4, <code>l1-03.1</code>/O6) ; il faut juste l'écrire ici aussi. Sans ça, V-23 n'est corrigé
+qu'à moitié, et le budget des 30 s est calculé sur un coût qu'on paie toujours.</p>
+<h3 id="f1-43-a-300-chips-par-site-mesure-cest-63-a-579">F1 — « 43 à 300 chips par site » : mesuré, c'est 63 à 579</h3>
+<p>Recompté sur les 9 873 manifestes :</p>
+<table>
+<thead>
+<tr>
+<th>Population</th>
+<th>min</th>
+<th>médiane</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chips <code>ingested</code> par site</td>
+<td><strong>63</strong> (B08)</td>
+<td>219</td>
+<td><strong>579</strong> (B01)</td>
+</tr>
+<tr>
+<td>après filtre <code>cloud_pct ≤ 10</code></td>
+<td><strong>49</strong> (B08)</td>
+<td>178</td>
+<td><strong>563</strong> (B01)</td>
+</tr>
+</tbody>
+</table>
+<p>Le chiffre « 43 à ~300 » figure dans <code>l1-05.1</code> (Contexte) et <code>l1-05.3a</code> (§5), où il justifie
+le choix de la silhouette. Le fait qualitatif — des groupes très inégaux — est non seulement
+préservé mais <strong>renforcé</strong> : le rapport réel est de 9,2× et non de 7×. Ce sont les bornes
+qui sont fausses, dans les deux fiches.</p>
+<p>⚠ Ce qui compte ici n'est pas l'écart, c'est ce qu'il révèle : <strong>c'est le seul chiffre du
+chantier que j'aie trouvé faux</strong>, et il l'est parce qu'aucune des trois revues précédentes
+ne pouvait ouvrir le corpus. Tous les autres sont exacts (voir §5).</p>
+<h2 id="5-ce-qui-a-ete-contre-verifie-et-qui-tient">5. Ce qui a été contre-vérifié — et qui tient</h2>
+<p>Ancrages <strong>exacts</strong>, chacun cité :</p>
+<ul>
+<li><code>core/geometry.py:52</code> — <code>chip_bounds(grid, settings)</code> existe, et il ne faut pas le
+  réécrire : <code>l1-01.2</code> a raison sur les deux points.</li>
+<li><code>core/bands.py</code> — <code>BAND_ORDER_10M | BAND_ORDER_20M</code> donne <strong>exactement</strong> les 10 bandes de
+  <code>BAND_ORDER_EMBED</code>, et <code>nir</code> y est en <strong>4ᵉ</strong> position contre <strong>7ᵉ</strong> chez Clay. Le piège que
+  <code>l1-01.1</code> a écrit en toutes lettres est réel.</li>
+<li><code>adapters/manifests.py:101-105</code> — <code>Manifest</code> porte bien <code>scl_class_counts</code>, <code>cloud_pct</code>,
+  <code>grid_hash</code>, <code>radiometry</code>, <code>boa_offset_applied</code>.</li>
+<li><code>tests/test_packaging.py</code> — lit <code>[project.dependencies]</code> et balaie <strong>tout <code>src/</code> par
+  AST</strong> : <code>import claymodel</code> le rendra rouge (V-12 exact). Et son second test lit
+  <code>[tool.pixi.dependencies]</code>, table de base — donc y <strong>ne pas</strong> mettre torch/terratorch le
+  laisse vert (A-2 exact).</li>
+<li><code>pyproject.toml</code> — <code>addopts = "-q --disable-socket"</code> : sans cache, c'est bien un
+  <code>SocketBlockedError</code> et pas une erreur réseau lisible (<code>l1-07</code> exact) ;
+  <code>ignore_missing_imports = true</code> (<code>l1-02.4</code>/O1 exact, y compris sa nuance sur la portée).</li>
+<li><code>adapters/backfill.py:441</code> — c'est bien un <code>ThreadPoolExecutor</code> (V-21 exact), donc
+  <code>torch.set_num_threads</code> atteindra les workers.</li>
+<li><code>adapters/chips.py:88</code> — <code>_is_offline()</code> est relu à chaque appel : la leçon que <code>l1-02.3</code>
+  transpose est la bonne.</li>
+<li><code>justfile</code> — <code>just script &lt;nom&gt;</code> existe (<code>l1-04.2</code>, <code>l1-05.2</code> peuvent s'y adosser) ;
+  <code>just check</code> = <code>lint &amp;&amp; types &amp;&amp; deptry &amp;&amp; test &amp;&amp; smoke &amp;&amp; cwl</code> ; <code>just deptry</code> porte
+  bien <code>src</code> seul.</li>
+<li><code>.github/workflows/ci.yml</code> — une seule étape <code>just check</code> derrière <code>just install</code>, et le
+  commentaire « le smoke est déterministe et hors ligne » est bien celui que <code>l1-07</code> doit
+  corriger.</li>
+<li><code>.gitignore</code> — <code>data/</code> est ignoré (<code>l1-04.5</code> a raison de sortir les rapports de là) ;
+  <code>.claude/settings.json</code> porte <code>worktree.baseRef: "head"</code>.</li>
+<li><code>config/sites.yaml</code> — versionné, <strong>25 grilles calculées</strong> : <code>l1-01.2</code> pourra résoudre le
+  <code>Grid</code> de n'importe quel site sans fixture supplémentaire.</li>
+<li><code>scripts/backlog.py:939</code> — <code>cmd_lots</code> globe <code>docs/lots/*.md</code> <strong>non récursivement</strong> : les
+  rapports déposés dans <code>docs/lots/lot-1/</code> n'entreront pas en collision avec <code>just lots</code>. Et
+  le garde-fou <code>md2html</code> (<code>backlog.py:700</code>) ne se déclenche que si le parent s'appelle
+  <code>lots</code>, donc <code>just md2html</code> reste utilisable sur eux.</li>
+</ul>
+<p>Faits chiffrés <strong>exacts</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Fait annoncé</th>
+<th>Mesuré</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 793 chips · 9 873 manifestes · 25 sites</td>
+<td><strong>exact</strong></td>
+</tr>
+<tr>
+<td>~4 959 chips sous le seuil de 10 % (86 %)</td>
+<td><strong>4 959</strong> (85,6 %)</td>
+</tr>
+<tr>
+<td><code>chip.tif</code> 2,1 Mo · <code>chip_20m.tif</code> 0,79 Mo · <code>scl.tif</code> 0,07 Mo</td>
+<td><strong>2,10 · 0,79 · 0,07</strong> — 4 fixtures ≈ 11,8 Mo, sous les 15 Mo d'O1</td>
+</tr>
+<tr>
+<td><code>chip.tif</code> 512²×4 et <code>chip_20m.tif</code> 256²×6, uint16</td>
+<td><strong>exact</strong> (<code>scl.tif</code> est en 256², uint8 — sans conséquence, <code>scl_summary</code> vient du manifeste)</td>
+</tr>
+<tr>
+<td>graphe : 5 chapeaux · 24 fiches agent · 2 humaines, profondeur 8</td>
+<td><strong>exact</strong> — aucun cycle, aucun <code>depends_on</code> orphelin, parent/subtasks tous appariés, aucun chapeau qui ordonne, et les <strong>huit niveaux publiés tombent à l'identique</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Mécanismes <strong>sondés</strong> plutôt que déduits :</p>
+<ul>
+<li>⭐ <strong><code>deptry</code> lit bien les <code>[project.optional-dependencies]</code>.</strong> C'est le mécanisme central
+  de <code>l1-00</code>, affirmé « vérifié en revue » sans preuve reproductible — je l'ai testé sur un
+  projet jouet dans l'environnement pixi réel : extra déclarant <code>pyyaml</code> + <code>import yaml</code> →
+  « No dependency issues found » ; extra retiré → <code>DEP003</code>. <strong>Le témoin joue dans les deux
+  sens.</strong> La stratégie de l'extra tient.</li>
+<li><strong><code>assert</code> dans <code>scripts/</code> fait rougir ruff</strong> — voir B1.</li>
+</ul>
+<h2 id="6-les-mineures">6. Les mineures</h2>
+<p><strong>m1 — <code>l1-04.4</code>/O5 est vert par construction.</strong> « <code>deptry</code> vert <strong>et</strong> <code>test_packaging.py</code>
+vert : <code>onnxruntime</code> vit dans la feature <code>bench</code>, pas au contrat de la wheel ». Mais
+<code>just deptry</code> = <code>deptry src</code> — le <code>justfile</code> dit même explicitement pourquoi (« <code>src</code> SEUL :
+<code>scripts/</code> n'est pas dans la wheel ») — et <code>test_packaging.py</code> ne balaie que <code>_SRC</code>.
+<code>scripts/bench_quant.py</code> n'est vu par <strong>ni l'un ni l'autre</strong>. L'oracle serait vert si
+<code>onnxruntime</code> n'était déclaré nulle part. Ce n'est pas faux, c'est <strong>non discriminant</strong> — le
+contraire de ce que ce lot exige de ses oracles. Le dire, ou l'assumer comme un contrôle de
+non-régression sur le contrat de la wheel (ce qu'il est réellement).</p>
+<p><strong>m2 — <code>mypy --strict</code> couvre <code>scripts/</code>, et un commentaire du Lot 0 dit l'inverse.</strong>
+<code>pyproject.toml:146</code> : <code>files = ["src", "tests", "scripts"]</code>. Les <strong>sept</strong> scripts neufs du
+lot (cinq bancs, <code>fetch_models</code>, <code>check_cache</code>) devront passer le strict ; aucune fiche de
+banc ne le mentionne, et toutes disent « aucun test unitaire, c'est un script de mesure » —
+formulation qui laisse croire que <code>scripts/</code> est hors du filet.
+⚠ Pire : <code>tests/test_smoke.py</code> l'affirme en docstring — « <code>scripts/</code> […] mypy ne le couvre
+pas non plus, <code>pyproject.toml</code> : <code>files = ["src"]</code> ». <strong>Ce commentaire est périmé</strong> (corrigé
+par <code>out-01</code>, jamais mis à jour) et il se trouve exactement sur le chemin que <code>l1-03.4</code>
+demande à l'implémenteur de lire. Une ligne à corriger, et un piège documentaire en moins.</p>
+<p><strong>m3 — le code de sortie du cas « poids absent » n'est fixé nulle part.</strong> Le Lot 0 a figé ses
+quatre codes en chapeau (<code>cli/exit_codes.py</code>). Le Lot 1 introduit un cas neuf — poids
+manquant du cache — qui traverse <code>l1-02.3</code>, <code>l1-07</code> et <code>l1-03.4</code> sans qu'aucune ne dise s'il
+vaut <code>1</code> (métier), <code>2</code> (config/usage) ou <code>3</code> (non concluant). Comme <code>embed</code> n'a pas d'amont
+réseau, <code>3</code> est libre ; <code>2</code> me paraît juste (c'est un défaut d'environnement). Une ligne dans
+<code>l1-02.3</code>, qui possède le chemin commun.</p>
+<p><strong>m4 — le contrôle de corrélation aux nuages repose sur 14 points.</strong> Mesuré sur C08 :
+119 chips <code>ingested</code>, <code>cloud_pct</code> de 0,0 à 26,1, médiane 0,0 — <strong>88 sont à ≤ 1 %</strong> et
+<strong>14 seulement dépassent 10 %</strong>. La correction K-14 (mesurer sur la plage complète) était
+juste, mais elle n'apporte que ces 14 points, et <code>l1-06.H</code> point 5 traite <code>|r| &gt; 0,5</code> comme
+un déclencheur de décision. Sur 14 points, ce seuil s'atteint par accident.
+→ Deux remèdes, cumulables : embedder <strong>C02 aussi sans filtre</strong> (21 points de plus,
+soit 35 — C02 a 126 chips <code>ingested</code> dont 105 sous le seuil), et <strong>exiger un <code>n</code> minimal</strong>
+au-dessus du seuil sous lequel le contrôle est déclaré <strong>non concluant</strong> au lieu d'être
+publié comme un <code>r</code>. <code>l1-05.4</code>/O3 publie déjà <code>n</code> et l'étendue effective — il ne manque que
+la conduite à tenir.</p>
+<p><strong>m5 — les trois rapports décisionnels n'auront pas de vue HTML, et rien ne borne les PNG.</strong>
+<code>l1-06.H</code> liste <code>bench-report.md</code>, <code>similarity-report.md</code> et <code>trajectory-report.md</code> comme
+« ce que tu auras sous les yeux », dans un projet où tout le reste a sa page rendue. Une
+ligne par fiche (<code>just md2html</code>, qui fonctionne sur eux — vérifié). Et <code>l1-05.4</code> produit des
+courbes Pillow « pour les deux modèles » plus une annexe « tous les sites » dans un
+répertoire <strong>versionné</strong>, alors que le lot borne scrupuleusement ses fixtures à 15 Mo. Une
+borne, même large.</p>
+<p><em>(Deux renvois inexacts, sans conséquence, signalés pour l'hygiène : <code>l1-07</code> dit que la
+taille du cache est « publiée par <code>l1-00</code>/O4 » — O4 mesure le delta d'installation, ce sont
+les trois tailles d'artefacts d'</em><em>O1</em><em> qui portent l'information. Et <code>l1-01.2</code> ne nomme pas
+<code>config/sites.yaml</code> parmi ses entrées, alors que <code>chip_bounds</code> exige un <code>Grid</code> </em><em>calculé</em><em> —
+<code>core/sites.py:35-37</code> les met à <code>None</code> par défaut, <code>_require_computed</code> lève. Non bloquant :
+le fichier est versionné et complet.)</em></p>
+<h2 id="7-fiches-a-creer-scinder-requalifier">7. Fiches à créer / scinder / requalifier</h2>
+<p><strong>Aucune.</strong> Le découpage tient, les efforts sont plausibles, et les deux scissions faites en
+revue v1 (<code>l1-04.3</code> → <code>a</code>/<code>b</code>, <code>l1-05.3</code> → <code>a</code>/<code>.H</code>) se lisent comme les bonnes. Les douze
+corrections ci-dessus sont toutes <strong>locales à une fiche existante</strong> ; aucune ne demande de
+créer, scinder ou fusionner.</p>
+<p>Deux requalifications d'oracle, en revanche :</p>
+<ul>
+<li><code>l1-04.4</code>/O5 — le dire non discriminant, ou le déplacer ;</li>
+<li><code>l1-01.2</code>/O6 — réécrire la clause <code>scl_summary</code> (M5).</li>
+</ul>
+<h2 id="8-questions-ouvertes-decisions-recommandees">8. Questions ouvertes — décisions recommandées</h2>
+<ol>
+<li><strong><code>assert</code> dans les scripts de banc</strong> — pré-poser l'exemption dans <code>l1-00</code>, ou interdire
+   <code>assert</code> dans les cinq fiches ? <em>Recommandation : pré-poser.</em> Une ligne dans le fichier
+   dont <code>l1-00</code> est déjà propriétaire, contre cinq formulations qu'un oubli suffit à casser.</li>
+<li><strong>Forme de <code>scl_summary</code></strong> — <code>{"classes": {...}, "valid_pct": …}</code> ou un dict plat ?
+   <em>Recommandation : imbriqué</em>, et <code>valid_pct</code> en pourcentage puisque son nom le dit.</li>
+<li><strong><code>CLAUDE.md</code></strong> — les trois exceptions de zone sont-elles portées <strong>avant</strong> le run ?
+   <em>Recommandation : oui, c'est un pré-requis de dispatch.</em> Sinon <code>l1-05.3a</code> (N1) rencontre
+   la contradiction au deuxième niveau du graphe.</li>
+<li><strong>Contrôle nuage</strong> — élargir à C02 (coût : ~21 chips de plus à embedder, quelques
+   minutes) ou se contenter d'un seuil de non-concluance ? <em>Recommandation : les deux.</em></li>
+</ol>
+<h2 id="9-prochaines-actions">9. Prochaines actions</h2>
+<ol>
+<li><strong>Philippe</strong> — porter les trois exceptions de zone dans <code>CLAUDE.md</code> (M4) et trancher les
+   quatre questions du §8. C'est le seul travail qui ne peut pas être délégué.</li>
+<li><strong>PO</strong> — appliquer les douze corrections. Aucune ne rouvre une décision ; la plus longue
+   est M2 (l'ordre d'écriture de la paire et l'oracle qui va avec).</li>
+<li><strong>Descente en <code>a-faire/</code></strong> — la vague N0 est mûre dès les corrections appliquées :
+   <code>l1-00</code>, <code>l1-01.1</code>, <code>l1-01.4</code>, <code>l1-03.1</code>, <code>l1-05.1</code>. ⚠ <code>l1-00</code> <strong>avant tout le reste</strong> :
+   B1, M1 et la feature <code>models</code> sont toutes chez elle.</li>
+<li>⚠ <strong>Conséquence de dispatch à anticiper</strong> — le worktree d'un agent du Lot 0 coûtait
+   <strong>1 min 5 s et 696 Mo</strong> (<code>CLAUDE.md</code>, drvfs sans liens durs, donc recopie intégrale).
+   Avec la feature <code>models</code>, <code>l1-00</code>/O4 mesurera un ordre de grandeur au-dessus. Trois agents
+   en parallèle deviendront coûteux en disque autant qu'en temps. <strong>C'est le Résumé de
+   <code>l1-00</code> qui donnera le chiffre — attendre qu'il soit là avant de fixer la largeur des
+   vagues suivantes</strong>, et non l'inverse.</li>
+<li><strong>Rappel de la règle ⛔</strong> — les cinq fiches de banc de N4 (<code>l1-04.2</code>, <code>l1-04.3a</code>,
+   <code>l1-04.3b</code>, <code>l1-04.4</code>, <code>l1-05.2</code>) ne se dispatchent <strong>jamais</strong> en parallèle. Le critère
+   habituel de <code>/run</code> (« fichiers disjoints ») les déclarerait sûres, et il aurait tort :
+   elles se disputent les cœurs, qui sont la grandeur mesurée.</li>
+</ol>
+<hr />
+<h2 id="limite-de-cette-revue">Limite de cette revue</h2>
+<p>Elle est <strong>solo et non adversariale</strong> : aucun réfuteur n'a repris mes findings, et je suis à
+la fois celui qui les trouve et celui qui les exécutera. Sa force est ailleurs — elle est la
+première à avoir <strong>ouvert le code, lancé le linter et compté le corpus</strong>. C'est ce qui
+explique la forme de ses résultats : presque rien sur le fond des fiches, où trois revues
+sont déjà passées, et tout sur leur rencontre avec le harnais, où personne n'était encore
+allé.</p>
+<p><strong>Non couvert, et déclaré</strong> : la justesse des faits externes sur Clay et TerraMind (je n'ai
+lu ni <code>claymodel/model.py</code> ni <code>terramind_vit.py</code> — la v1 et la v3 les ont vérifiés à la
+source, je m'appuie sur elles) · le comportement réel du cache Actions · les temps de calcul,
+qui sont l'objet du lot · la pertinence des seuils décisionnels, qui sont des arbitrages.</p>
+<hr />
+<h1 id="verdict-du-po-contre-verification-et-suite-donnee-26082026">Verdict du PO — contre-vérification et suite donnée (26/08/2026)</h1>
+<p><strong>Revue acceptée, douze corrections appliquées, avec trois amendements.</strong> J'ai contre-vérifié
+moi-même tout ce qui était mécanique : <strong>sept affirmations sur sept sont exactes</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Affirmation</th>
+<th>Contrôle PO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 — <code>S101</code> non exempté pour les scripts neufs</td>
+<td><code>pyproject.toml:133-138</code> : <code>"scripts/**" = ["T201"]</code> seul, <code>"scripts/smoke.py" = ["S101"]</code> nommément. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>m1 — <code>deptry src</code> seul</td>
+<td><code>justfile:97</code>, avec le commentaire qui l'explique. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>m2 — mypy couvre <code>scripts/</code></td>
+<td><code>pyproject.toml:146</code> : <code>files = ["src", "tests", "scripts"]</code>, et <code>tests/test_smoke.py:5</code> affirme l'inverse. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>M6 — chargement à la collecte pytest</td>
+<td><code>tests/test_smoke.py:46</code> : <code>smoke = _load_smoke_module()</code> au niveau module. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>F1 — bornes par site</td>
+<td>Recompté sur les 9 873 manifestes : <strong>63 (B08) à 579 (B01)</strong>, médiane 219 ; <strong>49 à 563</strong> après filtre. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>m4 — C08 au-dessus de 10 %</td>
+<td><strong>119</strong> chips, <strong>14</strong> au-dessus, 88 à ≤ 1 %, max 26,1. C02 : <strong>126</strong> dont <strong>21</strong>. <strong>Exact</strong></td>
+</tr>
+<tr>
+<td>5 793 · 9 873 · 4 959</td>
+<td><strong>Exact</strong>, recompté.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="trois-amendements">Trois amendements</h2>
+<ol>
+<li><strong>M1 — la règle est durcie.</strong> La revue note qu'un <code>resolve()</code> sur chemin relatif « serait
+   le même bug déguisé » mais laisse la conduite floue. Retenu : <strong><code>expanduser()</code>, puis
+   ERREUR si le résultat n'est pas absolu</strong> — pas de <code>resolve()</code> de rattrapage. Un <code>hf_home</code>
+   relatif est une faute de configuration ; elle se signale, elle ne se répare pas en
+   silence.</li>
+<li><strong>B1 — le mode d'échec probable est nuancé.</strong> La revue classe bloquant en invoquant la
+   règle « trois tentatives puis fiche différée », donc cinq fiches perdues. En pratique un
+   agent sèmera plutôt des <code># noqa: S101</code> ou ira éditer <code>pyproject.toml</code> — bruit permanent,
+   ou violation de zone. La correction et la priorité sont les mêmes ; c'est la
+   dramatisation qui est nuancée.</li>
+<li><strong>m4 — l'argument est chiffré.</strong> « Sur 14 points, ce seuil s'atteint par accident » est
+   juste et se quantifie : à <strong>n = 14</strong>, le <code>r</code> critique à 5 % vaut <strong>≈ 0,53</strong> — le seuil
+   acté de 0,5 est <strong>sous</strong> le seuil de significativité. Avec C02 (<strong>n = 35</strong>), il tombe à
+   <strong>≈ 0,34</strong> et redevient lisible. Le chiffre est écrit dans <code>l1-05.4</code>, <code>l1-05.3.H</code> et
+   <code>l1-06.H</code>, avec une <strong>règle de non-concluance sous 25 points</strong>.</li>
+</ol>
+<h2 id="le-trou-de-la-revue-comble">Le trou de la revue, comblé</h2>
+<p>La revue a sondé <strong>deux</strong> mécanismes (<code>deptry</code> face aux extras, <code>assert</code> face à ruff) et
+laissé le <strong>troisième</strong> — celui que le réfuteur v3 avait explicitement signalé comme reposant
+sur ma seule parole, en notant qu'un <code>just install</code> d'essai coûtait une minute. Sondé le
+26/08, dans la configuration exacte de <code>l1-00</code> (extra <code>models</code> + <code>claymodel @ git+…@commit</code>) :</p>
+<ul>
+<li><strong>sans</strong> <code>allow-direct-references</code> → <code>ValueError: Dependency #1 of option 'models' of field
+  'project.optional-dependencies' cannot be a direct reference…</code> — le build échoue ;</li>
+<li><strong>avec</strong> → la wheel se construit, et la référence git est <strong>confinée à l'extra</strong> :
+  <code>Requires-Dist: claymodel @ git+… ; extra == 'models'</code>, la ligne de base restant propre.</li>
+</ul>
+<p>⭐ <strong>Le témoin joue dans les deux sens, et il apporte une preuve que personne n'avait</strong> : la
+décision « la wheel du worker reste légère » est vérifiée, pas supposée — qui installe sans
+l'extra n'hérite d'aucune dépendance git.</p>
+<h2 id="un-treizieme-defaut-trouve-en-appliquant-le-critere-pret-a-faire">⭐ Un treizième défaut, trouvé en appliquant le critère « Prêt à faire »</h2>
+<p>Trouvé le 26/08, <strong>après</strong> la passe de correction, en confrontant <code>l1-00</code> à la clause
+« <strong>gate vert à son propre commit</strong> » du critère de descente — et <strong>sondé</strong>, pas déduit.</p>
+<p><code>deptry</code> signale toute dépendance <strong>déclarée mais non importée</strong> :
+<code>DEP002 '&lt;paquet&gt;' defined as a dependency but not used in the codebase</code>. Or <code>l1-00</code>
+déclare torch, claymodel, terratorch et <code>huggingface_hub</code> <strong>avant</strong> que le moindre code ne
+les importe — les adapters arrivent en <code>l1-02.x</code>. <strong>À son propre commit, <code>l1-00</code> livrait un
+<code>just deptry</code> rouge</strong>, ce que le critère interdit explicitement.</p>
+<p>Deux corrections, toutes deux vérifiées par sonde :</p>
+<ul>
+<li><code>l1-00</code> pose <code>[tool.deptry.per_rule_ignores] DEP002 = [...]</code> sur les quatre paquets.
+  ⭐ <strong>Garde ciblée, témoin dans les deux sens</strong> : avec elle, <code>deptry</code> est vert sur le
+  paquet ignoré ; <strong>et</strong> un import non déclaré reste attrapé (<code>DEP003</code>). On suspend une
+  règle sur quatre noms, on n'aveugle pas l'outil.</li>
+<li>Le bloc est <strong>temporaire</strong>, et son retrait a un propriétaire nommé : <strong><code>l1-02.3</code></strong>, la
+  première fiche où les quatre paquets sont réellement importés depuis <code>src/</code> (O6).</li>
+<li>Au passage : <code>onnxruntime</code> se déclare <strong>côté pixi seulement</strong>. Importé uniquement depuis
+  <code>scripts/bench_quant.py</code>, que <code>deptry src</code> ne scanne jamais, il serait sinon <code>DEP002</code>
+  <strong>à perpétuité</strong>. C'est le précédent du Lot 0, déjà écrit dans le <code>justfile</code>.</li>
+</ul>
+<p><em>Ce que ce défaut dit de la méthode : le critère « Prêt à faire » n'est pas une formalité de
+passage de dossier — il attrape ce que quatre revues n'avaient pas vu, à condition d'être
+appliqué clause par clause </em><em>et</em><em> avec une sonde plutôt qu'un raisonnement.</em></p>
+<h2 id="ce-qui-reste-et-qui-nest-pas-de-mon-ressort">Ce qui reste, et qui n'est pas de mon ressort</h2>
+<p>⛔ <strong>Le report des trois exceptions de zone dans <code>CLAUDE.md</code></strong> (M4). La revue a raison de le
+classer majeur, et elle voit un effet de bord que j'avais manqué : en fermant <code>CLAUDE.md</code> aux
+fiches, j'ai fait que la seule issue est « signaler au Résumé », donc <strong>après</strong> le run —
+alors que <code>l1-05.3a</code> rencontre la contradiction dès <strong>N1</strong>. C'est devenu un <strong>prérequis de
+dispatch</strong>, écrit comme tel dans <code>_roadmap.md</code> §5bis ; le paragraphe prêt à coller est dans
+<code>_revue-v3.md</code> §5.1.</p></article></body></html>
