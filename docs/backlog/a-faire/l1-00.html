@@ -45,11 +45,14 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../etat.html">🏠 Backlog</a> › <span>lot-1-embeddings</span> › <b>l1-00</b></nav><h1>[l1-00] Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié <span class="pill" style="background:#8b7bd8">Maturation</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O1<br><b>Chantier</b> : lot-1-embeddings</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="l1-07.html"><code>l1-07</code></a> Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <b>l1-00</b></nav><h1>[l1-00] Socle d&#x27;inférence — dépendances, cache des poids, fetch-models unifié <span class="pill" style="background:#d8a657">À faire</span></h1><p class="meta"><b>Effort</b> : M<br><b>Catégorie</b> : outillage<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-02.1.html"><code>l1-02.1</code></a> Adapter Clay v1.5 — masque à 0, datacube complet, z-score DN, CLS 1024-d <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-02.2.html"><code>l1-02.2</code></a> Adapter TerraMind small — 384-d, agrégation explicite des 256 patchs, table de noms <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-07.html"><code>l1-07</code></a> Gate avec poids — la CI et les worktrees ont un cache, ou le gate est rouge partout <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-00-le-socle-tout-ce-qui-sinstalle-en-un-seul-endroit">[l1-00] — Le socle : tout ce qui s'installe, en un seul endroit</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-3500804">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD 3500804)</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -226,6 +229,86 @@ passent tous par <strong>un seul mécanisme</strong> — c'est ce qui rend la ga
    256 ; aucune fiche ne parle plus de 224. ⚠ Ce verdict n'a <strong>pas</strong> d'oracle ici : son
    témoin mécanique est <code>l1-02.2</code>/O5, qui asserte la forme réelle de la sortie. Le dire
    explicitement plutôt que de laisser croire que la fiche le prouve.</p>
+<h3 id="ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-3500804">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD <code>3500804</code>)</h3>
+<p>Vérifié <strong>avant dispatch</strong>, fichier par fichier et par sondes exécutées. Ce qui suit prime
+sur la prose ci-dessus en cas d'écart.</p>
+<p><strong>Lu dans le code — les points d'insertion exacts</strong></p>
+<ul>
+<li><code>pyproject.toml</code> — <code>[tool.pixi.environments]</code> vaut aujourd'hui
+  <code>default = { features = ["dev"], solve-group = "default" }</code>. ⚠ La fiche écrit
+  <code>default = { features = ["dev", "models"] }</code> <strong>sans le <code>solve-group</code></strong> : le <strong>conserver</strong>.
+  Le supprimer perdrait le groupe de résolution sans que rien ne le signale.</li>
+<li><code>adapters/config_io.py:64-99</code> — <code>load_settings</code> enchaîne : lecture YAML → surcharges
+  d'environnement (<code>_coerce_env_value</code>) → <code>Settings(**raw)</code> → <code>validate()</code>. Et
+  <code>core/settings.py:31</code> déclare <code>@dataclass(frozen=True, slots=True)</code> : <strong>rien ne se mute
+  après construction</strong>.
+  ⭐ <strong><code>_PATH_FIELDS</code> s'applique donc sur <code>raw</code>, juste AVANT <code>Settings(**raw)</code></strong> — cet
+  emplacement, et lui seul, couvre d'un coup la valeur YAML et la surcharge d'environnement.
+  Le poser dans <code>_coerce_env_value</code> ne couvrirait <strong>que</strong> l'env, et le défaut versionné
+  <code>~/.cache/tiny-wae/models</code> — c'est-à-dire le <strong>cas nominal</strong> — passerait à travers non
+  expansé. C'est précisément le bug que O5 doit attraper.</li>
+<li><code>config_io.py:28-43</code> — <code>_LIST_FIELDS = frozenset({"asset_keys"})</code> et <code>_INT_FIELDS</code> (10
+  champs, dont <code>backfill_workers</code>). C'est le patron littéral à copier pour <code>_PATH_FIELDS</code>.</li>
+<li><code>core/settings.py:49-77</code> — <code>validate()</code> a <strong>deux</strong> boucles : bornes <code>[0, 100]</code> puis
+  <code>&gt; 0</code>. <code>embed_cloud_pct_max</code> va dans la première (la fiche le dit). ⭐ <strong>Mettre aussi
+  <code>embed_workers</code> dans la seconde</strong> : <code>backfill_workers</code> y est, et l'omettre accepterait
+  <code>embed_workers: 0</code> en silence — une asymétrie que personne ne reverrait.</li>
+<li><code>config_io.py:22</code> — <code>ENV_PREFIX = "TINY_WAE_"</code>. Les trois surcharges sont donc
+  <code>TINY_WAE_HF_HOME</code>, <code>TINY_WAE_EMBED_CLOUD_PCT_MAX</code>, <code>TINY_WAE_EMBED_WORKERS</code>.</li>
+<li><code>tests/test_packaging.py</code> — c'est <strong><code>_dependances_declarees()</code> (l.44-53)</strong> qu'il faut
+  étendre : elle seule lit <code>projet["dependencies"]</code>. Le second test lit <code>pixi["dependencies"]</code>
+  (table de base) et <strong>reste vert sans modification</strong> tant que torch/claymodel/terratorch
+  vivent dans <code>[tool.pixi.feature.models.*]</code>. <code>_modules_racines_importes()</code> (l.56-73) balaie
+  <code>_SRC</code> <strong>seul</strong> — <code>scripts/</code> n'est jamais scanné par ce test.</li>
+<li><code>justfile:96-97</code> — <code>just deptry</code> = <code>deptry src</code>, et son commentaire dit déjà pourquoi
+  <code>scripts/</code> en est exclu. Confirme la décision « <code>onnxruntime</code> côté pixi seulement ».</li>
+<li><code>pyproject.toml:126-138</code> — <code>[tool.ruff.lint.per-file-ignores]</code> porte <code>"tests/**"</code>,
+  <code>"scripts/**" = ["T201"]</code> et <code>"scripts/smoke.py" = ["S101"]</code>, chacun avec son commentaire.
+  La ligne <code>"scripts/bench_*.py"</code> s'insère là, dans le même style.</li>
+<li>Aucune section <code>[tool.deptry]</code> n'existe : le bloc <code>per_rule_ignores</code> est une <strong>création</strong>.</li>
+<li>Aucun répertoire <code>models/</code> à la racine — le point 2 (<code>.gitignore</code>) est un simple contrôle,
+  il n'y a rien à faire.</li>
+<li><code>huggingface_hub</code>, <code>timm</code>, <code>torch</code> et <code>terratorch</code> sont <strong>tous absents</strong> de l'environnement
+  actuel (relevé par <code>importlib.metadata</code>). Le <code>DEP002</code> anticipé par la fiche est donc bien
+  le comportement attendu, pas une hypothèse.</li>
+<li>⚠ <code>[tool.mypy] files = ["src", "tests", "scripts"]</code> (<code>pyproject.toml:146</code>) : <strong><code>scripts/</code>
+  est sous <code>mypy --strict</code></strong>. <code>fetch_models.py</code> et <code>check_cache.py</code> doivent donc être
+  entièrement typés. Ce n'est écrit nulle part ailleurs — et le commentaire de
+  <code>tests/test_smoke.py</code> affirme l'inverse (« <code>files = ["src"]</code> ») : <strong>il est périmé, ne pas
+  s'y fier</strong>.</li>
+</ul>
+<p><strong>Sondé, témoin dans les deux sens</strong></p>
+<ul>
+<li>⭐ <strong>pixi crée bien la feature depuis l'extra PEP 621</strong> (pixi 0.63.2). Projet jouet avec
+  <code>models = ["idna"]</code> et <code>default = { features = ["models"] }</code> → <code>pixi info</code> rend
+  <code>Features: models, default</code> et <code>PyPI Dependencies: idna, probe</code>. Témoin négatif :
+  environnement sans <code>features = ["models"]</code> → <code>PyPI Dependencies: probe</code> seul. <strong>Le
+  mécanisme central de cette fiche tient.</strong></li>
+<li>⭐ <strong>Le solve résout les DEUX plateformes.</strong> <code>platforms = ["linux-64", "win-64"]</code> : jouet
+  avec <code>torch</code> + <code>terratorch==1.2.11</code> + <code>huggingface_hub</code> → lock écrit, <strong>156 paquets en
+  linux-64, 131 en win-64</strong>. terratorch 1.2.11, timm 1.0.28, torch 2.13.0. <strong>Aucun blocage
+  de plateforme à redouter</strong> — c'était le risque le plus coûteux, il est levé.</li>
+<li>⭐ <strong>La référence git de <code>claymodel</code> se résout dans le même solve</strong> → <code>claymodel 1.5.0</code>.
+  Trois conséquences qu'aucune revue n'avait, et qui sont à <strong>consigner au Résumé</strong> :
+  1. ⚠ <strong><code>einops</code> est RÉTROGRADÉ de 0.8.2 à 0.7.0</strong> par claymodel, alors qu'il est aussi une
+     dépendance de terratorch — le solveur tranche en faveur de claymodel. Ce n'est pas une
+     erreur, c'est un effet de bord : <strong>si terratorch se comporte mal en <code>l1-02.2</code>, c'est la
+     première piste à regarder.</strong>
+  2. <code>claymodel</code> tire <strong><code>wandb</code>, <code>sentry-sdk</code> et <code>opentelemetry-api</code></strong> — de la télémétrie,
+     dans l'environnement par défaut. Inertes sans clé ni DSN, mais mieux vaut le <strong>savoir</strong>
+     que le découvrir : le dépôt est public.
+  3. <code>vit-pytorch</code> arrive également.</li>
+</ul>
+<p><strong>Deux points hors périmètre, à SIGNALER au Résumé sans les traiter</strong></p>
+<ul>
+<li><code>.env.example</code> documente <strong>une variable par clé</strong> surchargeable, exhaustivement. Cette
+  fiche pose <strong>trois</strong> clés ; <code>l1-07</code>, propriétaire du fichier, n'en documente qu'<strong>une</strong>
+  (<code>TINY_WAE_HF_HOME</code>). Les deux autres ne seraient documentées par personne.</li>
+<li>Le commentaire périmé de <code>tests/test_smoke.py</code> sur le périmètre de mypy (ci-dessus).</li>
+</ul>
+<p><strong>Ce que l'ancrage n'a PAS vérifié</strong> : le contenu des poids, leurs sha256 et leurs tailles
+(c'est O1) · le comportement de <code>timm</code> vis-à-vis de <code>TIMM_USE_OLD_CACHE</code> · le coût réel
+d'installation (c'est O4 — le décompte du jouet ne s'y transpose pas).</p>
 <p><strong>Hors périmètre</strong> : tout code d'adapter (<code>l1-02.x</code>) · la garde <code>HF_HUB_OFFLINE</code> au run
 (<code>l1-02.3</code>) · le smoke · la CI et les worktrees (<code>l1-07</code>).</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -320,4 +403,4 @@ patcher claymodel</strong> — on le télécharge, on le consigne, on ne patche 
 <li><strong>Delta d'install de la feature models</strong> : <em>(secondes, Mo, et qualification)</em></li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="l1-01.html">[l1-01] [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port →</a></div><p class="gen">Généré le 26/08/2026 16:21 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../fait/l0-R1.html">← [l0-R1] [RÉTROACTIVE] Durcissement de la livraison PID-FLOW — conventions CWL + contrat de la wheel</a><a href="../fait/obs-01.html">[obs-01] Système de logging + progression du backfill →</a></div><p class="gen">Généré le 26/08/2026 16:55 — le .md fait foi.</p></article></body></html>
