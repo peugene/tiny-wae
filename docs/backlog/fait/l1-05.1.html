@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.1</b></nav><h1>[l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#5aa7d8">En cours</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-05.html"><code>▣ l1-05</code></a> › <b>l1-05.1</b></nav><h1>[l1-05.1] Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O3</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-05.html"><code>l1-05</code></a> [CHAPEAU] Qualité — séparabilité, déterminisme, trajectoire témoin <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-05.1.html"><code>l1-05.1</code></a> Métriques pures — cosinus, séparabilité intra/inter site <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.2.html"><code>l1-05.2</code></a> Déterminisme — identité à configuration fixée, écart entre threads mesuré <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3.H.html"><code>l1-05.3.H</code></a> [HUMAIN] Campagne d&#x27;embeddings — sous-échantillon d&#x27;abord, corpus complet la nuit <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.4.html"><code>l1-05.4</code></a> Trajectoire témoin — Hinkley Point C contre Bouconne, le signal existe-t-il ? <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-051-les-metriques-a-sec">[l1-05.1] — Les métriques, à sec</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -56,7 +56,16 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
-<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#ce-qui-a-ete-livre">Ce qui a été livré</a></li>
+<li><a href="#verdict-des-oracles">Verdict des oracles</a></li>
+<li><a href="#o4b-la-valeur-litterale-a-ete-recalculee-independamment">⭐ O4b : la valeur littérale a été recalculée indépendamment</a></li>
+<li><a href="#un-choix-dimplementation-non-couvert-par-la-fiche">Un choix d'implémentation non couvert par la fiche</a></li>
+<li><a href="#le-gate-a-rougi-une-fois-flake-confirme-pas-une-regression">⚠ Le gate a rougi une fois — flake confirmé, pas une régression</a></li>
+<li><a href="#non-teste-et-declare">Non testé, et déclaré</a></li>
+<li><a href="#commits">Commits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -158,9 +167,9 @@ de la revue v4, qui a recompté sur les 9 873 manifestes.</p>
 seuil de décision — les seuils appartiennent aux campagnes, pas aux métriques.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>core/similarity.py</code> livré, <code>mypy --strict</code> vert, zéro dépendance nouvelle.</li>
-<li>[ ] Les 4 fonctions, avec gardes sur les cas dégénérés.</li>
-<li>[ ] <code>tests/test_similarity.py</code> — <strong>vecteurs synthétiques, valeurs connues</strong>.</li>
+<li>[x] <code>core/similarity.py</code> livré, <code>mypy --strict</code> vert, zéro dépendance nouvelle.</li>
+<li>[x] Les 4 fonctions, avec gardes sur les cas dégénérés.</li>
+<li>[x] <code>tests/test_similarity.py</code> — <strong>vecteurs synthétiques, valeurs connues</strong>.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -232,10 +241,143 @@ seul ~335 000 paires intra : c'est bien la silhouette, et non la seule marge, qu
 déséquilibre.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<p><strong>Fait le 26/08/2026</strong> — agent Sonnet medium en worktree isolé (31 min), relu et validé par
+l'orchestrateur. <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> : <strong>334 tests</strong>, mypy strict
+sur 81 fichiers, deptry, smoke et cwl verts.</p>
+<h3 id="ce-qui-a-ete-livre">Ce qui a été livré</h3>
+<p><code>src/tiny_wae/core/similarity.py</code> (179 lignes) et <code>tests/test_similarity.py</code> (186 lignes).
+9 tests, chacun documentant ce qu'il attrape que les autres n'attrapent pas. Le ratio (1,04x)
+est le plus élevé du lot jusqu'ici, et c'est <strong>assumé</strong> : la fiche l'annonçait — « cette
+fiche est du pur, c'est donc la mieux testée du lot, et c'est justifié : les métriques
+portent toutes les conclusions de <code>l1-05.3a</code> et <code>l1-05.4</code> ».</p>
+<h3 id="verdict-des-oracles">Verdict des oracles</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td><code>cosine</code> : <strong>1,0 · 0,0 · −1,0</strong> au 1e-9 sur identiques / orthogonaux / opposés</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>vecteur nul → <code>ZeroVectorError</code> typée, jamais un <code>nan</code></td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>groupes séparés : marge <strong>0,9620</strong> (&gt; 0,5) · bruit sans structure : <strong>0,0167</strong> (&lt; 0,1). <strong>Les deux sens</strong></td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td>silhouette <strong>0,9646</strong> (&gt; 0,5) · <strong>0,0156</strong> sur le bruit (&lt; 0,05)</td>
+</tr>
+<tr>
+<td>O4b</td>
+<td>✅</td>
+<td><strong>11/21 = 0,523809…</strong>, sur 4 vecteurs littéraux — voir ci-dessous</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td>dérive strictement croissante sur une suite qui s'éloigne ; non monotone sur une suite qui oscille</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>✅</td>
+<td>groupe à un élément <strong>et</strong> labels tous identiques → <code>DegenerateGroupsError</code> dans les deux cas, jamais de division par zéro</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>✅</td>
+<td><code>just check</code> vert</td>
+</tr>
+</tbody>
+</table></div>
+<p>Aucun oracle laissé « non exécuté ».</p>
+<h3 id="o4b-la-valeur-litterale-a-ete-recalculee-independamment">⭐ O4b : la valeur littérale a été recalculée indépendamment</h3>
+<p>La fiche exigeait une valeur « calculée à la main », sans la donner — c'est donc l'agent qui
+l'a dérivée, et c'était le point le plus critique de la relecture : <strong>une valeur fausse
+gèlerait une convention fausse</strong>, dans le seul test capable de rougir si la distance passait
+à l'euclidienne.</p>
+<p>Recalcul indépendant de l'orchestrateur, sur v1=(1,0), v2=(3/5,4/5) en groupe A et v3=(0,1),
+v4=(−4/5,3/5) en groupe B, distance <code>1 − cos</code> :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>a(i)</th>
+<th>b(i)</th>
+<th>s(i)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1</td>
+<td>2/5</td>
+<td>7/5</td>
+<td><strong>5/7</strong></td>
+</tr>
+<tr>
+<td>v2</td>
+<td>2/5</td>
+<td>3/5</td>
+<td><strong>1/3</strong></td>
+</tr>
+<tr>
+<td>v3</td>
+<td>2/5</td>
+<td>3/5</td>
+<td><strong>1/3</strong></td>
+</tr>
+<tr>
+<td>v4</td>
+<td>2/5</td>
+<td>7/5</td>
+<td><strong>5/7</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Moyenne = (10/7 + 2/3) / 4 = <strong>11/21</strong>. ✅ <strong>La valeur de l'agent est exacte.</strong></p>
+<h3 id="un-choix-dimplementation-non-couvert-par-la-fiche">Un choix d'implémentation non couvert par la fiche</h3>
+<p>Pour un point appartenant à un groupe de <strong>taille 1</strong> au sein d'un jeu à plusieurs groupes,
+<code>a(i)</code> est indéfini. L'agent a retenu la <strong>convention scikit-learn</strong> (silhouette du point =
+0) plutôt qu'une exception, en la documentant : un site à un seul chip ne doit pas faire
+échouer toute la mesure. C'est le bon arbitrage — la campagne portera sur 25 sites très
+inégaux (49 à 563 chips), et un groupe dégénéré ne doit pas invalider les 24 autres.
+⚠ Ce sous-cas <strong>n'a pas de test dédié</strong> : O6 ne couvre que le cas dégénéré global (un seul
+label distinct). Déclaré, non couvert.</p>
+<h3 id="le-gate-a-rougi-une-fois-flake-confirme-pas-une-regression">⚠ Le gate a rougi une fois — flake confirmé, pas une régression</h3>
+<p>Le premier <code>just check</code> après merge est sorti <strong>rouge</strong> : <code>1 failed, 333 passed</code>. Le test en
+cause est <code>tests/test_cli_backfill.py:546</code> (double Ctrl+C du backfill) — un test du <strong>Lot 0</strong>
+qui pilote un sous-processus, un FIFO et des signaux POSIX avec des <strong>timeouts de 10 s</strong>. Il
+a expiré en attendant « arrêt immédiat ».</p>
+<p>Vérifié plutôt que supposé : relancé <strong>seul</strong>, il passe (8/8) ; <code>just check</code> relancé en
+entier, <strong>334 passed</strong>, exit 0. Aucun lien possible avec cette fiche — <code>core/similarity.py</code>
+est un module pur que le backfill n'importe pas.</p>
+<p>⭐ <strong>Ce qu'il faut en retenir</strong> : un test du gate est <strong>sensible à la charge de la machine</strong>.
+Il produira des faux rouges, et le vrai danger n'est pas la minute perdue — c'est
+l'habitude de relancer un gate rouge « pour voir ». Signalé au débrief ; non traité ici,
+le Lot 0 étant gelé par décision du 23/08.</p>
+<h3 id="non-teste-et-declare">Non testé, et déclaré</h3>
+<p>Le comportement sur de vrais embeddings (<code>l1-05.3.H</code>) · la pertinence des seuils métier
+(campagnes) · le sous-cas du groupe de taille 1 ci-dessus · <strong>le temps d'exécution sur le
+corpus réel</strong>. Sur ce dernier point, l'implémentation est vectorisée (matrice de similarité
+par produit matriciel <code>normalized @ normalized.T</code>, une seule boucle Python sur les points
+avec des opérations vectorisées dedans) : l'ancrage avait chiffré 16,8 M paires et 134 Mo
+par matrice — il y en a <strong>deux</strong> en mémoire (<code>sim</code> puis <code>dist = 1 − sim</code>), soit ~270 Mo en
+float32. Tenable, mais mesuré nulle part : c'est <code>l1-05.3a</code> qui le verra.</p>
+<h3 id="commits">Commits</h3>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : …</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 26/08/2026 21:08 — le .md fait foi.</p></article></body></html>
+<li><code>ef54049</code> — <code>feat(core): métriques de similarité pures — cosinus, séparabilité, silhouette, dérive (l1-05.1)</code></li>
+<li>merge <code>--no-ff</code> sur <code>develop</code></li>
+</ul>
+<p><strong>Date</strong> : 2026-08-26</p><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 26/08/2026 21:58 — le .md fait foi.</p></article></body></html>
