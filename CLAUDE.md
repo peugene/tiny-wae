@@ -13,9 +13,16 @@ Deux types d'instances Claude travaillent sur ce dépôt **en parallèle** :
   lots, source de vérité du lotissement). Il ne touche jamais à `src/`, `tests/`,
   `scripts/`, et ne fait **ni commit ni push**.
 - **L'équipe d'implémentation** (instances Claude Code) écrit dans `src/`, `tests/`,
-  `scripts/`, et gère les **déplacements** de fiches (`a-faire/ → en-cours/ → fait/`) ainsi
-  que git. L'éauipe peut :  modidier ou  rédiger des nouvelles fiches en maturation après une revue. Elle rédige aussi des fiches **différées**
-  pendant un `/run` (règle d'autonomie de la méthode).
+  `scripts/`, **`.github/`** (workflows et configuration CI — précédent de fait : `codeql.yml`
+  et `dependabot.yml`), **`config/`** et **`.env.example`**. Elle peut aussi **créer** des
+  fichiers sous **`docs/lots/<lot>/`** (sous-répertoire d'un lot : rapports décisionnels
+  produits par les fiches) — les **fiches de lot** elles-mêmes (`docs/lots/*.md`) restent
+  zone PO. Elle gère les **déplacements** de fiches (`a-faire/ → en-cours/ → fait/`) ainsi
+  que git. L'équipe peut modifier ou rédiger de nouvelles fiches en maturation après une
+  revue. Elle rédige aussi des fiches **différées** pendant un `/run` (règle d'autonomie de
+  la méthode).
+- ⛔ **`README.md` et `CLAUDE.md` ne se modifient depuis aucune fiche** : la fiche rédige au
+  Résumé la ligne à y ajouter, Philippe la reporte.
 
 **Une troisième source alimente le dépôt** : le **tooling** (`scripts/`, en particulier
 `backlog.py`) est mis au point **hors de ce dépôt**, puis déposé ici. Y trouver des
