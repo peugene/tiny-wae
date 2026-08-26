@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.4</b></nav><h1>[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="../fait/l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#5aa7d8">En cours</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-01.html"><code>▣ l1-01</code></a> › <b>l1-01.4</b></nav><h1>[l1-01.4] Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O1</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-01.html"><code>l1-01</code></a> [CHAPEAU] Socle d&#x27;embedding — contrat d&#x27;entrée, chargement, port <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li><a href="l1-01.1.html"><code>l1-01.1</code></a> Core embedding — ordre normatif des bandes (celui de Clay), spec, spec_hash <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.2.html"><code>l1-01.2</code></a> chip_loader — ChipTensor complet (DN, ordre Clay, métadonnées pour datacube) <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-01.3.html"><code>l1-01.3</code></a> Port EmbeddingModel + registre à imports paresseux, table pré-posée <span class="pill" style="background:#8b7bd8">Maturation</span></li><li>→ <a href="l1-01.4.html"><code>l1-01.4</code></a> Corpus de fixtures d&#x27;embedding — quelques chips réels gelés, hors réseau <span class="pill" style="background:#69b076">Fait</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-014-fixtures-dembedding">[l1-01.4] — Fixtures d'embedding</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -57,7 +57,16 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
-<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#fixtures-retenues-cest-ce-qui-rend-le-corpus-rejouable">Fixtures retenues — c'est ce qui rend le corpus rejouable</a></li>
+<li><a href="#verdict-des-oracles">Verdict des oracles</a></li>
+<li><a href="#o2-reverifie-par-lorchestrateur-independamment">⭐ O2 revérifié par l'orchestrateur, indépendamment</a></li>
+<li><a href="#aucun-script-ecrit-et-cest-le-bon-geste">Aucun script écrit, et c'est le bon geste</a></li>
+<li><a href="#un-ecart-signale-par-lagent-sans-consequence">Un écart signalé par l'agent, sans conséquence</a></li>
+<li><a href="#non-verifie-et-declare">Non vérifié, et déclaré</a></li>
+<li><a href="#commits">Commits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -208,10 +217,10 @@ sous <code>mypy --strict</code> (<code>files = ["src", "tests", "scripts"]</code
 poids) · aucune fixture de modèle.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] 4 acquisitions sous <code>tests/fixtures/embed/</code>, <strong>taille totale mesurée et publiée</strong>.</li>
-<li>[ ] Les manifestes sont <strong>copiés tels quels</strong>, jamais réécrits.</li>
-<li>[ ] <code>README.md</code> du dossier : provenance et procédure.</li>
-<li>[ ] Aucun <code>https://</code> résiduel dans les fixtures (elles ne servent qu'à lire des fichiers locaux).</li>
+<li>[x] 4 acquisitions sous <code>tests/fixtures/embed/</code>, <strong>taille totale mesurée et publiée</strong>.</li>
+<li>[x] Les manifestes sont <strong>copiés tels quels</strong>, jamais réécrits.</li>
+<li>[x] <code>README.md</code> du dossier : provenance et procédure.</li>
+<li>[x] Aucun <code>https://</code> résiduel dans les fixtures (elles ne servent qu'à lire des fichiers locaux).</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -259,11 +268,119 @@ le <strong>gate</strong> déterministe et hors ligne. Le Lot 0 a versionné 31 M
 ajouter autant.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<p><strong>Fait le 26/08/2026</strong> — agent Sonnet medium en worktree isolé (20 min), relu et vérifié par
+l'orchestrateur. <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> : <strong>334 tests</strong>, mypy strict
+sur 81 fichiers, deptry, smoke et cwl verts.</p>
+<h3 id="fixtures-retenues-cest-ce-qui-rend-le-corpus-rejouable">Fixtures retenues — c'est ce qui rend le corpus rejouable</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th><code>item_id</code></th>
+<th>Site</th>
+<th>Date</th>
+<th><code>cloud_pct</code></th>
+<th>Taille</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>S2A_31TGJ_20220911_0_L2A</code></td>
+<td><strong>A01</strong></td>
+<td>2022-09-11</td>
+<td>0,0 %</td>
+<td>2 958 349 o</td>
+</tr>
+<tr>
+<td><code>S2A_31TGJ_20221120_0_L2A</code></td>
+<td><strong>A01</strong></td>
+<td>2022-11-20</td>
+<td>0,0 %</td>
+<td>2 958 336 o</td>
+</tr>
+<tr>
+<td><code>S2A_52TEL_20230323_0_L2A</code></td>
+<td><strong>C07</strong></td>
+<td>2023-03-23</td>
+<td>0,0 %</td>
+<td>2 958 352 o</td>
+</tr>
+<tr>
+<td><code>S2B_52TEL_20230226_0_L2A</code></td>
+<td><strong>C07</strong></td>
+<td>2023-02-26</td>
+<td><strong>28,89 %</strong></td>
+<td>2 958 428 o</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ce sont les quatre candidats proposés par l'ancrage, repris tels quels.</p>
+<h3 id="verdict-des-oracles">Verdict des oracles</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td><strong>11 836 720 octets (11,84 Mo)</strong> — seuil ≤ 15 Mo, marge de 21 %</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>4 × (3 rasters + manifeste) présents, <strong>identiques octet à octet</strong> aux originaux</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>trois à <strong>0,0 %</strong>, un à <strong>28,89 %</strong> — valeurs lues dans les manifestes réels, en littéral, jamais par référence à un réglage qui n'existe pas encore</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><strong>deux sites, et chacun porte deux dates</strong> — A01 (09/2022, 11/2022) et C07 (02/2023, 03/2023)</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td><code>just check</code> vert, <strong>hors ligne</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Aucun oracle laissé « non exécuté ».</p>
+<h3 id="o2-reverifie-par-lorchestrateur-independamment">⭐ O2 revérifié par l'orchestrateur, indépendamment</h3>
+<p>L'intégrité des copies est le cœur de cette fiche : un manifeste réécrit ou reformaté
+détruirait la trace du Lot 0. Plutôt que de m'en remettre au rapport, j'ai comparé les
+<strong>16 fichiers</strong> (4 acquisitions × 4 fichiers) aux originaux de <code>/mnt/d/datas/tiny-wae/</code> par
+<code>cmp</code> : <strong>16/16 identiques octet à octet</strong>. Taille remesurée : <strong>11 836 765 octets</strong> —
+l'écart de 45 octets avec le chiffre de l'agent est celui des entrées de répertoire selon
+l'outil de mesure, sans portée.</p>
+<p>Et « aucun <code>https://</code> résiduel » : <strong>aucun</strong>, confirmé par <code>grep -rl</code> sur le dossier. Comme
+l'ancrage l'avait annoncé, c'était vrai par construction — les manifestes du Lot 0
+n'écrivent aucun href.</p>
+<h3 id="aucun-script-ecrit-et-cest-le-bon-geste">Aucun script écrit, et c'est le bon geste</h3>
+<p>Les quatre acquisitions étaient déjà sur le disque local : une copie (<code>cp -p</code>) a suffi. La
+fiche le demandait explicitement (« s'il suffit d'une copie manuelle, ne pas écrire de
+script ») et l'ancrage l'avait confirmé. Un script d'enregistrement aurait été de
+l'outillage sans usage — et il serait tombé sous <code>mypy --strict</code> pour un bénéfice nul.</p>
+<p><code>tests/fixtures/</code> passe de <strong>31,7 Mo à 43,5 Mo</strong>. Le dossier <code>embed/</code> est disjoint de
+<code>stac/</code>, <code>cog/</code>, <code>manifests/</code> et <code>config/</code>, qui sont <strong>intacts</strong> (vérifié sur le diff).</p>
+<h3 id="un-ecart-signale-par-lagent-sans-consequence">Un écart signalé par l'agent, sans conséquence</h3>
+<p>L'ancrage annonçait le HEAD <code>bda42dc</code>, le worktree est parti de <code>7486774</code>. C'est normal —
+j'ai commité entre la rédaction de l'ancrage et le dispatch, et <code>7486774</code> <strong>contient</strong>
+l'ancrage. L'agent a eu raison de le relever plutôt que de passer outre : c'est le réflexe
+que la règle « commiter les fiches avant la sonde » cherche à installer.</p>
+<h3 id="non-verifie-et-declare">Non vérifié, et déclaré</h3>
+<p>La validation par <code>load_chip_tensor</code> — déplacée par la fiche elle-même vers <code>l1-01.2</code>/O6 ·
+la représentativité des 4 chips vis-à-vis des 5 793, que la fiche déclare <strong>nulle</strong> : ces
+fixtures rendent le gate déterministe et hors ligne, elles ne servent à aucune mesure.</p>
+<h3 id="commits">Commits</h3>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Fixtures retenues</strong> : <em>(id · site · date · cloud_pct · taille)</em></li>
-<li><strong>Verdict de l'oracle</strong> : …</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../maturation/lot-1-embeddings/l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</a><span></span></div><p class="gen">Généré le 26/08/2026 21:59 — le .md fait foi.</p></article></body></html>
+<li><code>ceefbcb</code> — <code>feat(fixtures): geler 4 acquisitions réelles pour le smoke embedding (l1-01.4)</code></li>
+<li>merge <code>--no-ff</code> sur <code>develop</code></li>
+</ul>
+<p><strong>Date</strong> : 2026-08-26</p><div class="prevnext"><a href="../maturation/lot-1-embeddings/l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</a><span></span></div><p class="gen">Généré le 26/08/2026 22:29 — le .md fait foi.</p></article></body></html>
