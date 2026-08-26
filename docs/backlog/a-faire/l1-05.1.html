@@ -49,7 +49,10 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <ul>
 <li><a href="#l1-051-les-metriques-a-sec">[l1-05.1] — Les métriques, à sec</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-556b03a">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD 556b03a)</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -100,6 +103,57 @@ s'arbitre avant d'être ajoutée).</p>
   chapeau : le pire cas d'une dérive est son MAXIMUM). C'est l'outil de <code>l1-05.4</code> — et son
   seuil « &gt; 2 » n'a de sens que sur cette définition, pas sur une similarité.</li>
 </ul>
+<h3 id="ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-556b03a">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD <code>556b03a</code>)</h3>
+<p><strong>Vérifié dans le code</strong></p>
+<ul>
+<li><code>src/tiny_wae/core/similarity.py</code> <strong>n'existe pas</strong> — création. Aucun <code>cosine</code> ni
+  <code>cosine_similarity</code> nulle part dans <code>src/</code> : rien à réutiliser, rien à ne pas dupliquer.</li>
+<li><strong><code>scikit-learn</code> n'est au contrat nulle part</strong> (0 occurrence dans <code>pyproject.toml</code>) : la
+  consigne « pas de scikit-learn » n'est pas un choix à faire, c'est l'état des lieux. En
+  ajouter une serait une écriture dans <code>pyproject.toml</code>, <strong>propriété exclusive de <code>l1-00</code>,
+  close</strong> — donc hors de portée de cette fiche de toute façon.</li>
+<li>⭐ <strong>Ce module sera le PREMIER de <code>core/</code> à importer numpy.</strong> Vérifié : aucun module sous
+  <code>core/</code> ne le fait aujourd'hui. Ce n'est pas une entorse — la règle de couches interdit
+  l'I/O et les frameworks, pas une bibliothèque de calcul, et <code>numpy</code> est au contrat du
+  paquet depuis le Lot 0. Mais c'est un <strong>précédent</strong>, autant le poser sciemment : la
+  pureté de <code>core/</code> se juge à l'absence d'I/O, pas à l'absence de dépendances.</li>
+</ul>
+<p><strong>Les ordres de grandeur, calculés — pour la note « à surveiller » de la fiche</strong></p>
+<p>Sur le corpus réel (5 793 chips) :</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Grandeur</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>paires distinctes pour une silhouette complète</td>
+<td><strong>16 776 528</strong> (~16,8 M — la fiche dit « ~17 millions », c'est juste)</td>
+</tr>
+<tr>
+<td>matrice <code>n × n</code> en float32</td>
+<td><strong>134 Mo</strong></td>
+</tr>
+<tr>
+<td>les vecteurs eux-mêmes : Clay 1024-d · TerraMind 384-d</td>
+<td><strong>24 Mo</strong> · <strong>9 Mo</strong></td>
+</tr>
+<tr>
+<td>paires intra du plus gros site (B01, 563 chips après filtre)</td>
+<td><strong>158 203</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>⭐ <strong>Conclusion utile : la silhouette complète tient en mémoire.</strong> 134 Mo pour la matrice
+de distances, sur une machine qui charge par ailleurs un modèle de 302 M de paramètres —
+l'échantillonnage évoqué dans les Notes n'a <strong>pas</strong> de raison d'être nécessaire. Le
+mesurer avant de le décider, et si on échantillonne quand même, le dire dans la campagne.</p>
+<p><strong>Le déséquilibre des groupes, recompté (et il justifie la silhouette encore mieux)</strong></p>
+<p>63 (B08) à 579 (B01) chips <code>ingested</code> par site, médiane 219 ; 49 à 563 après le filtre à
+10 %. Rapport <strong>9,2×</strong>, pas 7×. Le corps de la fiche porte déjà la correction — elle vient
+de la revue v4, qui a recompté sur les 9 873 manifestes.</p>
 <p><strong>Hors périmètre</strong> : toute lecture de vecteurs sur disque (<code>l1-05.3a</code>) · tout modèle · tout
 seuil de décision — les seuils appartiennent aux campagnes, pas aux métriques.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -184,4 +238,4 @@ déséquilibre.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 26/08/2026 19:41 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-05.2.html">[l1-05.2] Déterminisme — identité à configuration fixée, écart entre threads mesuré →</a></div><p class="gen">Généré le 26/08/2026 20:28 — le .md fait foi.</p></article></body></html>
