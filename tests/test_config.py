@@ -220,9 +220,27 @@ def test_embed_cloud_pct_max_and_embed_workers_defaults_and_bounds() -> None:
     """Les deux autres clés pré-posées (l1-00) : défauts livrés, puis bornes vérifiées."""
     settings = load_settings(SETTINGS_PATH, env={})
     assert settings.embed_cloud_pct_max == 10
-    assert settings.embed_workers == 4
+    assert settings.embed_workers == 1
 
     with pytest.raises(Exception, match="embed_cloud_pct_max"):
         load_settings(SETTINGS_PATH, env={"TINY_WAE_EMBED_CLOUD_PCT_MAX": "150"})
     with pytest.raises(Exception, match="embed_workers"):
         load_settings(SETTINGS_PATH, env={"TINY_WAE_EMBED_WORKERS": "0"})
+
+
+def test_o5_hf_home_default_is_expanded_even_when_absent_from_yaml(tmp_path: Path) -> None:
+    """Le DÉFAUT du dataclass est expansé lui aussi, pas seulement la valeur écrite.
+
+    Défaut trouvé à la relecture de l1-00 : la boucle `_PATH_FIELDS` ne traitait que les
+    clés PRÉSENTES dans le YAML, si bien qu'un `settings.yaml` sans `hf_home` rendait
+    `~/.cache/tiny-wae/models` tel quel — le bug exact que la garde ferme. Une garde qui
+    ne couvre pas son propre défaut n'en est pas une.
+    """
+    path = tmp_path / "settings.yaml"
+    path.write_text(
+        yaml.safe_dump({"stac_url": "https://x", "stac_collection": "c"}),
+        encoding="utf-8",
+    )
+    settings = load_settings(path, env={})
+    assert not settings.hf_home.startswith("~")
+    assert Path(settings.hf_home).is_absolute()

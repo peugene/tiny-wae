@@ -121,9 +121,16 @@ def load_settings(
     # couvre d'un coup la valeur YAML ET la surcharge d'environnement. Le poser dans
     # `_coerce_env_value` ne couvrirait QUE l'env, laissant passer le défaut versionné
     # (`~/.cache/tiny-wae/models`) non expansé — le cas nominal, exactement le bug visé.
+    # ⚠ Le DÉFAUT du dataclass doit être expansé lui aussi (relecture avant merge) : la
+    # version précédente ne traitait que les clés PRÉSENTES dans `raw`, si bien qu'un
+    # `settings.yaml` sans `hf_home` rendait `~/.cache/tiny-wae/models` tel quel — le bug
+    # exact que cette garde ferme. Une garde qui ne couvre pas son propre défaut n'en est
+    # pas une.
+    path_defaults = {f.name: f.default for f in fields(Settings) if f.name in _PATH_FIELDS}
     for field_name in _PATH_FIELDS:
-        if field_name in raw and raw[field_name] is not None:
-            raw[field_name] = _expand_path_field(field_name, str(raw[field_name]))
+        value = raw.get(field_name)
+        source = path_defaults[field_name] if value is None else value
+        raw[field_name] = _expand_path_field(field_name, str(source))
 
     try:
         settings = Settings(**raw)

@@ -53,7 +53,9 @@ class Settings:
     # expansé fabriquerait un répertoire littéralement nommé `~` dans le CWD).
     hf_home: str = "~/.cache/tiny-wae/models"
     embed_cloud_pct_max: int = 10
-    embed_workers: int = 4
+    # Défaut PRUDENT acté par l1-03.3 (goulot CPU, pas réseau) — jamais calqué sur
+    # `backfill_workers`. La valeur utile se mesure en l1-04.3b.
+    embed_workers: int = 1
 
     def validate(self) -> None:
         """Vérifie les bornes de pourcentage et la présence d'au moins une clé d'asset."""
