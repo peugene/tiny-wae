@@ -30,11 +30,24 @@ quand toutes ses sous-tâches y sont.
   non appariés, chapeau qui ordonne, fiche isolée) et **liste les feuilles à relire**. Toute
   anomalie se corrige en maturation AVANT le run.
 - Crée la **liste de tâches via l'outil Task** (une tâche par fiche + une de clôture) pour le suivi.
+- ⛔ **COMMITER les fiches AVANT la sonde.** Un worktree se crée depuis une **référence git** :
+  il ne contient **jamais** l'arbre de travail. Avec `worktree.baseRef: "head"`, la base est le
+  **dernier commit local** ; avec `fresh`, c'est le **ref distant** (il faut alors pousser aussi).
+  Des fiches corrigées mais non commitées sont **invisibles** de tous les agents — ils
+  implémenteraient la version d'avant, sans que rien ne le signale. ⚠ **La sonde ne l'attrape
+  pas** : elle vérifie que le worktree est sur le HEAD **attendu**, pas que ce HEAD **contient**
+  ce que tu crois. Les deux contrôles sont complémentaires, dans cet ordre.
 - ⭐ **Sonde de contrôle du worktree** (~30 s, lecture seule) : dispatcher UN agent trivial en
   `isolation: 'worktree'` qui rapporte `pwd` et `git rev-parse --short HEAD`. Si le HEAD ne
   correspond pas à celui de la branche de chantier → **ne pas dispatcher** : appliquer les réglages
   de `CLAUDE.md` § « Worktrees d'agents », ou basculer sur le repli manuel qui y est décrit.
-- Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
+  *30 s de sonde contre un dispatch entier perdu — le calcul est vite fait.*
+  ⭐ **Pourquoi c'est un prérequis et pas une précaution** : la défaillance qu'elle prévient est
+  **silencieuse et passe le gate**. Un agent sur une base périmée lit une version antérieure de
+  **sa propre fiche**, code contre elle, et livre quelque chose de cohérent — donc `just check`
+  est **vert**. Lint, types, tests et smoke vérifient que le code est conforme à *une* spec ;
+  **aucun** ne vérifie que c'est la **bonne**.
+  - Présente-moi le plan (ordre topologique + ce qui part en parallèle), **puis lance — en autonomie,
   sans attendre ma validation.**
 
 ## 2. Pour CHAQUE fiche
