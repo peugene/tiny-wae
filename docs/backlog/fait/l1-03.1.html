@@ -45,7 +45,7 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 .prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
 .tablewrap{overflow-x:auto;margin:1.2em 0}
 @media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.1</b></nav><h1>[l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#5aa7d8">En cours</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#5aa7d8">En cours</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../maturation/etat.html">🏠 Backlog</a> › <a href="../maturation/lot-1-embeddings/l1-03.html"><code>▣ l1-03</code></a> › <b>l1-03.1</b></nav><h1>[l1-03.1] Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#69b076">Fait</span></h1><p class="meta"><b>Effort</b> : S<br><b>Catégorie</b> : pipeline<br><b>Phase</b> : O2</p></div></div><article><div class="nav"><b>Débloque</b><ul><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-05.3a.html"><code>l1-05.3a</code></a> CLI similarity-report — séparabilité, baseline triviale, témoin mécanique <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><div class="nav"><b>Chapeau</b> : <a href="../maturation/lot-1-embeddings/l1-03.html"><code>l1-03</code></a> [CHAPEAU] CLI embed et stockage fichier des vecteurs <span class="pill" style="background:#8b7bd8">Maturation</span><ul><li>→ <a href="l1-03.1.html"><code>l1-03.1</code></a> Format de stockage des vecteurs + clé d&#x27;idempotence <span class="pill" style="background:#69b076">Fait</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.2.html"><code>l1-03.2</code></a> CLI embed — un site, une fenêtre, idempotent, filtre de nuage <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.3.html"><code>l1-03.3</code></a> CLI embed-backfill — tous les sites, pool de workers, reprise, interruption propre <span class="pill" style="background:#8b7bd8">Maturation</span></li><li><a href="../maturation/lot-1-embeddings/l1-03.4.html"><code>l1-03.4</code></a> Smoke embed dans le gate — chaîne réelle sur fixtures, sous la garde réseau <span class="pill" style="background:#8b7bd8">Maturation</span></li></ul></div><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#l1-031-ou-vivent-les-vecteurs-et-comment-on-sait-quils-sont-a-jour">[l1-03.1] — Où vivent les vecteurs, et comment on sait qu'ils sont à jour</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -56,7 +56,16 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
-<li><a href="#resume-de-realisation">Résumé de réalisation</a></li>
+<li><a href="#resume-de-realisation">Résumé de réalisation</a><ul>
+<li><a href="#ce-qui-a-ete-livre">Ce qui a été livré</a></li>
+<li><a href="#verdict-des-oracles">Verdict des oracles</a></li>
+<li><a href="#lecriture-atomique-nest-pas-une-duplication-et-cest-important">L'écriture atomique n'est pas une duplication, et c'est important</a></li>
+<li><a href="#ordre-decriture-la-correction-de-la-revue-v4-est-bien-en-place">Ordre d'écriture — la correction de la revue v4 est bien en place</a></li>
+<li><a href="#deux-ajouts-hors-oracle-assumes">Deux ajouts hors oracle, assumés</a></li>
+<li><a href="#non-teste-et-declare">Non testé, et déclaré</a></li>
+<li><a href="#commits">Commits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -206,15 +215,15 @@ non « environ 1 » — l'oracle peut être serré.</p>
 <p><strong>Hors périmètre</strong> : le CLI (<code>l1-03.2</code>) · toute base de données · tout index global.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
 <ul>
-<li>[ ] <code>adapters/vectors.py</code> livré, <code>mypy --strict</code> vert.</li>
-<li>[ ] Écriture atomique, relecture, erreur typée sur fichier corrompu.</li>
-<li>[ ] <strong>Le <code>.json</code> écrit en dernier fait foi</strong> ; <code>list_vectors</code> globe les <code>.json</code> ; un <code>.npy</code>
+<li>[x] <code>adapters/vectors.py</code> livré, <code>mypy --strict</code> vert.</li>
+<li>[x] Écriture atomique, relecture, erreur typée sur fichier corrompu.</li>
+<li>[x] <strong>Le <code>.json</code> écrit en dernier fait foi</strong> ; <code>list_vectors</code> globe les <code>.json</code> ; un <code>.npy</code>
       orphelin est invisible.</li>
-<li>[ ] <code>scl_summary</code> au format imbriqué, <code>valid_pct</code> en pourcentage.</li>
-<li>[ ] <code>embedding_key</code> combine les trois composantes.</li>
-<li>[ ] <code>list_vectors</code> livré, avec filtres <code>model_id</code> / <code>spec_hash</code>.</li>
-<li>[ ] <strong>Aucun <code>import torch</code></strong> dans le module — <code>importlib.metadata</code> seulement.</li>
-<li>[ ] <code>tests/test_vectors.py</code> — court.</li>
+<li>[x] <code>scl_summary</code> au format imbriqué, <code>valid_pct</code> en pourcentage.</li>
+<li>[x] <code>embedding_key</code> combine les trois composantes.</li>
+<li>[x] <code>list_vectors</code> livré, avec filtres <code>model_id</code> / <code>spec_hash</code>.</li>
+<li>[x] <strong>Aucun <code>import torch</code></strong> dans le module — <code>importlib.metadata</code> seulement.</li>
+<li>[x] <code>tests/test_vectors.py</code> — court.</li>
 </ul>
 <h2 id="oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</h2>
 <div class="tablewrap"><table>
@@ -281,10 +290,108 @@ supplémentaire, et <code>numpy</code> est déjà au contrat. Si le Lot 2 a beso
 il fera la conversion, ce n'est pas le travail de ce lot.</p>
 <hr />
 <h2 id="resume-de-realisation">Résumé de réalisation</h2>
-<p><em>(à remplir avant de déplacer la fiche dans <code>fait/</code>)</em></p>
+<p><strong>Fait le 26/08/2026</strong> — agent Sonnet medium en worktree isolé (28 min), relu et validé par
+l'orchestrateur. <code>just check</code> <strong>vert sur <code>develop</code> après merge</strong> : <strong>325 tests</strong>, mypy strict
+sur 79 fichiers, deptry, smoke et cwl verts.</p>
+<h3 id="ce-qui-a-ete-livre">Ce qui a été livré</h3>
+<p><code>src/tiny_wae/adapters/vectors.py</code> (322 lignes) et <code>tests/test_vectors.py</code> (162 lignes) —
+<strong>ratio 0,50x</strong>. 8 tests pour 8 oracles, chacun documentant ce qu'il attrape que les autres
+n'attrapent pas. <em>(Rappel : Lot 0 à 2,07x ; <code>l1-01.1</code> à 0,92x.)</em></p>
+<h3 id="verdict-des-oracles">Verdict des oracles</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Mesure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>✅</td>
+<td>aller-retour : compagnon identique champ à champ, tableau <code>array_equal</code>, dtype et forme préservés</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>✅</td>
+<td>les <strong>trois</strong> mutations (<code>grid_hash</code>, <code>model_id</code>, <code>spec_hash</code>) donnent trois clés distinctes ; inchangée → clé identique. Les deux sens</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>✅</td>
+<td>tmp orphelin nommé selon le vrai patron → <code>list_vectors</code> rend <code>[]</code>, <code>read_vector</code> rend <code>None</code></td>
+</tr>
+<tr>
+<td>O3b</td>
+<td>✅</td>
+<td><code>.npy</code> seul → invisible et <code>None</code> ; <strong>puis la paire complétée → 1 vecteur vu</strong>. Le témoin inverse est dans le même test</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>✅</td>
+<td><code>.npy</code> tronqué à 10 octets (en plein en-tête numpy) → <code>CorruptedVectorError</code>, pas un tableau silencieusement faux</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>✅</td>
+<td>trois vecteurs, deux specs du même modèle : sans filtre → 3 ; <code>spec_hash=</code> → exactement 1, le bon ; <code>model_id=</code> + <code>spec_hash=</code> → 1</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>✅</td>
+<td>sous-processus frais : <code>"torch" not in sys.modules</code> — et torch <strong>est</strong> installé dans ce worktree, donc l'oracle discrimine vraiment</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>✅</td>
+<td><code>just check</code> vert (worktree <strong>et</strong> <code>develop</code> après merge)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Aucun oracle laissé « non exécuté ». Dénominateur : 325/325 tests.</p>
+<h3 id="lecriture-atomique-nest-pas-une-duplication-et-cest-important">L'écriture atomique n'est pas une duplication, et c'est important</h3>
+<p>L'agent a <strong>réimplémenté</strong> le patron plutôt que d'importer <code>manifests._write_json_atomic</code>,
+et c'était le bon choix : l'original écrit du <strong>JSON</strong> (<code>payload: dict</code>), alors qu'il faut
+ici écrire un <strong><code>.npy</code> binaire</strong> <em>et</em> un JSON. D'où une généralisation —
+<code>_atomic_write_bytes(path, write: Callable[[Path], None])</code> — qui <strong>cite l'original et son
+motif</strong> : « le nom du tmp porte le PID ET l'identifiant de thread — collision réelle
+rencontrée sous <code>ThreadPoolExecutor</code> avec le PID seul ».</p>
+<p>Ce n'est donc pas le défaut <code>RUN_STATUSES</code> du Lot 0 (deux constantes identiques qui
+divergent) : c'est une variante nécessaire, documentée des deux côtés.
+⚠ <strong>Réserve honnête</strong> : la convention de nommage du tmp (<code>.{nom}.{pid}.{tid}.tmp</code>) existe
+désormais à <strong>deux</strong> endroits. Elle est stable et commentée aux deux, mais un futur
+changement devra passer par les deux. Signalé, pas corrigé — extraire un module commun
+toucherait <code>adapters/manifests.py</code>, hors du périmètre de cette fiche.</p>
+<p>⭐ Deux détails que l'agent a attrapés et qui ne sont dans aucun oracle : le répertoire
+<code>embeddings/</code> est créé au vol (<code>mkdir(parents=True)</code> — l'original n'en avait pas besoin), et
+<code>np.save</code> reçoit le <strong>descripteur de fichier</strong> plutôt que le chemin, sans quoi numpy ajoute
+de lui-même un <code>.npy</code> au nom temporaire qui se termine déjà par <code>.tmp</code>.</p>
+<h3 id="ordre-decriture-la-correction-de-la-revue-v4-est-bien-en-place">Ordre d'écriture — la correction de la revue v4 est bien en place</h3>
+<p><code>write_vector</code> écrit le <code>.npy</code> <strong>puis</strong> le <code>.json</code>, et c'est le <code>.json</code> qui marque la paire
+complète ; <code>list_vectors</code> globe les <code>.json</code>, <code>read_vector</code> s'y ancre. Un <code>.npy</code> orphelin est
+donc un <strong>déchet ignoré</strong>, jamais une erreur — exactement le scénario d'un SIGINT entre les
+deux écritures, que <code>l1-03.3</code>/O4 provoquera pour de bon. O3b l'exerce dans les deux sens.</p>
+<h3 id="deux-ajouts-hors-oracle-assumes">Deux ajouts hors oracle, assumés</h3>
 <ul>
-<li><strong>Ce qui a été fait</strong> : …</li>
-<li><strong>Verdict de l'oracle</strong> : …</li>
-<li><strong>Commit(s)</strong> : …</li>
-<li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 26/08/2026 20:25 — le .md fait foi.</p></article></body></html>
+<li><code>build_meta(...)</code> — construit un <code>VectorMeta</code> en calculant <code>embedding_key</code>,
+  <code>blas_threads</code>, <code>torch_version</code>, la version du paquet et l'horodatage, pour que l'appelant
+  n'ait jamais à composer ces champs à la main. Cohérent avec « <code>VectorMeta</code>, LA définition
+  unique » ; reste dans le module, sans I/O externe.</li>
+<li><code>scl_summary(...)</code> — expose la construction du format que cette fiche <strong>définit</strong>. Elle
+  n'ouvre aucun manifeste (c'est <code>l1-03.2</code>) : elle agrège des fractions sur des clés <code>str</code>.</li>
+</ul>
+<p>Les deux points tranchés par l'ancrage sont respectés : <strong>clés brutes du manifeste</strong>
+(chaînes de chiffres, jamais de libellés) et <strong><code>valid_pct = 100 − invalid_pct</code></strong>.</p>
+<p>⚠ Le piège de typage signalé par l'ancrage (<code>dict[str, int]</code> du manifeste contre
+<code>dict[int, int]</code> de <code>core/scl.py::verdict</code>) <strong>n'a pas été rencontré ici</strong> : ce module
+n'appelle jamais <code>verdict</code>. Il attend son appelant réel, <code>l1-03.2</code>.</p>
+<h3 id="non-teste-et-declare">Non testé, et déclaré</h3>
+<p>La concurrence réelle multi-thread (<code>l1-03.3</code>) · les volumes (<code>l1-04</code>) · toute valeur
+sémantique d'embedding · la lecture d'un vrai manifeste, qui appartient à <code>l1-03.2</code>.</p>
+<h3 id="commits">Commits</h3>
+<ul>
+<li><code>3f7e24e</code> — <code>feat(lot-1): format de stockage des vecteurs + clé d'idempotence (l1-03.1)</code></li>
+<li>merge <code>--no-ff</code> sur <code>develop</code></li>
+</ul>
+<p><strong>Date</strong> : 2026-08-26</p><div class="prevnext"><span></span><a href="../maturation/lot-1-embeddings/l1-03.2.html">[l1-03.2] CLI embed — un site, une fenêtre, idempotent, filtre de nuage →</a></div><p class="gen">Généré le 26/08/2026 21:05 — le .md fait foi.</p></article></body></html>
