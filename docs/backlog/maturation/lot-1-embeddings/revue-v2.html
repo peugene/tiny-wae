@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue v2 — Lot 1 (externe, interrompue)</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue v2 — Lot 1 (externe, interrompue)</h1><p>5/5 findings confirmés. Le .md fait foi.</p></div></div><article><h1 id="revue-v2-chantier-lot-1-externe-interrompue">Revue v2 — Chantier Lot 1 (externe, INTERROMPUE)</h1>
+<p><strong>Date</strong> : 24/08/2026 · <strong>Origine</strong> : revue externe fournie par Philippe (le modèle a
+crashé avant la fin — le finding m2 est tronqué, la suite éventuelle est perdue).
+<strong>Contre-vérification</strong> : chaque citation revérifiée par l'orchestrateur contre les fiches
+et le dépôt réels avant prise en compte. <strong>Verdict : 5/5 findings confirmés, zéro faux
+positif</strong> — un taux que ni la v1 ni son réfuteur n'avaient atteint.</p>
+<p>Sa force : elle a regardé là où la v1 ne pouvait pas — <strong>l'intersection des fiches et de
+l'infrastructure du dépôt</strong> (CI, worktrees, carte des zones, code du Lot 0 cité
+fichier:ligne).</p>
+<h2 id="findings-retenus-et-corrections-appliquees">Findings retenus et corrections appliquées</h2>
+<p><strong>B1 [BLOQUANT] — Le gate serait rouge en CI et dans tout worktree neuf dès <code>l1-03.4</code>.</strong>
+Chaîne vérifiée : CI = <code>just install</code> + <code>just check</code> → <code>check</code> inclut <code>smoke</code> → le smoke
+charge un vrai modèle sous la garde offline → cache gitignoré, <code>fetch-models</code> hors gate →
+<strong>rouge à chaque commit, partout où le cache n'existe pas</strong>. Le commentaire de <code>ci.yml</code>
+(« le smoke est déterministe et hors ligne ») était vrai du Lot 0, faux dès <code>l1-03.4</code>.
+Ironie assumée : ce commentaire corrige le constat A1 de la post-revue du Lot 0 — la
+correction de « la CI diverge du gate » a créé « le gate exige un état que la CI n'a pas ».
+→ <strong>Fiche neuve <code>l1-07</code> « Gate avec poids »</strong> (CI : fetch + cache d'actions ; worktrees :
+<code>hf_home</code> partagé absolu via <code>.env</code>) ; <code>l1-03.4</code> en dépend désormais. ⚠ Le point « qui
+possède <code>.github/</code> » est remonté à Philippe dans la fiche — précédent existant : c'est
+l'équipe qui a livré <code>codeql.yml</code> et Dependabot.</p>
+<p><strong>M1 [MAJEUR] — <code>l1-00</code> ne nommait pas le mécanisme réconciliant deptry / wheel légère /
+env de dev.</strong> → Tranché dans <code>l1-00</code> : <strong>extra PEP 621 <code>[project.optional-dependencies]
+models</code></strong>, la feature pixi s'y adosse ; « deptry compte les extras comme déclarées » mis en
+oracle (à confirmer à l'implémentation), pas affirmé.</p>
+<p><strong>M2 [MAJEUR] — <code>read_vector(dir, model_id)</code> incohérent avec le nom
+<code>&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.npy</code></strong> : impossible de désambiguïser deux variantes de spec, et
+le glob « un seul match » casserait le scénario O5 de <code>l1-03.2</code>. Défaut né de MA passe de
+correction (K-20 appliqué sans propager à la signature — la règle « qui consomme ce que je
+viens de changer ? » prise en défaut chez celui qui l'a écrite). → Signature corrigée :
+<code>read_vector(dir, model_id, spec_hash)</code>.</p>
+<p><strong>m1 [MINEUR] — <code>--cloud-max</code> utilisé par la checklist de <code>l1-05.3.H</code> mais défini par
+aucune fiche CLI.</strong> → Option ajoutée aux interfaces de <code>l1-03.2</code> et <code>l1-03.3</code> (une commande
+copiable pour un humain vaut mieux qu'une variable d'environnement).</p>
+<p><strong>m2 [MINEUR, tronqué] — <code>FakeEmbeddingModel</code> sous-spécifié</strong> : <code>l1-03.2</code>/O6 exige un
+double qui « lève sur un id », <code>l1-03.3</code>/O4 un signal de progression pour le jalon SIGINT —
+capacités absentes de la spec du double en <code>l1-01.3</code>. → Spec complétée : <code>fail_on</code>,
+<code>delay_s</code>, notification de progression.</p>
+<h2 id="limite">Limite</h2>
+<p>La revue est <strong>incomplète</strong> : elle s'est arrêtée au milieu de m2, dans la section des
+mineurs. Ce qui précédait (graphe, décisions, critères de sortie, faits du Lot 0) avait été
+balayé avec verdict « sain » ; la perte probable se limite donc à d'éventuels mineurs
+supplémentaires. À garder en tête si un défaut de cette famille ressort à l'implémentation.</p></article></body></html>

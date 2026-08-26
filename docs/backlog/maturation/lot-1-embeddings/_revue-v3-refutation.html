@@ -1,0 +1,511 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Réfutation — revue v3 Lot 1</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Réfutation — revue v3 Lot 1</h1><p>Généré le 25/08/2026 depuis _revue-v3-refutation.md — le .md fait foi.</p></div></div><article><h1 id="refutation-independante-revue-v3-du-lot-1-32-clusters">Réfutation indépendante — revue v3 du Lot 1 (32 clusters)</h1>
+<p><strong>Date</strong> : 25/08/2026 · <strong>Rôle</strong> : réfuteur indépendant · <strong>Base</strong> : les 31 fiches relues sur
+disque le 25/08 (état postérieur à la revue), le dépôt réel (<code>justfile</code>, <code>pyproject.toml</code>,
+<code>.gitignore</code>, <code>.github/</code>, <code>tests/</code>, <code>src/</code>, <code>.claude/commands/run.md</code>), et le code source amont
+de <code>Clay-foundation/model</code>.</p>
+<p><strong>Méthode</strong> : graphe de dépendances <strong>recalculé depuis les frontmatters</strong> (script ad hoc, 26
+nœuds dispatchables) ; chaque correction proposée re-simulée sur ce graphe avant d'être
+retenue ; sources amont lues au fichier, pas aux cartes HF.</p>
+<hr />
+<h2 id="1-verdicts-par-cluster">1. Verdicts par cluster</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verdict</th>
+<th>Preuve (fichier:ligne / source)</th>
+<th>Correction retenue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>V-01</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><code>l1-02.1.md:65</code> (DoD <code>tests/test_embed_clay.py</code>), <code>:71-78</code> (O1→O8, O8 = « <code>just check</code> vert, hors ligne (cache peuplé) ») ; <code>depends_on</code> = <code>[l1-00, l1-01.2, l1-01.3]</code> (<code>:7</code>) ; <code>pyproject.toml</code> <code>addopts = "-q --disable-socket"</code></td>
+<td><code>l1-07</code> dans <code>depends_on</code> de <code>l1-02.1</code> <strong>et</strong> <code>l1-02.2</code>. <strong>Vérifié par recalcul : profondeur 8 et largeur 3,25 inchangées, aucun cycle.</strong> ⚠ <strong>Amendement</strong> : l'arête directe <code>l1-03.4 → l1-07</code> devient alors <strong>transitivement redondante</strong> (via <code>l1-02.3 → l1-02.1 → l1-07</code>) — la garder ou la retirer, mais le dire. Et <code>l1-07.md:16-17</code> (« dès la livraison de <code>l1-03.4</code> ») devient « dès la livraison de <code>l1-02.1</code> »</td>
+</tr>
+<tr>
+<td><strong>V-02</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td>Fait re-prouvé : <code>.gitignore</code> ligne <code>.env</code> (section Environments) ; <strong>aucun <code>set dotenv-load</code> dans le <code>justfile</code></strong> (grep exhaustif : 0 occurrence) ; <code>ci.yml</code> ne source pas <code>.env</code> ; <code>chips.py:43</code> porte la doctrine D4 (« aucune variable d'environnement… recopiée dans le justfile, un <code>.env</code> ou la doc ») ; <code>CLAUDE.md</code> § Worktrees : la copie de <code>.env</code> n'est décrite que pour le <strong>repli manuel</strong>, pas pour le worktree natif</td>
+<td><strong>Arbitrage tranché en §2</strong> : défaut absolu <strong><code>~/.cache/tiny-wae/models</code></strong> dans <code>settings.yaml</code> versionné, <code>TINY_WAE_HF_HOME</code> en surcharge seulement. <code>HF_HUB_DISABLE_SYMLINKS</code> <strong>retiré du défaut</strong>, conservé comme note conditionnelle</td>
+</tr>
+<tr>
+<td><strong>V-03</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><code>l1-00.md:40-41</code> déclare <code>claymodel @ git+https://…</code> comme « référence directe PEP 508 » et <code>:49-55</code> la met dans l'extra PEP 621. hatchling refuse les direct references sans <code>[tool.hatch.metadata] allow-direct-references = true</code> (⚠ vérifié <strong>de mémoire du comportement de hatchling</strong>, permalien non récupérable — proxy sortant bloqué sur <code>raw.githubusercontent.com</code> en shell ; à reconfirmer par un <code>just install</code> d'essai)</td>
+<td>⚠ <strong>Amendement fort</strong> : la voie proposée par F (<code>[tool.pixi.feature.models.pypi-dependencies]</code> avec <code>{git=…, rev=…}</code>) <strong>casse <code>deptry</code></strong> — <code>deptry</code> lit le PEP 621, pas <code>[tool.pixi.*]</code> ; <code>embed_clay.py</code> importerait <code>claymodel</code> non déclaré → <strong>DEP001</strong>, et <code>just deptry</code> est dans le gate (<code>justfile:96-97,118</code>). Retenir <strong><code>allow-direct-references = true</code> + l'extra</strong>, pas la voie pixi-native</td>
+</tr>
+<tr>
+<td><strong>V-04</strong></td>
+<td>CONFIRMÉ (allégé)</td>
+<td>Multi-confirmé F-2/A-10. Fait admis : <code>huggingface_hub.constants</code> calcule <code>HF_HUB_OFFLINE</code> et <code>HF_HUB_CACHE</code> <strong>à l'import</strong></td>
+<td>⚠ <strong>Amendement de priorité</strong> : l'assertion runtime <strong>détecte</strong> le défaut, elle ne le <strong>prévient</strong> pas. Ordre à écrire : (1) <code>cache_dir=</code> + <code>local_files_only=True</code> <strong>explicites</strong> sur nos appels (seul mécanisme robuste, indépendant de l'ordre d'import) ; (2) <code>HF_HOME</code>/<code>HF_HUB_OFFLINE</code> posés <strong>avant l'interpréteur</strong> (activation pixi + <code>ci.yml</code>) — c'est le seul levier sur les appels <strong>internes</strong> de <code>timm</code>/<code>terratorch</code>, qui ne prennent pas nos kwargs ; (3) l'assertion en filet. Sur A-9 : l'oracle doit porter sur <code>import tiny_wae.__main__</code> <strong>dans un sous-processus frais</strong> (sous <code>pytest</code>, <code>torch</code> peut déjà être dans <code>sys.modules</code> via un autre test — sans le sous-processus l'oracle est faussement rouge)</td>
+</tr>
+<tr>
+<td><strong>V-05</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-02.4.md:42</code> « les dimensions diffèrent (1024 contre <strong>768</strong>) » contre <code>l1-02.4.md:60</code> (O2) « dimensions <strong>1024 · 384</strong> »</td>
+<td>Une ligne : <code>768</code> → <code>384</code>, avec renvoi à la table du chapeau <code>l1-02.md:27</code></td>
+</tr>
+<tr>
+<td><strong>V-06</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-07.md:66</code> : case à cocher « La question de zone <code>.github/</code> <strong>actée par Philippe</strong> » dans la DoD d'une fiche d'agent ; <code>l1-07.md:51-54</code>. Précédent vérifié : <code>.github/workflows/codeql.yml</code> et <code>.github/dependabot.yml</code> existent dans le dépôt, et <code>CLAUDE.md</code> limite la zone équipe à <code>src/</code>, <code>tests/</code>, <code>scripts/</code></td>
+<td>Acter la zone <strong>maintenant</strong>, retirer la case. <strong>DÉCISION PHILIPPE REQUISE</strong> (c'est <code>CLAUDE.md</code>)</td>
+</tr>
+<tr>
+<td><strong>V-07</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-07.md:72-73</code> (O1/O2 = « CI sur une branche de test », lecture des logs Actions) ; <code>:74</code> (O3 exige un <code>.env</code> copié, cf. V-02) ; O1/O2 sont verts par construction tant que <code>l1-03.4</code> n'existe pas</td>
+<td>Critères statiques locaux (contenu YAML) + consommateur provisoire <code>scripts/check_cache.py</code> + population du cache depuis la <strong>branche par défaut</strong> + clé dérivée des <strong>révisions HF épinglées</strong>, jamais de <code>pixi.lock</code></td>
+</tr>
+<tr>
+<td><strong>V-08</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-05.3a.md:41-44</code> (invariant 5 termes, dont <code>embedded + skipped == fichiers vecteurs sur disque</code>) ; <code>l1-05.3.H.md:43-45</code> (« Embedder AUSSI C08 sans filtre ») ; <code>l1-05.4.md:68</code> (O3 consomme ces vecteurs). Le second membre est lu <strong>du disque</strong> : les vecteurs C08 hors filtre le gonflent, l'égalité rougit sur données légitimes</td>
+<td>Filtre <code>cloud_pct ≤ seuil</code> par défaut dans les rapports ; seul <code>l1-05.4</code>/O3 le lève. À écrire dans <code>l1-05.3a</code>/<code>l1-05.4</code>, pas dans la checklist humaine</td>
+</tr>
+<tr>
+<td><strong>V-09</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-04.3a.md:41</code> « le protocole de stabilité est celui de <code>l1-04.3b</code>/O4, <strong>partagé</strong> » — or <code>l1-04.3a.depends_on = [l1-04.1, l1-02.4]</code> : <strong>aucune arête</strong>. Et le « partagé » est faux : <code>l1-04.2</code> n'a <strong>pas</strong> de protocole de stabilité (le sien est anti-cache, <code>l1-04.2.md:37-39</code>/O2) et <code>l1-04.4</code>/O1 (<code>:68</code>) n'a <strong>aucun</strong> seuil ni passe répétée</td>
+<td>Le protocole (fonction <code>stability</code> + barème CV) remonte chez <code>l1-04.1</code> — <strong>ancêtre commun vérifié des quatre</strong> (<code>.2</code>, <code>.3a</code>, <code>.3b</code>, <code>.4</code> dépendent toutes de <code>l1-04.1</code>). + D-10 : échantillon de banc (liste d'<code>item_id</code>) <strong>gelé une fois</strong> par <code>l1-04.1</code> (aujourd'hui : 50 / 50 / 20 / 20 / 20 selon les fiches)</td>
+</tr>
+<tr>
+<td><strong>V-10</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><code>_roadmap.md:237-245</code> (c'est le <strong>§5 point 6</strong>, pas le §6 — corriger la référence du cluster) : « <code>settings.yaml</code> → <code>l1-00</code> puis <code>l1-03.2</code> puis <code>l1-03.3</code>, <strong>séquentiels au graphe</strong> ». Faux : <code>l1-03.2.depends_on = [l1-01.2, l1-01.3, l1-01.4, l1-03.1]</code>, <strong>pas <code>l1-00</code></strong>. Substance réelle : <code>config_io.py:30-43</code> <code>_INT_FIELDS</code> et <code>settings.py:50</code> <code>validate()</code> ne sont cités par aucune fiche — <code>TINY_WAE_EMBED_CLOUD_PCT_MAX=20</code> donnerait la <strong>chaîne</strong> <code>"20"</code>, et <code>validate()</code> lèverait un <code>TypeError</code> sur <code>0 &lt;= "20" &lt;= 100</code></td>
+<td>Arête <code>l1-00 → l1-03.2</code> (<strong>coût recalculé : zéro</strong>, <code>l1-00</code> est N0 et <code>l1-03.2</code> N2) ; <code>l1-00</code> pré-pose les 3 clés ; les fiches citent explicitement <code>_INT_FIELDS</code> <strong>et</strong> l'ajout des bornes dans <code>Settings.validate()</code></td>
+</tr>
+<tr>
+<td><strong>V-11</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-05.3a.md:27</code> : sortie = <strong><code>similarity-report.md</code></strong> seule ; <code>l1-04.5.md:24</code> « Il <strong>agrège les JSON</strong> » et <code>:41-45</code> réclame la durée réelle de la campagne + la marge de séparabilité ; <code>l1-05.3.H.md:50</code> ne produit que de la prose</td>
+<td>Double sortie <code>similarity-report.{md,json}</code> + <code>campaign.json</code> produit par la checklist humaine</td>
+</tr>
+<tr>
+<td><strong>V-12</strong></td>
+<td>CONFIRMÉ</td>
+<td>Re-prouvé moi-même, 4/4 : <code>test_packaging.py:49</code> ne lit que <code>projet["dependencies"]</code> ; <code>:63</code> <code>_SRC.rglob("*.py")</code> balaie <strong>tout</strong> <code>src/</code> → <code>import claymodel</code> dans <code>embed_clay.py</code> ⇒ test rouge ; <code>:89</code> <code>assert distributions</code> échoue <strong>en dur</strong> si le paquet n'est pas installé dans l'env courant ; <code>pyproject.toml</code> <code>[tool.pixi.environments] default = { features = ["dev"] }</code> ⇒ feature <code>models</code> <strong>absente</strong> de l'env par défaut ; <code>grep huggingface pyproject.toml</code> ⇒ <strong>0 résultat</strong></td>
+<td><code>l1-00</code> étend <code>test_packaging</code> aux <code>optional-dependencies</code> (décision à écrire) ; <code>default = { features = ["dev","models"] }</code> ; <code>huggingface_hub</code> ajouté à l'énumération</td>
+</tr>
+<tr>
+<td><strong>V-13</strong></td>
+<td>CONFIRMÉ (allégé)</td>
+<td><code>docs/lots/</code> = zone PO exclusive (<code>CLAUDE.md</code>) ; <code>l1-05.3a.md:27</code>, <code>l1-04.5.md:28</code>, <code>l1-05.4.md:29</code> y écrivent tous les trois ; <code>l1-02.3.md:54</code> et <code>l1-07.md:64</code> touchent README/<code>CLAUDE.md</code></td>
+<td><strong>DÉCISION PHILIPPE REQUISE</strong> en un point unique : <code>.github/</code>, <code>docs/lots/lot-1/</code>, <code>README</code>, <code>CLAUDE.md</code>, <code>config/</code>, <code>.env.example</code></td>
+</tr>
+<tr>
+<td><strong>V-14</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-04.4.md:47</code> « la <strong>fidélité</strong> : <strong>distance</strong> cosinus » contre O2 <code>:69</code> « <strong>similarité</strong> cosinus » · <code>l1-05.2.md:45</code> « <strong>distance</strong> cosinus au vecteur de référence » contre O3 <code>:70</code> « <strong>similarité</strong> cosinus » (localisation exacte : § « Ce que le script mesure », point 2 — pas « §3 »)</td>
+<td>Une ligne chacune, alignées sur la convention normative <code>l1-05.md:27-31</code></td>
+</tr>
+<tr>
+<td><strong>V-15</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-05.3a.md:30</code> « sur les vecteurs présents dans <code>data_root</code> » — aucune sélection <code>(model_id, spec_hash)</code> ; <code>l1-03.2.md:78</code> (O5) <strong>exige</strong> la coexistence de deux specs ; <code>l1-03.1.md:42</code> <code>write_vector(dir, model_id, vector, meta)</code> alors que <code>meta</code> porte déjà <code>spec_hash</code> (<code>:54</code>) ; pas de <code>list_vectors</code></td>
+<td><code>list_vectors(dir)</code> chez <code>l1-03.1</code> ; sélection explicite chez les 3 lecteurs + oracle « deux specs → n'agrège qu'une, <strong>nommée dans le rapport</strong> » ; <code>write_vector(dir, vector, meta)</code> dérive le nom</td>
+</tr>
+<tr>
+<td><strong>V-16</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>--cloud-max</code> exposée en <code>l1-03.2.md:35</code> et <code>l1-03.3.md:35</code>, utilisée en <code>l1-05.3.H.md:43</code> — <strong>aucun</strong> des 8 oracles de <code>l1-03.2</code> ne l'exerce (O4 <code>:77</code> passe par <code>embed_cloud_pct_max=100</code>, donc settings/env). Précédence option &gt; env &gt; settings jamais testée. <code>.error.json</code> : <code>l1-03.2.md:79</code> l'écrit, <strong>aucune fiche</strong> ne dit ce qu'un run suivant en fait</td>
+<td>Oracle sur l'<strong>option</strong> + précédence à 3 niveaux ; sémantique de reprise écrite : un <code>.error.json</code> <strong>se rejoue</strong>, il n'est jamais un marqueur de skip</td>
+</tr>
+<tr>
+<td><strong>V-17</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><strong>Arbitrage détaillé en §2</strong> — vérifié au code source Clay</td>
+<td>O6 réécrit en deux temps (invariance annuelle <strong>consignée</strong> + témoin temporel réellement discriminant)</td>
+</tr>
+<tr>
+<td><strong>V-18</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><code>l1-05.2.md:60-62</code> (DoD : « la fiche n'est PAS terminable ») + O1 <code>:68</code> ; <code>l1-06.H.md:7</code> <code>depends_on</code> contient <code>l1-05.2</code> ⇒ une fiche jamais en <code>fait/</code> rend l'arbitre <strong>inatteignable</strong>. Interblocage réel</td>
+<td>Terminée en <strong>ROUGE DÉCLARÉ</strong> (<code>determinism_violated</code> dans le JSON), passage en <code>fait/</code>, point 6 de <code>l1-06.H</code> devient bloquant pour la recette. ⚠ <strong>Amendement sur E-16</strong> : le <strong>0,999</strong> est le plancher de <strong>quantification</strong> (<code>_roadmap.md:98</code>), acté pour <code>l1-04.4</code>. Le réutiliser pour l'écart entre threads serait <strong>un nouveau seuil non acté</strong> introduit par la porte de service. Soit il est acté explicitement par Philippe, soit O3 se qualifie sur son propre barème à 3 états</td>
+</tr>
+<tr>
+<td><strong>V-19</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-05.3a.md:41-44</code> + O3 <code>:65</code>. Le rapport n'a <strong>aucune source</strong> pour <code>embedded</code> / <code>skipped</code> autre que le disque : retirer un fichier décrémente les deux membres, l'égalité tient. Témoin non discriminant, et aucun témoin positif</td>
+<td>Invariant recalculé depuis disque <strong>+ manifestes</strong>, avec <code>unexplained_missing</code> <strong>jamais dérivé</strong> du comptage de fichiers ; ajouter un témoin positif</td>
+</tr>
+<tr>
+<td><strong>V-20</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td>Fait <strong>re-calculé</strong> : N4 = 7 nœuds, dont <strong>exactement 5 fiches de mesure CPU</strong> (<code>l1-04.2</code>, <code>l1-04.3a</code>, <code>l1-04.3b</code>, <code>l1-04.4</code>, <code>l1-05.2</code>). Aggravant non cité par la revue : <code>.claude/commands/run.md:27-28</code> retient comme critère de parallélisme « <strong>zones de code / fichiers disjoints</strong> » — les 5 écrivent <code>bench_io.py</code>, <code>bench_levers_a.py</code>, <code>bench_levers_b.py</code>, <code>bench_quant.py</code>, <code>bench_determinism.py</code>, <strong>disjoints</strong> : le critère les déclare sûres</td>
+<td>⚠ <strong>Amendement (proportionnalité)</strong> : <strong>pas</strong> de champ <code>exclusive_run</code> — il faudrait modifier <code>scripts/backlog.py</code>, hors des deux zones. Retenir : (a) <code>_tools/CLAUDE.md</code> pose déjà « un seul à la fois » — le <strong>citer</strong> ; (b) une ligne dans <code>_roadmap.md</code> §4 : « ⛔ les 5 fiches de banc CPU de N4 ne se dispatchent ni entre elles ni avec une autre charge CPU » ; (c) bandeau dans chacune des 5 ; (d) champ <code>concurrent_load</code> dans chaque JSON de banc, pour que la contamination soit <strong>lisible a posteriori</strong></td>
+</tr>
+<tr>
+<td><strong>V-21</strong></td>
+<td><strong>NON-PROUVÉ</strong></td>
+<td>Le <strong>contre-fait</strong> : <code>src/tiny_wae/adapters/backfill.py:56</code> et <code>:441</code> — le patron du Lot 0 que <code>l1-03.3.md:28</code> ordonne de reprendre est un <strong><code>ThreadPoolExecutor</code></strong>, donc <strong>le même processus</strong>. <code>torch.set_num_threads</code> est <strong>global au processus</strong> : il s'applique bien aux threads-workers. La prémisse d'E-9 (pool de <strong>processus</strong>, non-héritage) n'est <strong>pas établie</strong> — <code>l1-03.3</code> ne fixe nulle part le type de pool</td>
+<td>Ne <strong>pas</strong> retenir « la contention mesurée serait un artefact ». Retenir le résidu, qui est réel et pas cher : (a) <code>l1-03.3</code> <strong>fixe explicitement</strong> le type de pool (threads, par reprise du patron Lot 0) ; (b) <code>l1-04.3b</code>/O1 <strong>relève depuis un worker</strong> <code>torch.get_num_threads()</code> et <code>OMP_NUM_THREADS</code> et les écrit dans le JSON — c'est cette mesure qui tranche, pas une hypothèse. Le mécanisme « env hérité » ne devient nécessaire que si un pool de <strong>processus</strong> est choisi</td>
+</tr>
+<tr>
+<td><strong>V-22</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-04.3a.md:56</code> : O1 = <code>(4 × forward 256²) / (1 × forward 256²)</code> — <strong>4,0 par construction</strong>, tautologie. Et <strong>aucun CLI n'expose <code>--batch</code></strong> : vérifié sur les trois interfaces (<code>l1-03.2.md:35</code>, <code>l1-03.3.md:35</code>, <code>l1-04.1.md:46</code>) ⇒ le « Batch retenu » du Résumé (<code>:71</code>) n'a aucune surface d'application</td>
+<td>Coût <strong>absolu</strong> extrapolé (heures sur 4 959 chips) + écart séquentiel/batch ; retrait de l'arête <code>l1-05.3.H → l1-04.3a</code> (<strong>recalculé : zéro coût de profondeur</strong>) — la campagne ne consomme que le réglage de <code>l1-04.3b</code> (<code>l1-05.3.H.md:30</code>)</td>
+</tr>
+<tr>
+<td><strong>V-23</strong></td>
+<td>CONFIRMÉ</td>
+<td>Re-prouvé au fichier : <code>tests/test_smoke.py:46</code> charge le module au <strong>niveau import</strong>, <code>:110-117</code> <code>test_main_replay_exit_code_zero</code> appelle <strong><code>smoke.main()</code></strong> sous pytest. <code>l1-03.4.md:30,42</code> ajoute l'étape modèle réel à ce même <code>main()</code> ⇒ étape payée <strong>2×</strong> par <code>just check</code> (<code>just test</code> <strong>puis</strong> <code>just smoke</code>), et la règle de budget des 30 s (<code>l1-03.4.md:75</code>) n'est écrite que pour <code>just smoke</code></td>
+<td>Nommer <code>tests/test_smoke.py</code> <strong>au périmètre de <code>l1-03.4</code></strong> (aujourd'hui la table des zones <code>_roadmap.md:243</code> ne cite que <code>scripts/smoke.py</code>) ; étape modèle exposée en fonction séparée, ou test restreint aux étapes Lot 0</td>
+</tr>
+<tr>
+<td><strong>V-24</strong></td>
+<td>CONFIRMÉ (allégé)</td>
+<td><code>l1-00</code> est propriétaire exclusif de <code>pyproject.toml</code> + <code>pixi.lock</code> + <code>.gitignore</code> + <code>settings.yaml</code> + <code>scripts/fetch_models.py</code> + recette <code>justfile</code>, avec 4 oracles dont une mesure d'install — et il absorbe les inconnues V-03 et V-12. <code>l1-04.3b</code> porte une dépendance de plus que <code>l1-04.3a</code>, un protocole de contention via un vrai CLI, et <strong>le protocole de stabilité partagé</strong></td>
+<td><code>l1-00</code> → <strong>M</strong> · <code>l1-04.3b</code> → <strong>M</strong></td>
+</tr>
+<tr>
+<td><strong>V-25</strong></td>
+<td>CONFIRMÉ</td>
+<td><code>l1-05.4.md:67</code> (O2) « le second consigné par <code>l1-05.3.H</code> » ; <code>l1-05.3.H.md:46-48</code> = champ libre humain. K-16 à moitié appliqué (le premier témoin, C02, est nommé ; le second ne l'est pas)</td>
+<td>Nommer le second site <strong>au chapeau <code>l1-05</code> maintenant</strong> ; la checklist confirme ou remplace <strong>avec motif écrit</strong></td>
+</tr>
+<tr>
+<td><strong>V-26</strong></td>
+<td>CONFIRMÉ</td>
+<td>4/4, re-comptés : <code>lot-1-embeddings.md:128-129</code> « <strong>25</strong> fiches agent » — <strong>le décompte réel est 24</strong> (énumération vérifiée) · <code>:38</code> « Clay v1.5 et <strong>TerraMind</strong> » sans <code>small</code> · <code>:87-93</code> livrables sans <code>trajectory-report</code> ni <code>core/similarity.py</code> / <code>adapters/vectors.py</code> / <code>cli/similarity_report.py</code> / <code>cli/trajectory_report.py</code> / <code>cli/bench.py</code> / <code>cli/bench_report.py</code> · <code>:132-137</code> tableau des phases sans <code>l1-00</code> ni <code>l1-07</code></td>
+<td>Les 4 corrections, telles que proposées</td>
+</tr>
+<tr>
+<td><strong>V-27</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><code>_roadmap.md:210</code> « les <strong>24</strong> fiches agent s'enchaînent jusqu'à la campagne » — faux, <code>l1-04.5</code> et <code>l1-05.4</code> sont <strong>après</strong> (N6) ⇒ <strong>22</strong> · <code>:212-213</code> chemin critique <strong>invalide</strong> : l'arête <code>l1-02.4 → l1-04.1</code> <strong>n'existe pas</strong> (<code>l1-04.1.depends_on = ['l1-03.2']</code>, vérifié), et le chemin énoncé compte <strong>9</strong> nœuds pour une profondeur annoncée de 8 · <code>:209</code> « largeur moyenne ~3,1 » — <strong>26/8 = 3,25</strong> · <code>:52</code> §2bis-a omet « <strong>et dans le nom du fichier</strong> » (présent en <code>l1-01.md:32</code> et <code>l1-03.1.md:29-31</code>) · <code>l1-07</code> rangée dans la table O2 sans la mention « fiche à plat » dont bénéficie <code>l1-00</code> · <code>l1-07.md:33</code> « <strong>Deux</strong> volets » suivi de <strong>3</strong> items</td>
+<td>⚠ <strong>Un sous-item RÉFUTÉ</strong> : « 3 chaînes de longueur 8 <strong>disjointes</strong> » est faux — l'énumération exhaustive donne <strong>48 chaînes maximales de longueur 8</strong>. La bonne correction est de <strong>cesser de nommer « le » chemin critique</strong> : écrire « profondeur 8, atteinte par de nombreux chemins ; les trois <strong>goulots</strong> réels sont <code>l1-05.3.H</code> (N5, humain), puis <code>l1-04.5</code>/<code>l1-05.4</code> (N6), puis <code>l1-06.H</code> ». Les 5 autres sous-items : retenus tels quels</td>
+</tr>
+<tr>
+<td><strong>V-28</strong></td>
+<td>CONFIRMÉ</td>
+<td>7 des 9 sous-items re-prouvés : E-11 (<code>l1-00.md:82</code> — « les 3 se chargent sans aucune requête » est satisfait par un <code>local_files_only=True</code> qui rend un chemin <strong>sans rien charger</strong>) · D-8 (<code>:83</code> — la clause d'échappement « sinon, configuration deptry à documenter » rend O3 <strong>infalsifiable</strong>) · E-29/A-11 (<code>:84</code> — delta publié, <strong>aucun</strong> consommateur ni conséquence) · E-28 (<code>:65</code> verdict 256 affirmé, aucun oracle de <code>l1-00</code> ne le couvre ; le seul témoin mécanique est <code>l1-02.2</code>/O5) · F-3 (<code>:57</code> <code>hf_home</code> défaut <code>./models</code> — <strong>relatif au CWD</strong>, exactement la classe de bug déjà attrapée sur <code>metadata_path</code> en <code>l1-02.1.md:39-40</code>) · F-5 (commit <code>claymodel</code> et version <code>terratorch</code> épinglés, <strong>pas les révisions des repos HF</strong> — prérequis de la clé de cache de V-07) · F-9 (<code>:81</code> O1/O4 : sans <code>local_files_only</code>, <code>hf_hub_download</code> émet un <strong>HEAD de vérification d'etag</strong> même sur cache chaud ⇒ « ne télécharge rien » ≠ « zéro requête »)</td>
+<td>Les 7 corrections retenues. <strong>F-11</strong> (<code>TIMM_USE_OLD_CACHE</code>) et la <strong>ventilation hub/xet de F-12</strong> : voir §4 — non vérifiables ici, à conserver comme <em>note d'implémentation</em>, pas comme exigence. Sur F-12 le fond est juste : <code>HF_HOME</code> <strong>est</strong> la racine, <code>HF_HUB_CACHE = $HF_HOME/hub</code></td>
+</tr>
+<tr>
+<td><strong>V-29</strong></td>
+<td>CONFIRMÉ</td>
+<td>E-19 : <code>l1-02.1.md:74</code> (O4) asserte <code>unmsk_patch.shape[1] == 1025</code> — grandeur <strong>interne à l'encodeur</strong>, inatteignable depuis le port qui ne rend que <code>(1024,)</code> ⇒ assertion <strong>dans l'adapter</strong> + témoin monkeypatch. <em>(La </em><em>valeur</em><em> 1025, elle, est correcte : vérifiée à la source, cf. §3.)</em> · A-13 : <code>pyproject.toml</code> <code>ignore_missing_imports = true</code> ⇒ torch/claymodel/terratorch rendent <code>Any</code>, <code>strict</code> ne mord pas ⇒ <code>np.asarray</code> à la frontière, l'interdiction de <code>cast</code> de <code>l1-02.4</code>/O1 ne portant que sur le <strong>consommateur</strong> · D-9/S-7 : <code>l1-04.4.md:38-40</code> a besoin d'<code>onnxruntime</code> mais <code>l1-00</code> est <strong>propriétaire exclusif</strong> de <code>pyproject.toml</code> (<code>l1-00.md:16</code>, <code>_roadmap.md:237</code>) ⇒ feature <code>bench</code> pré-posée par <code>l1-00</code> · C-9/E-22 : <code>l1-02.3.md:52-53</code> grep <strong>non scopé</strong> contre O2 <code>:61</code> « Grep sur <code>src/</code> », alors que <code>scripts/fetch_models.py</code> appelle légitimement <code>hf_hub_download</code> (<code>l1-00.md:60-62</code>) ; et rien n'écrit que <code>fetch_models</code> <strong>échappe</strong> à la garde</td>
+<td>⚠ <strong>Amendement sur C-24 — contradiction interne à la revue</strong> : V-28/E-11 et V-07/E-4 veulent un <code>check_cache</code> <strong>conservé et versionné</strong> ; C-24 veut le script de contrôle de <code>l1-00</code> déclaré <strong>non versionné</strong>. Arbitrage : <strong>un seul <code>scripts/check_cache.py</code> versionné</strong>, et le grep de <code>l1-02.3</code> <strong>scopé à <code>src/</code></strong> avec <code>scripts/fetch_models.py</code> et <code>scripts/check_cache.py</code> nommés comme exceptions légitimes</td>
+</tr>
+<tr>
+<td><strong>V-30</strong></td>
+<td>CONFIRMÉ</td>
+<td>E-23 : <code>l1-03.2.md:75</code> — « vecteurs identiques au bit près » après « 0 recalcul » est <strong>tautologique</strong> · C-18 : <code>l1-03.4.md:61</code> (O1 = « <strong>2</strong> vecteurs ») contre <code>:75</code> (« réduire d'office à <strong>1</strong> fixture ») · A-14 : <code>__main__.py:14-17</code> déclare une « taxonomie <strong>fermée</strong> du lot (9 sous-commandes) » que le Lot 1 porte à 15 — <strong>aucun test ne l'asserte</strong> (vérifié : pas de test de la liste fermée), c'est une dérive de docstring <strong>sans impact gate</strong> · D-14/E-14 : <code>l1-03.4.md:64</code> (O4 « cache <strong>vidé</strong> ») détruirait le cache <strong>partagé</strong> posé par <code>l1-07</code> · A-12 : <code>core/geometry.py:52</code> <code>chip_bounds(grid, settings)</code> <strong>existe déjà</strong> et n'est pas cité par <code>l1-01.2.md:40-41</code> · C-19 : <code>l1-01.2.md:63</code> « les <strong>10</strong> champs ci-dessus » — la liste <code>:38-47</code> en compte <strong>11</strong> · D-16/E-27 : <code>l1-01.4.md:69</code> (O3) référence <code>embed_cloud_pct_max</code>, créée par <code>l1-03.2</code> (N2), alors que <code>l1-01.4</code> est <strong>N0</strong> · C-20 : <code>l1-04.1.md:72</code> (O1) consomme le <code>delay_s</code> du double sans figurer parmi les consommateurs listés en <code>l1-01.3.md:38-41</code></td>
+<td>Les 8 corrections retenues. Sur A-14, préciser le <strong>propriétaire</strong> de la mise à jour (<code>l1-03.2</code>, premier CLI ajouté). Sur D-14/E-14, la bonne forme est <strong><code>HF_HOME</code> pointé sur un <code>tmpdir</code> vide</strong>, jamais un <code>rm</code> du cache</td>
+</tr>
+<tr>
+<td><strong>V-31</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td>E-6 : <code>l1-05.1.md:40-42</code> — <code>silhouette</code> « indicateur classique », <strong>distance non définie</strong>, alors que <code>cosine</code> est une similarité et <code>trajectory_drift</code> vaut <code>1 − cosine</code> · E-5 : le <strong>0,2</strong> et la baseline n'apparaissent que dans la prose (<code>l1-05.3a.md:46</code>), <strong>dans aucune</strong> des tables d'oracle · E-17 : <code>l1-05.3a.md:34-37</code> calcule la baseline « <strong>depuis les mêmes chips</strong> » alors que <code>:56-57</code> impose des tests « sur <strong>vecteurs de fixture fabriqués</strong> » — <strong>il n'y a pas de chips derrière un vecteur fabriqué</strong> : contradiction réelle ; et une passe baseline sur corpus complet = une <strong>seconde lecture de ~16 Gio</strong>, non budgétée · D-17 : <code>l1-05.3.H.md:34</code> puis <code>:49</code> régénèrent le <strong>même</strong> <code>similarity-report.md</code> (<code>l1-05.3a.md:27</code>) — le verdict du sous-échantillon est <strong>écrasé</strong> · E-30 : <code>l1-05.2.md:71</code> (O4 « similarité &lt; 0,999999 ») sans issue si la valeur mesurée est 0,9999995 · C-15 : <code>l1-06.H.md:44-45</code> « que la <strong>fidélité tient</strong> » (sans seuil) et <code>:51</code> « <strong>dépasse 0,5</strong> » au lieu de <code>\|r\| &gt; 0,5</code> (<code>l1-05.4.md:68</code>)</td>
+<td>⚠ <strong>Deux amendements.</strong> (1) D-19/C-14 « <code>l1-05.md</code> tronque 2 seuils sur 4 » : sur les 2 manquants, <strong>la fidélité ≥ 0,999 appartient légitimement à <code>l1-04</code></strong> — seule la <strong>corrélation nuage 0,5</strong> manque vraiment à <code>l1-05</code>. Et le remède n'est <strong>pas</strong> de recopier : c'est un <strong>renvoi</strong> à <code>_roadmap.md</code> §2ter, sinon on recrée la divergence qu'on corrige. (2) C-16 « <code>VectorMeta</code> ré-énuméré dans <code>l1-03.md</code> » : <strong>RÉFUTÉ</strong> — <code>l1-03.md:43-46</code> dit explicitement « défini <strong>UNE</strong> fois, dans <code>l1-03.1</code> — les autres fiches y renvoient sans énumérer », puis cite 2 champs <strong>comme motif</strong>, pas comme définition. Ce n'est pas une ré-énumération</td>
+</tr>
+<tr>
+<td><strong>V-32</strong></td>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td>S-11 : <code>l1-03.4.md:78</code> remonte la bascule à <code>l1-06.H</code>, dont <code>depends_on</code> (<code>l1-06.H.md:7</code>) ne contient pas <code>l1-03.4</code> · S-12 : <code>l1-05.3a.depends_on = [l1-05.1, l1-03.3]</code> alors que la fiche se teste <strong>sur vecteurs fabriqués</strong> (<code>:56-57</code>) · S-8 : <code>l1-04.2.md:49</code> mesure « <strong>et sur le total</strong> » sans qu'aucune arête ne garantisse l'existence d'un adapter réel · S-9 : <code>l1-03.1.md:54</code> renvoie le format <code>scl_summary</code> à <code>l1-01.2</code> — or <strong><code>l1-03.1</code> est N0 et <code>l1-01.2</code> est N1</strong> : l'amont référence l'aval · S-10 : <code>lot-1-embeddings.md:139-140</code> mentionne <code>docs/lots/lot-1/</code> mais n'y <strong>lie</strong> rien · E-20 : <code>l1-01.2.md:76</code> (O6) borne les DN à <code>[0, 20000]</code> alors que <code>l1-01.4.md:38</code> <strong>impose</strong> une fixture nuageuse · E-24 : <code>l1-04.4.md:71</code> (O4) « champ <code>reason</code> <strong>non vide</strong> » · E-25 : <code>l1-03.4.md:42</code> (« Clay par défaut ») contre <code>:79-80</code> (« TerraMind… est <strong>la première chose à essayer</strong> ») · S-15 : <code>_roadmap.md:243-244</code> nomme <code>tests/fixtures/reports/</code> mais <strong>aucun propriétaire</strong> pour les fixtures de <strong>vecteurs</strong></td>
+<td>⚠ <strong>Deux amendements.</strong> (1) <strong>S-11 : ne PAS ajouter l'arête.</strong> Elle rendrait <strong>permanente</strong> une contrainte <strong>conditionnelle</strong> (la bascule peut ne jamais avoir lieu). Bon mécanisme : un <strong>point 8</strong> dans la liste de décisions de <code>l1-06.H</code> (« si <code>l1-03.4</code> a basculé sur le double, statuer sur la garde permanente ») + le drapeau porté par le Résumé de <code>l1-03.4</code>. (2) <strong>S-12 : la bonne dépendance est <code>l1-03.1</code>, pas <code>l1-03.2</code></strong> — <code>l1-05.3a</code> ne consomme que le <strong>format</strong> (<code>read_vector</code>/<code>VectorMeta</code>). <strong>Recalculé : <code>l1-05.3a</code> passe de N4 à N1, et N4 tombe de 7 à 6 nœuds — ce qui désengorge aussi V-20.</strong> Décision PO, car cela change la structure des niveaux. Les 7 autres sous-items : retenus. S-8 : arête <code>l1-04.2 → l1-02.4</code>, <strong>coût de profondeur recalculé : zéro</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-arbitrages-tranches">2. Arbitrages tranchés</h2>
+<h3 id="v-02-ou-vit-le-cache-des-poids-partage-entre-worktrees">V-02 — Où vit le cache des poids partagé entre worktrees</h3>
+<p><strong>Le fait est établi, et il est pire que dit.</strong> <code>.env</code> est gitignoré (<code>.gitignore</code>, section
+« Environments »), <strong>et n'est lu par rien</strong> : le <code>justfile</code> ne porte <strong>aucun <code>set dotenv-load</code></strong>
+(vérifié par grep exhaustif sur les 119 lignes), <code>ci.yml</code> ne le source pas, et <code>chips.py:43</code>
+énonce la doctrine D4 qui l'interdit explicitement comme véhicule de configuration. Le volet 2
+de <code>l1-07</code> (<code>l1-07.md:42-47</code>) repose donc sur un fichier <strong>absent</strong> d'un worktree natif et
+<strong>inerte</strong> là où il existe. L'oracle O3 (<code>:74</code>, « <code>just check</code> dans un worktree neuf avec <code>.env</code>
+copié ») valide un scénario qui n'est <strong>pas</strong> celui du worktree natif décrit par <code>CLAUDE.md</code> — la
+copie de <code>.env</code> n'y est prescrite que pour le <strong>repli manuel</strong>.</p>
+<p><strong>Tranché : <code>~/.cache/tiny-wae/models</code> (ext4), défaut absolu dans <code>settings.yaml</code> versionné.</strong></p>
+<p>Cinq raisons, dans l'ordre de poids :</p>
+<ol>
+<li><strong>Contamination de la mesure.</strong> Les poids sont relus <strong>à chaque démarrage de processus</strong> —
+   et <code>l1-04.1</code> chronomètre <code>setup_s</code> séparément, <code>l1-05.2</code> lance « deux processus distincts »,
+   <code>l1-04.3b</code> en lance un par configuration. Mettre les poids sur <code>/mnt/d</code> injecte la <strong>taxe
+   drvfs</strong> dans chacun de ces démarrages — exactement la taxe que <code>l1-04.2</code> existe pour isoler.
+   On mesurerait le montage en croyant mesurer le modèle. C'est l'argument décisif.</li>
+<li><strong>Symlinks.</strong> Le cache HF est adressé par hash avec <code>blobs/</code> + <code>snapshots/</code> <strong>en liens
+   symboliques</strong>. Sur drvfs, <code>huggingface_hub</code> détecte l'absence de support et <strong>duplique les
+   fichiers</strong> : ~1,5–3 Go de poids deviennent le double, écrits à travers le montage. Sur ext4,
+   le mécanisme nominal fonctionne, sans dédoublement et <strong>sans avoir besoin de
+   <code>HF_HUB_DISABLE_SYMLINKS</code></strong>.</li>
+<li><strong>Coût mesuré du drvfs, déjà au dossier</strong> : <code>CLAUDE.md</code> chiffre <code>just install</code> à <strong>1 min 5 s
+   et 696 Mo réels</strong> faute de liens durs sur <code>/mnt/d</code>. Le même mécanisme s'appliquerait à la
+   population du cache.</li>
+<li><strong>La visibilité Windows n'est pas un besoin</strong> : aucune fiche ne lit les poids depuis Windows.
+   Le corpus, lui, reste sur <code>D:</code> — et c'est voulu, c'est l'objet de <code>l1-04.2</code>.</li>
+<li><strong>Le partage entre worktrees est acquis dans les deux cas</strong> — le vrai levier est le <strong>chemin
+   absolu</strong>, pas le volume.</li>
+</ol>
+<p><strong>Contrepartie, dite franchement</strong> : l'ext4 de WSL2 vit dans un VHDX qui croît et ne se rétracte
+pas ; un reset de la distribution impose un <code>just fetch-models</code>. ~3 Go et une recharge occasionnelle :
+acceptable pour un POC.</p>
+<p><strong>Mécanisme retenu, précisément</strong> :
+- <code>settings.yaml</code> versionné : <code>hf_home: "~/.cache/tiny-wae/models"</code> — <strong>expansé et rendu absolu
+  au chargement</strong> (<code>Path(...).expanduser().resolve()</code>), ce qui règle F-3 dans le même geste.
+- <code>TINY_WAE_HF_HOME</code> reste la <strong>surcharge</strong>, lue par <code>config_io.load_settings</code> (mécanisme déjà en
+  place, <code>config_io.py:84-88</code>) — jamais par un <code>.env</code>.
+- <strong><code>.env.example</code> documente, ne configure pas</strong> : <code>l1-07</code>/DoD (<code>:63</code>) doit dire « documenté »,
+  pas « recommandé comme mécanisme ».
+- <code>HF_HUB_DISABLE_SYMLINKS=1</code> : <strong>retiré du défaut</strong>, conservé comme <strong>note conditionnelle</strong> —
+  « si un jour <code>hf_home</code> pointe sur <code>/mnt/d</code>, cette variable devient obligatoire ». F-8 avait
+  raison sur le mécanisme, mais son déclencheur disparaît avec le choix ci-dessus.
+- <strong>Conséquence sur V-30/D-14</strong> : l'oracle O4 de <code>l1-03.4</code> (« cache vidé ») ne doit <strong>jamais</strong>
+  vider ce cache — il pointe <code>HF_HOME</code> sur un <code>tmpdir</code> vide. Avec un cache sous <code>~/</code>, un <code>rm</code>
+  malencontreux coûterait un re-téléchargement complet à <strong>tous</strong> les worktrees à la fois.</p>
+<h3 id="v-17-e-1-lencodage-temporel-de-clay-porte-t-il-lannee">V-17 / E-1 — L'encodage temporel de Clay porte-t-il l'année ?</h3>
+<p><strong>Verdict : E-1 a raison sur le fait. L'oracle O6 de <code>l1-02.1</code> est faux. Mais la correction
+qu'il propose est un témoin faible, et doit être amendée.</strong></p>
+<p><strong>Preuve, au code source de <code>Clay-foundation/model</code> (branche <code>main</code>, lue le 25/08/2026)</strong> :</p>
+<ol>
+<li>
+<p><code>claymodel/datamodule.py</code>, <code>EODataset.__getitem__</code> :
+   <code>text
+   time_tensor = torch.tensor(
+       np.hstack((chip["week_norm"], chip["hour_norm"]), dtype=np.float32)
+   )</code>
+   Le tenseur <code>time</code> est construit <strong>exclusivement</strong> de <code>week_norm</code> et <code>hour_norm</code>.
+   <em>(https://raw.githubusercontent.com/Clay-foundation/model/main/claymodel/datamodule.py)</em></p>
+</li>
+<li>
+<p><code>docs/tutorials/embeddings.ipynb</code> — celui-là même que <code>l1-02.1.md:18</code> désigne comme source
+   faisant foi. Cellule markdown « INPUT » :</p>
+<blockquote>
+<p><code>time:    batch x 4</code> - horizontally stacked <code>week_norm</code> &amp; <code>hour_norm</code></p>
+</blockquote>
+</li>
+</ol>
+<p>et la sortie exécutée de la cellule d'inspection : <code>chips["time"].shape ==
+   torch.Size([128, 4])</code>, avec les clés du <code>.npz</code> : <code>pixels, lon_norm, lat_norm, week_norm,
+   hour_norm</code>.</p>
+<p><strong>Conclusion mécanique.</strong> L'entrée temporelle du modèle est faite de <strong>4 scalaires</strong> :
+sin/cos d'une position <strong>dans l'année</strong> (semaine) et sin/cos d'une position <strong>dans la journée</strong>
+(heure). <strong>Ni l'année, ni aucune époque absolue n'y figure.</strong> Un <code>datetime</code> décalé d'un an, à
+date calendaire identique, produit le <strong>même</strong> couple (semaine, heure) — donc le <strong>même</strong>
+<code>time</code>, le même <code>latlon</code>, les mêmes <code>pixels</code>, <code>waves</code> et <code>gsd</code> : le datacube est <strong>identique</strong>,
+et <code>l1-05.2</code>/O1 exige par ailleurs l'identité bit à bit à configuration fixée. <strong>O6 (« vecteurs
+différents ») est donc faux</strong>, ou au mieux non déterministe si la date choisie tombe sur un
+basculement de numéro de semaine ISO d'une année à l'autre.</p>
+<p><strong>Ce que je n'ai PAS vu, et que je ne prétends pas</strong> : la formule exacte de <code>week_norm</code> (ISO
+<code>isocalendar().week</code> ou jour-de-l'année ÷ 7) vit dans le <strong>prétraitement</strong> qui produit les
+<code>.npz</code>, hors du dépôt <code>model/</code> — je n'ai pas pu la fetcher. <strong>Mais la démonstration n'en dépend
+pas</strong> : quelle que soit la formule, « semaine » est une grandeur <strong>intra-annuelle</strong> et « heure »
+une grandeur <strong>intra-journalière</strong>. Un décalage d'un an ne peut donc changer le vecteur que de
+zéro, ou d'un cran de semaine dans le cas limite. Dans les deux cas, l'oracle <strong>n'est pas
+déterministe</strong> — ce qui suffit à le disqualifier comme oracle.</p>
+<p><strong>Correction retenue — amendée.</strong> Remplacer O6 par <strong>deux</strong> critères, parce que la correction
+d'E-1 seule (« +1 an → identiques ») ne prouverait plus rien de l'intention initiale (« la date
+<strong>est</strong> une entrée du modèle ») :</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Critère</th>
+<th>Seuil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O6a</td>
+<td>Même chip, <code>datetime</code> décalé d'<strong>un an jour pour jour</strong> (dates choisies et <strong>gelées dans le test</strong> de façon à ce que la semaine ISO soit identique — à vérifier dans le test lui-même)</td>
+<td>vecteurs <strong>identiques</strong>. ⭐ <strong>Fait à consigner pour le Lot 2 : l'encodage temporel de Clay ne porte PAS l'année</strong> — deux acquisitions à un an d'écart sont indiscernables pour le modèle sur ce canal</td>
+</tr>
+<tr>
+<td>O6b</td>
+<td>Même chip, <code>datetime</code> décalé d'environ <strong>six mois</strong> (p. ex. semaine 31 → semaine 5)</td>
+<td>vecteurs <strong>différents</strong> — c'est <strong>ce</strong> témoin qui prouve que la date est réellement une entrée du modèle, ce que l'ancien O6 croyait prouver</td>
+</tr>
+</tbody>
+</table>
+<p>Et corriger <code>l1-02.1.md:76</code> : le commentaire « la date est une entrée du modèle, le Lot 2 doit le
+savoir » reste juste, mais <strong>la conséquence à consigner est l'inverse de celle écrite</strong> — ce
+n'est pas la date qui entre, c'est la <strong>phase saisonnière</strong>. Pour le Lot 2, c'est une
+information de premier ordre : une dérive d'embeddings ne peut pas confondre « un an plus tard »
+avec « un changement », mais elle <strong>confond structurellement</strong> deux dates à même semaine de deux
+années différentes. C'est exactement le confondant saisonnier que <code>l1-05.4</code> cherche à isoler
+(A02 contre C08) — le noter dans les deux fiches.</p>
+<hr />
+<h2 id="3-findings-additionnels-du-refuteur">3. Findings additionnels du réfuteur</h2>
+<p><strong>A-1 (majeur) — <code>l1-03.1</code> (N0) ne peut pas remplir <code>torch_version</code> sans casser la garde
+d'import paresseux.</strong> <code>l1-03.1.md:55</code> impose <code>torch_version</code> (et <code>blas_threads</code>) dans
+<code>VectorMeta</code>, alors que <code>l1-03.1</code> a <code>depends_on: []</code> (N0) et s'écrit <strong>avant</strong> que torch existe
+dans l'environnement (<code>l1-00</code> l'installe). Pire : si A-9 est retenu (V-04) et que l'oracle
+devient <code>import tiny_wae.__main__</code> ⇒ <code>"torch" not in sys.modules</code>, un <code>import torch</code> au niveau
+module dans <code>adapters/vectors.py</code> <strong>rendrait le gate rouge</strong>. Correction : <code>torch_version</code> se lit
+par <strong><code>importlib.metadata.version("torch")</code></strong> — qui n'importe pas torch — avec repli <code>None</code> si
+absent, et c'est à écrire dans <code>l1-03.1</code>. Personne n'a relevé cette collision entre deux
+corrections de la revue.</p>
+<p><strong>A-2 (majeur) — piège de test dormant dans <code>l1-00</code> : où déclarer torch côté pixi.</strong>
+<code>test_packaging.py:101-118</code> exige que <strong>tout</strong> ce que déclare <code>[tool.pixi.dependencies]</code> (hors
+<code>python</code>) figure aussi dans <code>[project.dependencies]</code>. Si <code>l1-00</code> déclare <code>torch</code> dans la table
+<strong>de base</strong> <code>[tool.pixi.dependencies]</code>, ce test devient rouge <strong>ou</strong> force à gonfler le contrat
+de la wheel — contredisant la décision « la wheel du worker reste légère » (<code>l1-00.md:50-51</code>). Le
+test ne lit <strong>pas</strong> les tables de <em>feature</em>. À écrire explicitement dans <code>l1-00</code> : <strong>torch,
+claymodel et terratorch vont dans <code>[tool.pixi.feature.models.*]</code>, jamais dans la table de base.</strong></p>
+<p><strong>A-3 (mineur, mais c'est la fiche qui se réclame de la source) — la recette Clay de <code>l1-02.1</code>
+est incomplète par rapport au tutoriel qu'elle cite.</strong> <code>l1-02.1.md:38</code> affirme « le tutoriel
+officiel pose <strong>exactement ces deux arguments</strong> ». Le tutoriel (<code>embeddings.ipynb</code>, cellule 4) en
+pose <strong>quatre</strong> :</p>
+<pre><code class="language-text">module = ClayMAEModule.load_from_checkpoint(
+    checkpoint_path=CHECKPOINT_PATH, model_size=&quot;large&quot;, metadata_path=METADATA_PATH,
+    dolls=[16, 32, 64, 128, 256, 768, 1024], doll_weights=[1, 1, 1, 1, 1, 1, 1],
+    mask_ratio=0.0, shuffle=False,
+)
+</code></pre>
+<p>Comme les kwargs de <code>load_from_checkpoint</code> <strong>priment</strong> sur les hyperparamètres restaurés par
+<code>save_hyperparameters()</code>, l'omission de <code>dolls</code>/<code>doll_weights</code> n'est neutre que si le ckpt v1.5
+les stocke identiques. À reconfirmer à l'implémentation, et à corriger dans la phrase.</p>
+<p><strong>A-4 — vérifications POSITIVES, à ne pas rouvrir.</strong> Trois affirmations des fiches que j'ai
+re-vérifiées <strong>à la source</strong> et qui <strong>tiennent</strong> — la revue ne les avait pas contrôlées :
+- <code>l1-02.1</code>/O4 : <code>unmsk_patch.shape[1] == 1025</code> est <strong>exact</strong>. Sortie exécutée du tutoriel :
+  <code>unmsk_patch_s2.shape == torch.Size([128, 1025, 1024])</code> pour <code>CHIP_SIZE = 256</code>, patch 8 →
+  32×32 = 1024 patchs + 1 CLS. <em>(Seule son </em><em>accessibilité</em><em> depuis le port est en cause —
+  V-29/E-19.)</em>
+- <code>l1-02.1</code>/§4 : <code>CLS = out[0][:, 0, :]</code> est conforme — le tutoriel fait
+  <code>unmsk_patch, *_ = module.model.encoder(batch)</code>.
+- <code>l1-02.1</code>/§3 : <code>waves</code> en µm est conforme — le tutoriel passe
+  <code>wavelengths = list(metadata.bands.wavelength.values())</code> de <code>configs/metadata.yaml</code>.</p>
+<p><strong>A-5 — contradiction interne à la revue, tranchée</strong> : E-11/E-4 veulent <code>check_cache</code>
+<strong>versionné</strong>, C-24 veut le script de contrôle de <code>l1-00</code> <strong>non versionné</strong>. Voir V-29 :
+<strong>un seul <code>scripts/check_cache.py</code> versionné</strong>, grep de <code>l1-02.3</code> scopé à <code>src/</code>, les deux
+scripts nommés comme exceptions.</p>
+<hr />
+<h2 id="4-decompte-honnete">4. Décompte honnête</h2>
+<p><strong>32 clusters traités. 0 laissé sans verdict.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Nombre</th>
+<th>Clusters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CONFIRMÉ</td>
+<td><strong>20</strong></td>
+<td>V-05, V-06, V-07, V-08, V-09, V-11, V-12, V-13, V-14, V-15, V-16, V-19, V-22, V-23, V-24, V-25, V-26, V-28, V-29, V-30</td>
+</tr>
+<tr>
+<td>CONFIRMÉ-CORRECTION-À-AMENDER</td>
+<td><strong>11</strong></td>
+<td>V-01, V-02, V-03, V-04, V-10, V-17, V-18, V-20, V-27, V-31, V-32</td>
+</tr>
+<tr>
+<td>NON-PROUVÉ</td>
+<td><strong>1</strong></td>
+<td>V-21</td>
+</tr>
+<tr>
+<td>RÉFUTÉ (cluster entier)</td>
+<td><strong>0</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>RÉFUTÉ (sous-item)</td>
+<td><strong>2</strong></td>
+<td>« 3 chaînes de longueur 8 disjointes » (dans V-27 — il y en a <strong>48</strong>) · C-16 « <code>VectorMeta</code> ré-énuméré » (dans V-31)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Régime de vérification appliqué</strong></p>
+<ul>
+<li><strong>Vérification pleine (fait re-prouvé par moi, au fichier:ligne du dépôt ou à la source
+  amont)</strong> : <strong>29 clusters</strong> — V-01, V-02, V-03 (partiel), V-05 à V-12, V-14 à V-23, V-25 à V-32.
+  Les 31 fiches ont été relues intégralement sur disque, ainsi que <code>justfile</code>, <code>pyproject.toml</code>,
+  <code>.gitignore</code>, <code>ci.yml</code>, <code>.github/</code>, <code>.claude/settings.json</code>, <code>.claude/commands/run.md</code>,
+  <code>tests/test_smoke.py</code>, <code>tests/test_packaging.py</code>, <code>adapters/config_io.py</code>,
+  <code>adapters/backfill.py</code>, <code>core/settings.py</code>, <code>core/geometry.py</code>, <code>__main__.py</code>,
+  <code>docs/lots/lot-1-embeddings.md</code>.</li>
+<li><strong>Vérification allégée (correction + impact graphe seulement, fait admis sur convergence)</strong> :
+  <strong>3 clusters</strong> — V-04, V-13, V-24.</li>
+<li><strong>Graphe</strong> : recalculé intégralement depuis les 26 frontmatters dispatchables. Chaque
+  correction structurante (V-01, V-10, V-22, V-32/S-8, V-32/S-12) a été <strong>re-simulée</strong> :
+  profondeur 8 et largeur 3,25 préservées dans tous les cas ; aucun cycle ; seule S-12 modifie
+  la répartition (N4 : 7 → 6).</li>
+<li><strong>Sources amont</strong> : 3 fichiers de <code>Clay-foundation/model</code> récupérés et lus
+  (<code>claymodel/datamodule.py</code>, <code>claymodel/utils.py</code>, <code>docs/tutorials/embeddings.ipynb</code>).</li>
+</ul>
+<p><strong>Ce que je n'ai PAS pu vérifier, et pourquoi</strong></p>
+<ol>
+<li><strong>Formule exacte de <code>week_norm</code></strong> (ISO vs jour-de-l'année) — vit dans le prétraitement hors du
+   dépôt <code>model/</code>. <strong>Sans effet sur le verdict V-17</strong> : la démonstration ne repose que sur la
+   nature intra-annuelle de la grandeur, établie au code.</li>
+<li><strong>Permalien hatchling <code>allow-direct-references</code></strong> (V-03) — <code>curl</code> sortant bloqué par le proxy
+   de l'atelier ; l'API GitHub et <code>pypi.org</code> renvoient vide via le fetch. Affirmé de mémoire du
+   comportement de hatchling ; <strong>à reconfirmer par un <code>just install</code> d'essai</strong>, ce qui coûte une
+   minute.</li>
+<li><strong>Cloisonnement des caches GitHub Actions par branche</strong> (V-07/F-7) — comportement documenté de
+   <code>actions/cache</code>, non re-vérifié par permalien pour la même raison.</li>
+<li><strong><code>TIMM_USE_OLD_CACHE</code></strong> (V-28/F-11) et <strong>ventilation hub/xet des tailles</strong> (V-28/F-12) —
+   dépendent de la version de <code>timm</code>/<code>huggingface_hub</code> réellement résolue par pixi ; ni l'une ni
+   l'autre n'est installée ici. À traiter en <strong>note d'implémentation</strong>, pas en exigence de fiche.</li>
+<li><strong>Valeurs numériques de deux oracles</strong> : <code>l1-05.2</code>/O4 (le cas 0,9999995 est-il atteint ?) et
+   <code>l1-01.2</code>/O6 (les DN d'un chip nuageux dépassent-ils 20000 ?). Les deux exigent une exécution
+   réelle. Les findings E-30 et E-20 restent <strong>plausibles et bien argumentés</strong>, mais leur
+   déclenchement effectif n'est pas prouvé — la correction proposée (paliers · borne élargie +
+   distribution publiée) est de toute façon la bonne : elle rend l'oracle <strong>mesurable</strong> au lieu
+   de le laisser deviné.</li>
+<li><strong><code>scripts/backlog.py lots</code> face à un sous-répertoire <code>docs/lots/lot-1/</code></strong> (extension de S-10)
+   — je n'ai pas lu <code>backlog.py</code>. Le commit <code>156cb3d</code> mentionne un « garde-fou md2html sur les
+   fiches de lot » : à contrôler avant que trois fiches d'agent y déposent des <code>.md</code>.</li>
+</ol>
+<p><strong>Motif d'inquiétude résiduel, hors cluster</strong> : sur 32 clusters, <strong>31 sont confirmés au moins
+sur le fait</strong>. Un taux de survie aussi élevé après réfutation indique soit une revue v3 de très
+bonne tenue, soit un corpus de fiches encore loin de la maturité de dispatch. Les deux lectures
+sont compatibles — et les trois findings additionnels (A-1, A-2, A-3), tous trouvés en
+re-vérifiant plutôt qu'en cherchant, penchent pour la seconde.</p></article></body></html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue v3 — Lot 1</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue v3 — Lot 1</h1><p>Généré le 25/08/2026 depuis _revue-v3.md — le .md fait foi.</p></div></div><article><h1 id="revue-v3-lot-1-banc-dembeddings-gfm-sur-cpu">Revue v3 — Lot 1 (Banc d'embeddings GFM sur CPU)</h1>
+<blockquote>
+<p><strong>Troisième passe adversariale</strong> sur les 31 fiches du chantier, après la v1 (116 findings,
+24 clusters) et la v2 externe (5/5 confirmés). Première revue à <strong>6 angles</strong> : le nouvel
+angle ⭐ <strong>« fiches × infrastructure du dépôt »</strong> (ancrage code), ajouté après que la v2 a
+trouvé un bloquant invisible des 5 angles classiques.
+<strong>Date</strong> : 25/08/2026 · <strong>Protocole</strong> : 6 angles Opus en aveugle → déduplication →
+réfuteur indépendant avec obligation de preuve.</p>
+</blockquote>
+<p><strong>Bilan brut</strong> : 117 findings (Découpage 20 · Séquençage 15 · Ancrage 14 · Faits 12 ·
+Décisions 26 · Oracles 30), dédupliqués en <strong>32 clusters</strong> V-01→V-32.
+<strong>Verdict du réfuteur</strong> : 20 CONFIRMÉS · 11 CONFIRMÉS avec correction à amender ·
+1 NON-PROUVÉ (V-21) · 0 cluster réfuté en bloc · 2 sous-items réfutés. Le réfuteur a relu
+les 31 fiches sur disque, recalculé le graphe depuis les frontmatters, re-simulé chaque
+correction structurante, et lu le code source amont (<code>Clay-foundation/model</code>) — plus
+3 findings additionnels de son cru (A-1, A-2, A-3).</p>
+<hr />
+<h2 id="1-verdict-global">1. Verdict global</h2>
+<p>Le chantier est <strong>structurellement sain</strong> — profondeur 8 et largeur ~3,25 préservées par
+toutes les corrections, aucun cycle, aucune fiche à créer ni à fusionner — mais il n'est
+<strong>pas dispatchable en l'état</strong>. Trois familles de défauts l'empêchent :</p>
+<ol>
+<li><strong>Le gate rougirait avant la fin du premier niveau réel.</strong> <code>l1-07</code> (gate avec poids) est
+   branchée sur <code>l1-03.4</code> alors que <code>just test</code> charge des poids dès <code>l1-02.1</code> (V-01, trouvé
+   par 3 angles avec 3 preuves indépendantes) ; <code>test_packaging.py</code> ne lit pas les extras
+   PEP 621 (V-12) ; hatchling refuse la référence git de claymodel sans
+   <code>allow-direct-references</code> (V-03) ; le volet worktrees repose sur un <code>.env</code> que rien ne
+   lit (V-02).</li>
+<li><strong>Des oracles faux ou non discriminants ont survécu aux deux premières passes.</strong> O6 de
+   <code>l1-02.1</code> est démontré faux au code source Clay (V-17) ; l'invariant 5 termes de
+   <code>l1-05.3a</code> reste vert après mutation (V-19) ; le facteur 4-tuiles vaut 4,0 par
+   construction (V-22) ; l'interblocage <code>l1-05.2</code> → <code>l1-06.H</code> rendrait l'arbitre
+   inatteignable (V-18).</li>
+<li><strong>Le motif systémique des passes de correction</strong> : le correctif se pose au symptôme cité,
+   pas au premier consommateur réel (V-01) ; il corrige les tables d'oracle, pas les
+   paragraphes qui les précèdent (V-05, V-14). Les deux mécanismes sont désormais des points
+   de contrôle explicites de la passe v3.</li>
+</ol>
+<p>À noter, la mise en garde du réfuteur : 31 clusters sur 32 confirmés au moins sur le fait,
+et ses 3 findings additionnels trouvés <em>en re-vérifiant</em> — le corpus n'était pas encore à
+maturité de dispatch au moment de la revue. C'est le résultat attendu d'une troisième passe,
+pas une anomalie.</p>
+<h2 id="2-ce-que-chaque-angle-a-vu-que-les-autres-ne-pouvaient-pas-voir">2. Ce que chaque angle a vu que les autres ne pouvaient pas voir</h2>
+<table>
+<thead>
+<tr>
+<th>Angle</th>
+<th>Apport propre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Découpage (D)</td>
+<td><code>l1-07</code> branchée trop tard (D-1) · gate humain dans une DoD d'agent (D-3) · protocole de stabilité « partagé » défini chez une sœur sans arête (D-6)</td>
+</tr>
+<tr>
+<td>Séquençage (S)</td>
+<td>même V-01 par la voie du dispatch glouton · <code>.env</code> gitignoré (S-2) · <code>l1-00</code>/<code>l1-03.2</code> non ordonnés (S-5) · amont référençant l'aval (S-9)</td>
+</tr>
+<tr>
+<td>⭐ Ancrage (A)</td>
+<td><code>test_packaging.py:49</code> ne lit que <code>[project.dependencies]</code> (A-1) · <code>.env</code> lu par rien + doctrine D4 de <code>chips.py:43</code> (A-3) · <code>tests/test_smoke.py:110-117</code> rejoue <code>smoke.main()</code> dans pytest (A-4) · <code>config_io._INT_FIELDS</code> ignoré (A-5) · <code>chip_bounds</code> existant non réutilisé (A-12)</td>
+</tr>
+<tr>
+<td>Faits (F)</td>
+<td>hatchling vs direct references (F-1) · <code>HF_HUB_OFFLINE</code> lu à l'import (F-2) · caches Actions cloisonnés par branche (F-7) · symlinks HF sur drvfs (F-8) · etag même sur cache chaud (F-9)</td>
+</tr>
+<tr>
+<td>Décisions (C)</td>
+<td>résidus corps-vs-oracle « distance cosinus » (C-2, C-3) · <code>--cloud-max</code> sans oracle (C-6) · sélection <code>(model_id, spec_hash)</code> non déclarée par les lecteurs (C-5)</td>
+</tr>
+<tr>
+<td>Oracles (E)</td>
+<td>O6 datetime faux (E-1) · interblocage <code>l1-05.2</code> (E-2) · invariant non rougissable (E-3) · tautologie 4,0 (E-12) · contamination des bancs parallèles (E-8)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-issues-consolidees-verdicts-de-refutation">3. Issues consolidées — verdicts de réfutation</h2>
+<p>Le détail complet (preuves fichier:ligne, permaliens amont) vit dans le rapport de
+réfutation. Ici : le verdict et la correction <strong>retenue</strong> (celle du réfuteur quand elle
+amende celle de la revue).</p>
+<h3 id="bloquants">Bloquants</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Clusters</th>
+<th>Problème</th>
+<th>Correction retenue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V-01</td>
+<td>D-1, S-1, A-2, E-13</td>
+<td><code>l1-07</code> branchée sur <code>l1-03.4</code> alors que <code>just test</code> charge des poids dès <code>l1-02.1</code></td>
+<td><code>l1-07</code> dans <code>depends_on</code> de <code>l1-02.1</code> <strong>et</strong> <code>l1-02.2</code> (coût profondeur : zéro, re-simulé) ; l'arête <code>l1-03.4 → l1-07</code> devient redondante — retirée ; <code>l1-07.md</code> reformulé « dès la livraison de <code>l1-02.1</code> » ; fixture pytest scope session + durée publiée (E-13)</td>
+</tr>
+<tr>
+<td>V-02</td>
+<td>S-2, A-3, F-8</td>
+<td>Volet worktrees de <code>l1-07</code> fondé sur <code>.env</code>, gitignoré et <strong>lu par rien</strong></td>
+<td>⭐ <strong>Arbitré par le réfuteur : cache sous <code>~/.cache/tiny-wae/models</code> (ext4)</strong>, défaut absolu dans <code>settings.yaml</code> versionné, expansé <code>expanduser().resolve()</code> (règle F-3 au passage) ; <code>TINY_WAE_HF_HOME</code> en surcharge ; <code>.env.example</code> documente, ne configure pas ; <code>HF_HUB_DISABLE_SYMLINKS</code> rétrogradé en note conditionnelle. Argument décisif : les poids sont relus à chaque démarrage de processus — sur <code>/mnt/d</code>, la taxe drvfs contaminerait <code>setup_s</code> de <code>l1-04.1</code>, <code>l1-05.2</code>, <code>l1-04.3b</code>, celle que <code>l1-04.2</code> existe pour isoler</td>
+</tr>
+<tr>
+<td>V-03</td>
+<td>F-1</td>
+<td>hatchling refuse <code>claymodel @ git+…</code> par défaut → <code>just install</code> rouge</td>
+<td>⚠ Correction de la revue <strong>amendée</strong> : la voie pixi-native casserait deptry (qui lit le PEP 621, et est dans le gate). Retenu : <strong><code>[tool.hatch.metadata] allow-direct-references = true</code> + l'extra</strong>. À reconfirmer par un <code>just install</code> d'essai</td>
+</tr>
+<tr>
+<td>V-04</td>
+<td>F-2, A-10, A-9</td>
+<td><code>HF_HOME</code>/<code>HF_HUB_OFFLINE</code> lus <strong>à l'import</strong> de huggingface_hub — pose tardive = no-op</td>
+<td>Ordre de priorité réécrit : (1) <code>cache_dir=</code> + <code>local_files_only=True</code> explicites sur nos appels ; (2) env posé <strong>avant l'interpréteur</strong> (activation pixi + CI) — seul levier sur les appels internes de timm/terratorch ; (3) assertion runtime en filet. Oracle A-9 : <code>import tiny_wae.__main__</code> en <strong>sous-processus frais</strong></td>
+</tr>
+<tr>
+<td>V-06</td>
+<td>D-3, E-21</td>
+<td>Gate humain (« zone <code>.github/</code> actée par Philippe ») dans la DoD d'une fiche d'agent</td>
+<td>Acter la zone <strong>avant dispatch</strong>, retirer la case — <strong>décision Philippe requise</strong> (voir §5)</td>
+</tr>
+<tr>
+<td>V-07</td>
+<td>D-4, E-4, F-7, F-5, F-6</td>
+<td>O1/O2 de <code>l1-07</code> inexécutables par l'agent et verts par construction</td>
+<td>Critères statiques locaux + consommateur provisoire <code>scripts/check_cache.py</code> <strong>versionné</strong> (tranche aussi la contradiction C-24, cf. V-29) + population du cache depuis la branche par défaut + clé dérivée des <strong>révisions HF épinglées</strong>, jamais de <code>pixi.lock</code></td>
+</tr>
+<tr>
+<td>V-08</td>
+<td>D-5, C-4</td>
+<td>C08 sans filtre contamine séparabilité et invariants</td>
+<td>Filtre <code>cloud_pct ≤ seuil</code> par défaut dans les rapports ; seul <code>l1-05.4</code>/O3 le lève ; écrit dans <code>l1-05.3a</code>/<code>l1-05.4</code>, pas dans la checklist humaine</td>
+</tr>
+<tr>
+<td>V-09</td>
+<td>D-6, S-3, E-26, D-10</td>
+<td>Protocole de stabilité « partagé » sans arête, faux sur son périmètre</td>
+<td>Le protocole (fonction <code>stability</code> + barème CV) <strong>remonte chez <code>l1-04.1</code></strong>, ancêtre commun vérifié des quatre fiches de banc ; échantillon d'<code>item_id</code> gelé une fois par <code>l1-04.1</code></td>
+</tr>
+<tr>
+<td>V-10</td>
+<td>S-5, A-5</td>
+<td><code>l1-00</code>/<code>l1-03.2</code> non ordonnés ; <code>_INT_FIELDS</code>/<code>validate()</code> ignorés (surcharge env → <code>TypeError</code>)</td>
+<td>Arête <code>l1-00 → l1-03.2</code> (coût zéro) ; <code>l1-00</code> pré-pose les 3 clés ; les fiches citent <code>config_io._INT_FIELDS</code> <strong>et</strong> les bornes dans <code>Settings.validate()</code></td>
+</tr>
+<tr>
+<td>V-11</td>
+<td>S-4, E-7</td>
+<td>Marge/durées sans source machine-lisible pour <code>l1-04.5</code></td>
+<td>Double sortie <code>similarity-report.{md,json}</code> + <code>campaign.json</code> produit par la checklist humaine</td>
+</tr>
+<tr>
+<td>V-18</td>
+<td>E-2, C-22, E-16</td>
+<td>Interblocage : <code>l1-05.2</code> « non terminable si échec » alors que <code>l1-06.H</code> en dépend</td>
+<td>Terminée en <strong>rouge déclaré</strong> (<code>determinism_violated</code> dans le JSON), passe en <code>fait/</code> ; point 6 de <code>l1-06.H</code> bloquant pour la recette. ⚠ E-16 amendé : le 0,999 est le plancher de <strong>quantification</strong> — le réutiliser pour les threads serait un seuil non acté (voir §5)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="majeurs">Majeurs</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Clusters</th>
+<th>Problème</th>
+<th>Correction retenue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V-05</td>
+<td>5 angles</td>
+<td>Résidu « 1024 contre 768 » dans le corps de <code>l1-02.4</code></td>
+<td><code>768</code> → <code>384</code> + renvoi à la table du chapeau</td>
+</tr>
+<tr>
+<td>V-12</td>
+<td>A-1, F-4, C-7, F-10, C-8</td>
+<td><code>test_packaging.py</code> ne lit que <code>[project.dependencies]</code> ; feature <code>models</code> absente de l'env default ; <code>huggingface_hub</code> déclaré nulle part</td>
+<td><code>l1-00</code> étend <code>test_packaging</code> aux extras (décision écrite) ; <code>default = {features=["dev","models"]}</code> ; <code>huggingface_hub</code> ajouté</td>
+</tr>
+<tr>
+<td>V-13</td>
+<td>A-8, C-10, D-13, C-11</td>
+<td><code>docs/lots/lot-1/</code>, README, <code>CLAUDE.md</code>, <code>config/</code> hors zones</td>
+<td><strong>Décision Philippe requise</strong> — point unique, voir §5</td>
+</tr>
+<tr>
+<td>V-14</td>
+<td>C-2, C-3</td>
+<td>« distance cosinus » résiduel dans les corps (<code>l1-04.4</code>, <code>l1-05.2</code>)</td>
+<td>Une ligne chacune, alignées sur la convention du chapeau <code>l1-05</code></td>
+</tr>
+<tr>
+<td>V-15</td>
+<td>C-5, C-17, D-15</td>
+<td>Sélection <code>(model_id, spec_hash)</code> non déclarée par les lecteurs ; pas de <code>list_vectors</code></td>
+<td><code>list_vectors(dir)</code> chez <code>l1-03.1</code> ; sélection explicite + oracle « deux specs → n'agrège qu'une, nommée » ; <code>write_vector(dir, vector, meta)</code> dérive le nom</td>
+</tr>
+<tr>
+<td>V-16</td>
+<td>C-6, E-15</td>
+<td><code>--cloud-max</code> sans oracle ; précédence non testée ; <code>.error.json</code> sans sémantique de reprise</td>
+<td>Oracle sur l'option + précédence à 3 niveaux ; un <code>.error.json</code> <strong>se rejoue</strong>, jamais un marqueur de skip</td>
+</tr>
+<tr>
+<td>V-17</td>
+<td>E-1</td>
+<td>O6 de <code>l1-02.1</code> <strong>faux</strong> — l'encodage temporel Clay = sin/cos semaine+heure, <strong>pas l'année</strong> (vérifié au code : <code>datamodule.py</code>, <code>np.hstack((week_norm, hour_norm))</code>)</td>
+<td>⚠ Amendé en <strong>deux témoins</strong> : O6a « +1 an jour pour jour → identiques » (consigné pour le Lot 2) + <strong>O6b « ~6 mois → différents »</strong> — seul témoin qui prouve que la date entre. Conséquence Lot 2 <strong>inversée</strong> : c'est la phase saisonnière qui entre, pas la date — le confondant que <code>l1-05.4</code> isole (à noter dans les deux fiches)</td>
+</tr>
+<tr>
+<td>V-19</td>
+<td>E-3</td>
+<td>Invariant 5 termes vert après mutation (les deux membres lus du disque)</td>
+<td>Recalcul depuis disque <strong>+ manifestes</strong>, <code>unexplained_missing</code> jamais dérivé du comptage de fichiers ; témoin positif ajouté</td>
+</tr>
+<tr>
+<td>V-20</td>
+<td>E-8</td>
+<td>5 fiches de mesure CPU en N4 : contamination si dispatch parallèle — aggravé par <code>run.md:27-28</code> (« fichiers disjoints » les déclare sûres)</td>
+<td>⚠ Amendé (proportionnalité) : <strong>pas</strong> de champ <code>exclusive_run</code> (toucherait <code>backlog.py</code>, hors zones). Retenu : règle ⛔ dans <code>_roadmap.md</code> §4 + bandeau dans les 5 fiches + champ <code>concurrent_load</code> dans chaque JSON de banc</td>
+</tr>
+<tr>
+<td>V-21</td>
+<td>E-9</td>
+<td>« threads non propagés aux workers »</td>
+<td><strong>NON-PROUVÉ</strong> : le patron Lot 0 repris par <code>l1-03.3</code> est un <code>ThreadPoolExecutor</code> (<code>backfill.py:56,441</code>) — <code>set_num_threads</code> est process-global, il s'applique. Résidu retenu : <code>l1-03.3</code> <strong>fixe</strong> le type de pool ; <code>l1-04.3b</code>/O1 relève les threads effectifs <strong>depuis un worker</strong></td>
+</tr>
+<tr>
+<td>V-22</td>
+<td>E-12, D-18, S-6</td>
+<td>Facteur 4-tuiles = 4,0 par construction ; « batch retenu » sans surface (<code>--batch</code> n'existe nulle part)</td>
+<td>Coût <strong>absolu</strong> extrapolé (heures sur 4 959 chips) + écart séquentiel/batch ; retrait de l'arête <code>l1-05.3.H → l1-04.3a</code></td>
+</tr>
+<tr>
+<td>V-23</td>
+<td>A-4</td>
+<td><code>tests/test_smoke.py:110-117</code> rejoue <code>smoke.main()</code> dans pytest → étape modèle payée 2×</td>
+<td><code>tests/test_smoke.py</code> nommé au périmètre de <code>l1-03.4</code> ; étape modèle en fonction séparée ou test restreint aux étapes Lot 0</td>
+</tr>
+<tr>
+<td>V-24</td>
+<td>E-18</td>
+<td>Efforts sous-estimés</td>
+<td><code>l1-00</code> → <strong>M</strong> · <code>l1-04.3b</code> → <strong>M</strong></td>
+</tr>
+<tr>
+<td>V-25</td>
+<td>D-7</td>
+<td>Second témoin de <code>l1-05.4</code> resté champ libre humain</td>
+<td>Second site nommé <strong>au chapeau <code>l1-05</code> maintenant</strong> ; la checklist confirme ou remplace avec motif écrit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mineurs-v-26-v-32-consolides">Mineurs (V-26 → V-32, consolidés)</h3>
+<p>Tous confirmés, corrections retenues avec quatre amendements du réfuteur :</p>
+<ul>
+<li><strong>V-26</strong> fiche de lot : « 25 » → <strong>24</strong> fiches agent · « TerraMind » → « TerraMind small » ·
+  livrables complétés (trajectory-report, modules) · tableau des phases avec <code>l1-00</code>/<code>l1-07</code>.</li>
+<li><strong>V-27</strong> roadmap : « 24 s'enchaînent » → 22 · largeur 26/8 = <strong>3,25</strong> · §2bis-a complété
+  (« et dans le nom du fichier ») · ⚠ sous-item <strong>réfuté</strong> : « 3 chaînes disjointes de
+  longueur 8 » est faux (il y en a <strong>48</strong>) → on cesse de nommer « le » chemin critique ;
+  les goulots réels sont <code>l1-05.3.H</code> (N5), <code>l1-04.5</code>/<code>l1-05.4</code> (N6), <code>l1-06.H</code>.</li>
+<li><strong>V-28</strong> <code>l1-00</code> : O2 identité par sha256/tailles + <code>check_cache.py</code> conservé · O3 scindé
+  (la clause d'échappement le rendait infalsifiable) · O4 qualifié + conséquence dispatch ·
+  verdict 256 partagé explicitement avec <code>l1-02.2</code>/O5 · <code>hf_home</code> absolu · révisions HF
+  épinglées · « ne télécharge rien » ≠ « zéro requête » (etag) — un run <code>HF_HUB_OFFLINE=1</code>.
+  <code>TIMM_USE_OLD_CACHE</code> et ventilation hub/xet : rétrogradés en notes d'implémentation.</li>
+<li><strong>V-29</strong> <code>l1-02.x</code> : assertion 1025 <strong>dans l'adapter</strong> + témoin monkeypatch (la valeur
+  1025 elle-même est confirmée à la source) · <code>np.asarray</code> à la frontière des libs non
+  typées · feature <code>bench</code> (onnxruntime) pré-posée par <code>l1-00</code> · grep de <code>l1-02.3</code> scopé
+  à <code>src/</code>, <code>fetch_models.py</code> et <code>check_cache.py</code> nommés comme exceptions — tranche la
+  contradiction interne C-24 vs E-11/E-4.</li>
+<li><strong>V-30</strong> <code>l1-03.x</code> : 3ᵉ passage <code>--force</code> (le « bit près » après « 0 recalcul » était
+  tautologique) · N de fixtures publié · taxonomie de <code>__main__.py</code> mise à jour par
+  <code>l1-03.2</code> · ⚠ O4 de <code>l1-03.4</code> : <strong>jamais un <code>rm</code> du cache partagé</strong> — <code>HF_HOME</code> pointé
+  sur un tmpdir vide · <code>chip_bounds</code> existant réutilisé · « 10 champs » → 11 ·
+  <code>l1-01.4</code>/O3 en littéral 10 % · oracles du double chez son propriétaire, <code>l1-04.1</code>
+  listé consommateur.</li>
+<li><strong>V-31</strong> <code>l1-05.x</code> : distance 1−cos figée + valeur littérale · seuil 0,2+baseline entre
+  dans les tables d'oracle (qualification à 3 états) · baseline : <code>--no-baseline</code> +
+  coût de la passe corpus budgété · <code>--out</code> + 2 noms (sample vs complet) · paliers pour
+  O4 + <code>min_detectable</code> publié · ⚠ seuils : <strong>renvoi</strong> à <code>_roadmap.md</code> §2ter, pas de
+  recopie (seule la corrélation nuage 0,5 manque réellement à <code>l1-05</code>) · sous-item C-16
+  <strong>réfuté</strong> (<code>l1-03.md</code> cite 2 champs comme motif, pas comme définition).</li>
+<li><strong>V-32</strong> graphe : ⚠ S-11 <strong>sans arête</strong> <code>l1-03.4 → l1-06.H</code> (elle rendrait permanente une
+  contrainte conditionnelle) → point 8 dans <code>l1-06.H</code> + drapeau au Résumé de <code>l1-03.4</code> ·
+  ⚠ S-12 : la bonne dépendance de <code>l1-05.3a</code> est <strong><code>l1-03.1</code></strong> (le format), pas <code>l1-03.3</code> —
+  <code>l1-05.3a</code> passe de N4 à N1, <strong>N4 tombe de 7 à 6</strong> (désengorge V-20) · arête
+  <code>l1-04.2 → l1-02.4</code> (coût zéro) · <code>scl_summary</code> défini inline chez <code>l1-03.1</code>, <code>l1-01.2</code>
+  s'y conforme · borne DN élargie + distribution publiée · <code>reason</code> nomme un objet
+  mesurable · smoke : TerraMind au périmètre, cascade 30 s dans l'oracle · fixtures
+  <code>vectors/</code> : propriétaire <code>l1-05.3a</code>.</li>
+</ul>
+<h2 id="4-findings-additionnels-du-refuteur">4. Findings additionnels du réfuteur</h2>
+<ul>
+<li><strong>A-1 (majeur)</strong> — collision entre deux corrections de la revue : <code>l1-03.1</code> (N0) impose
+  <code>torch_version</code> dans <code>VectorMeta</code>, mais un <code>import torch</code> au niveau module rendrait rouge
+  l'oracle d'import paresseux (A-9). → <code>importlib.metadata.version("torch")</code>, repli <code>None</code>.</li>
+<li><strong>A-2 (majeur)</strong> — piège dormant : <code>test_packaging.py:101-118</code> exige que tout
+  <code>[tool.pixi.dependencies]</code> figure au contrat de la wheel. → torch/claymodel/terratorch
+  vont dans <code>[tool.pixi.feature.models.*]</code>, <strong>jamais</strong> dans la table de base — à écrire
+  dans <code>l1-00</code>.</li>
+<li><strong>A-3 (mineur)</strong> — <code>l1-02.1</code> : le tutoriel Clay pose <strong>quatre</strong> kwargs, pas deux
+  (<code>dolls</code>, <code>doll_weights</code> en plus), et les kwargs priment sur les hparams restaurés.
+  Phrase corrigée, vérification à l'implémentation.</li>
+<li><strong>A-4 — re-vérifications positives</strong> (à ne pas rouvrir) : le 1025 de <code>l1-02.1</code>/O4,
+  l'extraction du CLS, les <code>waves</code> en µm — exacts à la source.</li>
+</ul>
+<h2 id="5-decisions-de-philippe-prises-le-25082026">5. Décisions de Philippe — prises le 25/08/2026</h2>
+<h3 id="1-zones-decriture-v-06-v-13">1. Zones d'écriture (V-06 + V-13)</h3>
+<table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Décision</th>
+<th>Conséquence dans les fiches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/workflows/</code></td>
+<td><strong>ouverte équipe</strong></td>
+<td><code>l1-07</code> la modifie ; la case à cocher « zone actée par Philippe » est <strong>retirée</strong> de sa DoD (un gate humain n'a rien à faire dans une DoD d'agent)</td>
+</tr>
+<tr>
+<td><code>config/</code> · <code>.env.example</code></td>
+<td><strong>ouvertes équipe</strong></td>
+<td><code>l1-00</code> pré-pose les 3 clés de <code>settings.yaml</code> ; <code>l1-07</code> documente <code>TINY_WAE_HF_HOME</code> dans <code>.env.example</code></td>
+</tr>
+<tr>
+<td><code>docs/lots/lot-1/</code></td>
+<td><strong>ouverte en création</strong></td>
+<td><code>l1-05.3a</code> crée le répertoire ; <code>l1-04.5</code> et <code>l1-05.4</code> y déposent. Le reste de <code>docs/lots/</code> (les fiches de lot) demeure <strong>zone PO</strong></td>
+</tr>
+<tr>
+<td><code>README.md</code> · <code>CLAUDE.md</code></td>
+<td>⛔ <strong>fermées</strong></td>
+<td><code>l1-02.3</code> et <code>l1-07</code> <strong>rédigent leur ligne au Résumé</strong> ; Philippe la reporte. Aucune fiche ne les édite</td>
+</tr>
+</tbody>
+</table>
+<p>⚠ <strong>Le report dans <code>CLAUDE.md</code> reste à faire, et il n'est ni de ma zone ni de celle de
+l'équipe.</strong> Le texte à insérer dans la section « Multi-instances : zones d'écriture »,
+prêt à coller :</p>
+<blockquote>
+<p>L'équipe d'implémentation écrit aussi dans <strong><code>.github/</code></strong> (workflows et configuration
+CI — précédent de fait : <code>codeql.yml</code> et <code>dependabot.yml</code>), <strong><code>config/</code></strong> et
+<strong><code>.env.example</code></strong>, et peut <strong>créer des fichiers</strong> sous <code>docs/lots/&lt;lot&gt;/</code> (rapports
+décisionnels produits par les fiches). Les <strong>fiches de lot</strong> elles-mêmes
+(<code>docs/lots/*.md</code>) restent zone PO. <strong><code>README.md</code> et <code>CLAUDE.md</code> ne se modifient pas
+depuis une fiche</strong> : la fiche rédige la ligne à ajouter dans son Résumé, Philippe la
+reporte.</p>
+</blockquote>
+<h3 id="2-seuil-de-determinisme-entre-threads-v-18e-16">2. Seuil de déterminisme entre threads (V-18/E-16)</h3>
+<p><strong>Pas de nouveau seuil.</strong> <code>l1-05.2</code>/O3 publie un état parmi trois — <code>identical</code>,
+<code>negligible</code> (min ≥ 0,9999), <code>significant</code> — <strong>sans seuil de passage</strong> : c'est une mesure
+décisionnelle pour <code>l1-06.H</code>, pas un gate. Le 0,999 reste ce qu'il est : le plancher de
+<strong>fidélité de quantification</strong> de <code>l1-04.4</code>, et rien d'autre.</p>
+<h3 id="3-restructuration-s-12-information-decision-po">3. Restructuration S-12 <em>(information — décision PO)</em></h3>
+<p><code>l1-05.3a</code> redescend de N4 à <strong>N1</strong> : elle ne consomme que le <strong>format</strong> des vecteurs
+(<code>l1-03.1</code>), et se teste sur fixtures fabriquées. N4 passe de 7 à <strong>6</strong> fiches, dont
+exactement les 5 fiches de banc CPU plus <code>l1-03.4</code>.</p>
+<h2 id="6-etat-apres-la-passe-de-correction-25082026">6. État après la passe de correction (25/08/2026)</h2>
+<p><strong>Faite.</strong> Les 32 clusters et les 3 findings additionnels sont traités, avec les corrections
+<strong>retenues par le réfuteur</strong> partout où elles divergeaient de celles de la revue. Deux
+points de contrôle systématiques ont été appliqués, hérités des motifs identifiés :
+chaque correctif est posé chez le <strong>premier consommateur réel</strong> (pas chez le symptôme
+cité), et les <strong>corps de fiche</strong> ont été relus après les tables d'oracle.</p>
+<p><strong>Graphe recalculé depuis les frontmatters</strong> — 26 fiches dispatchables, <strong>profondeur 8</strong>,
+<strong>largeur 26/8 = 3,25</strong>, aucun cycle, aucune arête vers une fiche inconnue :</p>
+<pre><code>N0  l1-00 · l1-01.1 · l1-01.4 · l1-03.1 · l1-05.1
+N1  l1-01.2 · l1-01.3 · l1-05.3a · l1-07
+N2  l1-02.1 · l1-02.2 · l1-03.2
+N3  l1-02.3 · l1-02.4 · l1-03.3 · l1-04.1
+N4  l1-03.4 · l1-04.2 · l1-04.3a · l1-04.3b · l1-04.4 · l1-05.2
+N5  ⛔ l1-05.3.H
+N6  l1-04.5 · l1-05.4
+N7  ⛔ l1-06.H
+</code></pre>
+<p>Efforts après recalibrage : 13 M · 11 S · 2 H (<code>l1-00</code> et <code>l1-04.3b</code> passent de S à M).</p>
+<p><strong>Ce qui reste ouvert</strong> :</p>
+<ul>
+<li>le report du paragraphe de zones dans <code>CLAUDE.md</code> (§5.1) — geste de Philippe ;</li>
+<li>les <strong>revues externes par équipe dev</strong> annoncées, avant descente en <code>a-faire/</code> ;</li>
+<li>rien n'est commité : les fiches restent en <strong>maturation</strong>.</li>
+</ul></article></body></html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revue adversariale v1 — Lot 1 Embeddings</title><style>
+body{margin:0;background:#f6f8fa;color:#24323d;font-family:'Segoe UI',system-ui,
+sans-serif;line-height:1.65;font-size:16px}
+.banner{background:linear-gradient(120deg,#1d4d66,#2c6e91);color:#fff;padding:26px 24px}
+.banner h1{margin:0;font-size:1.5em}.banner p{margin:4px 0 0;opacity:.85;font-size:.9em}
+.banner a{color:#fff}.banner code{background:rgba(255,255,255,.15);color:#fff}
+.inner{max-width:880px;margin:0 auto;padding:0 8px}
+.crumb{font-size:.85em;opacity:.9;margin-bottom:10px}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.warn{background:#fdecea;border-left:4px solid #b91c1c;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.note{background:#eef4f8;border-left:4px solid #2c6e91;padding:12px 16px;
+border-radius:0 8px 8px 0;margin-bottom:18px}
+.nav{background:#f6f8fa;border:1px solid #e3e9ee;border-radius:8px;padding:10px 18px;
+margin:0 0 18px;font-size:.92em}
+.nav ul{margin:6px 0 2px;padding-left:20px}.nav li{margin:2px 0}
+.gen{color:#5c6b76;font-size:.8em;text-align:center;margin-top:30px}
+article{max-width:880px;margin:26px auto 60px;background:#fff;border:1px solid #e3e9ee;
+border-radius:10px;padding:34px 44px}
+article h1{color:#1d4d66;border-bottom:3px solid #2c6e91;padding-bottom:8px}
+article h2{color:#1d4d66;margin-top:1.8em}article a{color:#2c6e91}
+blockquote{border-left:4px solid #2c6e91;background:#eef4f8;margin:1em 0;
+padding:10px 18px;border-radius:0 8px 8px 0}
+code{background:#eef2f5;padding:2px 6px;border-radius:5px;font-size:.88em}
+pre{background:#20303c;color:#e8eef2;padding:16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+table{border-collapse:collapse;width:100%;font-size:.92em;margin:1.2em 0}
+th{background:#1d4d66;color:#fff;text-align:left;padding:8px 12px}
+td{padding:7px 12px;border-bottom:1px solid #e7ecf0}
+tbody tr:nth-child(even){background:#f3f7fa}
+/* composants partagés fiches ↔ lots (pastille, sommaire, prev/next, tableaux larges) */
+.badge,.pill{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;
+font-size:.72em;font-weight:600;vertical-align:middle;letter-spacing:.3px}
+.banner h1 .badge,.banner h1 .pill{margin-left:8px}
+.banner .meta{margin:8px 0 0;opacity:.9;font-size:.88em;line-height:1.7}
+.banner .meta b{opacity:.75;font-weight:600}
+.prio-P1{color:#ffd7d7;font-weight:700}.prio-P2{color:#ffe9c2}.prio-P3{opacity:.8}
+.toc-box{background:#eef4f8;border:1px solid #dbe6ee;border-radius:8px;padding:4px 20px 10px;
+margin:0 0 22px;font-size:.93em}
+.toc-box summary{cursor:pointer;font-weight:600;color:#1d4d66;padding:8px 0}
+.toc-box ul{margin:4px 0;padding-left:20px}
+.toc-box a{text-decoration:none;color:#2c6e91}.toc-box a:hover{text-decoration:underline}
+.prevnext{display:flex;justify-content:space-between;gap:16px;margin:26px 0 0;font-size:.9em;
+border-top:1px solid #e3e9ee;padding-top:14px}
+.prevnext a{color:#2c6e91;text-decoration:none}.prevnext a:hover{text-decoration:underline}
+.tablewrap{overflow-x:auto;margin:1.2em 0}
+@media print{article{border:none;padding:0}.toc-box,.prevnext,.crumb{display:none}}
+</style></head><body><div class="banner"><div class="inner"><h1>Revue adversariale v1 — Lot 1 Embeddings</h1><p>5 angles Opus + réfutation, 24/08/2026. Le .md fait foi.</p></div></div><article><h1 id="revue-de-coherence-adversariale-chantier-lot-1-embeddings-v1">Revue de cohérence adversariale — Chantier Lot 1 Embeddings (v1)</h1>
+<p><strong>Date</strong> : 24/08/2026 · <strong>Orchestrateur</strong> : architecte/PO (Cowork) · <strong>Protocole</strong> : 5 angles
+Opus indépendants et aveugles (découpage, séquençage, faits externes avec vérification à la
+source — code des dépôts Clay et TerraTorch, cartes HF —, couverture des décisions actées,
+effort/oracles) + réfutation Opus indépendante avec obligation de preuve. Les décisions
+actées par le PO étaient explicitement réfutables.</p>
+<p><strong>Chiffres de la revue</strong> : <strong>116 findings bruts</strong> (D:20 · S:18 · F:15 · C:28 · E:35) →
+<strong>24 clusters</strong> → réfutation : <strong>13 confirmés · 6 confirmés avec correction · 5 partiels ·
+0 réfuté en bloc</strong> (4 sous-findings réfutés à l'intérieur de clusters retenus). Le réfuteur
+a de plus corrigé <strong>3 chiffres factuels</strong> des angles et apporté <strong>3 findings neufs</strong> que les
+cinq angles avaient manqués.</p>
+<h2 id="verdict-global">Verdict global</h2>
+<p>Le chantier est <strong>structurellement sain</strong> (grain des fiches, témoins négatifs, politique de
+test) mais <strong>factuellement faux sur le contrat des deux modèles</strong>, et son graphe ne décrit
+pas les consommations réelles. Aucune fiche ne descend en <code>a-faire/</code> avant la passe de
+correction. Le risque dominant, nommé à l'identique par trois angles et le réfuteur : <strong>des
+vecteurs plausibles et faux, avec tous les oracles au vert.</strong></p>
+<h2 id="les-faits-qui-changent-le-lot-verifies-a-la-source-contre-verifies-par-le-refuteur">Les faits qui changent le lot (vérifiés à la source, contre-vérifiés par le réfuteur)</h2>
+<ol>
+<li><strong>TerraMind small sort du 384-d, pas du 768-d</strong> — le 768 de la carte HF est un
+   copier-coller de la variante base ; <code>forward</code> rend une <strong>liste</strong> de 12 tenseurs ;
+   <code>merge_method='mean'</code> moyenne sur l'axe <strong>modalités</strong> (identité en mono-modalité) :
+   l'agrégation des patchs est à écrire soi-même (<code>out[-1].mean(dim=1)</code>).</li>
+<li><strong>TerraMind accepte 256×256</strong> (interpolation des pos-emb) → <strong>256 tokens</strong>. La question
+   224/256 est close ; la branche « recadrer à 224 » disparaît des fiches.</li>
+<li><strong>Clay masque 75 % des patchs PAR DÉFAUT, y compris en inférence</strong> (<code>mask_ratio=0.75</code>,
+   <code>mask_out</code> inconditionnel, déterministe avec <code>shuffle=False</code> : les 3/4 hauts de l'image
+   jetés). Le tutoriel officiel pose <code>mask_ratio=0.0, shuffle=False</code> explicitement. Sans ces
+   deux arguments, tous nos oracles passent au vert sur un embedding faux.</li>
+<li><strong>Clay n'attend pas de la réflectance</strong> mais un <strong>z-score sur DN</strong> (mean 1105/std 1809
+   pour blue), et son encodeur consomme un <strong>datacube</strong> <code>{pixels, time[B,4], latlon[B,4],
+   gsd, waves}</code> — 8 dimensions du modèle leur sont réservées. TerraMind pareil côté DN
+   (<code>v1_pretraining_mean ≈ 1390…</code>). Le port <code>embed(tensor)</code> est trop étroit.</li>
+<li><strong>L'ordre des bandes Clay</strong> : <code>nir</code> en <strong>7ᵉ</strong> position (metadata.yaml), pas en 4ᵉ comme
+   dans <code>BAND_ORDER_10M + BAND_ORDER_20M</code>. Nuance : Clay est sensor-agnostic — l'invariant
+   réel est <em>pixels/waves/mean/std dans le même ordre</em>.</li>
+<li><strong>La garde HF_HUB_OFFLINE ne couvre pas Clay tel que documenté</strong> (wget d'un .ckpt) et
+   Clay télécharge <strong>un second modèle</strong> (teacher timm samvit, 89,7 M params) à la
+   construction. Correctif unifiant du réfuteur : passer le ckpt par <code>hf_hub_download</code>
+   (<code>made-with-clay/Clay</code>, licence <strong>apache-2.0</strong> relevée) — une seule garde pour les 3
+   artefacts.</li>
+<li><strong>Une faute de frappe dans <code>bands=</code> de TerraMind produit des poids ALÉATOIRES en
+   silence</strong> (pas de else, pas de warning) — et les noms attendus sont <code>NIR_BROAD</code>,
+   <code>NIR_NARROW</code>, <code>RED_EDGE_1</code>… : table de correspondance obligatoire, assertion avant build.</li>
+<li>⭐ <strong>Finding du réfuteur (K-01 bis)</strong> : la comparaison n'est pas « Clay contre
+   TerraMind » mais <strong>« Clay-large contre TerraMind-small »</strong> — ~302 M contre ~21 M de
+   paramètres d'encodeur, seul <code>large</code> étant publié en v1.5. L'ordre de grandeur du coût
+   attendu est <strong>~50×</strong>, pas 4-5×, et la phrase du chapeau « indépendamment du nombre de
+   paramètres » disait l'inverse de la réalité. L'asymétrie est subie, pas choisie ; elle se
+   déclare et se lit dans les résultats.</li>
+<li>Divers confirmés : <code>gsd=20</code> à passer explicitement (le metadata Clay dit 10) ·
+   <code>metadata.yaml</code> chargé relativement au CWD · <code>standardize=True</code> n'existe pas sur le
+   backbone · l'import de claymodel modifie <code>set_float32_matmul_precision</code> globalement ·
+   claymodel s'installe par <code>git+</code> (PEP 508, à trancher en fiche socle) · terratorch tire
+   lightning/torchgeo/diffusers… → feature pixi dédiée.</li>
+</ol>
+<h2 id="les-24-clusters-synthese-detail-dans-les-rapports-dangle">Les 24 clusters (synthèse — détail dans les rapports d'angle)</h2>
+<table>
+<thead>
+<tr>
+<th>Cluster</th>
+<th>Objet</th>
+<th>Verdict réfuteur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K-01</td>
+<td>TerraMind 384-d, forward liste, merge_method</td>
+<td>CONFIRMÉ + correction (O5 réécrit : <code>len(out)==12</code>, <code>(1,256,384)</code>)</td>
+</tr>
+<tr>
+<td>K-01bis</td>
+<td>Clay-large vs TerraMind-small, ~50×</td>
+<td><strong>NEUF (réfuteur)</strong></td>
+</tr>
+<tr>
+<td>K-02</td>
+<td>Contrat Clay : masque 75 %, DN z-score, datacube, ordre bandes, doc non exécutable</td>
+<td>CONFIRMÉ (5/5) + gsd=20</td>
+</tr>
+<tr>
+<td>K-03</td>
+<td>256 accepté → question 224 close ; 5,2× faux</td>
+<td>CONFIRMÉ + correction (ni 5,2 ni 4,0 en l'état : cf. K-01bis)</td>
+</tr>
+<tr>
+<td>K-04</td>
+<td>Garde poids : Clay hors HF_HUB_OFFLINE, teacher timm, bands= silencieux</td>
+<td>CONFIRMÉ + correction (89,7 M, pas 304 M ; hf_hub_download unifie)</td>
+</tr>
+<tr>
+<td>K-05</td>
+<td>O6 l1-03.2 réécrit les manifestes du Lot 0 en failed</td>
+<td>CONFIRMÉ</td>
+</tr>
+<tr>
+<td>K-06</td>
+<td>Cycle l1-05.3↔l1-04.5 ; critère de sortie n°5 sans porteur</td>
+<td>CONFIRMÉ</td>
+</tr>
+<tr>
+<td>K-07</td>
+<td>Rapports décisionnels dans data/ gitignoré</td>
+<td>CONFIRMÉ → docs/lots/lot-1/</td>
+</tr>
+<tr>
+<td>K-08</td>
+<td>8 arêtes manquantes + 2 fausses</td>
+<td>CONFIRMÉ + 1 arête de plus (l1-01.2→l1-03.2) ; l1-03.1 → depends_on: []</td>
+</tr>
+<tr>
+<td>K-09</td>
+<td>Écritures concurrentes pyproject/pixi.lock/registre/settings ; carte §5.6 fausse</td>
+<td>CONFIRMÉ + trou claymodel git+</td>
+</tr>
+<tr>
+<td>K-10</td>
+<td>Garde/smoke : propriétaires contradictoires, échappatoire fatale</td>
+<td>CONFIRMÉ</td>
+</tr>
+<tr>
+<td>K-11</td>
+<td>Variante 10 m : O1 mesure 16×, pas 4× ; aucun code ne produit 512²</td>
+<td>CONFIRMÉ → 4 forwards 256² synthétiques</td>
+</tr>
+<tr>
+<td>K-12</td>
+<td>Campagne l1-05.3 ≠ session d'agent</td>
+<td>PARTIEL : scission oui ; desserrage 400 chips incompatible avec l1-05.4/O5 sans le relâcher aussi</td>
+</tr>
+<tr>
+<td>K-13</td>
+<td>Fiche de lot non propagée</td>
+<td>PARTIEL : 4/5 (le « critère 3 contredit l1-02.3 » est réfuté)</td>
+</tr>
+<tr>
+<td>K-14</td>
+<td>Corrélation nuage tronquée : contrôle inopérant par construction</td>
+<td>CONFIRMÉ → mesurer sur ingested à 30 %</td>
+</tr>
+<tr>
+<td>K-15</td>
+<td>Seuils PO en fiche : silhouette sans baseline, dérive sans métrique, fidélité « tient »</td>
+<td>CONFIRMÉ (0,2 assumé mais baseline indispensable)</td>
+</tr>
+<tr>
+<td>K-16</td>
+<td>Témoin l1-05.4/O2 choisi après coup</td>
+<td>CONFIRMÉ → nommer les 2 sites maintenant</td>
+</tr>
+<tr>
+<td>K-17</td>
+<td>Similarité/distance contradictoires</td>
+<td>CONFIRMÉ ½ : seule l1-05.2/O3 est fautive ; l1-04.4/O2 était juste</td>
+</tr>
+<tr>
+<td>K-18</td>
+<td>Déterminisme : O1 jamais rouge, tolérance sans arbitre, threads/torch absents du compagnon</td>
+<td>CONFIRMÉ</td>
+</tr>
+<tr>
+<td>K-19</td>
+<td>Compagnon défini 3 fois ; résumé SCL non spécifié</td>
+<td>PARTIEL : vrai mais gravité moindre (site_id et scl_class_counts existent au Lot 0)</td>
+</tr>
+<tr>
+<td>K-20</td>
+<td>Chemin sans spec_hash → écrasement, réversibilité fausse</td>
+<td>CONFIRMÉ → <code>&lt;model_id&gt;.&lt;spec_hash[:8]&gt;.npy</code></td>
+</tr>
+<tr>
+<td>K-21</td>
+<td>Backfill : O1 impossible (idempotence), O4 SIGINT à vide</td>
+<td>CONFIRMÉ</td>
+</tr>
+<tr>
+<td>K-22</td>
+<td>Import du registre détruit « importable sans torch »</td>
+<td>CONFIRMÉ → import paresseux + oracle sys.modules</td>
+</tr>
+<tr>
+<td>K-23</td>
+<td>Oracles de banc : O5 branche morte, O2 ambigu, O6 sans arrêt, l1-04.3 = L</td>
+<td>PARTIEL : 5/6 (anti-cache auto-déclaré : laissé, mineur)</td>
+</tr>
+<tr>
+<td>K-24</td>
+<td>Mineurs consolidés</td>
+<td>CONFIRMÉ sauf E-27 (bornes utiles) et C-28 (CWL non bloquant)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mesure-juste-conclusion-fausse-le-mandat-du-refuteur">« Mesure juste, conclusion fausse » (le mandat du réfuteur)</h2>
+<p>Six cas attrapés, dont trois qui auraient produit de nouvelles erreurs si on avait appliqué
+les corrections des angles telles quelles : remplacer 5,2× par 4,0× en gardant la phrase
+« indépendamment du nombre de paramètres » (l'inverse du réel) ; traiter le teacher timm à
+304 M (il en fait 89,7) ; appliquer le desserrage de campagne sans relâcher l1-05.4/O5
+(rendait la fiche infaisable).</p>
+<h2 id="plan-de-correction-ordre-du-refuteur-valide-par-lorchestrateur">Plan de correction (ordre du réfuteur, validé par l'orchestrateur)</h2>
+<ol>
+<li><strong>Fiche socle N0</strong> <code>l1-00</code> : dépendances d'inférence (torch, terratorch en feature pixi,
+   claymodel @ git+), <code>models/</code> gitignoré, <code>HF_HOME</code>, fetch-models unifié par
+   <code>hf_hub_download</code> (3 artefacts), verdict 256 acté. Absorbe K-03, K-04, K-09, socle K-22.</li>
+<li><strong>Contrat d'entrée des adapters réécrit</strong> (l1-01.1/01.2/02.1/02.2) : ordre Clay, masque
+   0.0, datacube+gsd=20, z-score DN par modèle (la normalisation devient responsabilité
+   d'adapter déclarée dans la spec), 384-d, table de noms TerraTorch. Absorbe K-01, K-02.</li>
+<li><strong>Graphe</strong> : 9 arêtes ajoutées, 2 retirées, l1-03.1 en N0. Absorbe K-08.</li>
+<li><strong>Cycle et porteur du critère n°5</strong> : l1-04.5 après l1-05.3, ratio + confrontation chez
+   elle. Absorbe K-06.</li>
+<li><strong>Oracles jamais rouges + O6 destructeur</strong> : l1-03.2/O6 (manifeste intouché),
+   l1-05.2/O1, l1-03.3/O1+O4, l1-01.2/O5. Absorbe K-05, K-18, K-21, K-23.
+   Puis dans la même passe : K-07 (rapports), K-10 (garde/smoke), K-12 (scission campagne),
+   K-13 (fiche de lot), K-14 à K-17, K-19, K-20, K-24.</li>
+</ol>
+<h2 id="points-darbitrage-remontes-a-philippe">Points d'arbitrage remontés à Philippe</h2>
+<p>A. <strong>L'asymétrie Clay-large / TerraMind-small (~50× attendu)</strong> : maintenir les deux modèles
+   en la déclarant, ou reconsidérer le duo ? (Recommandation : maintenir — le banc mesurera,
+   c'est son travail — mais la phrase fausse du chapeau saute et les paramètres sont publiés
+   côte à côte.)
+B. <strong>La campagne</strong> : scinder CLI (agent) / campagne complète (fiche humaine), OU
+   sous-échantillonner la séparabilité (~400 chips) ET relâcher l'annexe de l1-05.4 à des
+   sites nommés. (Recommandation : les deux — CLI agent, campagne humaine ; séparabilité
+   d'abord sur sous-échantillon pour confronter l'extrapolation avant de payer le plein
+   tarif.)
+C. <strong>Seuils décisionnels remontés au cadrage</strong> : silhouette &gt; 0,2 avec baseline triviale
+   publiée · rapport de dérive (1−cos, médiane 6 derniers mois) &gt; 2 · plancher de fidélité
+   quantif ≥ 0,999 (douteux 0,99–0,999). À acter ou amender.
+D. <strong>Arbitrages de dépendances enfouis</strong> : ONNX Runtime (levier quantif, piste 2) — autorisé
+   ou interdit ? · matplotlib pour les courbes de trajectoire — ou rendu Pillow ?
+   (Recommandation : ONNX autorisé comme mesure jetable hors contrat du paquet ; pas de
+   matplotlib, Pillow suffit.)</p>
+<h2 id="non-verifie-par-cette-revue">Non vérifié par cette revue</h2>
+<p>Tout ce qui relève de la mesure sur la machine (temps, RAM, drvfs, stabilité bit à bit) — la
+revue n'a vérifié que ce que le code source impose, jamais ce qu'il coûte. Le comportement
+effectif de HF_HUB_OFFLINE sur timm (à reconfirmer au premier fetch-models réel). L'arbre de
+dépendances exact de terratorch/claymodel. Les chiffres du corpus (5 793/9 873/4 959) pris
+tels qu'écrits — cohérence interne vérifiée, exactitude non.</p></article></body></html>
