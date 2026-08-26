@@ -1,0 +1,83 @@
+{
+  "assets_read": 11,
+  "boa_offset_applied": true,
+  "bytes_downloaded": 0,
+  "bytes_written": 2956586,
+  "cause": null,
+  "chip_nodata_pct": 0.0,
+  "cloud_pct": 0.0,
+  "content_hashes": {
+    "chip.tif": "e46786a4945468c5d1bdc1731d07e7a2cf8efafca87b318be8ec70e2a67a43a9",
+    "chip_20m.tif": "33a575dd7db270370909220d5d38acf1ad397096c4bfbdf6a87739a7bc0a252c",
+    "scl.tif": "5d92c6cb187a00606472a3d0d5557dcb0d1ed9a33b9a416eb153858c2da6e49b"
+  },
+  "datetime": "2022-11-20T10:38:51.847000Z",
+  "duration_s": 98.81887017699773,
+  "files": [
+    "chip.tif",
+    "chip_20m.tif",
+    "scl.tif"
+  ],
+  "grid_hash": "6828d53eae762ea37699b8cc8823490b084a1f23819ad9f89965032b602e42a9",
+  "invalid_pct": 0.0,
+  "item_id": "S2A_31TGJ_20221120_0_L2A",
+  "platform": "sentinel-2a",
+  "processing_baseline": "04.00",
+  "radiometry": {
+    "blue": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "green": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "nir": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "nir08": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "red": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge1": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge2": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge3": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "scl": null,
+    "swir16": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "swir22": {
+      "offset": -0.1,
+      "scale": 0.0001
+    }
+  },
+  "schema_version": 1,
+  "scl_class_counts": {
+    "2": 10,
+    "4": 42143,
+    "5": 21163,
+    "6": 2220
+  },
+  "sequence": "0",
+  "site_id": "A01",
+  "status": "ingested",
+  "tile": "31TGJ",
+  "versions": {
+    "tiny_wae": "0.1.0"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "assets_read": 11,
+  "boa_offset_applied": true,
+  "bytes_downloaded": 0,
+  "bytes_written": 2956586,
+  "cause": null,
+  "chip_nodata_pct": 0.0,
+  "cloud_pct": 28.89251708984375,
+  "content_hashes": {
+    "chip.tif": "7b9ba201bc612493692cf59d00124c5dc8ea7a234c18b35eea05c04272bb52b9",
+    "chip_20m.tif": "11e1be16e66550aaf508947d8bc157b4b0f45f634bcfeba63527fc66eabac8eb",
+    "scl.tif": "8a5a8e55d33189f704151e74839e68f2c74eb697475a9183cefe9c47cb2fe720"
+  },
+  "datetime": "2023-02-26T02:26:07.639000Z",
+  "duration_s": 16.581409637990873,
+  "files": [
+    "chip.tif",
+    "chip_20m.tif",
+    "scl.tif"
+  ],
+  "grid_hash": "afb496ab42813d40963aa1cba5635b2f06a9658bc683d16a7905ad55e2e87c71",
+  "invalid_pct": 0.0,
+  "item_id": "S2B_52TEL_20230226_0_L2A",
+  "platform": "sentinel-2b",
+  "processing_baseline": "05.09",
+  "radiometry": {
+    "blue": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "green": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "nir": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "nir08": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "red": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge1": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge2": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "rededge3": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "scl": null,
+    "swir16": {
+      "offset": -0.1,
+      "scale": 0.0001
+    },
+    "swir22": {
+      "offset": -0.1,
+      "scale": 0.0001
+    }
+  },
+  "schema_version": 1,
+  "scl_class_counts": {
+    "10": 10005,
+    "11": 20389,
+    "2": 239,
+    "3": 1745,
+    "4": 524,
+    "5": 25293,
+    "7": 156,
+    "8": 4622,
+    "9": 2563
+  },
+  "sequence": "0",
+  "site_id": "C07",
+  "status": "ingested",
+  "tile": "52TEL",
+  "versions": {
+    "tiny_wae": "0.1.0"
+  }
+}
