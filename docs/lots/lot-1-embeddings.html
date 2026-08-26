@@ -61,7 +61,7 @@ transition:box-shadow .15s,transform .15s}
 min-width:110px}
 .counter b{font-size:1.4em;display:block}.counter span{color:#5c6b76;font-size:.8em}
 .roadmap{margin-top:38px}
-</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog</a> › <a href="index.html">📚 Lots</a> › <b>lot-1-embeddings</b></nav><h1>Fiche Lot 1 — Banc d&#x27;embeddings GFM sur CPU <span class="badge" style="background:#8b7bd8">Maturation</span></h1><p><b>Projet</b> : tiny-wae — POC Earth Intelligence perso<br><b>Statut</b> : maturation — ouvert le 23/08/2026 après la recette du Lot 0 (GO Philippe)<br><b>Date</b> : 23/08/2026. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-1-embeddings/</code></p></div></div><article><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
+</style></head><body><div class="banner"><div class="inner"><nav class="crumb"><a href="../backlog/maturation/etat.html">🏠 Backlog</a> › <a href="index.html">📚 Lots</a> › <b>lot-1-embeddings</b></nav><h1>Fiche Lot 1 — Banc d&#x27;embeddings GFM sur CPU <span class="badge" style="background:#8b7bd8">Maturation</span></h1><p><b>Projet</b> : tiny-wae — POC Earth Intelligence perso<br><b>Statut</b> : maturation — ouvert le 23/08/2026 ; <b>quatre revues passées, corrections appliquées</b> — v1 adversariale du 24/08 (116 findings, 24 clusters, <code>_revue.md</code>), v2 externe du 24/08 (5/5 confirmés dont le gate avec poids, <code>_revue-v2.md</code>), v3 du 25/08 à 6 angles dont l&#x27;ancrage dans le code (117 findings, 32 clusters, réfutation indépendante, <code>_revue-v3.md</code>), <b>v4 du 26/08 par l&#x27;équipe d&#x27;implémentation</b> — la première à ouvrir le code, lancer le linter et recompter le corpus : 12 issues dont 1 bloquante, et <b>1 chiffre faux</b> (<code>_revue-v4.md</code>). Prêt pour la descente en <code>a-faire/</code>, sous réserve des <b>prérequis de dispatch</b> (roadmap §5bis)<br><b>Date</b> : 23/08/2026. Déclinaison opérationnelle : chantier <code>docs/backlog/maturation/lot-1-embeddings/</code></p></div></div><article><details class="toc-box" open><summary>Sommaire</summary><div class="toc">
 <ul>
 <li><a href="#fiche-lot-1-banc-dembeddings-gfm-sur-cpu">Fiche Lot 1 — Banc d'embeddings GFM sur CPU</a><ul>
 <li><a href="#objectif">Objectif</a></li>
@@ -70,7 +70,7 @@ min-width:110px}
 <li><a href="#faits-releves-a-verifier-par-les-fiches-pas-a-croire-sur-parole">Faits relevés (à vérifier par les fiches, pas à croire sur parole)</a></li>
 <li><a href="#livrables">Livrables</a></li>
 <li><a href="#criteres-de-sortie">Critères de sortie</a></li>
-<li><a href="#questions-ouvertes-a-trancher-avant-descente-en-fiches">Questions ouvertes (à trancher avant descente en fiches)</a></li>
+<li><a href="#questions-de-cadrage-tranchees">Questions de cadrage — TRANCHÉES</a></li>
 <li><a href="#declinaison-en-backlog">Déclinaison en backlog</a></li>
 </ul>
 </li>
@@ -102,7 +102,7 @@ O3, et non au Lot 2.</p>
 <li>un <strong>contrat d'entrée</strong> commun aux modèles : ordre des bandes, normalisation radiométrique
   (les <code>scale</code>/<code>offset</code> par asset sont au manifeste depuis l'arbitrage n°1 du Lot 0),
   assemblage du tenseur depuis les <strong>deux</strong> rasters ;</li>
-<li>deux <strong>adapters</strong> derrière un port unique : <strong>Clay v1.5</strong> et <strong>TerraMind</strong> ;</li>
+<li>deux <strong>adapters</strong> derrière un port unique : <strong>Clay v1.5</strong> et <strong>TerraMind small</strong> ;</li>
 <li>un <strong>CLI <code>embed</code></strong> idempotent et son backfill, sur le modèle des CLIs du Lot 0 ;</li>
 <li>un <strong>stockage fichier</strong> des vecteurs (pas de base) ;</li>
 <li>un <strong>banc instrumenté</strong> : chargement / forward / écriture chronométrés séparément, RAM
@@ -130,8 +130,8 @@ O3, et non au Lot 2.</p>
 <tbody>
 <tr>
 <td>Modèles au banc</td>
-<td><strong>Clay v1.5 + TerraMind</strong></td>
-<td>Deux points suffisent à comparer, et ils sont complémentaires : les 10 bandes du Lot 0 ont été choisies à la spec de Clay (décision D-b) ; TerraMind est le modèle IBM/ESA, directement dans l'esprit du CCTP. Un banc à un seul modèle ne compare rien</td>
+<td><strong>Clay v1.5 (de facto large) + TerraMind small</strong></td>
+<td>Complémentaires (spec de bandes Clay / modèle IBM-ESA, esprit du CCTP). ⚠ Asymétrie subie et déclarée (revue v1) : ~302 M contre ~21 M de paramètres — seul <code>large</code> existe en Clay v1.5 ; rapport de coût attendu ~50×, compteurs publiés côte à côte</td>
 </tr>
 <tr>
 <td>Ce que le banc mesure</td>
@@ -162,19 +162,23 @@ O3, et non au Lot 2.</p>
 </table></div>
 <h2 id="faits-releves-a-verifier-par-les-fiches-pas-a-croire-sur-parole">Faits relevés (à vérifier par les fiches, pas à croire sur parole)</h2>
 <ul>
-<li><strong>Le corpus</strong> : 5 793 chips, 9 873 manifestes, ~2,9 Mo par acquisition.</li>
+<li><strong>Le corpus</strong> : 5 793 chips, 9 873 manifestes, ~2,9 Mo par acquisition. ⭐ <strong>Recompté le
+  26/08</strong> (revue v4) : <strong>63 (B08) à 579 (B01) chips par site</strong>, médiane 219 — soit un
+  déséquilibre de <strong>9,2×</strong> entre sites, et non 7× comme annoncé jusque-là. Après le filtre à
+  10 % : <strong>4 959 chips</strong>, de 49 à 563 par site.</li>
 <li><strong>Deux rasters par acquisition, à deux résolutions</strong> : <code>chip.tif</code> (512×512, <strong>4 bandes</strong>
   10 m, uint16, <strong>non compressé</strong>) et <code>chip_20m.tif</code> (256×256, <strong>6 bandes</strong> 20 m). Les 10
   bandes de la spec Clay sont donc réparties sur deux fichiers, à deux grilles différentes :
   <strong>assembler le tenseur d'entrée coûte une double lecture plus un rééchantillonnage.</strong></li>
-<li><strong>Clay v1.5</strong> : embeddings <strong>1024 dimensions</strong>, spec à <strong>10 bandes</strong> Sentinel-2, tuiles
-  256×256, patch d'attention 8×8. ⚠ Le chiffre de ~20 embeddings/s publié par Clay a été
-  obtenu <strong>sur AWS</strong>, pas sur un CPU de poste — il ne vaut que comme ordre de grandeur d'un
-  plafond, jamais comme référence de comparaison.</li>
-<li><strong>TerraMind</strong> : modèle multimodal IBM / ESA / Jülich, intégré à <strong>TerraTorch</strong>, décliné en
-  variantes ; les variantes <strong>tiny/small</strong> sont celles que les auteurs recommandent pour
-  l'exécution locale et l'inférence rapide. <strong>La licence est à relever et à consigner par la
-  fiche d'adapter</strong> — elle conditionne l'usage.</li>
+<li><strong>Clay v1.5</strong> : CLS <strong>1024-d</strong>, 10 bandes (⚠ <code>nir</code> en 7ᵉ position — PAS la concaténation
+  des constantes du Lot 0), 256×256, patch 8×8 → 1024 tokens. ⚠ <strong>Masque à 75 % par défaut,
+  y compris en inférence</strong> — <code>mask_ratio=0.0</code> obligatoire (revue). Attend un <strong>z-score sur
+  DN</strong> et un datacube <code>{pixels, time, latlon, gsd, waves}</code>. Le ~20 embeddings/s publié
+  vient d'<strong>AWS GPU (g4/g6), en configuration masquée</strong> — jamais une référence pour nous.</li>
+<li><strong>TerraMind small</strong> : sortie <strong>384-d</strong> (⚠ la carte HF annonçant 768 est fausse — vérifié
+  au code source), liste de 12 tenseurs à agréger soi-même, <strong>256×256 accepté</strong> (256
+  tokens). <strong>Licence Apache 2.0, vérifiée</strong> — comme Clay. Une bande mal nommée dans
+  <code>bands=</code> produit des poids aléatoires silencieux : assertion obligatoire.</li>
 <li><strong>Le montage <code>/mnt/d</code> de WSL2 passe par drvfs.</strong> Le Lot 0 a déjà mesuré ce que cette couche
   coûte (<code>just install</code> y recopiait 696 Mo faute de liens durs). Une passe complète, c'est
   <strong>~16 Gio à lire à travers elle</strong> : à chiffrer avant d'accuser le CPU.</li>
@@ -182,11 +186,19 @@ O3, et non au Lot 2.</p>
 <h2 id="livrables">Livrables</h2>
 <ul>
 <li><code>core/embedding.py</code> — spec de bandes et normalisation, pur, testable à sec.</li>
+<li><code>core/similarity.py</code> — métriques pures : cosinus, intra/inter, silhouette, dérive.</li>
 <li><code>adapters/chip_loader.py</code> — le tenseur d'entrée, depuis les deux rasters.</li>
 <li><code>adapters/embed_clay.py</code>, <code>adapters/embed_terramind.py</code> — derrière un port unique.</li>
+<li><code>adapters/vectors.py</code> — stockage, clé d'idempotence, <code>VectorMeta</code>, <code>list_vectors</code>.</li>
+<li><code>adapters/bench_probe.py</code> — instrumentation, protocole de stabilité, échantillon gelé.</li>
 <li><code>cli/embed.py</code>, <code>cli/embed_backfill.py</code> — orchestrables, I/O explicites.</li>
-<li>Un <strong>rapport de banc</strong> comparatif, avec extrapolation chiffrée au corpus et au run quotidien.</li>
-<li>Un <strong>rapport de séparabilité</strong> par modèle.</li>
+<li><code>cli/bench.py</code>, <code>cli/bench_report.py</code>, <code>cli/similarity_report.py</code>,
+  <code>cli/trajectory_report.py</code> — mesure et rapports.</li>
+<li><code>scripts/fetch_models.py</code> et <code>scripts/check_cache.py</code> — les poids, hors gate.</li>
+<li>Un <strong>rapport de banc</strong> comparatif, avec extrapolation chiffrée au corpus et au run
+  quotidien, et le <strong>ratio discrimination / seconde</strong>.</li>
+<li>Un <strong>rapport de séparabilité</strong> par modèle (<code>.md</code> <strong>et</strong> <code>.json</code>).</li>
+<li>Un <strong>rapport de trajectoires</strong> témoins (A02 / C08) — le verdict sur l'unité d'embedding.</li>
 <li>Un corpus de fixtures d'embedding, et un smoke <code>embed</code> dans le gate.</li>
 </ul>
 <h2 id="criteres-de-sortie">Critères de sortie</h2>
@@ -197,56 +209,52 @@ O3, et non au Lot 2.</p>
 <li><strong>Idempotence</strong> : deux passes d'<code>embed</code> sur le même chip et le même modèle ne recalculent
    rien la seconde fois, et le vecteur est identique (déterminisme mesuré, tolérance déclarée
    si elle n'est pas nulle).</li>
-<li><strong>Aucun accès réseau au run</strong> : les poids sont résolus depuis un cache local ; la garde
-   est vérifiée par mutation, comme celle du Lot 0.</li>
+<li><strong>Aucun accès réseau au run</strong> : les trois artefacts de poids sont résolus depuis un
+   cache local unique ; la garde est posée par le code de production et <strong>le smoke tourne
+   dessous</strong> — elle est exercée à chaque <code>just check</code>, pas testée à part.</li>
 <li><strong>Le banc publie une extrapolation chiffrée</strong> : chips par heure et par modèle, RAM crête,
    et ce que ça donne sur 5 793 chips <strong>et</strong> sur une journée d'incrémental — avec le
    dénominateur et le cas défavorable.</li>
-<li><strong>Le banc publie un pouvoir discriminant</strong> par modèle, mesuré sur le corpus réel, et le
-   rapport discrimination / seconde qui permet de trancher.</li>
+<li><strong>Le banc publie un pouvoir discriminant</strong> par modèle — lu contre une <strong>baseline
+   triviale</strong> — et le <strong>ratio discrimination / seconde</strong> (porté par <code>l1-04.5</code>, après la
+   campagne) qui permet de trancher.</li>
 </ol>
 <p>⚠ Un critère de sortie qu'on ne peut pas rendre <strong>rouge</strong> n'en est pas un : chaque oracle du
 chantier doit être exercé dans les deux sens.</p>
-<h2 id="questions-ouvertes-a-trancher-avant-descente-en-fiches">Questions ouvertes (à trancher avant descente en fiches)</h2>
-<ol>
-<li><strong>Quelle unité embedder ?</strong> Le chip entier (5 120 m) donne un vecteur par acquisition —
-   c'est la colonne vertébrale annoncée. Mais Clay travaille sur des tuiles de 256×256 : à 10 m
-   le chip en fait quatre, à 20 m une seule. Un vecteur par chip, ou un par tuile agrégé
-   ensuite ? <strong>Ça change le nombre de vecteurs, le coût, et la finesse de détection du Lot 2.</strong></li>
-<li><strong>Que fait-on du masque SCL à l'entrée du modèle ?</strong> Neutraliser les pixels nuageux, ou
-   laisser le modèle les voir ? La seconde option est plus simple et plus fidèle à
-   l'entraînement des GFM ; la première réduit le bruit. À trancher, pas à découvrir.</li>
-<li><strong>Quelle variante de TerraMind ?</strong> Les auteurs recommandent tiny/small en local. À fixer
-   avant la fiche d'adapter, sinon l'oracle n'a pas de référence.</li>
-<li><strong>Quelle tolérance de déterminisme ?</strong> Bit à bit est l'idéal, mais le multi-threading BLAS
-   peut introduire des écarts. Fixer un seuil <strong>avant</strong> de mesurer, sinon on le fixera après
-   coup à la valeur observée — ce qui ne prouve rien.</li>
-</ol>
+<h2 id="questions-de-cadrage-tranchees">Questions de cadrage — TRANCHÉES</h2>
+<p>Les quatre questions ouvertes à l'ouverture du lot ont été tranchées le 23/08 (Philippe),
+puis précisées par la revue v1 du 24/08 : unité = un vecteur par chip en 20 m ·
+pas de masque SCL, seuil 10 % paramétré, tout consigné · TerraMind small en 256 ·
+déterminisme exigé à configuration fixée, mesuré entre threads. Les seuils décisionnels
+(silhouette 0,2 + baseline, dérive &gt; 2, fidélité ≥ 0,999, corrélation nuage 0,5) sont
+actés. <strong>Détail : roadmap du chantier, §2bis et §2ter</strong> — qui fait foi pour la déclinaison.</p>
 <h2 id="declinaison-en-backlog">Déclinaison en backlog</h2>
-<p>Chantier <code>docs/backlog/maturation/lot-1-embeddings/</code> — <strong>5 chapeaux · 20 sous-tâches ·
-1 fiche humaine</strong>, en quatre phases :</p>
+<p>Chantier <code>docs/backlog/maturation/lot-1-embeddings/</code> — <strong>5 chapeaux · 24 fiches agent
+(dont le socle <code>l1-00</code> et le gate avec poids <code>l1-07</code>) · 2 fiches humaines</strong> (la campagne
+<code>l1-05.3.H</code> et l'arbitrage <code>l1-06.H</code>) — soit <strong>26 fiches dispatchables</strong>, profondeur 8,
+largeur moyenne 3,25 — en quatre phases :</p>
 <div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Phase</th>
 <th>Objet</th>
-<th>Chapeaux</th>
+<th>Chapeaux et fiches à plat</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>O1</strong></td>
-<td>Socle : contrat d'entrée, chargement, port, fixtures</td>
-<td><code>l1-01</code></td>
+<td>Socle : dépendances et cache des poids, gate avec poids, contrat d'entrée, chargement, port, fixtures</td>
+<td><code>l1-01</code> + <strong><code>l1-00</code></strong> et <strong><code>l1-07</code></strong> (à plat)</td>
 </tr>
 <tr>
 <td><strong>O2</strong></td>
-<td>Modèles et exécution : adapters, CLI, stockage</td>
+<td>Modèles et exécution : adapters, CLI, stockage, smoke</td>
 <td><code>l1-02</code>, <code>l1-03</code></td>
 </tr>
 <tr>
 <td><strong>O3</strong></td>
-<td>Mesure : banc instrumenté, leviers, séparabilité</td>
+<td>Mesure : banc instrumenté, leviers, séparabilité, trajectoires</td>
 <td><code>l1-04</code>, <code>l1-05</code></td>
 </tr>
 <tr>
@@ -256,6 +264,10 @@ chantier doit être exercé dans les deux sens.</p>
 </tr>
 </tbody>
 </table></div>
+<p>Les livrables décisionnels (bench-report, similarity-report, trajectory-report,
+campaign.json) sont versionnés sous <strong><a href="lot-1/"><code>docs/lots/lot-1/</code></a></strong> — jamais dans <code>data/</code>,
+qui est gitignoré. Ce répertoire est <strong>ouvert à l'équipe en création</strong> (décision Philippe du
+25/08) ; il est créé par <code>l1-05.3a</code>.</p>
 <p>La roadmap détaillée et le graphe de dépendances vivent dans <code>_roadmap.md</code> du chantier. Ce
 document reste la <strong>source de vérité du lotissement</strong> ; les fiches en sont la déclinaison
-opérationnelle.</p><div class="prevnext"><a href="lot-0-sites.html">← Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a><span></span></div><p class="gen">Généré le 23/08/2026 14:05 depuis lot-1-embeddings.md — le .md fait foi.</p></article></body></html>
+opérationnelle.</p><div class="prevnext"><a href="lot-0-sites.html">← Fiche Lot 0 — Sites de surveillance &amp; ingestion Sentinel-2</a><span></span></div><p class="gen">Généré le 26/08/2026 15:37 depuis lot-1-embeddings.md — le .md fait foi.</p></article></body></html>
