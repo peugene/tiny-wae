@@ -49,7 +49,11 @@ border-top:1px solid #e3e9ee;padding-top:14px}
 <ul>
 <li><a href="#l1-014-fixtures-dembedding">[l1-01.4] — Fixtures d'embedding</a><ul>
 <li><a href="#objectif">Objectif</a></li>
-<li><a href="#contexte-et-perimetre">Contexte et périmètre</a></li>
+<li><a href="#contexte-et-perimetre">Contexte et périmètre</a><ul>
+<li><a href="#ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-bda42dc">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD bda42dc)</a></li>
+<li><a href="#quatre-candidats-concrets-releves-sur-le-corpus-la-topologie-est-deja-satisfaite">⭐ Quatre candidats concrets, relevés sur le corpus — la topologie est déjà satisfaite</a></li>
+</ul>
+</li>
 <li><a href="#definition-de-termine">Définition de « terminé »</a></li>
 <li><a href="#oracle-recette-fige-avant-implementation">Oracle / recette (figé AVANT implémentation)</a></li>
 <li><a href="#notes-pistes">Notes / pistes</a></li>
@@ -117,6 +121,89 @@ le Résumé : id, site, date, <code>cloud_pct</code>, taille — c'est ce qui re
   <code>record_*_fixtures.py</code> du Lot 0. <strong>S'il suffit d'une copie manuelle, ne pas écrire de
   script</strong> — c'est un POC.</li>
 </ul>
+<h3 id="ancrage-dans-le-code-reel-equipe-dimplementation-26082026-head-bda42dc">⚠ Ancrage dans le code réel (équipe d'implémentation, 26/08/2026, HEAD <code>bda42dc</code>)</h3>
+<p><strong>Le budget de taille est vérifié, il tient largement</strong></p>
+<p>Mesuré sur une acquisition réelle : <code>chip.tif</code> <strong>2,10 Mo</strong> · <code>chip_20m.tif</code> <strong>0,79 Mo</strong> ·
+<code>scl.tif</code> <strong>0,07 Mo</strong> · <code>manifest.json</code> <strong>~1,8 Ko</strong>. Soit <strong>2,96 Mo</strong> par acquisition, donc
+<strong>~11,8 Mo</strong> pour quatre — sous les 15 Mo d'O1, avec de la marge. <code>tests/fixtures/</code> passe
+de 31 Mo à ~43 Mo.
+⚠ Géométrie relevée, à ne pas confondre : <code>chip.tif</code> est en <strong>512×512, 4 bandes, uint16</strong> ;
+<code>chip_20m.tif</code> en <strong>256×256, 6 bandes, uint16</strong> ; et <code>scl.tif</code> en <strong>256×256, 1 bande,
+uint8</strong> — pas en 512.</p>
+<p><strong>O4 « aucun <code>https://</code> résiduel » est un contrôle, pas un travail</strong></p>
+<p>Vérifié sur un manifeste réel : il n'en contient <strong>aucun</strong>. Ses 24 clés sont
+<code>assets_read</code>, <code>boa_offset_applied</code>, <code>bytes_downloaded</code>, <code>bytes_written</code>, <code>cause</code>,
+<code>chip_nodata_pct</code>, <code>cloud_pct</code>, <code>content_hashes</code>, <code>datetime</code>, <code>duration_s</code>, <code>files</code>,
+<code>grid_hash</code>, <code>invalid_pct</code>, <code>item_id</code>, <code>platform</code>, <code>processing_baseline</code>, <code>radiometry</code>,
+<code>schema_version</code>, <code>scl_class_counts</code>, <code>sequence</code>, <code>site_id</code>, <code>status</code>, <code>tile</code>, <code>versions</code> —
+aucune n'est un href. Le Lot 0 ne les y écrit pas. <strong>Le vérifier, ne pas chercher à
+« nettoyer » quoi que ce soit.</strong></p>
+<h3 id="quatre-candidats-concrets-releves-sur-le-corpus-la-topologie-est-deja-satisfaite">⭐ Quatre candidats concrets, relevés sur le corpus — la topologie est déjà satisfaite</h3>
+<p>Le choix reste à l'implémenteur (la fiche le dit), mais ces quatre-là ont été <strong>vérifiés</strong>
+et cochent toutes les contraintes. Les prendre évite de parcourir 5 793 chips à travers
+drvfs.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Site</th>
+<th><code>item_id</code></th>
+<th>Date</th>
+<th><code>cloud_pct</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>très clair (le cas nominal)</td>
+<td><strong>A01</strong></td>
+<td><code>S2A_31TGJ_20220911_0_L2A</code></td>
+<td>2022-09-11</td>
+<td><strong>0,0 %</strong></td>
+</tr>
+<tr>
+<td>2ᵉ date du même site</td>
+<td><strong>A01</strong></td>
+<td><code>S2A_31TGJ_20221120_0_L2A</code></td>
+<td>2022-11-20</td>
+<td><strong>0,0 %</strong></td>
+</tr>
+<tr>
+<td>clair, second site</td>
+<td><strong>C07</strong></td>
+<td><code>S2A_52TEL_20230323_0_L2A</code></td>
+<td>2023-03-23</td>
+<td><strong>0,0 %</strong></td>
+</tr>
+<tr>
+<td><strong>au-dessus du seuil</strong></td>
+<td><strong>C07</strong></td>
+<td><code>S2B_52TEL_20230226_0_L2A</code></td>
+<td>2023-02-26</td>
+<td><strong>28,9 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Ce que cette sélection donne :</p>
+<ul>
+<li><strong>O3</strong> — au moins un ≤ 1 % (trois le sont) et un <strong>strictement au-dessus de 10 %</strong>. ⭐ À
+  <strong>28,9 %</strong>, pas à 10,1 % : le cas limite existait dans le corpus, il a été écarté
+  volontairement. Un témoin qui frôle le seuil ne discrimine rien si le seuil bouge d'un
+  point, et <code>l1-01.2</code>/O6 attend justement un chip qui <strong>sature en DN</strong> pour justifier sa
+  borne à 32767.</li>
+<li><strong>O4</strong> — deux sites, et <strong>chacun</strong> porte deux dates (pas seulement A01) : <code>l1-05.2</code>
+  (déterminisme) et <code>l1-03.2</code> (idempotence) auront donc de quoi travailler sur l'un comme
+  sur l'autre.</li>
+<li>Tous les quatre sont en statut <strong><code>ingested</code></strong>, donc <code>cloud_pct ≤ 30</code> par construction.</li>
+<li>Plateformes S2A et S2B uniquement — les items <strong>S2C</strong> du corpus (schéma d'assets
+  différent, cf. la fixture dédiée du Lot 0) sont <strong>écartés à dessein</strong> : cette fiche gèle
+  des chips, elle n'a pas à rejouer le sujet des schémas d'assets.</li>
+</ul>
+<p><strong>Sur le script d'enregistrement</strong></p>
+<p><code>scripts/record_stac_fixtures.py</code> et <code>scripts/record_cog_fixtures.py</code> existent comme
+modèles. Mais la fiche dit : « s'il suffit d'une copie manuelle, ne pas écrire de script ».
+⭐ <strong>C'est le cas ici</strong> : les quatre acquisitions sont <strong>déjà sur le disque local</strong>, il n'y a
+rien à re-télécharger. Une copie suffit — et si un script est écrit malgré tout, il tombe
+sous <code>mypy --strict</code> (<code>files = ["src", "tests", "scripts"]</code>), pour un bénéfice nul.</p>
 <p><strong>Hors périmètre</strong> : aucun vecteur gelé (on ne peut pas figer 1024 flottants sans figer des
 poids) · aucune fixture de modèle.</p>
 <h2 id="definition-de-termine">Définition de « terminé »</h2>
@@ -179,4 +266,4 @@ ajouter autant.</p>
 <li><strong>Verdict de l'oracle</strong> : …</li>
 <li><strong>Commit(s)</strong> : …</li>
 <li><strong>Date</strong> : AAAA-MM-JJ</li>
-</ul><div class="prevnext"><a href="../maturation/lot-1-embeddings/l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</a><span></span></div><p class="gen">Généré le 26/08/2026 20:24 — le .md fait foi.</p></article></body></html>
+</ul><div class="prevnext"><a href="../maturation/lot-1-embeddings/l1-01.3.html">← [l1-01.3] Port EmbeddingModel + registre à imports paresseux, table pré-posée</a><span></span></div><p class="gen">Généré le 26/08/2026 21:13 — le .md fait foi.</p></article></body></html>
